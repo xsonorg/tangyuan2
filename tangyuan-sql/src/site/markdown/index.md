@@ -85,3 +85,6 @@ tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的
 		</else>
 	</sql-service>
 
+### 6. 源码
+
+<https://github.com/xsonorg/tangyuan2>

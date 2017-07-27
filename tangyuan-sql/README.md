@@ -29,7 +29,7 @@ tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的
 
 ### 3. 系统架构
 
-![系统架构图](images/00.png)
+![系统架构图](http://www.xson.org/project/sql/1.2.0/images/00.png)
 
 ### 4. 版本和Maven依赖
 
@@ -85,3 +85,6 @@ tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的
 		</else>
 	</sql-service>
 
+### 6. 技术文档
+
+<http://www.xson.org/project/sql/1.2.0/>
