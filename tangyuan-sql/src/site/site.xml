@@ -44,7 +44,7 @@
 		<!-- 项目信息报告 inherit表示子模块继承父模块 -->
 		<menu name="OVERVIEW">
 			<item name="首页" href="index.html" />
-			<item name="使用示例" href="usage.html" />
+			<item name="使用说明" href="usage.html" />
 			<item name="数据映射" href="mapper.html" />
 			<item name="SQL服务" href="sql.html" />
 			<item name="分库分表" href="sharding.html" />

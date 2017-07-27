@@ -124,4 +124,8 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 	    <artifactId>tangyuan-mongo</artifactId>
 	    <version>1.2.0</version>
 	</dependency>
+	
+### 5. 技术文档
+
+<http://www.xson.org/project/mongo/1.2.0/>
 

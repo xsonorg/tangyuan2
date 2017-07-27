@@ -125,3 +125,6 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 	    <version>1.2.0</version>
 	</dependency>
 
+### 5. 源码
+
+<https://github.com/xsonorg/tangyuan2>
