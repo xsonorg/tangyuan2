@@ -28,3 +28,6 @@ tangyuan-web是tangyuan框架中的控制层组件，以组件化和插件化为
 	</dependency>
 	
 ### 3. 源码
+
+<https://github.com/xsonorg/tangyuan2>
+
