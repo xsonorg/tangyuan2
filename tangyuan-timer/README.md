@@ -87,7 +87,7 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 定时器是通过`component-timer.xml`中的`timer`节点来配置的，`timer`节点的具体属性如下：
 
 | 属性 | 用途 | 必填 | 取值 | 默认值 |
-| --- | --- | --- | --- |
+| :-- | :--| :-- | :-- | :-- |
 | scheduled | 执行计划 | Y | quartz的cron表达式，详见<http://www.quartz-scheduler.org/> | |
 | service | 服务名 | `custom`属性为空时此项必填 | 需要满足tangyuan服务名称规范 | |
 | sync | 是否同步访问;同步访问意味着不允许并发访问 | N | true和false | true |
@@ -123,7 +123,7 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 
 定时程序的部署可以分为两种方式，一种是和服务整合在一起，作为一套系统部署；另一种是独立部署；
 
-![timer部署](images/deploy.png)
+![timer部署](http://www.xson.org/project/timer/1.2.0/images/deploy.png)
 
 在上述使用教程中示例中`<timer scheduled="0 0/5 * * * ?" service="demo/sendPointsOnline" desc="在线送积分" sync="true"/>`使用就是整合部署，如果使用独立部署的应该做如下调整：
 
@@ -139,7 +139,7 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 
 ### 7. 类图
 
-![类图](images/class.png)
+![类图](http://www.xson.org/project/timer/1.2.0/images/class.png)
 
 1. `TimerConfig`：每个定时器的参数类，对应`timer`节点配置信息；
 2. `org.quartz.Job`：quartz框架中的Job接口；
@@ -148,3 +148,6 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 5. `NonConcurrentJob`：标记类，标记为不可并发执行系统定时器Job；
 6. `CustomJob`：用户自定义的定时器Job；
 
+### 8. 技术文档
+
+<http://www.xson.org/project/timer/1.2.0/>

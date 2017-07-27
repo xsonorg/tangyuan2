@@ -87,7 +87,7 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 定时器是通过`component-timer.xml`中的`timer`节点来配置的，`timer`节点的具体属性如下：
 
 | 属性 | 用途 | 必填 | 取值 | 默认值 |
-| --- | --- | --- | --- |
+| :-- | :--| :-- | :-- | :-- |
 | scheduled | 执行计划 | Y | quartz的cron表达式，详见<http://www.quartz-scheduler.org/> | |
 | service | 服务名 | `custom`属性为空时此项必填 | 需要满足tangyuan服务名称规范 | |
 | sync | 是否同步访问;同步访问意味着不允许并发访问 | N | true和false | true |
@@ -148,3 +148,6 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 5. `NonConcurrentJob`：标记类，标记为不可并发执行系统定时器Job；
 6. `CustomJob`：用户自定义的定时器Job；
 
+### 8. 源码
+
+<https://github.com/xsonorg/tangyuan2>
