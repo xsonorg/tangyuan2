@@ -24,4 +24,7 @@ tangyuan-cache是tangyuan框架中的缓存组件，提供缓存的技术实现�
 		<version>1.2.0</version>
 	</dependency>
 	
-### 3. 源码
+### 3. 技术文档
+
+<http://www.xson.org/project/cache/1.2.0/>
+
