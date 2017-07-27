@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.validate.XCOValidate;
 import org.xson.tangyuan.validate.XCOValidateException;
 import org.xson.tangyuan.web.RequestContext.DataFormatEnum;
@@ -134,7 +135,14 @@ public class XCOServlet extends HttpServlet {
 			if (null == ex) {
 				doResponseSuccess(context);
 			} else {
-				context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+				// context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+				// fix bug
+				if (ex instanceof ServiceException) {
+					ServiceException se = (ServiceException) ex;
+					context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
+				} else {
+					context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+				}
 				doResponseError(context, ex, "exec error");
 			}
 		}
