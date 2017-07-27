@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/sql/service" targetNamespace="http://xson.org/schema/tangyuan/sql/service" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="sql">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="selectSet">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="resultType" type="xs:string"/>
+			<xs:attribute name="resultMap" type="xs:string"/>
+			<xs:attribute name="resultKey" type="xs:string"/>
+			<xs:attribute name="fetchSize" type="xs:int"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="selectOne">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="resultType" type="xs:string"/>
+			<xs:attribute name="resultMap" type="xs:string"/>
+			<xs:attribute name="resultKey" type="xs:string"/>
+			<xs:attribute name="fetchSize" type="xs:int"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="selectVar">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="resultKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="insert">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="resultType" type="xs:string"/>
+			<xs:attribute name="rowCount" type="xs:string"/>
+			<xs:attribute name="incrementKey" type="xs:string"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="update">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="rowCount" type="xs:string"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="delete">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="rowCount" type="xs:string"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sql-service">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+				<xs:element ref="return" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="resultType" type="xs:string"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="txRef" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="setvar">
+		<xs:complexType>
+			<xs:attribute name="key" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+			<xs:attribute name="type">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="int"/>
+						<xs:enumeration value="long"/>
+						<xs:enumeration value="float"/>
+						<xs:enumeration value="double"/>
+						<xs:enumeration value="short"/>
+						<xs:enumeration value="boolean"/>
+						<xs:enumeration value="byte"/>
+						<xs:enumeration value="char"/>
+						<xs:enumeration value="dateTime"/>
+						<xs:enumeration value="date"/>
+						<xs:enumeration value="time"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="log">
+		<xs:complexType>
+			<xs:attribute name="message" type="xs:string" use="required"/>
+			<xs:attribute name="level" default="info">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="error"/>
+						<xs:enumeration value="warn"/>
+						<xs:enumeration value="info"/>
+						<xs:enumeration value="debug"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="if">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="test" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="elseif">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="test" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="else">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="foreach">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="collection" type="xs:string" use="required"/>
+			<xs:attribute name="index" type="xs:string"/>
+			<xs:attribute name="open" type="xs:string"/>
+			<xs:attribute name="close" type="xs:string"/>
+			<xs:attribute name="separator" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="exception">
+		<xs:complexType>
+			<xs:attribute name="test" type="xs:string" use="required"/>
+			<xs:attribute name="code" type="xs:int"/>
+			<xs:attribute name="message" type="xs:string"/>
+			<xs:attribute name="i18n" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="transGroup">
+		<xs:complexType>
+			<xs:attribute name="txRef" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="return">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="value" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="call">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="service" type="xs:string"/>
+			<xs:attribute name="resultKey" type="xs:string"/>
+			<xs:attribute name="mode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="EXTEND"/>
+						<xs:enumeration value="ALONE"/>
+						<xs:enumeration value="ASYNC"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="exResultKey" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="include">
+		<xs:complexType>
+			<xs:attribute name="ref" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sqlservices">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="sql"/>
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="sql-service"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="ns" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

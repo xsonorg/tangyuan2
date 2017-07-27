@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/mongo/mapper" targetNamespace="http://xson.org/schema/tangyuan/mongo/mapper" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="mapper">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="mappingClass" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="id" type="xs:string" use="required"/>
+						<xs:attribute name="class" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="resultMap" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="result" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="property" type="xs:string" use="required"/>
+									<xs:attribute name="column" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="id" type="xs:string" use="required"/>
+						<xs:attribute name="type" type="xs:string" use="optional"/>
+						<xs:attribute name="rule" type="xs:string" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

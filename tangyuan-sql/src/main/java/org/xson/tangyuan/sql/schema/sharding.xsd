@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/sql/sharding" targetNamespace="http://xson.org/schema/tangyuan/sql/sharding" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="sharding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="shardingClass" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="id" type="xs:string" use="required"/>
+						<xs:attribute name="class" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="table" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="dataSource" type="xs:string"/>
+						<xs:attribute name="mode">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="range"/>
+									<xs:enumeration value="hash"/>
+									<xs:enumeration value="mod"/>
+									<xs:enumeration value="random"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="dbCount" type="xs:int"/>
+						<xs:attribute name="tableCount" type="xs:int"/>
+						<xs:attribute name="tableCapacity" type="xs:int"/>
+						<xs:attribute name="keys" type="xs:string"/>
+						<xs:attribute name="impl" type="xs:string"/>
+						<xs:attribute name="increment" type="xs:boolean"/>
+						<xs:attribute name="requireKeyword" type="xs:boolean"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

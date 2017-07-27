@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/mq/service" targetNamespace="http://xson.org/schema/tangyuan/mq/service" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="mqservices">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="mq-listener"/>
+					<xs:element ref="mq-service"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="ns" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mq-listener">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="binding" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="key" type="xs:string" use="optional"/>
+						<xs:attribute name="pattern" type="xs:string" use="optional"/>
+						<xs:attribute name="separator" type="xs:string" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="service" type="xs:string" use="required"/>
+			<xs:attribute name="channel" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mq-service">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="routing" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="channels" type="xs:string" use="required"/>
+						<xs:attribute name="key" type="xs:string" use="optional"/>
+						<xs:attribute name="pattern" type="xs:string" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="channels" type="xs:string" use="optional"/>
+			<xs:attribute name="useTx" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
