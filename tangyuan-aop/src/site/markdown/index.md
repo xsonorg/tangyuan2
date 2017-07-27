@@ -11,3 +11,6 @@ tangyuan-aop是tangyuan框架中的AOP组件，是基于AOP（面向切面编程
 
 该组件位于tangyuan-base项目中，无需单独引用。
 
+### 3. 源码
+
+<https://github.com/xsonorg/tangyuan2>
