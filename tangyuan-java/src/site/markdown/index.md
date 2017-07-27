@@ -15,3 +15,6 @@ tangyuan-java是tangyuan框架中的JAVA服务组件，提供方法即服务的�
 	    <version>1.2.0</version>
 	</dependency>
 
+### 3. 源码
+
+<https://github.com/xsonorg/tangyuan2>
