@@ -37,3 +37,9 @@ tangyuan-mq是tangyuan框架中的消息服务组件，其整合了RabbitMQ和Ac
 	    <artifactId>tangyuan-mq</artifactId>
 	    <version>1.2.0</version>
 	</dependency>
+	
+### 4. 源码
+
+<https://github.com/xsonorg/tangyuan2>
+
+
