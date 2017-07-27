@@ -35,3 +35,7 @@ tangyuan-validate是tangyuan框架中的数据验证组件，提供基于XCO对�
 		<artifactId>tangyuan-validate</artifactId>
 		<version>1.2.0</version>
 	</dependency>
+	
+### 4. 源码
+
+<https://github.com/xsonorg/tangyuan2>
