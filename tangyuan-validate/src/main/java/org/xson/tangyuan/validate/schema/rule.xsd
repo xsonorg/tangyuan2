@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/validate/rule" targetNamespace="http://xson.org/schema/tangyuan/validate/rule" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="validate">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="def"/>
+					<xs:element ref="ruleGroup"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="ns" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="def">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="rule" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ruleGroup">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="item" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="message" type="xs:string"/>
+			<xs:attribute name="desc" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="rule">
+		<xs:complexType>
+			<xs:attribute name="name" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="枚举值"/>
+						<xs:enumeration value="区间值"/>
+						<xs:enumeration value="过滤"/>
+						<xs:enumeration value="最大长度"/>
+						<xs:enumeration value="最小长度"/>
+						<xs:enumeration value="区间长度"/>
+						<xs:enumeration value="匹配"/>
+						<xs:enumeration value="不匹配"/>
+						<xs:enumeration value="最小值"/>
+						<xs:enumeration value="最大值"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="value" type="xs:string" use="optional"/>
+			<xs:attribute name="checker" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="item">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="rule" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="name" use="required"/>
+			<xs:attribute name="type" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="int"/>
+						<xs:enumeration value="long"/>
+						<xs:enumeration value="float"/>
+						<xs:enumeration value="double"/>
+						<xs:enumeration value="string"/>
+						<xs:enumeration value="date"/>
+						<xs:enumeration value="time"/>
+						<xs:enumeration value="dateTime"/>
+						<xs:enumeration value="bigInteger"/>
+						<xs:enumeration value="bigDecimal"/>
+						<xs:enumeration value="array"/>
+						<xs:enumeration value="collection"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="require" type="xs:boolean"/>
+			<xs:attribute name="defaultValue" type="xs:string"/>
+			<xs:attribute name="ref" type="xs:string"/>
+			<xs:attribute name="message" type="xs:string"/>
+			<xs:attribute name="desc" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

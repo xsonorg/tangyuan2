@@ -3,13 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.xson</groupId>
-	<artifactId>tangyuan-base</artifactId>
-	<version>1.2.0</version>
+	<artifactId>tangyuan-validate</artifactId>
+	<version>1.2.1</version>
 	<packaging>jar</packaging>
 
-	<name>tangyuan-base</name>
+	<name>tangyuan-validate</name>
 	<url>http://xson.org/tangyuan</url>
-	<description>tangyuan is a service-oriented, component-based and plug-in enterprise-level distributed development framework.</description>
+	<description>Tangyuan-validate is the data validation component in the tangyuan framework that provides data validation based on XCO objects. The component is through the XML way to the service request parameter model to set the rules, through the rules of these settings, each request for access to the request object data validation.
+	.</description>
 
 	<properties>
 		<java.version>1.7</java.version>
@@ -23,26 +24,19 @@
 			<email>xson_org@126.com</email>
 		</developer>
 	</developers>
-	
+
 	<scm>
 		<url>https://github.com/xsonorg/tangyuan2.git</url>
 		<connection>scm:git:https://github.com/xsonorg/tangyuan2.git</connection>
 	</scm>
 
-	<licenses>
-		<license>
-			<name>GNU General Public License v3.0</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-		</license>
-	</licenses>	
-
 	<dependencies>
 
 		<dependency>
 			<groupId>org.xson</groupId>
-			<artifactId>logging</artifactId>
-			<version>1.0.0</version>
-			<!-- <scope>provided</scope> -->
+			<artifactId>tangyuan-base</artifactId>
+			<version>1.2.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -51,37 +45,6 @@
 			<version>1.0.2</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.1.41</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>2.2.2</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- <dependency> <groupId>org.xson</groupId> <artifactId>zongzi-api</artifactId> 
-			<version>1.2.0</version> </dependency> -->
 
 	</dependencies>
 
@@ -116,11 +79,11 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
-	
-	
+
+
 	<profiles>
 		<profile>
 			<id>private</id>
@@ -191,6 +154,6 @@
 				</plugins>
 			</build>
 		</profile>
-	</profiles>		
-	
+	</profiles>
+
 </project>
