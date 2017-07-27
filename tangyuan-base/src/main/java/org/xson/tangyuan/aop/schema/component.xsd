@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/aop/component" targetNamespace="http://xson.org/schema/tangyuan/aop/component" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="aop-component">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="before-check"/>
+					<xs:element ref="before-join"/>
+					<xs:element ref="before-alone"/>
+					<xs:element ref="after-join"/>
+					<xs:element ref="after-alone"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="before-check">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="include"/>
+					<xs:element name="exclude"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="exec" type="xs:string" use="required"/>
+			<xs:attribute name="order" type="xs:int" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="before-alone">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="include"/>
+					<xs:element name="exclude"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="exec" type="xs:string" use="required"/>
+			<xs:attribute name="order" type="xs:int" use="optional"/>
+			<xs:attribute name="mode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ALONE"/>
+						<xs:enumeration value="ASYNC"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="propagation" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="before-join">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="include"/>
+					<xs:element name="exclude"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="exec" type="xs:string" use="required"/>
+			<xs:attribute name="order" type="xs:int" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="after-alone">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="include"/>
+					<xs:element name="exclude"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="exec" type="xs:string" use="required"/>
+			<xs:attribute name="order" type="xs:int" use="optional"/>
+			<xs:attribute name="mode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ALONE"/>
+						<xs:enumeration value="ASYNC"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="propagation" type="xs:boolean" use="optional"/>
+			<xs:attribute name="condition">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="SUCCESS"/>
+						<xs:enumeration value="EXCEPTION"/>
+						<xs:enumeration value="ALL"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="after-join">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="include"/>
+					<xs:element name="exclude"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="exec" type="xs:string" use="required"/>
+			<xs:attribute name="order" type="xs:int" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
