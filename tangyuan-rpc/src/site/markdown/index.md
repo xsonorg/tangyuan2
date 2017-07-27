@@ -24,11 +24,14 @@ tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的�
 | :-- | :--| :-- | :-- | :-- |
 | www.xson.com | 门面 | N | N | N |
 
-### 3. 版本和引用
+### 3. 功能特点
+
+- 提供HttpClient客户端访问
+- 提供多节点混合传输支持
+
+### 4. 版本和引用
 
 当前版本：1.2.0
-
-源码地址：<https://github.com/xsonorg/tangyuan>
 
 Maven使用：
 
@@ -37,10 +40,8 @@ Maven使用：
 	  <artifactId>tangyuan-rpc</artifactId>
 	  <version>1.2.0</version>
 	</dependency>
+	
+### 5. 源码
 
-### 4. 功能特点
+<https://github.com/xsonorg/tangyuan2>
 
-- 提供HttpClient客户端访问
-- 提供Pigeon客户端支持
-- 提供多节点混合传输支持
-- 提供Pigeon服务端支持
