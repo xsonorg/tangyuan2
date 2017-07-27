@@ -25,6 +25,16 @@
  -->
 	<body>
 
+		<head><![CDATA[<script>
+			var _hmt = _hmt || [];
+			(function() {
+			  var hm = document.createElement("script");
+			  hm.src = "https://hm.baidu.com/hm.js?667c1c941a306c7a5b4eb4d49f740b15";
+			  var s = document.getElementsByTagName("script")[0]; 
+			  s.parentNode.insertBefore(hm, s);
+			})();
+		</script>]]></head>
+
 		<breadcrumbs>
 			<item name="index" href="###" />
 		</breadcrumbs>
