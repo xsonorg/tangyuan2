@@ -4,7 +4,7 @@
 
 	<groupId>org.xson</groupId>
 	<artifactId>tangyuan-mq</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 
 	<name>tangyuan-mq</name>
