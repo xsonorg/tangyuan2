@@ -30,7 +30,8 @@ public class XMLConfigBuilder {
 
 	public void parseNode() throws Throwable {
 		buildConfigNodes(this.root.evalNodes("config-property"));
-		buildDomainNodes(this.root.evalNodes("domain"));
+		// 去除demain元素
+		// buildDomainNodes(this.root.evalNodes("domain"));
 		if (WebComponent.getInstance().isMappingServiceName()) {
 			new AutoMapping(this.bc).build();
 		}
@@ -55,20 +56,21 @@ public class XMLConfigBuilder {
 		}
 	}
 
-	private void buildDomainNodes(List<XmlNodeWrapper> contexts) throws Exception {
-		// <domain id="xxx" base="http://www.baidu.com" />
-		for (XmlNodeWrapper context : contexts) {
-			String id = StringUtils.trim(context.getStringAttribute("id"));
-			String base = StringUtils.trim(context.getStringAttribute("base"));
-			if (null == id || null == base) {
-				throw new RuntimeException("<domain> missing id or base");
-			}
-			if (this.bc.getDomainMap().containsKey(id)) {
-				throw new RuntimeException("Duplicate domain: " + id);
-			}
-			this.bc.getDomainMap().put(id, base);
-		}
-	}
+	// 忽略web中的domain
+	// private void buildDomainNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	// // <domain id="xxx" base="http://www.baidu.com" />
+	// for (XmlNodeWrapper context : contexts) {
+	// String id = StringUtils.trim(context.getStringAttribute("id"));
+	// String base = StringUtils.trim(context.getStringAttribute("base"));
+	// if (null == id || null == base) {
+	// throw new RuntimeException("<domain> missing id or base");
+	// }
+	// if (this.bc.getDomainMap().containsKey(id)) {
+	// throw new RuntimeException("Duplicate domain: " + id);
+	// }
+	// this.bc.getDomainMap().put(id, base);
+	// }
+	// }
 
 	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <plugin resource="xxx.xml" />

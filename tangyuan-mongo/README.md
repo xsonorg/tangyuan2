@@ -129,3 +129,6 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 
 <http://www.xson.org/project/mongo/1.2.0/>
 
+### 6. 版本更新
+
+1. 支持Long类型

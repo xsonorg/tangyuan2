@@ -139,6 +139,10 @@ public class UpdateVo implements SqlVo {
 					int val = ((Integer) valueVo.getValue()).intValue();
 					// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), -val));
 					incObject.put(columnUpdateVo.getName(), -val);
+				} else if (ValueType.LONG == valueVo.getType()) {
+					long val = ((Integer) valueVo.getValue()).intValue();
+					// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), -val));
+					incObject.put(columnUpdateVo.getName(), -val);
 				} else if (ValueType.DOUBLE == valueVo.getType()) {
 					double val = ((Double) valueVo.getValue()).doubleValue();
 					// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), -val));

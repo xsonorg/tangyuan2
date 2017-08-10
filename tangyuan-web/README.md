@@ -29,3 +29,8 @@ tangyuan-web是tangyuan框架中的控制层组件，以组件化和插件化为
 ### 3. 技术文档
 
 <http://www.xson.org/project/web/1.2.0/>
+
+### 4. 版本更新
+
+1. 去除domain元素的支持
+

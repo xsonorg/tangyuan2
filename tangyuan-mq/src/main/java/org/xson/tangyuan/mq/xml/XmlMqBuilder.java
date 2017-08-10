@@ -63,11 +63,14 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			throw new XmlParseException("Missing <mqSource> node.");
 		}
 
+		String _defaultMqSource = null;
+
 		for (XmlNodeWrapper xNode : contexts) {
 			String id = StringUtils.trim(xNode.getStringAttribute("id"));
 			if (context.getMqSourceMap().containsKey(id)) {
 				throw new XmlParseException("Duplicate <mqSource> id: " + id);
 			}
+			_defaultMqSource = id;
 
 			MqSourceType type = null;
 			String _type = StringUtils.trim(xNode.getStringAttribute("type"));
@@ -97,6 +100,11 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			MqSourceVo hostVo = new MqSourceVo(id, type, data);
 			context.getMqSourceMap().put(id, hostVo);
 			log.info("add mq source: " + id);
+		}
+
+		// fix bug
+		if (1 == contexts.size()) {
+			this.defaultMqSource = _defaultMqSource;
 		}
 
 		this.context.setDefaultMqSource(defaultMqSource);

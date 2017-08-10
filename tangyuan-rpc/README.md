@@ -44,3 +44,7 @@ Maven使用：
 ### 5. 技术文档
 
 <http://www.xson.org/project/rpc/1.2.0/>
+
+### 4. 版本更新
+
+1. 优化XXXX

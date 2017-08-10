@@ -302,7 +302,16 @@ public class SqlParser {
 		}
 
 		if (isInteger(val)) {
-			return new ValueVo(Integer.parseInt(val), ValueType.INTEGER);
+			// return new ValueVo(Integer.parseInt(val), ValueType.INTEGER);
+			// fix bug, support long
+			Object number = null;
+			try {
+				number = Integer.parseInt(val);
+				return new ValueVo(number, ValueType.INTEGER);
+			} catch (NumberFormatException e) {
+				number = Long.parseLong(val);
+			}
+			return new ValueVo(number, ValueType.LONG);
 		}
 		return new ValueVo(Double.parseDouble(val), ValueType.DOUBLE);
 	}

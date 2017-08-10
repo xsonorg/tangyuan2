@@ -364,6 +364,39 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		}
 	}
 
+	// private String parseTransfer(String transfer, String url) {
+	// if (refMark.equals(transfer)) {
+	// return url;
+	// }
+	// // 第一种情况: {xxx}/@
+	// String regex = "\\{.*\\}/@";
+	// Pattern pattern = Pattern.compile(regex);
+	// Matcher matcher = pattern.matcher(transfer);
+	// if (matcher.matches()) {
+	// int pos = transfer.indexOf(rightBrackets);
+	// String domainRef = transfer.substring(1, pos);
+	// String domain = this.bc.getDomainMap().get(domainRef);
+	// if (null == domain) {
+	// throw new XmlParseException("Domain reference error: " + transfer);
+	// }
+	// return urlMerge(domain, url);
+	// }
+	// // 第二种情况: {xxx}/axx/bxx
+	// if (transfer.startsWith(leftBrackets)) {
+	// int pos = transfer.indexOf(rightBrackets);
+	// String domainRef = transfer.substring(1, pos);
+	// String domain = this.bc.getDomainMap().get(domainRef);
+	// if (null == domain) {
+	// throw new XmlParseException("Domain reference error: " + transfer);
+	// }
+	// String path = transfer.substring(pos + 1);
+	// return urlMerge(domain, path);
+	// }
+	// // 第三种情况: 完全手写
+	// return transfer;
+	// }
+
+	// 解析转发URL, 忽略domain的处理
 	private String parseTransfer(String transfer, String url) {
 		if (refMark.equals(transfer)) {
 			return url;
@@ -374,24 +407,16 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		Matcher matcher = pattern.matcher(transfer);
 		if (matcher.matches()) {
 			int pos = transfer.indexOf(rightBrackets);
-			String domainRef = transfer.substring(1, pos);
-			String domain = this.bc.getDomainMap().get(domainRef);
-			if (null == domain) {
-				throw new XmlParseException("Domain reference error: " + transfer);
-			}
-			return urlMerge(domain, url);
+			// String domainRef = transfer.substring(1, pos);
+			// String domain = this.bc.getDomainMap().get(domainRef);
+			// if (null == domain) {
+			// throw new XmlParseException("Domain reference error: " + transfer);
+			// }
+			// return urlMerge(domain, url);
+			String domainRef = transfer.substring(0, pos + 1);
+			return urlMerge(domainRef, url);
 		}
 		// 第二种情况: {xxx}/axx/bxx
-		if (transfer.startsWith(leftBrackets)) {
-			int pos = transfer.indexOf(rightBrackets);
-			String domainRef = transfer.substring(1, pos);
-			String domain = this.bc.getDomainMap().get(domainRef);
-			if (null == domain) {
-				throw new XmlParseException("Domain reference error: " + transfer);
-			}
-			String path = transfer.substring(pos + 1);
-			return urlMerge(domain, path);
-		}
 		// 第三种情况: 完全手写
 		return transfer;
 	}

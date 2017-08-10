@@ -12,7 +12,7 @@ public class BuilderContext {
 
 	private Map<String, ControllerVo>	controllerMap	= new HashMap<String, ControllerVo>();
 
-	private Map<String, String>			domainMap		= new HashMap<String, String>();
+	// private Map<String, String> domainMap = new HashMap<String, String>();
 	private Map<String, Object>			beanIdMap		= new HashMap<String, Object>();
 	private Map<String, Object>			beanClassMap	= new HashMap<String, Object>();
 
@@ -26,9 +26,9 @@ public class BuilderContext {
 	private Map<String, String>			afterMap		= new HashMap<String, String>();
 	private Map<String, String>			assemblyMap		= new HashMap<String, String>();
 
-	public Map<String, String> getDomainMap() {
-		return domainMap;
-	}
+	// public Map<String, String> getDomainMap() {
+	// return domainMap;
+	// }
 
 	public Map<String, Object> getBeanIdMap() {
 		return beanIdMap;
@@ -71,7 +71,7 @@ public class BuilderContext {
 	}
 
 	public void clear() {
-		this.domainMap.clear();
+		// this.domainMap.clear();
 		this.beanIdMap.clear();
 		this.beanClassMap.clear();
 		this.moMap.clear();
@@ -81,7 +81,7 @@ public class BuilderContext {
 		this.afterMap.clear();
 		this.assemblyList.clear();
 
-		this.domainMap = null;
+		// this.domainMap = null;
 		this.beanIdMap = null;
 		this.beanClassMap = null;
 		this.moMap = null;

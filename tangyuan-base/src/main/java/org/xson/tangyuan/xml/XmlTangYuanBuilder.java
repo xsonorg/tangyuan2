@@ -149,6 +149,11 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		// 服务启动完毕:自动启动
 		// ServiceActuator.start();
 
+		// fix bug
+		if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
+			ServiceActuator.openOnlyProxyMode();
+		}
+
 		type = "aop".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
@@ -163,17 +168,17 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		type = "timer".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
-			if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
-				ServiceActuator.openOnlyProxyMode();
-			}
+			// if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
+			// ServiceActuator.openOnlyProxyMode();
+			// }
 		}
 
 		type = "web".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
-			if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
-				ServiceActuator.openOnlyProxyMode();
-			}
+			// if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
+			// ServiceActuator.openOnlyProxyMode();
+			// }
 		}
 
 		// 最后启动

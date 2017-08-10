@@ -3,7 +3,8 @@ package org.xson.tangyuan.mongo.executor.sql;
 public class ValueVo {
 
 	public enum ValueType {
-		INTEGER, DOUBLE, BOOLEAN, STRING, NULL
+		// INTEGER, DOUBLE, BOOLEAN, STRING, NULL
+		INTEGER, LONG, DOUBLE, BOOLEAN, STRING, NULL
 	}
 
 	private Object		value;

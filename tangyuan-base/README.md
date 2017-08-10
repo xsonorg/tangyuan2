@@ -13,3 +13,8 @@ tangyuan-base是tangyuan框架的基础类库。
 ### 4. 技术文档
 
 <http://www.xson.org/project/tangyuan/1.2.0>
+
+### 5. 版本更新
+
+1. fix 服务启动时的onlyProxyMode
+
