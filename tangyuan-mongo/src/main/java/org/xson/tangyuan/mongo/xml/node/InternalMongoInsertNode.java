@@ -42,7 +42,7 @@ public class InternalMongoInsertNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		Object result = mongoContext.executeInsert(this);
+		Object result = mongoContext.executeInsert(this, arg);
 		if (null != this.resultKey) {
 			Ognl.setValue(arg, this.resultKey, result);
 		}

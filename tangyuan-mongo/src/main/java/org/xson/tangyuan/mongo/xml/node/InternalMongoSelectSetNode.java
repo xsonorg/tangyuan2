@@ -55,9 +55,9 @@ public class InternalMongoSelectSetNode extends AbstractMongoNode {
 
 		Object result = null;
 		if (XCO.class == resultType) {
-			result = mongoContext.executeSelectSetListXCO(this, null, fetchSize);
+			result = mongoContext.executeSelectSetListXCO(this, null, fetchSize, arg);
 		} else {
-			result = mongoContext.executeSelectSetListMap(this, null, fetchSize);
+			result = mongoContext.executeSelectSetListMap(this, null, fetchSize, arg);
 		}
 		if (null != this.resultKey) {
 			Ognl.setValue(arg, this.resultKey, result);

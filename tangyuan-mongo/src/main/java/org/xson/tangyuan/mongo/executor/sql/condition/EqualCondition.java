@@ -48,7 +48,7 @@ public class EqualCondition extends WhereCondition {
 	}
 
 	@Override
-	public void setQuery(DBObject query, BasicDBList orList) {
+	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		// if (null == orList) {
 		// query.put(this.name, value.getValue());
 		// } else {
@@ -57,15 +57,15 @@ public class EqualCondition extends WhereCondition {
 
 		if (this.name.equals("_id")) {
 			if (null == orList) {
-				query.put(this.name, new ObjectId(value.getValue().toString()));
+				query.put(this.name, new ObjectId(value.getValue(arg).toString()));
 			} else {
-				orList.add(new BasicDBObject(this.name, new ObjectId(value.getValue().toString())));
+				orList.add(new BasicDBObject(this.name, new ObjectId(value.getValue(arg).toString())));
 			}
 		} else {
 			if (null == orList) {
-				query.put(this.name, value.getValue());
+				query.put(this.name, value.getValue(arg));
 			} else {
-				orList.add(new BasicDBObject(this.name, value.getValue()));
+				orList.add(new BasicDBObject(this.name, value.getValue(arg)));
 			}
 		}
 	}

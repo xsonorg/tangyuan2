@@ -40,7 +40,7 @@ public class InternalMongoUpdateNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		int count = mongoContext.executeUpdate(this);
+		int count = mongoContext.executeUpdate(this, arg);
 		if (null != this.resultKey) {
 			Ognl.setValue(arg, this.resultKey, count);
 		}

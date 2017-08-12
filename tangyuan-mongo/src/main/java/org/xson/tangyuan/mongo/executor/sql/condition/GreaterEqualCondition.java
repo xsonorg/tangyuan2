@@ -37,19 +37,19 @@ public class GreaterEqualCondition extends WhereCondition {
 		builder.append(SqlParser.BLANK_MARK);
 		if (ValueType.STRING == value.getType()) {
 			builder.append('\'');
-			builder.append(value.getValue());
+			builder.append(value.getSqlValue());
 			builder.append('\'');
 		} else {
-			builder.append(value.getValue());
+			builder.append(value.getSqlValue());
 		}
 	}
 
 	@Override
-	public void setQuery(DBObject query, BasicDBList orList) {
+	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		if (null == orList) {
-			query.put(this.name, new BasicDBObject("$gte", value.getValue()));
+			query.put(this.name, new BasicDBObject("$gte", value.getValue(arg)));
 		} else {
-			orList.add(new BasicDBObject(this.name, new BasicDBObject("$gte", value.getValue())));
+			orList.add(new BasicDBObject(this.name, new BasicDBObject("$gte", value.getValue(arg))));
 		}
 	}
 }

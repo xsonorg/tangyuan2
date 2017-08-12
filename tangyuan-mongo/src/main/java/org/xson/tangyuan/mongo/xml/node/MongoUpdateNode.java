@@ -37,7 +37,7 @@ public class MongoUpdateNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		int result = mongoContext.executeUpdate(this);
+		int result = mongoContext.executeUpdate(this, arg);
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

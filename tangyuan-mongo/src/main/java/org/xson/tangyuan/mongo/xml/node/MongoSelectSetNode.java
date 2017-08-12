@@ -64,9 +64,9 @@ public class MongoSelectSetNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 		if (XCO.class == resultType) {
-			result = mongoContext.executeSelectSetListXCO(this, resultMap, fetchSize);
+			result = mongoContext.executeSelectSetListXCO(this, resultMap, fetchSize, arg);
 		} else {
-			result = mongoContext.executeSelectSetListMap(this, resultMap, fetchSize);
+			result = mongoContext.executeSelectSetListMap(this, resultMap, fetchSize, arg);
 		}
 		context.setResult(result);
 

@@ -56,10 +56,10 @@ public class DeleteVo implements SqlVo {
 		return builder.toString();
 	}
 
-	public int delete(DBCollection collection, WriteConcern writeConcern) {
+	public int delete(DBCollection collection, WriteConcern writeConcern, Object arg) {
 		DBObject query = new BasicDBObject();
 		if (null != condition) {
-			this.condition.setQuery(query, null);
+			this.condition.setQuery(query, null, arg);
 		}
 
 		log(query);

@@ -20,7 +20,8 @@ public class UpdateVo implements SqlVo {
 	private static Log log = LogFactory.getLog(UpdateVo.class);
 
 	public enum ColumnUpdateType {
-		NORMAL, ADD, MINUS
+		// NORMAL, ADD, MINUS
+		NORMAL, ADD, MINUS, MUL
 	}
 
 	private List<ColumnUpdateVo>	setColumns;
@@ -95,13 +96,27 @@ public class UpdateVo implements SqlVo {
 				builder.append("+");
 				builder.append(SqlParser.BLANK_MARK);
 				builder.append(valueVo.getSqlValue());
-			} else {
+			} else if (ColumnUpdateType.MINUS == columnUpdateVo.getType()) {
 				builder.append(columnUpdateVo.getName());
 				builder.append(SqlParser.BLANK_MARK);
 				builder.append("-");
 				builder.append(SqlParser.BLANK_MARK);
 				builder.append(valueVo.getSqlValue());
+			} else if (ColumnUpdateType.MUL == columnUpdateVo.getType()) {
+				builder.append(columnUpdateVo.getName());
+				builder.append(SqlParser.BLANK_MARK);
+				builder.append("*");
+				builder.append(SqlParser.BLANK_MARK);
+				builder.append(valueVo.getSqlValue());
 			}
+
+			// else {
+			// builder.append(columnUpdateVo.getName());
+			// builder.append(SqlParser.BLANK_MARK);
+			// builder.append("-");
+			// builder.append(SqlParser.BLANK_MARK);
+			// builder.append(valueVo.getSqlValue());
+			// }
 		}
 		if (null != condition) {
 			builder.append(SqlParser.BLANK_MARK);
@@ -112,45 +127,50 @@ public class UpdateVo implements SqlVo {
 		return builder.toString();
 	}
 
-	public int update(DBCollection collection, WriteConcern writeConcern) {
+	public int update(DBCollection collection, WriteConcern writeConcern, Object arg) {
 		DBObject query = new BasicDBObject();
 		DBObject update = new BasicDBObject();
 
 		if (null != this.condition) {
-			this.condition.setQuery(query, null);
+			this.condition.setQuery(query, null, arg);
 		}
 
 		boolean hasSet = false;
 		boolean hasInc = false;
+		boolean hasMul = false;// 新增:乘法
 		DBObject setObject = new BasicDBObject();
 		DBObject incObject = new BasicDBObject();
+		DBObject mulObject = new BasicDBObject();
 		for (int i = 0, n = setColumns.size(); i < n; i++) {
 			ColumnUpdateVo columnUpdateVo = setColumns.get(i);
 			ValueVo valueVo = columnUpdateVo.getValueVo();
 			if (ColumnUpdateType.NORMAL == columnUpdateVo.getType()) {
-				setObject.put(columnUpdateVo.getName(), valueVo.getValue());
+				setObject.put(columnUpdateVo.getName(), valueVo.getValue(arg));
 				hasSet = true;
 			} else if (ColumnUpdateType.ADD == columnUpdateVo.getType()) {
 				// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), valueVo.getValue()));
-				incObject.put(columnUpdateVo.getName(), valueVo.getValue());
+				incObject.put(columnUpdateVo.getName(), valueVo.getValue(arg));
 				hasInc = true;
-			} else {
+			} else if (ColumnUpdateType.MINUS == columnUpdateVo.getType()) {
 				if (ValueType.INTEGER == valueVo.getType()) {
-					int val = ((Integer) valueVo.getValue()).intValue();
+					int val = ((Integer) valueVo.getValue(arg)).intValue();
 					// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), -val));
 					incObject.put(columnUpdateVo.getName(), -val);
 				} else if (ValueType.LONG == valueVo.getType()) {
-					long val = ((Integer) valueVo.getValue()).intValue();
+					long val = ((Integer) valueVo.getValue(arg)).intValue();
 					// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), -val));
 					incObject.put(columnUpdateVo.getName(), -val);
 				} else if (ValueType.DOUBLE == valueVo.getType()) {
-					double val = ((Double) valueVo.getValue()).doubleValue();
+					double val = ((Double) valueVo.getValue(arg)).doubleValue();
 					// updateSetting.put("$inc", new BasicDBObject(columnUpdateVo.getName(), -val));
 					incObject.put(columnUpdateVo.getName(), -val);
 				} else {
 					throw new SqlParseException("When updating a minus operation, invalid data type: " + valueVo.getType());
 				}
 				hasInc = true;
+			} else if (ColumnUpdateType.MUL == columnUpdateVo.getType()) {
+				mulObject.put(columnUpdateVo.getName(), valueVo.getValue(arg));
+				hasMul = true;
 			}
 		}
 
@@ -159,6 +179,9 @@ public class UpdateVo implements SqlVo {
 		}
 		if (hasInc) {
 			update.put("$inc", incObject);
+		}
+		if (hasMul) {
+			update.put("$mul", mulObject);
 		}
 
 		// 日志显示

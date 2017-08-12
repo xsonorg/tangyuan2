@@ -52,51 +52,52 @@ public class MongoServiceContext implements IServiceContext {
 		}
 	}
 
-	public List<Map<String, Object>> executeSelectSetListMap(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize) throws Throwable {
+	public List<Map<String, Object>> executeSelectSetListMap(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize, Object arg)
+			throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		List<Map<String, Object>> result = mongoActuator.selectAllMap(dsKey, getSql(), resultMap, fetchSize);
+		List<Map<String, Object>> result = mongoActuator.selectAllMap(dsKey, getSql(), resultMap, fetchSize, arg);
 		return result;
 	}
 
-	public List<XCO> executeSelectSetListXCO(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize) throws Throwable {
+	public List<XCO> executeSelectSetListXCO(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		List<XCO> result = mongoActuator.selectAllXCO(dsKey, getSql(), resultMap, fetchSize);
+		List<XCO> result = mongoActuator.selectAllXCO(dsKey, getSql(), resultMap, fetchSize, arg);
 		return result;
 	}
 
-	public Map<String, Object> executeSelectOneMap(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize) throws Throwable {
+	public Map<String, Object> executeSelectOneMap(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		Map<String, Object> result = mongoActuator.selectOneMap(dsKey, getSql(), resultMap, fetchSize);
+		Map<String, Object> result = mongoActuator.selectOneMap(dsKey, getSql(), resultMap, fetchSize, arg);
 		return result;
 	}
 
-	public XCO executeSelectOneXCO(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize) throws Throwable {
+	public XCO executeSelectOneXCO(AbstractMongoNode sqlNode, MappingVo resultMap, Integer fetchSize, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		XCO result = mongoActuator.selectOneXCO(dsKey, getSql(), resultMap, fetchSize);
+		XCO result = mongoActuator.selectOneXCO(dsKey, getSql(), resultMap, fetchSize, arg);
 		return result;
 	}
 
-	public Object executeSelectVar(AbstractMongoNode sqlNode) throws Throwable {
+	public Object executeSelectVar(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		Object result = mongoActuator.selectVar(dsKey, getSql());
+		Object result = mongoActuator.selectVar(dsKey, getSql(), arg);
 		return result;
 	}
 
-	public int executeDelete(AbstractMongoNode sqlNode) throws Throwable {
+	public int executeDelete(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		int result = mongoActuator.delete(dsKey, getSql());
+		int result = mongoActuator.delete(dsKey, getSql(), arg);
 		return result;
 	}
 
-	public int executeUpdate(AbstractMongoNode sqlNode) throws Throwable {
+	public int executeUpdate(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		int result = mongoActuator.update(dsKey, getSql());
+		int result = mongoActuator.update(dsKey, getSql(), arg);
 		return result;
 	}
 
-	public Object executeInsert(AbstractMongoNode sqlNode) throws Throwable {
+	public Object executeInsert(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		Object result = mongoActuator.insert(dsKey, getSql());
+		Object result = mongoActuator.insert(dsKey, getSql(), arg);
 		return result;
 	}
 

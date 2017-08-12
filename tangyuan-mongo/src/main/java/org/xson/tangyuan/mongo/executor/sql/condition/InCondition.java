@@ -57,17 +57,17 @@ public class InCondition extends WhereCondition {
 	}
 
 	@Override
-	public void setQuery(DBObject query, BasicDBList orList) {
+	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		if (null == orList) {
 			BasicDBList list = new BasicDBList();
 			for (int i = 0, n = value.size(); i < n; i++) {
-				list.add(value.get(i).getValue());
+				list.add(value.get(i).getValue(arg));
 			}
 			query.put(this.name, new BasicDBObject("$in", list));
 		} else {
 			BasicDBList list = new BasicDBList();
 			for (int i = 0, n = value.size(); i < n; i++) {
-				list.add(value.get(i).getValue());
+				list.add(value.get(i).getValue(arg));
 			}
 			orList.add(new BasicDBObject(this.name, new BasicDBObject("$in", list)));
 		}

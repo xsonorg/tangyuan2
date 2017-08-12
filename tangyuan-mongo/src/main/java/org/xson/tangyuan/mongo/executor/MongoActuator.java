@@ -23,67 +23,66 @@ public class MongoActuator {
 
 	private SqlParser sqlParser = new SqlParser();
 
-	public List<Map<String, Object>> selectAllMap(String dsKey, String sql, MappingVo resultMap, Integer fetchSize) {
+	public List<Map<String, Object>> selectAllMap(String dsKey, String sql, MappingVo resultMap, Integer fetchSize, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
-		DBCursor cursor = selectVo.selectSet(collection);
+		DBCursor cursor = selectVo.selectSet(collection, arg);
 		return getResults(cursor, resultMap);
 	}
 
-	public List<XCO> selectAllXCO(String dsKey, String sql, MappingVo resultMap, Integer fetchSize) {
+	public List<XCO> selectAllXCO(String dsKey, String sql, MappingVo resultMap, Integer fetchSize, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
-		DBCursor cursor = selectVo.selectSet(collection);
+		DBCursor cursor = selectVo.selectSet(collection, arg);
 		return getXCOResults(cursor, resultMap);
 	}
 
-	public Map<String, Object> selectOneMap(String dsKey, String sql, MappingVo resultMap, Integer fetchSize) {
+	public Map<String, Object> selectOneMap(String dsKey, String sql, MappingVo resultMap, Integer fetchSize, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
-		DBObject result = selectVo.selectOne(collection);
+		DBObject result = selectVo.selectOne(collection, arg);
 		if (null != result) {
 			return getResults(result, resultMap);
 		}
 		return null;
 	}
 
-	public XCO selectOneXCO(String dsKey, String sql, MappingVo resultMap, Integer fetchSize) {
+	public XCO selectOneXCO(String dsKey, String sql, MappingVo resultMap, Integer fetchSize, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
-		DBObject result = selectVo.selectOne(collection);
+		DBObject result = selectVo.selectOne(collection, arg);
 		if (null != result) {
 			return getXCOResults(result, resultMap);
 		}
 		return null;
 	}
 
-	public List<Map<String, Object>> selectAll(String dsKey, String sql) {
+	public List<Map<String, Object>> selectAll(String dsKey, String sql, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
-		DBCursor cursor = selectVo.selectSet(collection);
+		DBCursor cursor = selectVo.selectSet(collection, arg);
 		return getResults(cursor, null);
 	}
 
-	public Map<String, Object> selectOne(String dsKey, String sql) {
+	public Map<String, Object> selectOne(String dsKey, String sql, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
-		DBObject result = selectVo.selectOne(collection);
+		DBObject result = selectVo.selectOne(collection, arg);
 		if (null != result) {
 			return getResults(result, null);
 		}
 		return null;
 	}
 
-	public Object selectVar(String dsKey, String sql) {
+	public Object selectVar(String dsKey, String sql, Object arg) {
 		SelectVo selectVo = (SelectVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, selectVo.getTable());
 		// return selectVo.selectVar(collection); fix bug
-		Object result = selectVo.selectVar(collection);
+		Object result = selectVo.selectVar(collection, arg);
 		if (null == result) {
 			return result;
 		}
 		if (result instanceof DBObject) {
-			// return getXCOResults((DBObject) result, null);
 			XCO one = getXCOResults((DBObject) result, null);
 			return selectVo.selectVarOneField(one);
 		} else {
@@ -91,36 +90,22 @@ public class MongoActuator {
 		}
 	}
 
-	public Object insert(String dsKey, String sql) {
+	public Object insert(String dsKey, String sql, Object arg) {
 		InsertVo insertVo = (InsertVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, insertVo.getTable());
-		return insertVo.insert(collection, MongoSupport.getDefaultWriteConcern(dsKey));
+		return insertVo.insert(collection, MongoSupport.getDefaultWriteConcern(dsKey), arg);
 	}
 
-	// public InsertReturn insertReturn(String dsKey, String sql) {
-	// InsertVo insertVo = (InsertVo) sqlParser.parse(sql);
-	// DBCollection collection = MongoSupport.getCollection(dsKey, insertVo.getTable());
-	// int rowCount = insertVo.insert(collection);
-	// return new InsertReturn(rowCount, null);
-	// // DBCollection collection = db.getCollection("user");
-	// // DBObject object = new BasicDBObject();
-	// // object.put("name", "aaa");
-	// // object.put("age", 11);
-	// // collection.save(object);搜索
-	// // System.out.println(object.get("_id"));
-	// // /ObjectId id = (ObjectId)doc.get( "_id" );
-	// }
-
-	public int update(String dsKey, String sql) {
+	public int update(String dsKey, String sql, Object arg) {
 		UpdateVo updateVo = (UpdateVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, updateVo.getTable());
-		return updateVo.update(collection, MongoSupport.getDefaultWriteConcern(dsKey));
+		return updateVo.update(collection, MongoSupport.getDefaultWriteConcern(dsKey), arg);
 	}
 
-	public int delete(String dsKey, String sql) {
+	public int delete(String dsKey, String sql, Object arg) {
 		DeleteVo deleteVo = (DeleteVo) sqlParser.parse(sql);
 		DBCollection collection = MongoSupport.getCollection(dsKey, deleteVo.getTable());
-		return deleteVo.delete(collection, MongoSupport.getDefaultWriteConcern(dsKey));
+		return deleteVo.delete(collection, MongoSupport.getDefaultWriteConcern(dsKey), arg);
 	}
 
 	private Map<String, Object> getResults(DBObject result, MappingVo resultMap) {

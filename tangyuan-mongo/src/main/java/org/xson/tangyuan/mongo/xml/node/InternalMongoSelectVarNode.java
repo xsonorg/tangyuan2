@@ -49,7 +49,7 @@ public class InternalMongoSelectVarNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		Object result = mongoContext.executeSelectVar(this);
+		Object result = mongoContext.executeSelectVar(this, arg);
 
 		if (null != this.resultKey) {
 			Ognl.setValue(arg, this.resultKey, result);

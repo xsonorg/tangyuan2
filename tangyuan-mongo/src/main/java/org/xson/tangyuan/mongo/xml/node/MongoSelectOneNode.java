@@ -62,9 +62,9 @@ public class MongoSelectOneNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 		if (XCO.class == resultType) {
-			result = mongoContext.executeSelectOneXCO(this, this.resultMap, null);
+			result = mongoContext.executeSelectOneXCO(this, this.resultMap, null, arg);
 		} else {
-			result = mongoContext.executeSelectOneMap(this, this.resultMap, null);
+			result = mongoContext.executeSelectOneMap(this, this.resultMap, null, arg);
 		}
 		context.setResult(result);
 

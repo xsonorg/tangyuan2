@@ -131,4 +131,45 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 
 ### 6. 版本更新
 
-1. 支持Long类型
+1.支持Long类型
+
+2.INSERT支持ARRAY类型
+
+	<insert id="insertGPS" dsKey="mongods">
+		insert into map(ip, port, gps) values(#{ip}, #{port}, #{gps});
+	</insert>
+
+3.UPDATE支持ARRAY类型的更新
+
+	<update id="updateGPS" dsKey="mongods">
+		update map set gps = #{gps} where ip = #{ip}
+	</update>
+
+4.UPDATE SET支持乘法操作
+
+	<update id="updatePort" dsKey="mongods">
+		update map set port = port * 4 where ip = #{ip}
+	</update>
+
+5.SQL语法支持@{xxx}
+
+	<mongo-service id="getNear" dsKey="mongods">
+		<selectSet resultKey="{maps}">
+			select * from map where gps = @{org.xson.tangyuan2.demo.MongoFunction.near}
+		</selectSet>
+		<return>
+			<property value="{maps}"/>
+		</return>
+	</mongo-service>
+	
+	public static Object near(Object arg) {
+		XCO xco = (XCO) arg;
+		BasicDBObject near = new BasicDBObject();
+		// 116.280622, 39.948242
+		near.put("$near", xco.getDoubleArrayValue("gps"));
+		double x = 8d;
+		double y = 111d;
+		double all = 6378137d;
+		near.put("$maxDistance", x / y);
+		return near;
+	}	

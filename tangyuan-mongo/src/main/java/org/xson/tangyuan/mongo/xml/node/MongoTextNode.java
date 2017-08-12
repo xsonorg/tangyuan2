@@ -1,5 +1,6 @@
 package org.xson.tangyuan.mongo.xml.node;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.xson.tangyuan.TangYuanException;
@@ -8,6 +9,7 @@ import org.xson.tangyuan.mongo.MongoComponent;
 import org.xson.tangyuan.mongo.executor.MongoServiceContext;
 import org.xson.tangyuan.mongo.ognl.vars.vo.MPPVariable;
 import org.xson.tangyuan.mongo.ognl.vars.warper.MPPParserWarper;
+import org.xson.tangyuan.mongo.util.MongoUtil;
 import org.xson.tangyuan.ognl.vars.Variable;
 import org.xson.tangyuan.ognl.vars.VariableConfig;
 import org.xson.tangyuan.ognl.vars.vo.ShardingVariable;
@@ -115,11 +117,22 @@ public class MongoTextNode implements TangYuanNode {
 					if (val instanceof String) {
 						val = "'" + (String) val + "'";
 					}
+
+					// support array and collection
+					if (val instanceof Collection) {
+						val = MongoUtil.collectionToString((Collection<?>) val);
+					}
+					if (val.getClass().isArray()) {
+						val = MongoUtil.arrayToString(val);
+					}
+
 					builder.append(val);
 				} else if (obj instanceof Variable) {
 					Object val = ((Variable) obj).getValue(arg);
 					if (null == val) {
-						throw new TangYuanException("Field does not exist: " + ((MPPVariable) obj).getOriginal());
+						// throw new TangYuanException("Field does not exist: " + ((MPPVariable) obj).getOriginal());
+						// fix bug
+						throw new TangYuanException("Field does not exist: " + ((Variable) obj).getOriginal());
 					}
 					if (val instanceof Null) {
 						builder.append("null");

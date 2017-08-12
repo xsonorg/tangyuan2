@@ -45,11 +45,11 @@ public class LessThanCondition extends WhereCondition {
 	}
 
 	@Override
-	public void setQuery(DBObject query, BasicDBList orList) {
+	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		if (null == orList) {
-			query.put(this.name, new BasicDBObject("$lt", value.getValue()));
+			query.put(this.name, new BasicDBObject("$lt", value.getValue(arg)));
 		} else {
-			orList.add(new BasicDBObject(this.name, new BasicDBObject("$lt", value.getValue())));
+			orList.add(new BasicDBObject(this.name, new BasicDBObject("$lt", value.getValue(arg))));
 		}
 	}
 }

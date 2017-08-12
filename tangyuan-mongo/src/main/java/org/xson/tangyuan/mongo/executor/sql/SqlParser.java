@@ -1,5 +1,7 @@
 package org.xson.tangyuan.mongo.executor.sql;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +18,8 @@ import org.xson.tangyuan.mongo.executor.sql.condition.LikeCondition;
 import org.xson.tangyuan.mongo.executor.sql.condition.MoreThanCondition;
 import org.xson.tangyuan.mongo.executor.sql.condition.NotEqualCondition;
 import org.xson.tangyuan.mongo.executor.sql.condition.NotInCondition;
+import org.xson.tangyuan.ognl.OgnlException;
+import org.xson.tangyuan.util.ClassUtils;
 
 public class SqlParser {
 
@@ -284,21 +288,69 @@ public class SqlParser {
 		return findIn(condition, sql, startPos, endPos);
 	}
 
+	// private ValueVo parseValueVo(String val, boolean isString) {
+	// if (isString) {
+	// return new ValueVo(val, ValueType.STRING);
+	// }
+	//
+	// if (val.equalsIgnoreCase("null")) {
+	// return new ValueVo(null, ValueType.NULL);
+	// }
+	//
+	// if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
+	// return new ValueVo(Boolean.parseBoolean(val), ValueType.BOOLEAN);
+	// }
+	//
+	// if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith("\"") && val.endsWith("\""))) {
+	// return new ValueVo(val.substring(1, val.length() - 1), ValueType.STRING);
+	// }
+	//
+	// // add array type
+	// if (val.startsWith("[") && val.endsWith("]")) {
+	// parseArrayValue(val.substring(1, val.length() - 1).trim());
+	// return new ValueVo(val, ValueType.ARRAY);
+	// }
+	//
+	// if (isInteger(val)) {
+	// // return new ValueVo(Integer.parseInt(val), ValueType.INTEGER);
+	// // fix bug, support long
+	// Object number = null;
+	// try {
+	// number = Integer.parseInt(val);
+	// return new ValueVo(number, ValueType.INTEGER);
+	// } catch (NumberFormatException e) {
+	// number = Long.parseLong(val);
+	// }
+	// return new ValueVo(number, ValueType.LONG);
+	// }
+	// return new ValueVo(Double.parseDouble(val), ValueType.DOUBLE);
+	// }
+
 	private ValueVo parseValueVo(String val, boolean isString) {
 		if (isString) {
-			return new ValueVo(val, ValueType.STRING);
+			return new ValueVo(val, ValueType.STRING, val);
 		}
 
 		if (val.equalsIgnoreCase("null")) {
-			return new ValueVo(null, ValueType.NULL);
+			return new ValueVo(null, ValueType.NULL, val);
 		}
 
 		if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
-			return new ValueVo(Boolean.parseBoolean(val), ValueType.BOOLEAN);
+			return new ValueVo(Boolean.parseBoolean(val), ValueType.BOOLEAN, val);
 		}
 
 		if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith("\"") && val.endsWith("\""))) {
-			return new ValueVo(val.substring(1, val.length() - 1), ValueType.STRING);
+			return new ValueVo(val.substring(1, val.length() - 1), ValueType.STRING, val);
+		}
+
+		// add array type
+		if (val.startsWith("[") && val.endsWith("]")) {
+			return new ValueVo(parseArrayValue(val.substring(1, val.length() - 1).trim()), ValueType.ARRAY, val);
+		}
+
+		// support function call
+		if (val.startsWith("@{") && val.endsWith("}")) {
+			return new ValueVo(parseCall(val.substring(2, val.length() - 1).trim()), ValueType.CALL, val);
 		}
 
 		if (isInteger(val)) {
@@ -307,13 +359,78 @@ public class SqlParser {
 			Object number = null;
 			try {
 				number = Integer.parseInt(val);
-				return new ValueVo(number, ValueType.INTEGER);
+				return new ValueVo(number, ValueType.INTEGER, val);
 			} catch (NumberFormatException e) {
 				number = Long.parseLong(val);
 			}
-			return new ValueVo(number, ValueType.LONG);
+			return new ValueVo(number, ValueType.LONG, val);
 		}
-		return new ValueVo(Double.parseDouble(val), ValueType.DOUBLE);
+		return new ValueVo(Double.parseDouble(val), ValueType.DOUBLE, val);
+	}
+
+	protected Object parseCall(String val) {
+		Method method = getStaticMethod(val);
+		return method;
+	}
+
+	private Method getStaticMethod(String fullName) {
+		int lastpos = fullName.lastIndexOf(".");
+		if (lastpos < 0) {
+			throw new OgnlException("Illegal method call name: " + fullName);
+		}
+
+		String className = fullName.substring(0, lastpos);
+		String methodName = fullName.substring(lastpos + 1);
+		Class<?> clazz = ClassUtils.forName(className);
+
+		Method[] methods = clazz.getMethods();
+		for (Method m : methods) {
+			if (m.getName().equals(methodName)) {
+				if (!Modifier.isStatic(m.getModifiers())) {
+					throw new OgnlException("The method invoked in XML must be static: " + fullName);
+				}
+				return m;
+			}
+		}
+
+		throw new OgnlException("Non-existent method call name: " + fullName);
+	}
+
+	protected Object parseValue(String val) {
+		if (val.equalsIgnoreCase("null")) {
+			return null;
+		}
+
+		if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
+			return Boolean.parseBoolean(val);
+		}
+
+		if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith("\"") && val.endsWith("\""))) {
+			return val.substring(1, val.length() - 1);
+		}
+
+		if (isInteger(val)) {
+			Object number = null;
+			try {
+				number = Integer.parseInt(val);
+			} catch (NumberFormatException e) {
+				number = Long.parseLong(val);
+			}
+			return number;
+		}
+		return Double.parseDouble(val);
+	}
+
+	protected Object parseArrayValue(String val) {
+		if (0 == val.length()) {
+			return new Object[0];
+		}
+		String[] temp = val.split(",");
+		Object[] result = new Object[temp.length];
+		for (int i = 0; i < temp.length; i++) {
+			result[i] = parseValue(temp[i].trim());
+		}
+		return result;
 	}
 
 	protected ValueVo parseValueVo(String val) {

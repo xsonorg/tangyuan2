@@ -58,7 +58,7 @@ public class MongoInsertNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		Object result = mongoContext.executeInsert(this);
+		Object result = mongoContext.executeInsert(this, arg);
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

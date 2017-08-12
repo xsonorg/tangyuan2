@@ -12,6 +12,7 @@ public class SimpleMongoDataSourceManager implements MongoDataSourceManager {
 	private String					dataSourceId	= null;
 
 	public SimpleMongoDataSourceManager(String creator, AbstractMongoDataSource dataSource, String dataSourceId) {
+		this.creator = creator;
 		this.dataSource = dataSource;
 		this.dataSourceId = dataSourceId;
 	}
@@ -31,7 +32,6 @@ public class SimpleMongoDataSourceManager implements MongoDataSourceManager {
 		dataSource.close(creator);
 	}
 
-	
 	@Override
 	public WriteConcern getDefaultWriteConcern(String dsKey) {
 		return dataSource.getDefaultWriteConcern();

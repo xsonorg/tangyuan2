@@ -85,16 +85,16 @@ public class BracketsCondition extends WhereCondition {
 	}
 
 	@Override
-	public void setQuery(DBObject query, BasicDBList orList) {
+	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		if (null == orList) {
 			if (this.andOr) {
 				for (int i = 0, n = conditions.size(); i < n; i++) {
-					conditions.get(i).setQuery(query, null);
+					conditions.get(i).setQuery(query, null, arg);
 				}
 			} else {
 				BasicDBList newOrList = new BasicDBList();
 				for (int i = 0, n = conditions.size(); i < n; i++) {
-					conditions.get(i).setQuery(null, newOrList);
+					conditions.get(i).setQuery(null, newOrList, arg);
 				}
 				query.put("$or", newOrList);
 			}
@@ -102,12 +102,12 @@ public class BracketsCondition extends WhereCondition {
 			BasicDBObject newQuery = new BasicDBObject();
 			if (this.andOr) {
 				for (int i = 0, n = conditions.size(); i < n; i++) {
-					conditions.get(i).setQuery(newQuery, null);
+					conditions.get(i).setQuery(newQuery, null, arg);
 				}
 			} else {
 				BasicDBList newOrList = new BasicDBList();
 				for (int i = 0, n = conditions.size(); i < n; i++) {
-					conditions.get(i).setQuery(null, newOrList);
+					conditions.get(i).setQuery(null, newOrList, arg);
 				}
 				newQuery.put("$or", newOrList);
 			}

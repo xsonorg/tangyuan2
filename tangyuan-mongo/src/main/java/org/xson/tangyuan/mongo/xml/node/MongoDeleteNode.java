@@ -36,7 +36,7 @@ public class MongoDeleteNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		int result = mongoContext.executeDelete(this);
+		int result = mongoContext.executeDelete(this, arg);
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

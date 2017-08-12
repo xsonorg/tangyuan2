@@ -41,7 +41,7 @@ public class InternalMongoDeleteNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		int count = mongoContext.executeDelete(this);
+		int count = mongoContext.executeDelete(this, arg);
 		if (null != this.resultKey) {
 			Ognl.setValue(arg, this.resultKey, count);
 		}

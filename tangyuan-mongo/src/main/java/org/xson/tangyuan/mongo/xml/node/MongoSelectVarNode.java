@@ -51,7 +51,7 @@ public class MongoSelectVarNode extends AbstractMongoNode {
 			log.info(mongoContext.getSql());
 		}
 
-		result = mongoContext.executeSelectVar(this);
+		result = mongoContext.executeSelectVar(this, arg);
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

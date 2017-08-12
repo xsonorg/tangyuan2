@@ -98,7 +98,7 @@ public class InsertVo implements SqlVo {
 	// return result.getN();
 	// }
 
-	public Object insert(DBCollection collection, WriteConcern writeConcern) {
+	public Object insert(DBCollection collection, WriteConcern writeConcern, Object arg) {
 		DBObject document = new BasicDBObject();
 		// 匹配_id
 		for (int i = 0, n = columns.size(); i < n; i++) {
@@ -106,9 +106,9 @@ public class InsertVo implements SqlVo {
 
 			String tempColumn = columns.get(i);
 			if (3 == tempColumn.length() && tempColumn.equals("_id")) {
-				document.put(tempColumn, new ObjectId(values.get(i).getValue().toString()));
+				document.put(tempColumn, new ObjectId(values.get(i).getValue(arg).toString()));
 			} else {
-				document.put(tempColumn, values.get(i).getValue());
+				document.put(tempColumn, values.get(i).getValue(arg));
 			}
 		}
 		log(document);

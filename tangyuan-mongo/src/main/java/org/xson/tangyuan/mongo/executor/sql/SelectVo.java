@@ -156,10 +156,10 @@ public class SelectVo implements SqlVo {
 		return fields;
 	}
 
-	private DBObject getQuery() {
+	private DBObject getQuery(Object arg) {
 		if (null != this.condition) {
 			DBObject query = new BasicDBObject();
-			this.condition.setQuery(query, null);
+			this.condition.setQuery(query, null, arg);
 			return query;
 		}
 		return null;
@@ -178,8 +178,8 @@ public class SelectVo implements SqlVo {
 		return orderByObject;
 	}
 
-	private long getQueryCount(DBCollection collection) {
-		DBObject query = getQuery();
+	private long getQueryCount(DBCollection collection, Object arg) {
+		DBObject query = getQuery(arg);
 		if (null == query) {
 			return collection.count();
 		} else {
@@ -187,9 +187,9 @@ public class SelectVo implements SqlVo {
 		}
 	}
 
-	public DBObject selectOne(DBCollection collection) {
+	public DBObject selectOne(DBCollection collection, Object arg) {
 		DBObject fields = getFields();
-		DBObject query = getQuery();
+		DBObject query = getQuery(arg);
 		DBObject orderByObject = getOrderByObject();
 
 		// 日志
@@ -204,12 +204,12 @@ public class SelectVo implements SqlVo {
 		}
 	}
 
-	public Object selectVar(DBCollection collection) {
+	public Object selectVar(DBCollection collection, Object arg) {
 		if (null == this.count) {
-			DBObject result = selectOne(collection);
+			DBObject result = selectOne(collection, arg);
 			return result;
 		} else {
-			return getQueryCount(collection);
+			return getQueryCount(collection, arg);
 		}
 	}
 
@@ -222,9 +222,9 @@ public class SelectVo implements SqlVo {
 		return one.getObjectValue(column);
 	}
 
-	public DBCursor selectSet(DBCollection collection) {
+	public DBCursor selectSet(DBCollection collection, Object arg) {
 		DBObject fields = getFields();
-		DBObject query = getQuery();
+		DBObject query = getQuery(arg);
 		DBObject orderByObject = getOrderByObject();
 		DBCursor cursor = null;
 

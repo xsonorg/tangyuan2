@@ -47,7 +47,9 @@ public class InsertParser extends SqlParser {
 
 		// array = sql.substring(leftBracketsPos + 1, rightBracketsPos).split(",");
 		// fix bug
-		array = safeSplit(sql.substring(leftBracketsPos + 1, rightBracketsPos), ',');
+		// array = safeSplit(sql.substring(leftBracketsPos + 1, rightBracketsPos), ',');
+		// support array
+		array = splitValues(sql.substring(leftBracketsPos + 1, rightBracketsPos), ',');
 		List<ValueVo> values = new ArrayList<ValueVo>();
 		for (int i = 0, n = array.length; i < n; i++) {
 			values.add(parseValueVo(array[i].trim()));
@@ -55,6 +57,51 @@ public class InsertParser extends SqlParser {
 		insertVo.setValues(values);
 		insertVo.check();
 		return insertVo;
+	}
+
+	/** values分隔 */
+	protected String[] splitValues(String src, char separator) {
+		List<String> temp = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		boolean isString = false; // 是否进入字符串采集
+		for (int i = 0; i < src.length(); i++) {
+			char key = src.charAt(i);
+			switch (key) {
+			case '\'':
+				isString = !isString;
+				sb.append(key);
+				break;
+			case '[':// 不支持递归,仅支持一维数组
+				if (isString) {
+					sb.append(key);
+				} else {
+					int end = findCharIndex(src, i, ']');
+					if (-1 == end) {
+						throw new SqlParseException("The array is missing an end tag: " + src);
+					}
+					sb.append(src.substring(i, end + 1));
+					i = end;
+				}
+				break;
+			default:
+				if (separator == key && !isString) {
+					if (sb.length() > 0) {
+						temp.add(sb.toString());
+						sb = new StringBuilder();
+					}
+				} else {
+					sb.append(key);
+				}
+				break;
+			}
+		}
+
+		if (sb.length() > 0) {
+			temp.add(sb.toString());
+		}
+
+		String[] result = new String[temp.size()];
+		return temp.toArray(result);
 	}
 
 }

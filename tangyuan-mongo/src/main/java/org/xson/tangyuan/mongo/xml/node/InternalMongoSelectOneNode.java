@@ -52,9 +52,9 @@ public class InternalMongoSelectOneNode extends AbstractMongoNode {
 
 		Object result = null;
 		if (XCO.class == resultType) {
-			result = mongoContext.executeSelectOneXCO(this, null, null);
+			result = mongoContext.executeSelectOneXCO(this, null, null, arg);
 		} else {
-			result = mongoContext.executeSelectOneMap(this, null, null);
+			result = mongoContext.executeSelectOneMap(this, null, null, arg);
 		}
 		if (null != this.resultKey) {
 			Ognl.setValue(arg, this.resultKey, result);
