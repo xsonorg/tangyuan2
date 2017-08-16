@@ -17,4 +17,5 @@ tangyuan-base是tangyuan框架的基础类库。
 ### 5. 版本更新
 
 1. fix 服务启动时的onlyProxyMode
+2. add CloseHandler
 

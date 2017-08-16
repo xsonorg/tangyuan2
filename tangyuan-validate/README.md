@@ -39,3 +39,35 @@ tangyuan-validate是tangyuan框架中的数据验证组件，提供基于XCO对�
 ### 4. 技术文档
 
 <http://www.xson.org/project/validate/1.2.0/>
+
+### 5. 版本更新
+
+1.新增类型支持
+
+	XCO("xco"),
+	BYTE("byte"),
+	BOOLEAN("boolean"),
+	SHORT("short"),
+	CHAR("char"),
+
+	// array
+	INT_ARRAY("int_array"),
+	LONG_ARRAY("long_array"),
+	FLOAT_ARRAY("float_array"),
+	DOUBLE_ARRAY("double_array"),
+	BYTE_ARRAY("byte_array"),
+	BOOLEAN_ARRAY("boolean_array"),
+	SHORT_ARRAY("short_array"),
+	CHAR_ARRAY("char_array"),
+	STRING_ARRAY("string_array"),
+	XCO_ARRAY("xco_array"),
+
+	// set
+	STRING_LIST("string_list"),
+	XCO_LIST("xco_list"),
+	STRING_SET("string_set"),
+	XCO_SET("xco_set");
+
+2.自定义错误code支持
+
+3.增加英文版验证规则

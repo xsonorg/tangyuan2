@@ -55,7 +55,18 @@ public class RuleDataConvert {
 		} else if (type == TypeEnum.TIMESTAMP) {
 			xco.setTimestampValue(fieldName, XCOUtil.parseTimestamp(value));
 		}
+
+		else if (type == TypeEnum.BYTE) {
+			xco.setByteValue(fieldName, Byte.parseByte(value));
+		} else if (type == TypeEnum.BOOLEAN) {
+			xco.setBooleanValue(fieldName, Boolean.parseBoolean(value));
+		} else if (type == TypeEnum.SHORT) {
+			xco.setShortValue(fieldName, Short.parseShort(value));
+		} else if (type == TypeEnum.CHAR) {
+			xco.setCharValue(fieldName, value.charAt(0));
+			// 如果value为空,会报错
+		}
+
 		// 其他类型不做转换
 	}
-
 }

@@ -1,24 +1,21 @@
 package org.xson.tangyuan.validate.rule;
 
-import java.util.Collection;
-
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.validate.Checker;
 
 /**
- * List size 最小值
+ * short型最小值固定值校验
  */
-public class CollectionLengthMinChecker implements Checker {
+public class ShortMinChecker implements Checker {
 
 	@Override
 	public boolean check(XCO xco, String fieldName, Object value) {
-		Collection<?> list = (Collection<?>) xco.getObjectValue(fieldName);
-		int val = list.size();
-		int min = ((Integer) value).intValue();
+		short min = ((Short) value).shortValue();
+		short val = xco.getShortValue(fieldName);
 		return min <= val;
 	}
 
 	public static Object parseValue(String value) {
-		return Integer.parseInt(value);
+		return Short.parseShort(value);
 	}
 }

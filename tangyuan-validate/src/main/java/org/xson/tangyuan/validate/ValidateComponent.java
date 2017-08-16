@@ -19,11 +19,15 @@ import org.xson.tangyuan.validate.rule.BigDecimalMinChecker;
 import org.xson.tangyuan.validate.rule.BigIntegerIntervalChecker;
 import org.xson.tangyuan.validate.rule.BigIntegerMaxChecker;
 import org.xson.tangyuan.validate.rule.BigIntegerMinChecker;
+import org.xson.tangyuan.validate.rule.BooleanEnumChecker;
+import org.xson.tangyuan.validate.rule.ByteEnumChecker;
+import org.xson.tangyuan.validate.rule.ByteIntervalChecker;
+import org.xson.tangyuan.validate.rule.ByteMaxChecker;
+import org.xson.tangyuan.validate.rule.ByteMinChecker;
+import org.xson.tangyuan.validate.rule.CharEnumChecker;
 import org.xson.tangyuan.validate.rule.CollectionLengthIntervalChecker;
 import org.xson.tangyuan.validate.rule.CollectionLengthMaxChecker;
 import org.xson.tangyuan.validate.rule.CollectionLengthMinChecker;
-import org.xson.tangyuan.validate.rule.DateMatchChecker;
-import org.xson.tangyuan.validate.rule.DateTimeMatchChecker;
 import org.xson.tangyuan.validate.rule.DoubleEnumChecker;
 import org.xson.tangyuan.validate.rule.DoubleIntervalChecker;
 import org.xson.tangyuan.validate.rule.DoubleMaxChecker;
@@ -40,14 +44,17 @@ import org.xson.tangyuan.validate.rule.LongEnumChecker;
 import org.xson.tangyuan.validate.rule.LongIntervalChecker;
 import org.xson.tangyuan.validate.rule.LongMaxChecker;
 import org.xson.tangyuan.validate.rule.LongMinChecker;
+import org.xson.tangyuan.validate.rule.ShortEnumChecker;
+import org.xson.tangyuan.validate.rule.ShortIntervalChecker;
+import org.xson.tangyuan.validate.rule.ShortMaxChecker;
+import org.xson.tangyuan.validate.rule.ShortMinChecker;
+import org.xson.tangyuan.validate.rule.StringCheckChecker;
 import org.xson.tangyuan.validate.rule.StringEnumChecker;
-import org.xson.tangyuan.validate.rule.StringFilterChecker;
 import org.xson.tangyuan.validate.rule.StringLengthIntervalChecker;
 import org.xson.tangyuan.validate.rule.StringLengthMaxChecker;
 import org.xson.tangyuan.validate.rule.StringLengthMinChecker;
 import org.xson.tangyuan.validate.rule.StringMatchChecker;
 import org.xson.tangyuan.validate.rule.StringNoMatchChecker;
-import org.xson.tangyuan.validate.rule.TimeMatchChecker;
 import org.xson.tangyuan.validate.xml.XMLConfigBuilder;
 
 public class ValidateComponent implements TangYuanComponent {
@@ -98,60 +105,144 @@ public class ValidateComponent implements TangYuanComponent {
 		return errorMessage;
 	}
 
-	private String createCheckerKey(String a, String b) {
-		return (a + "_" + b).toUpperCase();
+	private String createCheckerKey(TypeEnum typeEnum, RuleEnum ruleEnum) {
+		return (typeEnum.getValue() + "_" + ruleEnum.getEnValue()).toUpperCase();
 	}
 
 	private void initChecker() {
 
-		checkerMap.put(createCheckerKey("Array", "区间长度"), new ArrayLengthIntervalChecker());
-		checkerMap.put(createCheckerKey("Array", "最大长度"), new ArrayLengthMaxChecker());
-		checkerMap.put(createCheckerKey("Array", "最小长度"), new ArrayLengthMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE, RuleEnum.ENUM), new DoubleEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE, RuleEnum.INTERVAL), new DoubleIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE, RuleEnum.MAX), new DoubleMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE, RuleEnum.MIN), new DoubleMinChecker());
 
-		checkerMap.put(createCheckerKey("Collection", "区间长度"), new CollectionLengthIntervalChecker());
-		checkerMap.put(createCheckerKey("Collection", "最大长度"), new CollectionLengthMaxChecker());
-		checkerMap.put(createCheckerKey("Collection", "最小长度"), new CollectionLengthMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT, RuleEnum.ENUM), new FloatEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT, RuleEnum.INTERVAL), new FloatIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT, RuleEnum.MAX), new FloatMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT, RuleEnum.MIN), new FloatMinChecker());
 
-		checkerMap.put(createCheckerKey("Double", "枚举值"), new DoubleEnumChecker());
-		checkerMap.put(createCheckerKey("Double", "区间值"), new DoubleIntervalChecker());
-		checkerMap.put(createCheckerKey("Double", "最大值"), new DoubleMaxChecker());
-		checkerMap.put(createCheckerKey("Double", "最小值"), new DoubleMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.INTEGER, RuleEnum.ENUM), new IntegerEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.INTEGER, RuleEnum.INTERVAL), new IntegerIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.INTEGER, RuleEnum.MAX), new IntegerMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.INTEGER, RuleEnum.MIN), new IntegerMinChecker());
 
-		checkerMap.put(createCheckerKey("Float", "枚举值"), new FloatEnumChecker());
-		checkerMap.put(createCheckerKey("Float", "区间值"), new FloatIntervalChecker());
-		checkerMap.put(createCheckerKey("Float", "最大值"), new FloatMaxChecker());
-		checkerMap.put(createCheckerKey("Float", "最小值"), new FloatMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.LONG, RuleEnum.ENUM), new LongEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.LONG, RuleEnum.INTERVAL), new LongIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.LONG, RuleEnum.MAX), new LongMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.LONG, RuleEnum.MIN), new LongMinChecker());
 
-		checkerMap.put(createCheckerKey("Int", "枚举值"), new IntegerEnumChecker());
-		checkerMap.put(createCheckerKey("Int", "区间值"), new IntegerIntervalChecker());
-		checkerMap.put(createCheckerKey("Int", "最大值"), new IntegerMaxChecker());
-		checkerMap.put(createCheckerKey("Int", "最小值"), new IntegerMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.ENUM), new StringEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.CHECK), new StringCheckChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.INTERVAL_LENGTH), new StringLengthIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.MAX_LENGTH), new StringLengthMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.MIN_LENGTH), new StringLengthMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.MATCH), new StringMatchChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.STRING, RuleEnum.UNMATCH), new StringNoMatchChecker());
 
-		checkerMap.put(createCheckerKey("Long", "枚举值"), new LongEnumChecker());
-		checkerMap.put(createCheckerKey("Long", "区间值"), new LongIntervalChecker());
-		checkerMap.put(createCheckerKey("Long", "最大值"), new LongMaxChecker());
-		checkerMap.put(createCheckerKey("Long", "最小值"), new LongMinChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BIGINTEGER, RuleEnum.INTERVAL), new BigIntegerIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BIGINTEGER, RuleEnum.MAX), new BigIntegerMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BIGINTEGER, RuleEnum.MIN), new BigIntegerMinChecker());
 
-		checkerMap.put(createCheckerKey("String", "枚举值"), new StringEnumChecker());
-		checkerMap.put(createCheckerKey("String", "过滤"), new StringFilterChecker());
-		checkerMap.put(createCheckerKey("String", "区间长度"), new StringLengthIntervalChecker());
-		checkerMap.put(createCheckerKey("String", "最大长度"), new StringLengthMaxChecker());
-		checkerMap.put(createCheckerKey("String", "最小长度"), new StringLengthMinChecker());
-		checkerMap.put(createCheckerKey("String", "匹配"), new StringMatchChecker());
-		checkerMap.put(createCheckerKey("String", "不匹配"), new StringNoMatchChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BIGDECIMAL, RuleEnum.INTERVAL), new BigDecimalIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BIGDECIMAL, RuleEnum.MAX), new BigDecimalMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BIGDECIMAL, RuleEnum.MIN), new BigDecimalMinChecker());
 
-		checkerMap.put(createCheckerKey("BigInteger", "区间值"), new BigIntegerIntervalChecker());
-		checkerMap.put(createCheckerKey("BigInteger", "最大值"), new BigIntegerMaxChecker());
-		checkerMap.put(createCheckerKey("BigInteger", "最小值"), new BigIntegerMinChecker());
+		// checkerMap.put(createCheckerKey("Date", MATCH), new DateMatchChecker());
+		// checkerMap.put(createCheckerKey("Time", MATCH), new TimeMatchChecker());
+		// checkerMap.put(createCheckerKey("DateTime", MATCH), new DateTimeMatchChecker());
 
-		checkerMap.put(createCheckerKey("BigDecimal", "区间值"), new BigDecimalIntervalChecker());
-		checkerMap.put(createCheckerKey("BigDecimal", "最大值"), new BigDecimalMaxChecker());
-		checkerMap.put(createCheckerKey("BigDecimal", "最小值"), new BigDecimalMinChecker());
+		// byte-->int
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE, RuleEnum.ENUM), new ByteEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE, RuleEnum.INTERVAL), new ByteIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE, RuleEnum.MAX), new ByteMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE, RuleEnum.MIN), new ByteMinChecker());
 
-		checkerMap.put(createCheckerKey("Date", "匹配"), new DateMatchChecker());
-		checkerMap.put(createCheckerKey("Time", "匹配"), new TimeMatchChecker());
-		checkerMap.put(createCheckerKey("DateTime", "匹配"), new DateTimeMatchChecker());
+		// short-->int
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT, RuleEnum.ENUM), new ShortEnumChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT, RuleEnum.INTERVAL), new ShortIntervalChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT, RuleEnum.MAX), new ShortMaxChecker());
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT, RuleEnum.MIN), new ShortMinChecker());
 
+		// boolean-->枚举值
+		checkerMap.put(createCheckerKey(TypeEnum.BOOLEAN, RuleEnum.ENUM), new BooleanEnumChecker());
+		// char-->枚举值
+		checkerMap.put(createCheckerKey(TypeEnum.CHAR, RuleEnum.ENUM), new CharEnumChecker());
+
+		// array
+
+		ArrayLengthIntervalChecker arrayLengthIntervalChecker = new ArrayLengthIntervalChecker();
+		ArrayLengthMaxChecker arrayLengthMaxChecker = new ArrayLengthMaxChecker();
+		ArrayLengthMinChecker arrayLengthMinChecker = new ArrayLengthMinChecker();
+
+		checkerMap.put(createCheckerKey(TypeEnum.ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.INT_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.INT_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.INT_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.LONG_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.LONG_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.LONG_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.FLOAT_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.DOUBLE_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.BYTE_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.BOOLEAN_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.BOOLEAN_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.BOOLEAN_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.SHORT_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.CHAR_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.CHAR_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.CHAR_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_ARRAY, RuleEnum.MIN_LENGTH), arrayLengthMinChecker);
+
+		// set
+
+		CollectionLengthIntervalChecker collectionLengthIntervalChecker = new CollectionLengthIntervalChecker();
+		CollectionLengthMaxChecker collectionLengthMaxChecker = new CollectionLengthMaxChecker();
+		CollectionLengthMinChecker collectionLengthMinChecker = new CollectionLengthMinChecker();
+
+		checkerMap.put(createCheckerKey(TypeEnum.COLLECTION, RuleEnum.INTERVAL_LENGTH), collectionLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.COLLECTION, RuleEnum.MAX_LENGTH), collectionLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.COLLECTION, RuleEnum.MIN_LENGTH), collectionLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_LIST, RuleEnum.INTERVAL_LENGTH), collectionLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_LIST, RuleEnum.MAX_LENGTH), collectionLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_LIST, RuleEnum.MIN_LENGTH), collectionLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_LIST, RuleEnum.INTERVAL_LENGTH), collectionLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_LIST, RuleEnum.MAX_LENGTH), collectionLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_LIST, RuleEnum.MIN_LENGTH), collectionLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_SET, RuleEnum.INTERVAL_LENGTH), collectionLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_SET, RuleEnum.MAX_LENGTH), collectionLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.STRING_SET, RuleEnum.MIN_LENGTH), collectionLengthMinChecker);
+
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_SET, RuleEnum.INTERVAL_LENGTH), collectionLengthIntervalChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_SET, RuleEnum.MAX_LENGTH), collectionLengthMaxChecker);
+		checkerMap.put(createCheckerKey(TypeEnum.XCO_SET, RuleEnum.MIN_LENGTH), collectionLengthMinChecker);
 	}
 
 	public void config(Map<String, String> properties) {
@@ -181,7 +272,6 @@ public class ValidateComponent implements TangYuanComponent {
 
 	@Override
 	public void stop(boolean wait) {
-		// TODO Auto-generated method stub
 	}
 
 }

@@ -20,8 +20,10 @@ import org.xson.tangyuan.validate.RuleEnum;
 import org.xson.tangyuan.validate.RuleGroup;
 import org.xson.tangyuan.validate.RuleGroupItem;
 import org.xson.tangyuan.validate.TypeEnum;
+import org.xson.tangyuan.validate.ValidateComponent;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
+import org.xson.tangyuan.xml.XmlParseException;
 
 public class XMLRuleBuilder {
 
@@ -45,11 +47,7 @@ public class XMLRuleBuilder {
 	}
 
 	public void parseDefNode() {
-		try {
-			buildDefNodes(this.root.evalNodes("def"));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		buildDefNodes(this.root.evalNodes("def"));
 	}
 
 	private void addDefNode(RuleDef ruleDef) {
@@ -59,11 +57,7 @@ public class XMLRuleBuilder {
 	}
 
 	public void parseRuleGroupNode() {
-		try {
-			buildRuleGroupNodes(this.root.evalNodes("ruleGroup"));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		buildRuleGroupNodes(this.root.evalNodes("ruleGroup"));
 	}
 
 	private void addRuleGroup(RuleGroup ruleGroup) {
@@ -78,7 +72,7 @@ public class XMLRuleBuilder {
 			checkDefId(id);
 			List<XmlNodeWrapper> ruleNodes = context.evalNodes("rule");
 			if (ruleNodes.size() < 1) {
-				throw new RuntimeException("<def> node is empty: " + id);
+				throw new XmlParseException("<def> node is empty: " + id);
 			}
 			List<Rule> ruleList = new ArrayList<>();
 			for (XmlNodeWrapper ruleNode : ruleNodes) {
@@ -88,21 +82,22 @@ public class XMLRuleBuilder {
 					String name = StringUtils.trim(ruleNode.getStringAttribute("name"));
 					RuleEnum ruleEnum = RuleEnum.getEnum(name);
 					if (null == ruleEnum) {
-						throw new RuntimeException("Invalid rule: " + name);
+						throw new XmlParseException("Invalid rule: " + name);
 					}
 					String value = StringUtils.trim(ruleNode.getStringAttribute("value"));
 					if (null == value) {
 						value = getNodeBody(ruleNode);
 					}
 					if (null == value) {
-						throw new RuntimeException("Invalid rule value.");
+						throw new XmlParseException("Invalid rule value.");
 					}
-					rule = new Rule(name, value);
+					// rule = new Rule(name, value);
+					rule = new Rule(ruleEnum.getEnValue(), value);
 				} else {
 					// checkerId
 					Checker checker = this.customCheckerMap.get(checkerId);
 					if (null == checker) {
-						throw new RuntimeException("Reference checker does not exist: " + checkerId);
+						throw new XmlParseException("Reference checker does not exist: " + checkerId);
 					}
 					rule = new Rule(checker);
 				}
@@ -137,14 +132,21 @@ public class XMLRuleBuilder {
 			String id = StringUtils.trim(context.getStringAttribute("id")); // xml validation
 			checkRuleGroupId(id);
 
-			String desc = StringUtils.trim(context.getStringAttribute("desc"));
+			String groupDesc = StringUtils.trim(context.getStringAttribute("desc"));
+			String groupMessage = StringUtils.trim(context.getStringAttribute("message"));
+			if (null == groupMessage || 0 == groupMessage.length()) {
+				groupMessage = ValidateComponent.getInstance().getErrorMessage();
+			}
+			String _groupCode = StringUtils.trim(context.getStringAttribute("code"));
+			int groupCode = ValidateComponent.getInstance().getErrorCode();
+			if (null != _groupCode) {
+				groupCode = Integer.parseInt(_groupCode);
+			}
 
 			List<XmlNodeWrapper> itemNodes = context.evalNodes("item");
 			if (itemNodes.size() < 1) {
-				throw new RuntimeException("<item> node is empty: " + id);
+				throw new XmlParseException("<item> node is empty: " + id);
 			}
-
-			String groupMessage = StringUtils.trim(context.getStringAttribute("message"));
 
 			List<RuleGroupItem> ruleGroupItemList = new ArrayList<RuleGroupItem>();
 
@@ -153,7 +155,7 @@ public class XMLRuleBuilder {
 				String _type = StringUtils.trim(itemNode.getStringAttribute("type"));// xml validation
 				TypeEnum fieldType = TypeEnum.getEnum(_type);// xml validation
 				if (null == fieldType) {
-					throw new RuntimeException("Invalid fieldType: " + _type);
+					throw new XmlParseException("Invalid fieldType: " + _type);
 				}
 				String _require = StringUtils.trim(itemNode.getStringAttribute("require"));
 				boolean require = true;
@@ -172,22 +174,23 @@ public class XMLRuleBuilder {
 							String name = StringUtils.trim(ruleNode.getStringAttribute("name"));
 							RuleEnum ruleEnum = RuleEnum.getEnum(name);
 							if (null == ruleEnum) {
-								throw new RuntimeException("Invalid rule: " + name);
+								throw new XmlParseException("Invalid rule: " + name);
 							}
 							String value = StringUtils.trim(ruleNode.getStringAttribute("value"));
 							if (null == value) {
 								value = getNodeBody(ruleNode);
 							}
 							if (null == value) {
-								throw new RuntimeException("Invalid rule value.");
+								throw new XmlParseException("Invalid rule value.");
 							}
-							rule = new Rule(name, value);
+							// rule = new Rule(name, value);
+							rule = new Rule(ruleEnum.getEnValue(), value);
 							rule.parseValue(fieldType, ruleEnum, id + ":" + name);
 						} else {
 							// checkerId
 							Checker checker = this.customCheckerMap.get(checkerId);
 							if (null == checker) {
-								throw new RuntimeException("Reference checker does not exist: " + checkerId);
+								throw new XmlParseException("Reference checker does not exist: " + checkerId);
 							}
 							rule = new Rule(checker);
 						}
@@ -202,21 +205,26 @@ public class XMLRuleBuilder {
 				}
 
 				// 允许没有规则的验证
-				// if (require && 0 == ruleList.size()) {
-				// throw new RuntimeException("The group does not exist to verify items: " + id);
-				// }
-
-				String itemMessage = StringUtils.trim(itemNode.getStringAttribute("message"));
-				// if (null == itemMessage) {
-				// itemMessage = groupMessage;
-				// }
 
 				String defaultValue = StringUtils.trim(itemNode.getStringAttribute("defaultValue"));
 				String itemDesc = StringUtils.trim(itemNode.getStringAttribute("desc"));
-				RuleGroupItem ruleGroupItem = new RuleGroupItem(fieldName, fieldType, ruleList, require, itemMessage, defaultValue, itemDesc);
+				String itemMessage = StringUtils.trim(itemNode.getStringAttribute("message"));
+				String _itemCode = StringUtils.trim(itemNode.getStringAttribute("code"));
+
+				if (null == itemMessage || 0 == itemMessage.length()) {
+					itemMessage = groupMessage;
+				}
+
+				int itemCode = groupCode;
+				if (null != _itemCode) {
+					itemCode = Integer.parseInt(_itemCode);
+				}
+
+				RuleGroupItem ruleGroupItem = new RuleGroupItem(fieldName, fieldType, ruleList, require, defaultValue, itemDesc, itemMessage,
+						itemCode);
 				ruleGroupItemList.add(ruleGroupItem);
 			}
-			RuleGroup ruleGroup = new RuleGroup(id, ruleGroupItemList, desc, groupMessage);
+			RuleGroup ruleGroup = new RuleGroup(id, ruleGroupItemList, groupDesc, groupMessage, groupCode);
 			addRuleGroup(ruleGroup);
 		}
 	}
@@ -233,36 +241,32 @@ public class XMLRuleBuilder {
 				ruleDef = this.globleDefMap.get(refId);
 			}
 			if (null == ruleDef) {
-				throw new RuntimeException("Ref does not exist: " + refId + ", in ruleGroup: " + id);
+				throw new XmlParseException("Ref does not exist: " + refId + ", in ruleGroup: " + id);
 			}
 			list.add(ruleDef);
 		}
 		if (list.size() == 0) {
-			throw new RuntimeException("Ref does not exist: " + ref + ", in ruleGroup: " + id);
+			throw new XmlParseException("Ref does not exist: " + ref + ", in ruleGroup: " + id);
 		}
 		return list;
 	}
 
 	private String getFullId(String id) {
-		// if (null == ns || "".equals(ns)) {
-		// return id;
-		// }
-		// return ns + TangYuanContainer.getInstance().getNsSeparator() + id;
 		return TangYuanUtil.getQualifiedName(this.ns, id, null, TangYuanContainer.getInstance().getNsSeparator());
 	}
 
 	private void checkDefId(String id) {
 		if (null != this.localDefMap.get(id)) {
-			throw new RuntimeException("Duplicate <def>: " + id);
+			throw new XmlParseException("Duplicate <def>: " + id);
 		}
 		if (null != this.globleDefMap.get(getFullId(id))) {
-			throw new RuntimeException("Duplicate <def>: " + id);
+			throw new XmlParseException("Duplicate <def>: " + id);
 		}
 	}
 
 	private void checkRuleGroupId(String id) {
 		if (null != this.ruleGroupMap.get(getFullId(id))) {
-			throw new RuntimeException("Duplicate <ruleGroup>: " + id);
+			throw new XmlParseException("Duplicate <ruleGroup>: " + id);
 		}
 	}
 

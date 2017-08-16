@@ -16,6 +16,7 @@ import org.xson.tangyuan.validate.RuleGroup;
 import org.xson.tangyuan.validate.ValidateComponent;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
+import org.xson.tangyuan.xml.XmlParseException;
 
 public class XMLConfigBuilder {
 
@@ -29,24 +30,20 @@ public class XMLConfigBuilder {
 		this.root = this.parser.evalNode("/validate-component");
 	}
 
-	public void parseNode() {
-		try {
-			buildConfigNodes(this.root.evalNodes("config-property"));
-			buildCheckerNodes(this.root.evalNodes("checker"));
-			buildPluginNodes(this.root.evalNodes("plugin"));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public void parseNode() throws Throwable {
+		buildConfigNodes(this.root.evalNodes("config-property"));
+		buildCheckerNodes(this.root.evalNodes("checker"));
+		buildPluginNodes(this.root.evalNodes("plugin"));
 	}
 
-	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <config-property name="A" value="B" />
 		Map<String, String> configMap = new HashMap<String, String>();
 		for (XmlNodeWrapper context : contexts) {
 			String name = StringUtils.trim(context.getStringAttribute("name"));
 			String value = StringUtils.trim(context.getStringAttribute("value"));
 			if (null == name || null == value) {
-				throw new RuntimeException("<config-property> missing name or value");
+				throw new XmlParseException("<config-property> missing name or value");
 			}
 			configMap.put(name.toUpperCase(), value);
 		}
@@ -55,29 +52,29 @@ public class XMLConfigBuilder {
 		}
 	}
 
-	private void buildCheckerNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildCheckerNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		for (XmlNodeWrapper context : contexts) {
 			String id = StringUtils.trim(context.getStringAttribute("id"));
 			String className = StringUtils.trim(context.getStringAttribute("class"));
 			if (customCheckerMap.containsKey(id)) {
-				throw new RuntimeException("Duplicate <checker> node");
+				throw new XmlParseException("Duplicate <checker> node");
 			}
 			Class<?> clazz = Class.forName(className);
 			if (!clazz.isAssignableFrom(Checker.class)) {
-				throw new RuntimeException("Custom checker must implement the interface Checker: " + className);
+				throw new XmlParseException("Custom checker must implement the interface Checker: " + className);
 			}
 			customCheckerMap.put(id, (Checker) clazz.newInstance());
 			log.info("Add <checker> :" + className);
 		}
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <plugin resource="xxx.xml" />
 		List<String> resourceList = new ArrayList<String>();
 		for (XmlNodeWrapper context : contexts) {
 			String resource = StringUtils.trim(context.getStringAttribute("resource"));
 			if (null == resource) {
-				throw new RuntimeException("<plugin> missing resource");
+				throw new XmlParseException("<plugin> missing resource");
 			}
 			resourceList.add(resource);
 		}

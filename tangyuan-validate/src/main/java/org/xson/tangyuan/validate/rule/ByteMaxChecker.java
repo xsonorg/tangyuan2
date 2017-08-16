@@ -4,17 +4,18 @@ import org.xson.common.object.XCO;
 import org.xson.tangyuan.validate.Checker;
 
 /**
- * Date匹配校验校验
+ * byte型最大值校验
  */
-public class DateMatchChecker implements Checker {
+public class ByteMaxChecker implements Checker {
 
 	@Override
 	public boolean check(XCO xco, String fieldName, Object value) {
-		return false;
+		byte max = ((Byte) value).byteValue();
+		byte val = xco.getByteValue(fieldName);
+		return max >= val;
 	}
 
 	public static Object parseValue(String value) {
-		return null;
+		return Byte.parseByte(value);
 	}
-
 }

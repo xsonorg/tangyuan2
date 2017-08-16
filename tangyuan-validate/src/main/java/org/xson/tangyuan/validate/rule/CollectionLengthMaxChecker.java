@@ -1,6 +1,6 @@
 package org.xson.tangyuan.validate.rule;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.validate.Checker;
@@ -12,7 +12,7 @@ public class CollectionLengthMaxChecker implements Checker {
 
 	@Override
 	public boolean check(XCO xco, String fieldName, Object value) {
-		List<?> list = (List<?>) xco.getObjectValue(fieldName);
+		Collection<?> list = (Collection<?>) xco.getObjectValue(fieldName);
 		int val = list.size();
 		int max = ((Integer) value).intValue();
 		return max >= val;

@@ -4,17 +4,18 @@ import org.xson.common.object.XCO;
 import org.xson.tangyuan.validate.Checker;
 
 /**
- * Time匹配校验校验
+ * byte型最小值固定值校验
  */
-public class TimeMatchChecker implements Checker {
+public class ByteMinChecker implements Checker {
 
 	@Override
 	public boolean check(XCO xco, String fieldName, Object value) {
-		return false;
+		byte min = ((Byte) value).byteValue();
+		byte val = xco.getByteValue(fieldName);
+		return min <= val;
 	}
 
 	public static Object parseValue(String value) {
-		return null;
+		return Byte.parseByte(value);
 	}
-
 }

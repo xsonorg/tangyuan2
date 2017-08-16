@@ -4,27 +4,27 @@ import org.xson.common.object.XCO;
 import org.xson.tangyuan.validate.Checker;
 
 /**
- * 字符串过滤校验校验
+ * byte型固定值校验
  */
-public class StringFilterChecker implements Checker {
+public class ByteEnumChecker implements Checker {
 
 	@Override
 	public boolean check(XCO xco, String fieldName, Object value) {
-		String val = xco.getStringValue(fieldName);
-		String[] result = (String[]) value;
+		byte val = xco.getByteValue(fieldName);
+		byte[] result = (byte[]) value;
 		for (int i = 0; i < result.length; i++) {
-			if (val.contains(result[i])) {
-				return false;
+			if (val == result[i]) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public static Object parseValue(String value) {
 		String[] array = value.split(",");
-		String[] result = new String[array.length];
+		byte[] result = new byte[array.length];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = array[i].trim();
+			result[i] = Byte.parseByte(array[i].trim());
 		}
 		return result;
 	}

@@ -17,17 +17,20 @@ public class RuleGroupItem {
 	private TypeEnum	type;
 	private List<Rule>	rules;
 	private boolean		require;
-	private String		message;
 	private Object		defaultValue;
 	private String		desc;
+	private String		message;
+	private int			code;
 
-	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String message, String defaultValue, String desc) {
+	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message,
+			int code) {
 		this.fieldName = fieldName;
 		this.type = type;
 		this.rules = rules;
 		this.require = require;
-		this.message = message;
 		this.desc = desc;
+		this.message = message;
+		this.code = code;
 		parseDefaultValue(defaultValue);
 	}
 
@@ -59,20 +62,21 @@ public class RuleGroupItem {
 					}
 				} else {
 					// 在没有规则的情况, 支持类型的验证
-					result = checkValueType(value);
+					result = checkValueType(value, xco);
 				}
 			}
 		} catch (Throwable e) {
 			log.error(null, e);
 		}
 
-		if (!result && ValidateComponent.getInstance().isThrowException() && null != this.message) {
-			throw new XCOValidateException(ValidateComponent.getInstance().getErrorCode(), this.message);
+		if (!result && ValidateComponent.getInstance().isThrowException()) {
+			throw new XCOValidateException(this.code, this.message);
 		}
+
 		return result;
 	}
 
-	private boolean checkValueType(Object value) {
+	private boolean checkValueType(Object value, XCO data) {
 		if (TypeEnum.INTEGER == type) {
 			if (Integer.class == value.getClass()) {
 				return true;
@@ -101,6 +105,10 @@ public class RuleGroupItem {
 			if (java.sql.Time.class == value.getClass()) {
 				return true;
 			}
+		} else if (TypeEnum.TIMESTAMP == type) {
+			if (java.sql.Time.class == value.getClass()) {
+				return true;
+			}
 		} else if (TypeEnum.DATETIME == type) {
 			if (java.util.Date.class == value.getClass()) {
 				return true;
@@ -122,6 +130,121 @@ public class RuleGroupItem {
 				return true;
 			}
 		}
+
+		else if (TypeEnum.XCO == type) {
+			if (XCO.class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.STRING_ARRAY == type) {
+			if (String[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.XCO_ARRAY == type) {
+			if (XCO[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.STRING_LIST == type) {
+			if (null != data.getStringListValue(fieldName)) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.XCO_LIST == type) {
+			if (null != data.getXCOListValue(fieldName)) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.STRING_SET == type) {
+			if (null != data.getStringSetValue(fieldName)) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.XCO_SET == type) {
+			if (null != data.getXCOSetValue(fieldName)) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.BYTE == type) {
+			if (Byte.class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.BOOLEAN == type) {
+			if (Boolean.class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.SHORT == type) {
+			if (Short.class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.CHAR == type) {
+			if (Character.class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.INT_ARRAY == type) {
+			if (int[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.LONG_ARRAY == type) {
+			if (long[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.FLOAT_ARRAY == type) {
+			if (float[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.DOUBLE_ARRAY == type) {
+			if (double[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.BYTE_ARRAY == type) {
+			if (byte[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.BOOLEAN_ARRAY == type) {
+			if (boolean[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.SHORT_ARRAY == type) {
+			if (short[].class == value.getClass()) {
+				return true;
+			}
+		}
+
+		else if (TypeEnum.CHAR_ARRAY == type) {
+			if (char[].class == value.getClass()) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -140,9 +263,19 @@ public class RuleGroupItem {
 		} else if (this.type == TypeEnum.STRING) {
 			this.defaultValue = value;
 		} else if (this.type == TypeEnum.BIGINTEGER) {
-			this.defaultValue = new BigInteger((String) defaultValue);
+			// this.defaultValue = new BigInteger((String) defaultValue);
+			this.defaultValue = new BigInteger(value);
 		} else if (this.type == TypeEnum.BIGDECIMAL) {
-			this.defaultValue = new BigDecimal((String) defaultValue);
+			// this.defaultValue = new BigDecimal((String) defaultValue);
+			this.defaultValue = new BigDecimal(value);
+		} else if (this.type == TypeEnum.BYTE) {
+			this.defaultValue = Byte.parseByte(value);
+		} else if (this.type == TypeEnum.BOOLEAN) {
+			this.defaultValue = Boolean.parseBoolean(value);
+		} else if (this.type == TypeEnum.SHORT) {
+			this.defaultValue = Short.parseShort(value);
+		} else if (this.type == TypeEnum.CHAR) {
+			this.defaultValue = value.charAt(0);
 		}
 	}
 
@@ -161,6 +294,14 @@ public class RuleGroupItem {
 			xco.setBigIntegerValue(this.fieldName, (BigInteger) defaultValue);
 		} else if (this.type == TypeEnum.BIGDECIMAL) {
 			xco.setBigDecimalValue(this.fieldName, (BigDecimal) defaultValue);
+		} else if (this.type == TypeEnum.BYTE) {
+			xco.setByteValue(this.fieldName, (Byte) defaultValue);
+		} else if (this.type == TypeEnum.BOOLEAN) {
+			xco.setBooleanValue(this.fieldName, (Boolean) defaultValue);
+		} else if (this.type == TypeEnum.SHORT) {
+			xco.setShortValue(this.fieldName, (Short) defaultValue);
+		} else if (this.type == TypeEnum.CHAR) {
+			xco.setCharValue(this.fieldName, (Character) defaultValue);
 		}
 	}
 
@@ -182,6 +323,10 @@ public class RuleGroupItem {
 
 	public String getMessage() {
 		return message;
+	}
+
+	public int getCode() {
+		return code;
 	}
 
 	public List<Rule> getRules() {

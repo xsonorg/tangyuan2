@@ -10,12 +10,14 @@ public class RuleGroup {
 	private List<RuleGroupItem>	items;
 	private String				desc;		// 描述
 	private String				message;	// 错误信息
+	private int					code;		// 错误代码
 
-	public RuleGroup(String id, List<RuleGroupItem> items, String desc, String message) {
+	public RuleGroup(String id, List<RuleGroupItem> items, String desc, String message, int code) {
 		this.id = id;
 		this.items = items;
 		this.desc = desc;
 		this.message = message;
+		this.code = code;
 	}
 
 	public String getId() {
@@ -34,22 +36,18 @@ public class RuleGroup {
 		return message;
 	}
 
+	public int getCode() {
+		return code;
+	}
+
 	public boolean check(XCO xco) {
-
 		boolean result = false;
-
 		for (RuleGroupItem item : this.items) {
 			result = item.check(xco);
 			if (!result) {
 				break;
 			}
 		}
-
-		if (!result && ValidateComponent.getInstance().isThrowException()) {
-			throw new XCOValidateException(ValidateComponent.getInstance().getErrorCode(),
-					(null != this.message) ? this.message : ValidateComponent.getInstance().getErrorMessage());
-		}
-
 		return result;
 	}
 

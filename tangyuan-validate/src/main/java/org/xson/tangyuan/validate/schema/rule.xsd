@@ -28,8 +28,9 @@
 				<xs:element ref="item" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="message" type="xs:string"/>
 			<xs:attribute name="desc" type="xs:string"/>
+			<xs:attribute name="message" type="xs:string"/>
+			<xs:attribute name="code" type="xs:integer" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="rule">
@@ -39,7 +40,7 @@
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="枚举值"/>
 						<xs:enumeration value="区间值"/>
-						<xs:enumeration value="过滤"/>
+						<xs:enumeration value="检查"/>
 						<xs:enumeration value="最大长度"/>
 						<xs:enumeration value="最小长度"/>
 						<xs:enumeration value="区间长度"/>
@@ -47,6 +48,16 @@
 						<xs:enumeration value="不匹配"/>
 						<xs:enumeration value="最小值"/>
 						<xs:enumeration value="最大值"/>
+						<xs:enumeration value="enum"/>
+						<xs:enumeration value="interval"/>
+						<xs:enumeration value="check"/>
+						<xs:enumeration value="max_length"/>
+						<xs:enumeration value="min_length"/>
+						<xs:enumeration value="interval_length"/>
+						<xs:enumeration value="match"/>
+						<xs:enumeration value="unmatch"/>
+						<xs:enumeration value="min"/>
+						<xs:enumeration value="max"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -70,19 +81,40 @@
 						<xs:enumeration value="string"/>
 						<xs:enumeration value="date"/>
 						<xs:enumeration value="time"/>
+						<xs:enumeration value="timestamp"/>
 						<xs:enumeration value="dateTime"/>
 						<xs:enumeration value="bigInteger"/>
 						<xs:enumeration value="bigDecimal"/>
 						<xs:enumeration value="array"/>
 						<xs:enumeration value="collection"/>
+						<xs:enumeration value="xco"/>
+						<xs:enumeration value="byte"/>
+						<xs:enumeration value="boolean"/>
+						<xs:enumeration value="short"/>
+						<xs:enumeration value="char"/>
+						<xs:enumeration value="int_array"/>
+						<xs:enumeration value="long_array"/>
+						<xs:enumeration value="float_array"/>
+						<xs:enumeration value="double_array"/>
+						<xs:enumeration value="byte_array"/>
+						<xs:enumeration value="boolean_array"/>
+						<xs:enumeration value="short_array"/>
+						<xs:enumeration value="char_array"/>
+						<xs:enumeration value="string_array"/>
+						<xs:enumeration value="xco_array"/>
+						<xs:enumeration value="string_list"/>
+						<xs:enumeration value="xco_list"/>
+						<xs:enumeration value="string_set"/>
+						<xs:enumeration value="xco_set"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="require" type="xs:boolean"/>
 			<xs:attribute name="defaultValue" type="xs:string"/>
 			<xs:attribute name="ref" type="xs:string"/>
-			<xs:attribute name="message" type="xs:string"/>
 			<xs:attribute name="desc" type="xs:string"/>
+			<xs:attribute name="message" type="xs:string"/>
+			<xs:attribute name="code" type="xs:integer" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
