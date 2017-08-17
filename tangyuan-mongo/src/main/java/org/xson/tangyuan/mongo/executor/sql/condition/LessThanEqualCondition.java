@@ -1,10 +1,11 @@
 package org.xson.tangyuan.mongo.executor.sql.condition;
 
+import org.bson.BSONObject;
 import org.xson.tangyuan.mongo.executor.sql.SqlParseException;
 import org.xson.tangyuan.mongo.executor.sql.SqlParser;
 import org.xson.tangyuan.mongo.executor.sql.ValueVo;
-import org.xson.tangyuan.mongo.executor.sql.WhereCondition;
 import org.xson.tangyuan.mongo.executor.sql.ValueVo.ValueType;
+import org.xson.tangyuan.mongo.executor.sql.WhereCondition;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -47,7 +48,13 @@ public class LessThanEqualCondition extends WhereCondition {
 	@Override
 	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		if (null == orList) {
-			query.put(this.name, new BasicDBObject("$lte", value.getValue(arg)));
+			// query.put(this.name, new BasicDBObject("$lte", value.getValue(arg)));
+			if (query.containsField(this.name)) {
+				BSONObject bson = (BSONObject) query.get(this.name);
+				bson.put("$lte", value.getValue(arg));
+			} else {
+				query.put(this.name, new BasicDBObject("$lte", value.getValue(arg)));
+			}
 		} else {
 			orList.add(new BasicDBObject(this.name, new BasicDBObject("$lte", value.getValue(arg))));
 		}

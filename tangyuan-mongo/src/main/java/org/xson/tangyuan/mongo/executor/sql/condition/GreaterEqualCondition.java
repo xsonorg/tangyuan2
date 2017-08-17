@@ -1,5 +1,6 @@
 package org.xson.tangyuan.mongo.executor.sql.condition;
 
+import org.bson.BSONObject;
 import org.xson.tangyuan.mongo.executor.sql.SqlParseException;
 import org.xson.tangyuan.mongo.executor.sql.SqlParser;
 import org.xson.tangyuan.mongo.executor.sql.ValueVo;
@@ -47,7 +48,13 @@ public class GreaterEqualCondition extends WhereCondition {
 	@Override
 	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
 		if (null == orList) {
-			query.put(this.name, new BasicDBObject("$gte", value.getValue(arg)));
+			// query.put(this.name, new BasicDBObject("$gte", value.getValue(arg)));
+			if (query.containsField(this.name)) {
+				BSONObject bson = (BSONObject) query.get(this.name);
+				bson.put("$gte", value.getValue(arg));
+			} else {
+				query.put(this.name, new BasicDBObject("$gte", value.getValue(arg)));
+			}
 		} else {
 			orList.add(new BasicDBObject(this.name, new BasicDBObject("$gte", value.getValue(arg))));
 		}
