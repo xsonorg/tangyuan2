@@ -11,9 +11,15 @@
 	    <version>1.2.0</version>
 	</dependency>
 
+	<dependency>
+		<groupId>org.mongodb</groupId>
+		<artifactId>mongo-java-driver</artifactId>
+		<version>3.3.0</version>
+	</dependency>
+
 > b. 添加服务组件
 
-在tangyuan总配置文件(tangyuan.xml)添加mongo组件：
+在tangyuan总配置文件(tangyuan.xml)中添加mongo组件：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -68,8 +74,7 @@ tangyuan-mongo组件本身的配置(component-mongo.xml)：
 
 ### 2. 数据源配置
 
-
-tangyuan-mongo组件中数据源配置分为两种，一种是普通数据源，适用于普通的数据库应用项目；另一种是数据源组，适用于数据量和数据并发访问量大的应用场景，同时需要配合分库分表模块共同使用。数据源的配置位于`component-mongo.xml`中。
+tangyuan-mongo组件中数据源配置分为两种，一种是普通数据源，适用于普通的Mongo应用项目；另一种是数据源组，适用于数据量和数据并发访问量大的应用场景，同时需要配合分库分表模块共同使用。数据源的配置位于`component-mongo.xml`中。
 
 #### 2.1 普通数据源
 
@@ -98,6 +103,8 @@ tangyuan-mongo组件中数据源配置分为两种，一种是普通数据源，
 | 属性名 | 用途及说明 | 取值 | 默认值 |
 | :-- | :--| :-- | :-- |
 | url | mongo连接协议 | String | |
+| username | 用户名 | String | |
+| password | 密码 | String | |
 | socketKeepAlive | 是否保持长链接 | boolean | true |
 | maxWaitTime | 长链接的最大等待时间 | int | 10 * 60 * 1000 |
 | connectTimeout | 链接超时时间 | int | 60 * 1000 |
@@ -168,35 +175,3 @@ tangyuan-mongo组件中可以通过插件进行服务的定义、管理和功能
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :--: | :-- |
 | resource | 插件的资源文件路径 | Y | 用户定义 |
-
-### 4. 返回结果映射
-
-参考tangyuan-sql组件数据映射章节的返回结果映射篇<http://www.xson.org/project/sql/1.2.0/mapper.html>
-
-> schema
-
-<http://xson.org/schema/tangyuan/mongo/mapper.xsd>
-
-### 5. MONGO服务
-
-由于tangyuan-mongo组件中支持使用SQL语法访问Mongo，所以从使用角度来讲，二者非常相似，因此在这里只说明tangyuan-mongo组件区别于tangyuan-sql组件的地方，其他的内容可参考SQL服务<http://www.xson.org/project/sql/1.2.0/sql.html>
-
-> 区别
-
-1. MONGO服务插件的schema和根节点和SQL服务不同，可参考上文中`编写Mongo服务`处；
-2. tangyuan-mongo组件中的组合服务是通过`<mongo-service>`节点来定义，而tangyuan-sql组件中的组合服务是通过`<sql-service>`节点来定义；
-3. tangyuan-mongo组件中数据源是mongo数据源，和tangyuan-sql组件中数据源无关；
-4. tangyuan-mongo组件中无事务概念，所以各个服务标签中也不存在`txRef`属性；
-
-> schema
-
-<http://xson.org/schema/tangyuan/mongo/service.xsd>
-
-
-### 6. 分库分表
-
-参考tangyuan-sql组件分库分表章节<http://www.xson.org/project/sql/1.2.0/sharding.html>
-
-> schema
-
-<http://xson.org/schema/tangyuan/sql/sharding.xsd>

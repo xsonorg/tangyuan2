@@ -30,7 +30,7 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 	    [FROM tbl_name
 	    [WHERE where_definition]
 	    [ORDER BY col_name [ASC | DESC] , ...]
-	    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
+	    [LIMIT {[offset,] row_count}]
 
 > 查询字段
 
@@ -71,7 +71,7 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 
 	INSERT INTO
 	    tbl_name (col_name,...)
-	    VALUES ({expr | DEFAULT},...),(...),...
+	    VALUES (col_value,...)
 
 > 示例
 
