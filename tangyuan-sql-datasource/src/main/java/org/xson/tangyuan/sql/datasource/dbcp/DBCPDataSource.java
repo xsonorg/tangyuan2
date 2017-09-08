@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 
 public class DBCPDataSource extends AbstractDataSource {
 
-	private static Log				log	= LogFactory.getLog(DBCPDataSource.class);
+	// private static Log log = LogFactory.getLog(DBCPDataSource.class);
+	private static Logger			log	= LoggerFactory.getLogger(DBCPDataSource.class);
 
 	private final BasicDataSource	dataSource;
 

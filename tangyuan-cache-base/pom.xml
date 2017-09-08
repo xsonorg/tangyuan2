@@ -38,12 +38,12 @@
 
 	<dependencies>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>logging</artifactId>
 			<version>1.0.0</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
 
 		<!-- cache -->
 		<dependency>

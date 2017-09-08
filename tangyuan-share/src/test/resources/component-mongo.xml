@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mongo-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/mongo/component.xsd">
+
+	<dataSource id="mongods">
+		<property name="url" value="mongodb://127.0.0.1:27017/rtt" />
+	</dataSource>
+	
+</mongo-component>

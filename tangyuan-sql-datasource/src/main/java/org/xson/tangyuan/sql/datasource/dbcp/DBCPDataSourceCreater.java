@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 import org.xson.tangyuan.sql.datasource.DataSourceCreater;
 import org.xson.tangyuan.sql.datasource.DataSourceException;
@@ -15,7 +15,8 @@ import org.xson.tangyuan.sql.datasource.util.DSPropertyUtil;
 
 public class DBCPDataSourceCreater implements DataSourceCreater {
 
-	private Log log = LogFactory.getLog(DBCPDataSourceCreater.class);
+	// private Log log = LogFactory.getLog(DBCPDataSourceCreater.class);
+	private Logger log = LoggerFactory.getLogger(DBCPDataSourceCreater.class);
 
 	@Override
 	public void newInstance(DataSourceVo dsVo, Map<String, DataSourceVo> logicMap, Map<String, AbstractDataSource> realMap) {

@@ -2,13 +2,14 @@ package org.xson.tangyuan.cache.local;
 
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xson.tangyuan.cache.AbstractCache;
 
 public class LoggingCache extends AbstractCache {
 
-	protected Log			log			= LogFactory.getLog(LoggingCache.class);
+	// protected Log log = LogFactory.getLog(LoggingCache.class);
+	private Logger			log			= LoggerFactory.getLogger(LoggingCache.class);
 
 	private AbstractCache	delegate	= null;
 	protected int			requests	= 0;

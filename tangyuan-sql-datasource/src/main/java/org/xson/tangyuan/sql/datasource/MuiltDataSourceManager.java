@@ -4,15 +4,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 复杂的DataSourceManager
  */
 public class MuiltDataSourceManager extends DataSourceManager {
 
-	private Log									log					= LogFactory.getLog(this.getClass());
+	// private Log log = LogFactory.getLog(this.getClass());
+	private Logger								log					= LoggerFactory.getLogger(MuiltDataSourceManager.class);
 
 	/**
 	 * 逻辑上的

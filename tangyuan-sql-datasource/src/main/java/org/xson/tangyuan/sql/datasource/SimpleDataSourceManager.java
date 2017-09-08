@@ -3,15 +3,16 @@ package org.xson.tangyuan.sql.datasource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 最简单的DataSourceManager
  */
 public class SimpleDataSourceManager extends DataSourceManager {
 
-	private Log					log					= LogFactory.getLog(this.getClass());
+	// private Log log = LogFactory.getLog(this.getClass());
+	private Logger				log					= LoggerFactory.getLogger(SimpleDataSourceManager.class);
 
 	private AbstractDataSource	singleDataSource	= null;
 
