@@ -6,6 +6,8 @@ import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.executor.ServiceActuator;
+import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.zongzi.JPCBridge;
 
 public class TangYuanJPCBridge implements JPCBridge {
@@ -14,17 +16,37 @@ public class TangYuanJPCBridge implements JPCBridge {
 
 	private JPCBridge	hook	= null;
 
+	// private Object doXcoRpcRquest(ServiceURI sURI, final XCO arg) throws Throwable {
+	// Object result = null;
+	// if (null == sURI.getMark()) {
+	// result = ServiceActuator.execute(sURI.getQualifiedServiceName(), arg);
+	// } else if ("async".equalsIgnoreCase(sURI.getMark())) {
+	// ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
+	// } else if ("timer".equalsIgnoreCase(sURI.getMark())) {
+	// ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
+	// } else {
+	// throw new TangYuanException("Invalid URL[mark]: " + sURI.getOriginal());
+	// }
+	// return result;
+	// }
+
 	@Override
 	public Object call(String path, Object arg) {
 		log.info("client request to: " + path);
 		log.info("client request args: " + arg);
 		XCO result = null;
-		// try {
-		// result = RpcUtil.doXcoRpcRquest(path, (XCO) arg);
-		// } catch (Throwable e) {
-		// result = RpcUtil.getExceptionResult(e);
-		// }
-		// TODO
+		try {
+			/// bp/getTab1
+			if (path.startsWith("/")) {
+				path = path.substring(1);
+			}
+			// result = RpcUtil.doXcoRpcRquest(path, (XCO) arg);
+			// result = ServiceActuator.execute(path, arg);
+			Object retObj = ServiceActuator.execute(path, arg);
+			result = TangYuanUtil.retObjToXco(retObj);
+		} catch (Throwable e) {
+			result = TangYuanUtil.getExceptionResult(e);
+		}
 		return result;
 	}
 

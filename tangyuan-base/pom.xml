@@ -23,7 +23,7 @@
 			<email>xson_org@126.com</email>
 		</developer>
 	</developers>
-	
+
 	<scm>
 		<url>https://github.com/xsonorg/tangyuan2.git</url>
 		<connection>scm:git:https://github.com/xsonorg/tangyuan2.git</connection>
@@ -34,7 +34,7 @@
 			<name>GNU General Public License v3.0</name>
 			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
 		</license>
-	</licenses>	
+	</licenses>
 
 	<dependencies>
 
@@ -80,8 +80,12 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.xson</groupId> <artifactId>zongzi-api</artifactId> 
-			<version>1.2.0</version> </dependency> -->
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>zongzi-api</artifactId>
+			<version>1.2.0</version>
+			<scope>provided</scope>
+		</dependency>
 
 	</dependencies>
 
@@ -116,11 +120,11 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
-	
-	
+
+
 	<profiles>
 		<profile>
 			<id>private</id>
@@ -191,6 +195,6 @@
 				</plugins>
 			</build>
 		</profile>
-	</profiles>		
-	
+	</profiles>
+
 </project>
