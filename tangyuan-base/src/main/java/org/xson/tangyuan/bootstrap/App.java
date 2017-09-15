@@ -1,18 +1,23 @@
-package org.xson.tangyuan.share;
+package org.xson.tangyuan.bootstrap;
 
-public class Bootstrap {
+import org.xson.tangyuan.TangYuanContainer;
+
+public class App {
 
 	public static void start(String[] args) throws Throwable {
-		// ShareComponent.getInstance().start(basePath, resource);
-		ShareComponent.getInstance().start(args[1], args[2]);
+		String xmlResource = "tangyuan.xml";
+		if(args.length > 1){
+			xmlResource = args[1];
+		}
+		TangYuanContainer.getInstance().start(xmlResource);
 	}
 
 	public static void stop() throws Throwable {
-		ShareComponent.getInstance().stop(true);
+		TangYuanContainer.getInstance().stop(true);
 	}
 
 	public static void main(String[] args) throws Throwable {
-		// System.out.println("TS:" + Bootstrap.class.getClassLoader().getClass().getName());
+		//System.out.println("APP:" + App.class.getClassLoader().getClass().getName());
 		try {
 			String command = "start";
 			if (args.length > 0) {

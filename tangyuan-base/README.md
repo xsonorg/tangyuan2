@@ -19,4 +19,4 @@ tangyuan-base是tangyuan框架的基础类库。
 1. fix 服务启动时的onlyProxyMode
 2. add CloseHandler
 3. 增加zongzi依赖
-
+4. update TangYuanJPCBridge

@@ -6,7 +6,9 @@ import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.executor.ServiceActuator;
+import org.xson.tangyuan.executor.ServiceURI;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.zongzi.JPCBridge;
 
@@ -16,19 +18,19 @@ public class TangYuanJPCBridge implements JPCBridge {
 
 	private JPCBridge	hook	= null;
 
-	// private Object doXcoRpcRquest(ServiceURI sURI, final XCO arg) throws Throwable {
-	// Object result = null;
-	// if (null == sURI.getMark()) {
-	// result = ServiceActuator.execute(sURI.getQualifiedServiceName(), arg);
-	// } else if ("async".equalsIgnoreCase(sURI.getMark())) {
-	// ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
-	// } else if ("timer".equalsIgnoreCase(sURI.getMark())) {
-	// ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
-	// } else {
-	// throw new TangYuanException("Invalid URL[mark]: " + sURI.getOriginal());
-	// }
-	// return result;
-	// }
+	private Object doXcoRpcRquest(ServiceURI sURI, Object arg) throws Throwable {
+		Object result = null;
+		if (null == sURI.getMark()) {
+			result = ServiceActuator.execute(sURI.getQualifiedServiceName(), arg);
+		} else if ("async".equalsIgnoreCase(sURI.getMark())) {
+			ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
+		} else if ("timer".equalsIgnoreCase(sURI.getMark())) {
+			ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
+		} else {
+			throw new TangYuanException("Invalid URL[mark]: " + sURI.getOriginal());
+		}
+		return result;
+	}
 
 	@Override
 	public Object call(String path, Object arg) {
@@ -36,13 +38,8 @@ public class TangYuanJPCBridge implements JPCBridge {
 		log.info("client request args: " + arg);
 		XCO result = null;
 		try {
-			/// bp/getTab1
-			if (path.startsWith("/")) {
-				path = path.substring(1);
-			}
-			// result = RpcUtil.doXcoRpcRquest(path, (XCO) arg);
-			// result = ServiceActuator.execute(path, arg);
-			Object retObj = ServiceActuator.execute(path, arg);
+			ServiceURI sURI = ServiceURI.parseUrlPath(path);
+			Object retObj = doXcoRpcRquest(sURI, arg);
 			result = TangYuanUtil.retObjToXco(retObj);
 		} catch (Throwable e) {
 			result = TangYuanUtil.getExceptionResult(e);
