@@ -27,7 +27,7 @@ public class ShareJdbcBuilder {
 
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		System.out.println("@*** Start parsing: " + resource);
+		// System.out.println("@*** Start parsing: " + resource);
 		InputStream inputStream = new FileInputStream(new File(basePath, resource));
 		this.xPathParser = new XPathParser(inputStream);
 		inputStream.close();
@@ -145,7 +145,7 @@ public class ShareJdbcBuilder {
 			return ConnPoolType.PROXOOL;
 		} else if ("DRUID".equalsIgnoreCase(type)) {
 			return ConnPoolType.DRUID;
-		} 
+		}
 		// else if ("SHARE".equalsIgnoreCase(type)) {
 		// return ConnPoolType.SHARE;
 		// }
