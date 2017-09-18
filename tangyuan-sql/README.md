@@ -89,3 +89,7 @@ tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的
 
 <http://www.xson.org/project/sql/1.2.0/>
 
+### 版本更新
+
+1. DataSourceVo, 修改share相关属性修改
+

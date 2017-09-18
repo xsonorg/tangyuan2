@@ -173,3 +173,5 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 		near.put("$maxDistance", x / y);
 		return near;
 	}	
+	
+6. sharedUse

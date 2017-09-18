@@ -2,11 +2,11 @@
 <cache-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/cache/component.xsd">
 
-	<cache id="cache1" type="local">
+	<cache id="scache1" type="local">
 		<property name="strategy" value="time" />
 		<property name="survivalTime" value="10" />
 		<property name="log" value="true" />
 	</cache>
-	<cache id="cache4" type="redis" resource="redis.basic.properties" />
+	<cache id="scache4" type="redis" resource="redis.basic.properties" />
 
 </cache-component>

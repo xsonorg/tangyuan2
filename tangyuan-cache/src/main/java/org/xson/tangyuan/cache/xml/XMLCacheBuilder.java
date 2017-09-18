@@ -129,9 +129,10 @@ public class XMLCacheBuilder {
 				throw new XmlParseException("cache type and cache class can not be empty.");
 			}
 
-			String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			// String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
 
-			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, jndiName, TangYuanContainer.getInstance().getSystemName());
+			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, sharedUse, TangYuanContainer.getInstance().getSystemName());
 			cacheVoMap.put(id, cVo);
 
 			log.info("add cache: " + id);

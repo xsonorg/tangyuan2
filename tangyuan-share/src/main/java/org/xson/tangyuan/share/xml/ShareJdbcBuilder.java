@@ -55,7 +55,8 @@ public class ShareJdbcBuilder {
 				throw new XmlParseException("Invalid data source type.");
 			}
 
-			String jndiName = null;
+			// String jndiName = null;
+			String sharedUse = null;
 			boolean defaultDs = false;
 
 			Map<String, String> data = new HashMap<String, String>();
@@ -64,7 +65,7 @@ public class ShareJdbcBuilder {
 				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
 						StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
-			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, jndiName, ShareComponent.getInstance().getSystemName());
+			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, sharedUse, ShareComponent.getInstance().getSystemName());
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}

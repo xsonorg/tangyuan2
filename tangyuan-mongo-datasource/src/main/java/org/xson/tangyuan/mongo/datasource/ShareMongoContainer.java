@@ -20,18 +20,18 @@ public final class ShareMongoContainer {
 		return instance;
 	}
 
-	public MongoDataSourceVo getDataSourceVo(String jndiName) {
+	public MongoDataSourceVo getDataSourceVo(String sharedName) {
 		if (null == dsVoMap) {
 			return null;
 		}
-		return dsVoMap.get(jndiName);
+		return dsVoMap.get(sharedName);
 	}
 
-	public AbstractMongoDataSource getDataSource(String jndiName) {
+	public AbstractMongoDataSource getDataSource(String sharedName) {
 		if (null == dsMap) {
 			return null;
 		}
-		return dsMap.get(jndiName);
+		return dsMap.get(sharedName);
 	}
 
 	public void setDsMap(Map<String, AbstractMongoDataSource> dsMap) {
@@ -41,7 +41,7 @@ public final class ShareMongoContainer {
 	public void setDsVoMap(Map<String, MongoDataSourceVo> dsVoMap) {
 		this.dsVoMap = dsVoMap;
 	}
-	
+
 	public void close(String creator) {
 		if (null == dsMap) {
 			return;

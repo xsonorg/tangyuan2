@@ -2,7 +2,7 @@
 <sql-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/component.xsd">
 	
-	<dataSource id="readtvr" type="DBCP">
+	<dataSource id="share_read_01" type="DBCP">
 		<property name="username" value="root" />
 		<property name="password" value="123456" />
 		<property name="url"
@@ -25,7 +25,7 @@
 		<property name="numTestsPerEvictionRun" value="16" />
 	</dataSource>
 
-	<dataSource id="writetvr" type="DBCP" isDefault="true">
+	<dataSource id="share_write_01" type="DBCP">
 		<property name="username" value="root" />
 		<property name="password" value="123456" />
 		<property name="url"

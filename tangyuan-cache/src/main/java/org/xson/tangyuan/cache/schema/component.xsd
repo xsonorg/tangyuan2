@@ -33,6 +33,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
+			<xs:attribute name="sharedUse" type="xs:string" use="optional"/>
 			<xs:attribute name="class" type="xs:string" use="optional"/>
 			<xs:attribute name="resource" type="xs:string" use="optional"/>
 			<xs:attribute name="default" type="xs:boolean" use="optional"/>

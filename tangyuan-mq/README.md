@@ -45,3 +45,4 @@ tangyuan-mq是tangyuan框架中的消息服务组件，其整合了RabbitMQ和Ac
 ### 5. 版本更新
 
 1. fix 默认源
+2. 增加share支持

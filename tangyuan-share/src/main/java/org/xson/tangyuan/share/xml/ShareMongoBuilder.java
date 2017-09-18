@@ -47,7 +47,8 @@ public class ShareMongoBuilder {
 				throw new XmlParseException("Duplicate mongo data source ID: " + id);
 			}
 			boolean defaultDs = false;
-			String jndiName = null;
+			// String jndiName = null;
+			String sharedUse = null;
 
 			Map<String, String> data = new HashMap<String, String>();
 			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
@@ -55,7 +56,7 @@ public class ShareMongoBuilder {
 				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
 						StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
-			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, jndiName, ShareComponent.getInstance().getSystemName());
+			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, sharedUse, ShareComponent.getInstance().getSystemName());
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}

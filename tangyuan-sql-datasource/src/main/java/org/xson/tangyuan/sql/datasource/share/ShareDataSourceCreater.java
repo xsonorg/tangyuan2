@@ -18,16 +18,17 @@ public class ShareDataSourceCreater implements DataSourceCreater {
 
 	@Override
 	public void newInstance(DataSourceVo dsVo, Map<String, DataSourceVo> logicMap, Map<String, AbstractDataSource> realMap) {
-		String jndiName = dsVo.getJndiName();
-		DataSourceVo shareVo = ShareJdbcContainer.getInstance().getDataSourceVo(jndiName);
+		// String jndiName = dsVo.getJndiName();
+		String sharedUse = dsVo.getSharedUse();
+		DataSourceVo shareVo = ShareJdbcContainer.getInstance().getDataSourceVo(sharedUse);
 		if (null == shareVo) {
-			throw new DataSourceException("Non-existent share datasource: " + jndiName);
+			throw new DataSourceException("Non-existent share datasource: " + sharedUse);
 		}
 		if (shareVo.isGroup()) {
 			DataSourceGroupVo dsGroupVo = (DataSourceGroupVo) dsVo;
 			for (int i = dsGroupVo.getStart(); i <= dsGroupVo.getEnd(); i++) {
 				String readName = dsGroupVo.getId() + "." + i;
-				String mappingName = jndiName + "." + i;
+				String mappingName = sharedUse + "." + i;
 				AbstractDataSource ds = ShareJdbcContainer.getInstance().getDataSource(mappingName);
 				if (null == ds) {
 					throw new DataSourceException("Non-existent data source: " + mappingName);
@@ -39,9 +40,9 @@ public class ShareDataSourceCreater implements DataSourceCreater {
 				log.info("add datasource[group]: " + readName);
 			}
 		} else {
-			AbstractDataSource ds = ShareJdbcContainer.getInstance().getDataSource(jndiName);
+			AbstractDataSource ds = ShareJdbcContainer.getInstance().getDataSource(sharedUse);
 			if (null == ds) {
-				throw new DataSourceException("Non-existent data source: " + jndiName);
+				throw new DataSourceException("Non-existent data source: " + sharedUse);
 			}
 			if (realMap.containsKey(dsVo.getId())) {
 				throw new DataSourceException("Duplicate DataSourceID: " + dsVo.getId());

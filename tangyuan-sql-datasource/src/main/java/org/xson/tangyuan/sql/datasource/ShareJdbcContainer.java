@@ -20,18 +20,18 @@ public final class ShareJdbcContainer {
 		return instance;
 	}
 
-	public DataSourceVo getDataSourceVo(String jndiName) {
+	public DataSourceVo getDataSourceVo(String sharedName) {
 		if (null == dsVoMap) {
 			return null;
 		}
-		return dsVoMap.get(jndiName);
+		return dsVoMap.get(sharedName);
 	}
 
-	public AbstractDataSource getDataSource(String jndiName) {
+	public AbstractDataSource getDataSource(String sharedName) {
 		if (null == dsMap) {
 			return null;
 		}
-		return dsMap.get(jndiName);
+		return dsMap.get(sharedName);
 	}
 
 	public void setDsMap(Map<String, AbstractDataSource> dsMap) {

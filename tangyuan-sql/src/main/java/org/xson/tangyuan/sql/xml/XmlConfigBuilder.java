@@ -115,9 +115,14 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 				throw new XmlParseException("Invalid data source type.");
 			}
 
-			String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
-			if (ConnPoolType.SHARE == type && null == jndiName) {
-				throw new XmlParseException("In share type, the jndiName can not be missing.");
+			// String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			// if (ConnPoolType.SHARE == type && null == jndiName) {
+			// throw new XmlParseException("In share type, the jndiName can not be missing.");
+			// }
+
+			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
+			if (ConnPoolType.SHARE == type && null == sharedUse) {
+				throw new XmlParseException("In share type, the sharedUse can not be missing.");
 			}
 
 			boolean defaultDs = false;
@@ -134,7 +139,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
 						StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
-			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, jndiName, TangYuanContainer.getInstance().getSystemName());
+			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, sharedUse, TangYuanContainer.getInstance().getSystemName());
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}

@@ -19,11 +19,11 @@ public final class ShareCacheContainer {
 		return instance;
 	}
 
-	public AbstractCache getCache(String jndiName) {
+	public AbstractCache getCache(String sharedName) {
 		if (null == cacheMap) {
 			return null;
 		}
-		return cacheMap.get(jndiName);
+		return cacheMap.get(sharedName);
 	}
 
 	public void setCacheMap(Map<String, AbstractCache> cacheMap) {

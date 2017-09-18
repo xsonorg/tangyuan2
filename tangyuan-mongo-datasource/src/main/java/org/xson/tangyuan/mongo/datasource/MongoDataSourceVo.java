@@ -8,13 +8,15 @@ public class MongoDataSourceVo {
 	private Map<String, String>	properties;
 	private boolean				defaultDs	= false;
 	protected boolean			group		= false;
-	protected String			jndiName	= null;
+	// protected String jndiName = null;
+	protected String			sharedUse	= null;
 	protected String			creator		= null;
 
-	public MongoDataSourceVo(String id, Map<String, String> properties, boolean defaultDs, String jndiName, String creator) {
+	public MongoDataSourceVo(String id, Map<String, String> properties, boolean defaultDs, String sharedUse, String creator) {
 		this.id = id;
 		this.properties = properties;
 		this.defaultDs = defaultDs;
+		this.sharedUse = sharedUse;
 	}
 
 	public String getId() {
@@ -33,16 +35,16 @@ public class MongoDataSourceVo {
 		return group;
 	}
 
-	public String getJndiName() {
-		return jndiName;
-	}
-
 	public String getCreator() {
 		return creator;
 	}
 
+	public String getSharedUse() {
+		return sharedUse;
+	}
+
 	public void start(Map<String, MongoDataSourceVo> logicMap, Map<String, AbstractMongoDataSource> realMap) {
-		new DataSourceCreaterFactory().newInstance(this.jndiName).newInstance(this, logicMap, realMap);
+		new DataSourceCreaterFactory().newInstance(this.sharedUse).newInstance(this, logicMap, realMap);
 	}
 
 }

@@ -100,7 +100,8 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 				}
 			}
 
-			String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			// String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
 
 			Map<String, String> data = new HashMap<String, String>();
 			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
@@ -109,7 +110,7 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 						StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
 			// MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs);
-			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, jndiName, TangYuanContainer.getInstance().getSystemName());
+			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, sharedUse, TangYuanContainer.getInstance().getSystemName());
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}

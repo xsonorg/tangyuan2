@@ -16,7 +16,8 @@ public class CacheVo {
 	protected boolean			group;
 	protected AbstractCache		cache;
 
-	protected String			jndiName;
+	// protected String jndiName;
+	protected String			sharedUse;
 	protected String			creator;
 
 	private CacheType			type;
@@ -28,14 +29,15 @@ public class CacheVo {
 		this.creator = creator;
 	}
 
-	public CacheVo(String id, CacheType type, AbstractCache cache, String resource, Map<String, String> properties, String jndiName, String creator) {
+	public CacheVo(String id, CacheType type, AbstractCache cache, String resource, Map<String, String> properties, String sharedUse,
+			String creator) {
 		this.id = id;
 		this.type = type;
 		this.cache = cache;
 		this.resource = resource;
 		this.properties = properties;
 		// this.group = group;
-		this.jndiName = jndiName;
+		this.sharedUse = sharedUse;
 		this.creator = creator;
 	}
 
@@ -63,8 +65,12 @@ public class CacheVo {
 		return resource;
 	}
 
-	public String getJndiName() {
-		return jndiName;
+	// public String getJndiName() {
+	// return jndiName;
+	// }
+
+	public String getSharedUse() {
+		return sharedUse;
 	}
 
 	public String getCreator() {

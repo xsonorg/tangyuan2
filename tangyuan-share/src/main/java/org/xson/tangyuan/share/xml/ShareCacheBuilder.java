@@ -95,9 +95,10 @@ public class ShareCacheBuilder {
 				throw new XmlParseException("cache type and cache class can not be empty.");
 			}
 
-			String jndiName = null;
+			// String jndiName = null;
+			String sharedUse = null;
 
-			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, jndiName, ShareComponent.getInstance().getSystemName());
+			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, sharedUse, ShareComponent.getInstance().getSystemName());
 			cacheVoMap.put(id, cVo);
 
 			log.info("add cache: " + id);
