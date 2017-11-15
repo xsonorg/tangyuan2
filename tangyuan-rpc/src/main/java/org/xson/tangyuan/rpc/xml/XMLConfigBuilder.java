@@ -10,6 +10,7 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.rpc.RpcContainer;
 import org.xson.tangyuan.rpc.RpcProxy;
+import org.xson.tangyuan.rpc.TangYuanRpcPlaceHolderHandler;
 import org.xson.tangyuan.rpc.client.AbstractClientRpc;
 import org.xson.tangyuan.rpc.client.MixedRpcClient;
 import org.xson.tangyuan.rpc.xml.RpcClientVo.ClientUseType;
@@ -23,15 +24,18 @@ import org.xson.tangyuan.xml.XmlParseException;
 
 public class XMLConfigBuilder implements XmlExtendBuilder {
 
-	private Log						log			= LogFactory.getLog(getClass());
-	private XPathParser				xPathParser	= null;
-	private XmlNodeWrapper			root		= null;
+	private Log						log							= LogFactory.getLog(getClass());
+	private XPathParser				xPathParser					= null;
+	private XmlNodeWrapper			root						= null;
 
 	// private String pigeonResource = null;
 	// private boolean usePigeonServer = false;
 	// private boolean usePigeonClient = false;
 
-	private Map<String, Integer>	clientIdMap	= new HashMap<String, Integer>();
+	private Map<String, Integer>	clientIdMap					= new HashMap<String, Integer>();
+
+	// Placeholder Remote Node List
+	private Map<String, Integer>	placeHolderRemoteNodeMap	= new HashMap<String, Integer>();
 
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
@@ -44,8 +48,22 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 
 	public void parseNode() throws Throwable {
 		buildConfigNodes(this.root.evalNodes("config-property"));
+
 		List<RpcClientVo> clientVoList = buildClientNodes(this.root.evalNodes("client"));
 		List<RemoteNodeVo> remoteVoList = buildRemoteNodes(this.root.evalNodes("remote-node"));
+
+		// 占位remote特殊处理
+		if (this.placeHolderRemoteNodeMap.size() > 0) {
+			RpcProxy.setPlaceHolderHandler(new TangYuanRpcPlaceHolderHandler(this.placeHolderRemoteNodeMap));
+		}
+		this.placeHolderRemoteNodeMap = null;
+
+		if (0 == clientVoList.size()) {
+			return;// do nothing
+		}
+		if (0 == remoteVoList.size() && clientVoList.size() > 1) {
+			return;// do nothing
+		}
 
 		Map<String, RemoteNodeVo> remoteNodeMap = new HashMap<String, RemoteNodeVo>();
 
@@ -65,16 +83,14 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			remoteNodeMap.put(rnVo.getId(), rnVo);
 		}
 
-		// 创建客户端
-		// if (1 == rpcImplMap.size() && 0 == remoteVoList.size()) {
-		// RpcProxy.setRpc(new MixedRpcClient(rpcImplMap.get(defaultClientId)));
-		// } else if (rpcClientMap.size() > 0) {
-		// RpcProxy.setRpc(new MixedRpcClient(rpcClientMap, remoteNodeMap));
-		// }
+		// 1. 1个客户端, n个remote
+		// 2. 1个客户端, 0个remote(隐含支持所有)
+		// 3. m个客户端, n个remote
 
-		if (1 == rpcImplMap.size()) {
+		// 创建客户端, 非占位节点的
+		if (1 == rpcImplMap.size() && 0 == remoteVoList.size()) {
 			RpcProxy.setRpc(new MixedRpcClient(rpcImplMap.get(defaultClientId)));
-		} else if (rpcClientMap.size() > 0) {
+		} else {
 			RpcProxy.setRpc(new MixedRpcClient(rpcClientMap, remoteNodeMap));
 		}
 	}
@@ -108,7 +124,7 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			if (null == use) {
 				use = ClientUseType.HTTP_CLIENT;
 			}
-			if (null == schema || "".equals(schema)) {
+			if ((ClientUseType.HTTP_CLIENT == use) && (null == schema || "".equals(schema))) {
 				schema = "http";
 			}
 			RpcClientVo vo = new RpcClientVo(id, use, schema);
@@ -131,12 +147,21 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			remoteIdMap.put(id, 1);
 			testStringEmpty(id, "the id attribute in <remote-node> node is not empty.");
 			testStringEmpty(domain, "the domain attribute in <remote-node> node  is not empty. remote-node.id: " + id);
-			testStringEmpty(client, "the client attribute in <remote-node> node is not empty. remote-node.id: " + id);
-			if (!clientIdMap.containsKey(client)) {
-				throw new XmlParseException("the client attribute in <remote-node> node is not invalid. remote-node.id: " + id);
+
+			// <remote-node id="serviceC" domain="@"/>
+			if ("@".equals(domain)) {
+				// RemoteNodeVo vo = new RemoteNodeVo(id, domain, client);
+				// phRemoteNodeList.add(vo);
+				placeHolderRemoteNodeMap.put(id, 1);
+				log.info("add placeholder remote-node: " + id);
+			} else {
+				testStringEmpty(client, "the client attribute in <remote-node> node is not empty. remote-node.id: " + id);
+				if (!clientIdMap.containsKey(client)) {
+					throw new XmlParseException("the client attribute in <remote-node> node is not invalid. remote-node.id: " + id);
+				}
+				RemoteNodeVo vo = new RemoteNodeVo(id, domain, client);
+				list.add(vo);
 			}
-			RemoteNodeVo vo = new RemoteNodeVo(id, domain, client);
-			list.add(vo);
 		}
 		return list;
 	}

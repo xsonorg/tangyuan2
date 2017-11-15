@@ -27,7 +27,6 @@ public class MixedRpcClient implements TangYuanRpc {
 	public MixedRpcClient(Map<String, AbstractClientRpc> rpcClientMap, Map<String, RemoteNodeVo> remoteNodeMap) {
 		this.rpcClientMap = rpcClientMap;
 		this.remoteNodeMap = remoteNodeMap;
-		// this.separator = TangYuanContainer.getInstance().getNsSeparator();
 	}
 
 	public MixedRpcClient(AbstractClientRpc defaultClientRpc) {
@@ -52,12 +51,15 @@ public class MixedRpcClient implements TangYuanRpc {
 		} else {
 			int beginIndex = url.indexOf(separator);
 			if (url.startsWith("{")) {// {}
-				String remoteId = url.substring(1, url.indexOf("}"));
+				int endIndex = url.indexOf("}");
+				String remoteId = url.substring(1, endIndex);
 				RemoteNodeVo remoteNodeVo = remoteNodeMap.get(remoteId);
 				if (null == remoteNodeVo) {
 					throw new RpcException("Illegal service URI: " + url);
 				}
 				domain = remoteNodeVo.getDomain();
+				// 重新构建URL fixbug
+				url = domain + url.substring(endIndex + 1);
 			} else {
 				domain = url.substring(0, beginIndex);
 			}

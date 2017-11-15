@@ -4,7 +4,7 @@
 
 	<groupId>org.xson</groupId>
 	<artifactId>tangyuan-sql-datasource</artifactId>
-	<version>1.2.0</version>
+	<version>${tangyuan.version}</version>
 	<packaging>jar</packaging>
 
 	<name>tangyuan-sql-datasource</name>
@@ -14,6 +14,10 @@
 	<properties>
 		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tangyuan.version>1.2.1.1</tangyuan.version>
+		<xco.version>1.0.2</xco.version>
+		<xson.redis>1.0.2</xson.redis>
+		<zongzi>1.2.0</zongzi>		
 	</properties>
 
 	<developers>
@@ -38,13 +42,6 @@
 
 	<dependencies>
 	
-<!-- 		<dependency>
-			<groupId>org.xson</groupId>
-			<artifactId>logging</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
-		</dependency> -->
-		
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

@@ -12,6 +12,7 @@ import org.xson.tangyuan.ognl.convert.ParameterConverter;
 import org.xson.tangyuan.rpc.RpcProxy;
 import org.xson.tangyuan.rpc.RpcServiceNode;
 import org.xson.tangyuan.task.AsyncTask;
+import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
 public class ServiceActuator {
@@ -172,12 +173,15 @@ public class ServiceActuator {
 			}
 			log.debug("context--. hashCode[" + context.hashCode() + "], context[" + (context.counter - 1) + "]");
 			if (--context.counter < 1) {
+				Throwable ex = null;
 				if (null == context.getExceptionInfo()) {
 					try {
 						context.finish();// 这里是确定的提交
 					} catch (Throwable e) {
 						context.finishOnException();
 						log.error("SqlService commit exception", e);
+						// fix bug: 这里的异常需要上抛
+						ex = e;
 					}
 				} else {
 					context.finishOnException();
@@ -186,6 +190,14 @@ public class ServiceActuator {
 				context.stopMonitor();// stop monitor
 				if (threadContext.recycle()) {
 					contextThreadLocal.remove();
+				}
+
+				// fix bug: 这里的异常需要上抛
+				if (null != ex) {
+					if (ex instanceof ServiceException) {
+						throw (ServiceException) ex;
+					}
+					throw new ServiceException(ex);
 				}
 			}
 		} else {
@@ -224,6 +236,22 @@ public class ServiceActuator {
 		}
 	}
 
+	protected static Object getResult(Object result) {
+		boolean allServiceReturnXCO = TangYuanContainer.getInstance().isAllServiceReturnXCO();
+		if (allServiceReturnXCO) {
+			return TangYuanUtil.retObjToXco(result);
+		}
+		return result;
+	}
+
+	protected static Object getExceptionResult(Throwable e) {
+		boolean allServiceReturnXCO = TangYuanContainer.getInstance().isAllServiceReturnXCO();
+		if (allServiceReturnXCO) {
+			return TangYuanUtil.getExceptionResult(e);
+		}
+		return null;// 发生错误, 一定是NULL
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> T execute(String serviceURI, Object arg) throws ServiceException {
 		check();// 检查系统是否已经正在关闭中了
@@ -251,6 +279,7 @@ public class ServiceActuator {
 		Object result = null;
 		Throwable ex = null;
 		try {
+
 			if (null != aop) {
 				aop.execBefore(service, arg, PointCut.BEFORE_JOIN);// 前置切面
 			}
@@ -265,6 +294,7 @@ public class ServiceActuator {
 
 		} catch (Throwable e) {
 			ex = e;
+			result = getExceptionResult(e);// 防止异常处理后的返回
 		} finally {
 			// 新增后置处理
 			ServiceException throwEx = null;
@@ -276,6 +306,11 @@ public class ServiceActuator {
 				}
 			} catch (ServiceException se) {
 				throwEx = se;
+
+				// fix bug: help aop
+				if (null == ex) {
+					ex = se;
+				}
 			}
 			if (null != aop) {
 				aop.execAfter(service, arg, result, ex, PointCut.AFTER_ALONE);
@@ -284,23 +319,30 @@ public class ServiceActuator {
 				throw throwEx;
 			}
 		}
-		return (T) result;
+		// return (T) result;
+		return (T) getResult(result);
 	}
 
 	/**
 	 * 单独环境
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> T executeAlone(String serviceURI, Object arg) throws ServiceException {
 		check();// 检查系统是否已经正在关闭中了
-		return executeAlone(serviceURI, arg, true);
+		return (T) executeAlone(serviceURI, arg, false);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T executeAlone(String serviceURI, Object arg, boolean throwException) throws ServiceException {
+	private static Object executeAlone(String serviceURI, Object arg, boolean throwException) throws ServiceException {
+
 		log.info("execute alone service: " + serviceURI);
 
 		if (onlyProxy) {
-			return (T) executeProxy(serviceURI, arg);
+			try {
+				return executeProxy(serviceURI, arg);
+			} catch (Throwable e) {
+				log.error("Execute service exception: " + serviceURI, e);
+				return getExceptionResult(e);
+			}
 		}
 
 		final AbstractServiceNode service = findService(serviceURI);
@@ -309,7 +351,12 @@ public class ServiceActuator {
 		}
 
 		if (null != aop) {
-			aop.execBefore(service, arg, PointCut.BEFORE_CHECK);// 前置切面
+			try {
+				aop.execBefore(service, arg, PointCut.BEFORE_CHECK);// 前置切面
+			} catch (Throwable e) {
+				log.error("Execute aop exception on: " + serviceURI, e);
+				return getExceptionResult(e);
+			}
 			aop.execBefore(service, arg, PointCut.BEFORE_ALONE);// 前置切面
 		}
 
@@ -333,6 +380,7 @@ public class ServiceActuator {
 
 		} catch (Throwable e) {
 			ex = e;
+			result = getExceptionResult(e);
 		} finally {
 			// 新增后置处理
 			ServiceException throwEx = null;
@@ -344,6 +392,14 @@ public class ServiceActuator {
 				}
 			} catch (ServiceException se) {
 				throwEx = se;
+
+				// 防止提交产生新异常
+				result = getExceptionResult(se);
+
+				// fix bug: help aop
+				if (null == ex) {
+					ex = se;
+				}
 			}
 			if (null != aop) {
 				aop.execAfter(service, arg, result, ex, PointCut.AFTER_ALONE);
@@ -356,7 +412,8 @@ public class ServiceActuator {
 				}
 			}
 		}
-		return (T) result;
+		// return (T) result;
+		return getResult(result);
 	}
 
 	/**
@@ -383,7 +440,14 @@ public class ServiceActuator {
 		}
 
 		if (null != aop) {
-			aop.execBefore(service, arg, PointCut.BEFORE_CHECK);// 前置切面
+			// may be
+			try {
+				aop.execBefore(service, arg, PointCut.BEFORE_CHECK);// 前置切面
+			} catch (Throwable e) {
+				log.error("Execute aop exception on: " + serviceURI, e);
+				return;
+			}
+
 			aop.execBefore(service, arg, PointCut.BEFORE_ALONE);// 前置切面
 		}
 
@@ -431,7 +495,7 @@ public class ServiceActuator {
 
 	/**
 	 * 获取服务<br />
-	 * a.b|www.xx.com/a/b
+	 * a/b|www.xx.com/a/b
 	 */
 	private static AbstractServiceNode findService(String serviceURL) {
 		try {
@@ -440,12 +504,20 @@ public class ServiceActuator {
 			if (null != service) {
 				return service;
 			}
-			// TODO serviceURL有可能是个不合法的URI,
 			// 查询远程服务
 			service = TangYuanContainer.getInstance().getDynamicService(serviceURL);
 			if (null != service) {
 				return service;
 			}
+
+			// 处理本地占位URL
+			if (null != RpcProxy.getPlaceHolderHandler()) {
+				String newServiceURL = RpcProxy.getPlaceHolderHandler().parse(serviceURL);
+				if (null != newServiceURL) {
+					return TangYuanContainer.getInstance().getService(newServiceURL);
+				}
+			}
+
 			// 创建新的远程服务
 			return createDynamicService(serviceURL);
 		} catch (Throwable e) {
@@ -467,6 +539,17 @@ public class ServiceActuator {
 		}
 		return result;
 	}
+
+	// private static Object executeProxy(String serviceURI, Object arg) {
+	// Object result = null;
+	// try {
+	// result = RpcProxy.call(serviceURI, (XCO) arg);
+	// return getResult(result);
+	// } catch (Throwable e) {
+	// log.error("Execute service exception: " + serviceURI, e);
+	// return TangYuanUtil.getExceptionResult(e);
+	// }
+	// }
 
 	private static AbstractServiceNode createDynamicService(String serviceURL) {
 

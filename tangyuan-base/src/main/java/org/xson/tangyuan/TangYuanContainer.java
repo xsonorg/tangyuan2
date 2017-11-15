@@ -29,6 +29,8 @@ public class TangYuanContainer implements TangYuanComponent {
 	public final static String						XCO_DATA_KEY					= "$$DATA";
 	public final static String						XCO_CODE_KEY					= "$$CODE";
 	public final static String						XCO_MESSAGE_KEY					= "$$MESSAGE";
+	// XCO返回对象包装标识
+	public final static String						XCO_PACKAGE_KEY					= "$$PACKAGE";
 	// public final static int SUCCESS_CODE_RPC = 0;
 	public final static int							SUCCESS_CODE					= 0;
 
@@ -69,6 +71,9 @@ public class TangYuanContainer implements TangYuanComponent {
 
 	// 最大关闭等待时间(秒)
 	private long									maxWaitTimeForShutDown			= 10L;
+
+	// 所有服务统一返回XCO
+	private boolean									allServiceReturnXCO				= false;
 
 	private TangYuanContainer() {
 	}
@@ -112,6 +117,11 @@ public class TangYuanContainer implements TangYuanComponent {
 		//
 		if (properties.containsKey("maxWaitTimeForShutDown".toUpperCase())) {
 			maxWaitTimeForShutDown = Long.parseLong(properties.get("maxWaitTimeForShutDown".toUpperCase()));
+		}
+
+		if (properties.containsKey("allServiceReturnXCO".toUpperCase())) {
+			allServiceReturnXCO = Boolean.parseBoolean(properties.get("allServiceReturnXCO".toUpperCase()));
+			log.info("open the unified return object mode.");
 		}
 
 		log.info("config setting success...");
@@ -328,5 +338,9 @@ public class TangYuanContainer implements TangYuanComponent {
 
 	public boolean isClosing() {
 		return closing;
+	}
+
+	public boolean isAllServiceReturnXCO() {
+		return allServiceReturnXCO;
 	}
 }

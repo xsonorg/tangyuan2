@@ -110,6 +110,8 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		// component.getComponent().start(typeResourceMap.get(component.getType()));
 		// }
 
+		// int serviceComponent = 0;// TangYuan服务组件
+
 		String type = "validate".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
@@ -128,22 +130,26 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		type = "sql".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
+			// serviceComponent++;
 		}
 
 		type = "java".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
+			// serviceComponent++;
 		}
 
 		type = "mongo".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
+			// serviceComponent++;
 		}
 
 		type = "mq".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			// TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
 			TangYuanContainer.getInstance().getComponent("mq-service").start(typeResourceMap.get(type));
+			// serviceComponent++;
 		}
 
 		// 服务启动完毕:自动启动
@@ -168,17 +174,11 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		type = "timer".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
-			// if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
-			// ServiceActuator.openOnlyProxyMode();
-			// }
 		}
 
 		type = "web".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
-			// if (0 == TangYuanContainer.getInstance().getServicesKeySet().size()) {
-			// ServiceActuator.openOnlyProxyMode();
-			// }
 		}
 
 		// 最后启动

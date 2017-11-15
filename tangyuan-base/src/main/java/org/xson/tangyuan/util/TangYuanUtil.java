@@ -37,12 +37,27 @@ public class TangYuanUtil {
 			} else {
 				result = new XCO();
 				result.setObjectValue(TangYuanContainer.XCO_DATA_KEY, obj);
+				result.setIntegerValue(TangYuanContainer.XCO_PACKAGE_KEY, TangYuanContainer.SUCCESS_CODE);
 			}
 		}
 		if (null == result.getCode()) {
 			result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
 		}
 		return result;
+	}
+
+	public static Object getRealData(Object obj) {
+		if (null == obj) {
+			return null;
+		}
+		if (obj instanceof XCO) {
+			XCO xco = (XCO) obj;
+			if (xco.exists(TangYuanContainer.XCO_PACKAGE_KEY)) {
+				return xco.getData();
+			}
+			return xco;
+		}
+		return obj;
 	}
 
 	public static XCO getExceptionResult(Throwable e) {
@@ -59,7 +74,8 @@ public class TangYuanUtil {
 			errorMessage = ex.getErrorMessage();
 		} else {
 			errorCode = TangYuanContainer.getInstance().getErrorCode();
-			errorMessage = e.getMessage();
+			// errorMessage = e.getMessage();
+			errorMessage = TangYuanContainer.getInstance().getErrorMessage();
 		}
 		result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, errorCode);
 		result.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, errorMessage);

@@ -38,7 +38,7 @@
 		<xs:complexType>
 			<xs:attribute name="id" type="xs:string" use="required"/>
 			<xs:attribute name="domain" type="xs:string" use="required"/>
-			<xs:attribute name="client" type="xs:string" use="required"/>
+			<xs:attribute name="client" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

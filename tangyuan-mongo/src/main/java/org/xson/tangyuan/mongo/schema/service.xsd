@@ -17,6 +17,31 @@
 			<xs:attribute name="id" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="segment">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="selectSet">
 		<xs:complexType>
 			<xs:sequence>
@@ -339,6 +364,8 @@
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="exResultKey" type="xs:string"/>
+			<xs:attribute name="codeKey" type="xs:string"/>
+			<xs:attribute name="messageKey" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="include">
@@ -351,6 +378,7 @@
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="sql"/>
+					<xs:element ref="segment"/>
 					<xs:element ref="selectSet"/>
 					<xs:element ref="selectOne"/>
 					<xs:element ref="selectVar"/>

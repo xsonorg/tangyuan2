@@ -42,6 +42,7 @@ public class TangYuanJPCBridge implements JPCBridge {
 			Object retObj = doXcoRpcRquest(sURI, arg);
 			result = TangYuanUtil.retObjToXco(retObj);
 		} catch (Throwable e) {
+			// log.error("call service exception: " + path, e);
 			result = TangYuanUtil.getExceptionResult(e);
 		}
 		return result;

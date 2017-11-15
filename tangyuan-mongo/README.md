@@ -175,3 +175,5 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 	}	
 	
 6. sharedUse
+
+7. 增加段定义和引用

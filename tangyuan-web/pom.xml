@@ -4,7 +4,7 @@
 
 	<groupId>org.xson</groupId>
 	<artifactId>tangyuan-web</artifactId>
-	<version>1.2.0</version>
+	<version>${tangyuan.version}</version>
 	<packaging>jar</packaging>
 
 	<name>tangyuan-web</name>
@@ -14,6 +14,10 @@
 	<properties>
 		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tangyuan.version>1.2.1.1</tangyuan.version>
+		<xco.version>1.0.2</xco.version>
+		<xson.redis>1.0.2</xson.redis>
+		<zongzi>1.2.0</zongzi>		
 	</properties>
 
 	<developers>
@@ -41,28 +45,27 @@
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-base</artifactId>
-			<version>1.2.0</version>
-			<scope>provided</scope>
+			<version>${tangyuan.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>common-object</artifactId>
-			<version>1.0.2</version>
+			<version>${xco.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-cache</artifactId>
-			<version>1.2.0</version>
+			<version>${tangyuan.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-validate</artifactId>
-			<version>1.2.0</version>
+			<version>${tangyuan.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

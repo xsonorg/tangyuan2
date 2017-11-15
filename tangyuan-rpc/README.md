@@ -47,4 +47,16 @@ Maven使用：
 
 ### 4. 版本更新
 
-1. 优化XXXX
+1. 增加占位remote-node
+	
+	<remote-node id="serviceA" domain="@"/>
+	<remote-node id="serviceB" domain="@"/>
+	<remote-node id="serviceC" domain="@"/>
+	
+2. fixbug 服务协议格式支持
+	
+	// www.baidu.com/xxx/yyy				1
+	// http://www.baidu.com/xxx/yyy		2
+	// pigeon://www.baidu.com/xxx/yyy		3
+	// {aaaaaaaaaaa}/xxx/yyy				4	
+	

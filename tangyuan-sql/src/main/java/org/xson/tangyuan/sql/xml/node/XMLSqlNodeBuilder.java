@@ -37,6 +37,7 @@ import org.xson.tangyuan.xml.node.IfNode;
 import org.xson.tangyuan.xml.node.LogNode;
 import org.xson.tangyuan.xml.node.MixedNode;
 import org.xson.tangyuan.xml.node.ReturnNode;
+import org.xson.tangyuan.xml.node.SegmentNode;
 import org.xson.tangyuan.xml.node.SetVarNode;
 import org.xson.tangyuan.xml.node.TangYuanNode;
 import org.xson.tangyuan.xml.node.vo.PropertyItem;
@@ -59,6 +60,8 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 	@Override
 	public void parseRef() {
 		buildRefNode(this.root.evalNodes("sql"));
+		// 增加段定义和引用
+		buildSegmentNode(this.root.evalNodes("segment"));
 	}
 
 	@Override
@@ -188,6 +191,23 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 				}
 			} else {
 				throw new XmlParseException("Duplicate <sql> nodes: " + id);
+			}
+		}
+	}
+
+	// 扫描段
+	private void buildSegmentNode(List<XmlNodeWrapper> contexts) {
+		for (XmlNodeWrapper context : contexts) {
+			String id = StringUtils.trim(context.getStringAttribute("id")); // xml V
+			String fullId = getFullId(id);
+			if (null == this.sqlContext.getXmlContext().getIntegralRefMap().get(fullId)) {
+				TangYuanNode sqlNode = new SegmentNode(context);
+				if (null != sqlNode) {
+					this.sqlContext.getXmlContext().getIntegralRefMap().put(fullId, sqlNode);
+					log.info("add <segment> node: " + fullId);
+				}
+			} else {
+				throw new XmlParseException("Duplicate <segment> nodes: " + id);
 			}
 		}
 	}
@@ -632,6 +652,17 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 			if (null == refNode) {
 				throw new XmlParseException("The referenced node is null: " + refKey);
 			}
+
+			// 增加段的引用
+			if (refNode instanceof SegmentNode) {
+				XmlNodeWrapper innerNode = ((SegmentNode) refNode).getNode();
+				refNode = parseNode(innerNode, true);
+				if (null == refNode) {
+					log.warn("The referenced segment is empty, ref: " + refKey);
+					return;
+				}
+			}
+
 			targetContents.add(refNode);
 		}
 	}
@@ -778,13 +809,18 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 			if (null != _mode) {
 				mode = getCallMode(_mode);
 			}
-			String exResultKey = getResultKey(StringUtils.trim(nodeToHandle.getStringAttribute("exResultKey")));
+
+			// String exResultKey = getResultKey(StringUtils.trim(nodeToHandle.getStringAttribute("exResultKey")));
+
+			String codeKey = getResultKey(StringUtils.trim(nodeToHandle.getStringAttribute("codeKey")));
+			String messageKey = getResultKey(StringUtils.trim(nodeToHandle.getStringAttribute("messageKey")));
 
 			List<XmlNodeWrapper> properties = nodeToHandle.evalNodes("property");
 			List<PropertyItem> itemList = buildPropertyItem(properties, "call");
 
 			// service id可以放在运行期间检查
-			targetContents.add(new CallNode(service, resultKey, mode, itemList, exResultKey));
+			// targetContents.add(new CallNode(service, resultKey, mode, itemList, exResultKey));
+			targetContents.add(new CallNode(service, resultKey, mode, itemList, codeKey, messageKey));
 		}
 	}
 
