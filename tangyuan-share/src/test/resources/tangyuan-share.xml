@@ -5,6 +5,6 @@
 	<plugin-jdbc resource="component-sql.xml" />
  	<plugin-cache resource="component-cache.xml" />
 	<plugin-mq resource="component-mq.xml" />
-	<plugin-mongo resource="component-mongo.xml" />
+	<!-- <plugin-mongo resource="component-mongo.xml" /> -->
 	
 </tangyuan-share>

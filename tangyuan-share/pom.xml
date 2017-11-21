@@ -16,7 +16,7 @@
 		<tangyuan.version>1.2.1.1</tangyuan.version>
 		<xco.version>1.0.2</xco.version>
 		<xson.redis>1.0.2</xson.redis>
-		<zongzi>1.2.0</zongzi>
+		<zongzi.version>1.0.0</zongzi.version>
 	</properties>
 
 	<developers>
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>xson-redis</artifactId>
-			<version>1.0.2</version>
+			<version>${xson.redis}</version>
 		</dependency>
 
 		<!-- MONGO -->
