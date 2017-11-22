@@ -21,7 +21,7 @@ public class ShareTangYuanBuilder {
 		this.xPathParser = new XPathParser(inputStream);
 		this.basePath = basePath;
 		inputStream.close();
-		configurationElement(xPathParser.evalNode("/tangyuan-share"));
+		configurationElement(xPathParser.evalNode("/share-component"));
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {

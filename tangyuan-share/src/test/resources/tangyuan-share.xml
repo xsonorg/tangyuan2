@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tangyuan-share xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+<share-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/share/component.xsd">
 	
 	<plugin-jdbc resource="component-sql.xml" />
  	<plugin-cache resource="component-cache.xml" />
 	<plugin-mq resource="component-mq.xml" />
 	<!-- <plugin-mongo resource="component-mongo.xml" /> -->
-	
-</tangyuan-share>
+
+</share-component>
