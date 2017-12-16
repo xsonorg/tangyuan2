@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<es-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/es/component.xsd">
+
+	<esSource id="es" host="http://192.168.0.214:9200" />
+
+	<converter id="abc" class="xxx.x..xx"/>
+
+	<plugin resource="service/test-mongo2.xml" />
+
+</es-component>

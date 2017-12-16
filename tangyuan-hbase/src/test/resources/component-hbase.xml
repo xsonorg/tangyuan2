@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<config-property name="A" value="B" />
+	<config-property name="A" value="B" />
+
+	<!-- <dataSource id="readLife" isDefault="true" /> -->
+
+	<dataSource id="tb107" isDefault="true">
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+	</dataSource>
+
+	<!-- more -->
+	<plugin resource="service-hbase.xml" />
+	
+</configuration>

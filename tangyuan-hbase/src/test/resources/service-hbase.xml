@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hbaseServices ns="">
+
+	<hbase-betch-put>
+		<putItem>put 'test_pseudo', 'row1', 'cf:a', 'micmiu.com'</putItem>
+	</hbase-betch-put>
+	<hbaseBetchPut>
+		<item>put 'test_pseudo', 'row1', 'cf:a', 'micmiu.com'</item>
+	</hbaseBetchPut>
+	
+	<getSet />
+	<betchPut />
+
+	<get id="get01" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 		"user_table",
+			row:		"row1",
+			family:		{
+				addr: [ "sheng", "shi", "qu"],
+				info: []
+			}
+		}
+	]]></get>
+
+	<put id="put01" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 	"user_table",
+			row:	"row1",
+			value:	[
+				addr: {
+					sheng: "河南",
+					shi: "新乡",
+					qu: "牧野区"
+				},
+				info: {
+					name: "davie",
+					age: 18,
+					sex: "男"
+				}
+			]
+		}
+	]]></put>
+
+	<!-- 搜索 -->
+	<scan></scan>
+
+</hbaseServices>

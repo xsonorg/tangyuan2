@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/es/service" targetNamespace="http://xson.org/schema/tangyuan/es/service" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="get">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="url"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="esKey" type="xs:string"/>
+			<xs:attribute name="converter" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="post">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="url"/>
+				<xs:element ref="body"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="esKey" type="xs:string"/>
+			<xs:attribute name="converter" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="put">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="url"/>
+				<xs:element ref="body"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="esKey" type="xs:string"/>
+			<xs:attribute name="converter" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="delete">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="url"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="esKey" type="xs:string"/>
+			<xs:attribute name="converter" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="if">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="test" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="elseif">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="test" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="else">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="foreach">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="collection" type="xs:string" use="required"/>
+			<xs:attribute name="index" type="xs:string"/>
+			<xs:attribute name="open" type="xs:string"/>
+			<xs:attribute name="close" type="xs:string"/>
+			<xs:attribute name="separator" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="url">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="body">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="esservices">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="get"/>
+					<xs:element ref="put"/>
+					<xs:element ref="post"/>
+					<xs:element ref="delete"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="ns" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

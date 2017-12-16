@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<esservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/service.xsd"
+	ns="es">
+
+	<get id="xxx" target="http://192.168.0.251:9200/worksindex_v1/_alias/worksindex"><![CDATA[
+		{  
+		    "actions" : [  
+		        { "remove" : { "index" : "test1","alias" : "alias1" } }
+		    ]
+		}
+	]]></get>
+	
+	<put id="xxx" host="">
+		<url>/worksindex_v1/_alias/worksindex</url>
+		<body><![CDATA[
+			{  
+			    "actions" : [  
+			        { "remove" : { "index" : "test1","alias" : "alias1" } }
+			    ]
+			}
+		]]></body>
+	</put>
+
+</esservices>
