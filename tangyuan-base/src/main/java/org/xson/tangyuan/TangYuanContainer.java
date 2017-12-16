@@ -201,7 +201,27 @@ public class TangYuanContainer implements TangYuanComponent {
 			componentMap.get(type).getComponent().stop(wait);
 		}
 
+		type = "java".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(wait);
+		}
+
 		type = "mongo".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(wait);
+		}
+
+		type = "hbase".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(wait);
+		}
+
+		type = "hive".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(wait);
+		}
+
+		type = "es".toUpperCase();
 		if (componentMap.containsKey(type)) {
 			componentMap.get(type).getComponent().stop(wait);
 		}

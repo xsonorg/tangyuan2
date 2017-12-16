@@ -19,6 +19,10 @@ public class ServiceContext {
 	private IServiceContext			javaServiceContext	= null;
 	private IServiceContext			mongoServiceContext	= null;
 	private IServiceContext			mqServiceContext	= null;
+	private IServiceContext			esServiceContext	= null;
+
+	private IServiceContext			hbaseServiceContext	= null;
+	private IServiceContext			hiveServiceContext	= null;
 
 	/** 使用计数器 */
 	protected int					counter				= 1;
@@ -94,23 +98,26 @@ public class ServiceContext {
 				javaServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
 			}
 			return javaServiceContext;
-		}
-		// else if (TangYuanServiceType.HIVE == type) {
-		// if (null == hiveServiceContext) {
-		// hiveServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
-		// }
-		// return hiveServiceContext;
-		// } else if (TangYuanServiceType.HBASE == type) {
-		// if (null == hbaseServiceContext) {
-		// hbaseServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
-		// }
-		// return hbaseServiceContext;
-		// }
-		else if (TangYuanServiceType.MQ == type) {
+		} else if (TangYuanServiceType.HIVE == type) {
+			if (null == hiveServiceContext) {
+				hiveServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
+			}
+			return hiveServiceContext;
+		} else if (TangYuanServiceType.HBASE == type) {
+			if (null == hbaseServiceContext) {
+				hbaseServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
+			}
+			return hbaseServiceContext;
+		} else if (TangYuanServiceType.MQ == type) {
 			if (null == mqServiceContext) {
 				mqServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
 			}
 			return mqServiceContext;
+		} else if (TangYuanServiceType.ES == type) {
+			if (null == esServiceContext) {
+				esServiceContext = TangYuanContainer.getInstance().getContextFactory(type).create();
+			}
+			return esServiceContext;
 		}
 
 		// return getSqlServiceContext();
@@ -133,18 +140,23 @@ public class ServiceContext {
 			javaServiceContext = null;
 		}
 
-		// if (null != hiveServiceContext) {
-		// hiveServiceContext.commit(true);
-		// hiveServiceContext = null;
-		// }
-		// if (null != hbaseServiceContext) {
-		// hbaseServiceContext.commit(true);
-		// hbaseServiceContext = null;
-		// }
+		if (null != hiveServiceContext) {
+			hiveServiceContext.commit(true);
+			hiveServiceContext = null;
+		}
+		if (null != hbaseServiceContext) {
+			hbaseServiceContext.commit(true);
+			hbaseServiceContext = null;
+		}
 
 		if (null != mqServiceContext) {
 			mqServiceContext.commit(true);
 			mqServiceContext = null;
+		}
+
+		if (null != esServiceContext) {
+			esServiceContext.commit(true);
+			esServiceContext = null;
 		}
 
 		globleCounter.getAndDecrement();
@@ -165,18 +177,25 @@ public class ServiceContext {
 			javaServiceContext.rollback();
 			javaServiceContext = null;
 		}
-		// if (null != hiveServiceContext) {
-		// hiveServiceContext.rollback();
-		// hiveServiceContext = null;
-		// }
-		// if (null != hbaseServiceContext) {
-		// hbaseServiceContext.rollback();
-		// hbaseServiceContext = null;
-		// }
+
+		if (null != hiveServiceContext) {
+			hiveServiceContext.rollback();
+			hiveServiceContext = null;
+		}
+
+		if (null != hbaseServiceContext) {
+			hbaseServiceContext.rollback();
+			hbaseServiceContext = null;
+		}
 
 		if (null != mqServiceContext) {
 			mqServiceContext.rollback();
 			mqServiceContext = null;
+		}
+
+		if (null != esServiceContext) {
+			esServiceContext.rollback();
+			esServiceContext = null;
 		}
 
 		this.exceptionInfo = null;

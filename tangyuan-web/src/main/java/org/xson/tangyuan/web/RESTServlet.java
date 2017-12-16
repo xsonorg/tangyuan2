@@ -12,22 +12,47 @@ import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.util.PatternMatchUtils;
 import org.xson.tangyuan.validate.XCOValidate;
 import org.xson.tangyuan.validate.XCOValidateException;
 import org.xson.tangyuan.web.RequestContext.DataFormatEnum;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
 import org.xson.tangyuan.web.handler.DefaultJSONResponseHandler;
 import org.xson.tangyuan.web.handler.DefaultXCOResponseHandler;
+import org.xson.tangyuan.web.util.AntPathMatcher;
 import org.xson.tangyuan.web.util.ServletUtils;
 import org.xson.tangyuan.web.xml.ControllerVo;
 
-public class XCOServlet extends HttpServlet {
+/**
+ * REST
+ */
+public class RESTServlet extends HttpServlet {
 
 	private static final long	serialVersionUID	= 1L;
-	private static Log			log					= LogFactory.getLog(XCOServlet.class);
+	private static Log			log					= LogFactory.getLog(RESTServlet.class);
 
 	private ResponseHandler		xcoResponseHandler	= new DefaultXCOResponseHandler();
 	private ResponseHandler		jsonResponseHandler	= new DefaultJSONResponseHandler();
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handler(req, resp, RequestTypeEnum.PUT);
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handler(req, resp, RequestTypeEnum.DELETE);
+	}
+
+	@Override
+	protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handler(req, resp, RequestTypeEnum.HEAD);
+	}
+
+	@Override
+	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handler(req, resp, RequestTypeEnum.OPTIONS);
+	}
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -51,6 +76,8 @@ public class XCOServlet extends HttpServlet {
 
 		RequestContext context = pretreatmentContext(req, resp, requestType);
 
+		// 1. REST URL 匹配问题
+
 		ControllerVo cVo = container.getControllerVo(context.getUrl());
 		if (null == cVo) {
 			log.error("It does not match the URL: " + context.getUrl());
@@ -63,10 +90,8 @@ public class XCOServlet extends HttpServlet {
 		try {
 			if (RequestTypeEnum.POST == requestType) {
 				context.setArg(ServletUtils.parseArgFromPostRequest(cVo, req, context));
-			} else if (RequestTypeEnum.GET == requestType) {// GET
+			} else {// GET
 				context.setArg(ServletUtils.parseArgFromGetRequest(cVo, req));
-			} else {
-				throw new XcoWebException("Unsupported request type: " + requestType);
 			}
 			log.info(context.getUrl() + " :" + context.getArg());
 		} catch (Throwable e) {
@@ -105,6 +130,9 @@ public class XCOServlet extends HttpServlet {
 				return;
 			}
 		}
+
+		// 数据验证
+
 		exec(context, cVo);
 	}
 
@@ -213,5 +241,31 @@ public class XCOServlet extends HttpServlet {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
 		}
+	}
+
+	public void parseDefinedURI(String uri) {
+		// StringBuilder sb = new StringBuilder();
+		// 0. 是否包含变量
+		// 1. 结构数
+		// 2. 模板 /zoos/#/animals/#
+		// 3. 变量 ID, ID
+		// 4. 变量的位置 1, 3
+		// uri.split(",");
+	}
+
+	public void parseCurrentURI(String uri) {
+
+	}
+
+	public static void main(String[] args) {
+		// API/USER/{xxxx}
+		// /zoos/{ID}/animals/{ID}
+		// /zoos/123/animals/456
+		// String pattern = "/zoos/{AID}/animals/{BID}";
+		String pattern = "/zoos/*/animals/*";
+		String str = "/zoos/1*23/animals/45/6";
+		System.out.println(PatternMatchUtils.simpleMatch(pattern, str));
+		AntPathMatcher apm = new AntPathMatcher();
+		System.out.println(apm.match(pattern, str));
 	}
 }

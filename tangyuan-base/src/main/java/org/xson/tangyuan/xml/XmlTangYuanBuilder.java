@@ -145,6 +145,21 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			// serviceComponent++;
 		}
 
+		type = "hbase".toUpperCase();
+		if (typeResourceMap.containsKey(type)) {
+			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
+		}
+
+		type = "hive".toUpperCase();
+		if (typeResourceMap.containsKey(type)) {
+			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
+		}
+
+		type = "es".toUpperCase();
+		if (typeResourceMap.containsKey(type)) {
+			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
+		}
+
 		type = "mq".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			// TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
@@ -196,6 +211,16 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 				Class.forName("org.xson.tangyuan.java.JavaComponent");
 			} else if ("mongo".equalsIgnoreCase(type)) {
 				Class.forName("org.xson.tangyuan.mongo.MongoComponent");
+			}
+
+			else if ("hbase".equalsIgnoreCase(type)) {
+				Class.forName("org.xson.tangyuan.hbase.HBaseComponent");
+			} else if ("hive".equalsIgnoreCase(type)) {
+				// Class.forName("org.xson.tangyuan.mongo.MongoComponent");
+			}
+
+			else if ("es".equalsIgnoreCase(type)) {
+				Class.forName("org.xson.tangyuan.es.EsComponent");
 			} else if ("mq".equalsIgnoreCase(type)) {
 				// Class.forName("org.xson.tangyuan.mq.MqComponent");
 				Class.forName("org.xson.tangyuan.mq.MqContainer");

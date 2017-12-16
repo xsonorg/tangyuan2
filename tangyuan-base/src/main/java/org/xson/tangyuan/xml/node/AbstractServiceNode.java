@@ -7,7 +7,7 @@ public abstract class AbstractServiceNode implements TangYuanNode {
 
 	/** 服务类型 */
 	public enum TangYuanServiceType {
-		SQL, MONGO, HIVE, HBASE, JAVA, MQ, PRCPROXY
+		SQL, MONGO, HIVE, HBASE, JAVA, MQ, PRCPROXY, ES
 	}
 
 	/** 服务ID */

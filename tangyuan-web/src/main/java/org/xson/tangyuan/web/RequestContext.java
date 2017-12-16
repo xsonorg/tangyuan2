@@ -16,7 +16,7 @@ import org.xson.tangyuan.web.util.ServletUtils;
 public class RequestContext {
 
 	public enum RequestTypeEnum {
-		GET, POST
+		GET, POST, PUT, DELETE, HEAD, OPTIONS
 	}
 
 	public enum DataFormatEnum {
@@ -173,4 +173,7 @@ public class RequestContext {
 		// return "url: " + url + ", view: " + view + ", contextType: " + contextType + ", ajax: " + ajax + ", dataFormat: " + dataFormat;
 		return "url: " + url + ", contextType: " + contextType + ", ajax: " + ajax + ", dataFormat: " + dataFormat;
 	}
+
+	// forward
+	// sendRedirect
 }

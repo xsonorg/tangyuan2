@@ -13,7 +13,6 @@ public class DataSourceVo {
 	private boolean				defaultDs	= false;
 	protected ConnPoolType		type		= null;
 	protected boolean			group		= false;
-	// protected String jndiName = null;
 	protected String			sharedUse	= null;
 	protected String			creator		= null;
 
@@ -22,8 +21,8 @@ public class DataSourceVo {
 		this.type = type;
 		this.defaultDs = defaultDs;
 		this.properties = properties;
-		// this.jndiName = jndiName;
 		this.sharedUse = sharedUse;
+		this.creator = creator;
 	}
 
 	public String getId() {
@@ -45,10 +44,6 @@ public class DataSourceVo {
 	public boolean isDefaultDs() {
 		return defaultDs;
 	}
-
-	// public String getJndiName() {
-	// return jndiName;
-	// }
 
 	public String getSharedUse() {
 		return sharedUse;
