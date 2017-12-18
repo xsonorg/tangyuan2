@@ -406,17 +406,20 @@ public class XMLEsNodeBuilder extends XmlNodeBuilder {
 				sqlNode = new MixedNode(contents);
 			}
 
-			if (null == sqlNode && null == open && null == close && null == separator) {
-				open = "(";
-				close = ")";
-				separator = ",";
-			}
+			// if (null == sqlNode && null == open && null == close && null == separator) {
+			// open = "(";
+			// close = ")";
+			// separator = ",";
+			// }
+			// if (null == sqlNode) {
+			// if (null == index) {
+			// index = "i";
+			// }
+			// sqlNode = new EsTextNode("#{" + collection + "[" + index + "]}");
+			// }
 
 			if (null == sqlNode) {
-				if (null == index) {
-					index = "i";
-				}
-				sqlNode = new EsTextNode("#{" + collection + "[" + index + "]}");
+				throw new XmlParseException("<forEach> node missing child nodes.");
 			}
 
 			ForEachNode forEachNode = new EsForEachNode(sqlNode, new NormalParser().parse(collection), index, open, close, separator);

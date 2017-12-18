@@ -10,7 +10,6 @@ public class XmlHBaseContext implements XmlContext {
 	@Override
 	public void clean() {
 		xmlContext = null;
-		// converterMap = null;
 	}
 
 	public XmlGlobalContext getXmlContext() {

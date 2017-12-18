@@ -9,9 +9,10 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.xson.tangyuan.hbase.util.HBaseUtil;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class GetVo extends BaseVo{
+public class GetVo extends BaseVo {
 
 	class FamilyVo {
 
@@ -33,6 +34,10 @@ public class GetVo extends BaseVo{
 		}
 	}
 
+	private List<Object>	rows;
+	private int				rowsIndex;
+	private Object			row;
+
 	private Long			timestamp;
 	private long[]			timeRange;
 	private Boolean			cacheBlocks;
@@ -40,13 +45,23 @@ public class GetVo extends BaseVo{
 
 	private List<FamilyVo>	families;
 
+	public GetVo(int rowsIndex) {
+		this.rowsIndex = rowsIndex;
+	}
+
+	public boolean isRows() {
+		return null != this.rows;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void parse(String text) {
 		JSONObject json = JSON.parseObject(text);
 
 		String ns = json.getString("ns");// N
 		String table = json.getString("table");// Y
-		String row = json.getString("row");// Y
+		// String row = json.getString("row");// Y
+
+		Object _row = json.get("row");// Y
 
 		Boolean cacheBlocks = json.getBoolean("cacheBlocks");
 		Long timestamp = json.getLong("timestamp");
@@ -76,11 +91,18 @@ public class GetVo extends BaseVo{
 
 		// check
 		HBaseUtil.checkNull(table, "'table' property can not be empty.\n" + text);
-		HBaseUtil.checkNull(row, "'row' property can not be empty.\n" + text);
+		HBaseUtil.checkNull(_row, "'row' property can not be empty.\n" + text);
 
 		this.ns = ns;
 		this.table = table;
-		this.row = row;
+
+		if (_row instanceof JSONArray) {
+			this.rows = (List<Object>) _row;
+			this.row = this.rows.get(this.rowsIndex);
+		} else {
+			this.row = _row;
+		}
+
 		if (null != timeRangeArray && 2 == timeRangeArray.size()) {
 			this.timeRange = new long[2];
 			this.timeRange[0] = (Long) timeRangeArray.get(0);
@@ -101,7 +123,7 @@ public class GetVo extends BaseVo{
 
 	public Get getHBaseGet() throws Throwable {
 
-		Get hbaseGet = new Get(Bytes.toBytes(this.row));
+		Get hbaseGet = new Get(HBaseUtil.toByte(this.row));
 		if (null != this.families) {
 			for (FamilyVo familyVo : this.families) {
 				if (null == familyVo.getColumns()) {
@@ -140,6 +162,37 @@ public class GetVo extends BaseVo{
 		}
 
 		return hbaseGet;
+	}
+
+	private GetVo copy(int rowsIndex) {
+		GetVo getVo = new GetVo(rowsIndex);
+
+		getVo.ns = this.ns;
+		getVo.table = this.table;
+		getVo.tempFilterList = this.tempFilterList;
+		getVo.filterListOperator = this.filterListOperator;
+
+		getVo.rows = this.rows;
+		getVo.row = this.rows.get(rowsIndex);
+
+		getVo.timestamp = this.timestamp;
+		getVo.timeRange = this.timeRange;
+		getVo.cacheBlocks = this.cacheBlocks;
+		getVo.maxVersions = this.maxVersions;
+
+		getVo.families = this.families;
+
+		return getVo;
+	}
+
+	public List<Get> getHBaseGets() throws Throwable {
+		List<Get> gets = new ArrayList<Get>();
+		gets.add(this.getHBaseGet());
+		int size = this.rows.size();
+		for (int i = 1; i < size; i++) {
+			gets.add(this.copy(i).getHBaseGet());
+		}
+		return gets;
 	}
 
 }

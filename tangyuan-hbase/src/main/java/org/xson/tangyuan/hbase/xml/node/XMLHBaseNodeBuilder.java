@@ -127,11 +127,13 @@ public class XMLHBaseNodeBuilder extends XmlNodeBuilder {
 		List<AbstractServiceNode> putList = buildPutNodes(context.evalNodes("put"));
 		List<AbstractServiceNode> scanList = buildScanNodes(context.evalNodes("scan"));
 		List<AbstractServiceNode> deleteList = buildDeleteNodes(context.evalNodes("delete"));
+		List<AbstractServiceNode> putBatchList = buildPutBatchNodes(context.evalNodes("putBatch"));
 
 		registerService(getList, "get");
 		registerService(putList, "put");
 		registerService(scanList, "scan");
 		registerService(deleteList, "delete");
+		registerService(putBatchList, "putBatch");
 	}
 
 	private TangYuanNode parseNode(XmlNodeWrapper context, boolean internal) {
@@ -211,6 +213,30 @@ public class XMLHBaseNodeBuilder extends XmlNodeBuilder {
 				dsKey = checkDsKey(dsKey, id);
 
 				HBasePutNode putNode = new HBasePutNode(id, ns, getFullId(id), dsKey, sqlNode);
+				list.add(putNode);
+			}
+		}
+		return list;
+	}
+
+	private List<AbstractServiceNode> buildPutBatchNodes(List<XmlNodeWrapper> contexts) {
+		List<AbstractServiceNode> list = new ArrayList<AbstractServiceNode>();
+		for (XmlNodeWrapper context : contexts) {
+			TangYuanNode sqlNode = parseNode(context, false);
+			if (null != sqlNode) {
+				String id = StringUtils.trim(context.getStringAttribute("id")); // xml
+				existingService(id);
+
+				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
+				dsKey = checkDsKey(dsKey, id);
+
+				String _async = StringUtils.trim(context.getStringAttribute("async"));
+				boolean async = false;// 异步执行
+				if (null != _async) {
+					async = Boolean.parseBoolean(_async);
+				}
+
+				HBasePutBatchNode putNode = new HBasePutBatchNode(id, ns, getFullId(id), dsKey, async, sqlNode);
 				list.add(putNode);
 			}
 		}
@@ -378,21 +404,29 @@ public class XMLHBaseNodeBuilder extends XmlNodeBuilder {
 				sqlNode = new MixedNode(contents);
 			}
 
-			if (null == sqlNode && null == open && null == close && null == separator) {
-				open = "(";
-				close = ")";
-				separator = ",";
-			}
-
 			if (null == sqlNode) {
-				if (null == index) {
-					index = "i";
-				}
-				sqlNode = new HBaseTextNode("#{" + collection + "[" + index + "]}");
+				throw new XmlParseException("<forEach> node missing child nodes.");
 			}
 
 			ForEachNode forEachNode = new HBaseForEachNode(sqlNode, new NormalParser().parse(collection), index, open, close, separator);
 			targetContents.add(forEachNode);
+		}
+	}
+
+	private class ItemHandler implements NodeHandler {
+		@Override
+		public void handleNode(XmlNodeWrapper nodeToHandle, List<TangYuanNode> targetContents) {
+			List<TangYuanNode> contents = parseDynamicTags(nodeToHandle);
+			int size = contents.size();
+			HBaseItemNode itemNode = null;
+			if (1 == size) {
+				itemNode = new HBaseItemNode(contents.get(0));
+			} else if (size > 1) {
+				itemNode = new HBaseItemNode(new MixedNode(contents));
+			} else { // size == 0
+				throw new XmlParseException("<itemNode> node contents is empty.");
+			}
+			targetContents.add(itemNode);
 		}
 	}
 
@@ -404,6 +438,7 @@ public class XMLHBaseNodeBuilder extends XmlNodeBuilder {
 			put("if", new IfHandler());
 			put("else", new ElseHandler());
 			put("elseif", new ElseIfHandler());
+			put("item", new ItemHandler());
 		}
 	};
 

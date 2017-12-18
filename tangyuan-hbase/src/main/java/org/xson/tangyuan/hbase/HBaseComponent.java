@@ -14,14 +14,16 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class HBaseComponent implements TangYuanComponent {
 
-	private static HBaseComponent	instance	= new HBaseComponent();
-
-	private Log						log			= LogFactory.getLog(getClass());
+	private static HBaseComponent instance = new HBaseComponent();
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.HBASE, new HBaseServiceContextFactory());
 		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "hbase", 40, 40));
 	}
+
+	private Log		log						= LogFactory.getLog(getClass());
+
+	private long	hbaseWriteBufferSize	= 1024L * 1024L;
 
 	private HBaseComponent() {
 	}
@@ -33,6 +35,13 @@ public class HBaseComponent implements TangYuanComponent {
 	/** 设置配置文件 */
 	public void config(Map<String, String> properties) {
 		// log.info("config setting success...");
+		if (properties.containsKey("hbaseWriteBufferSize".toUpperCase())) {
+			this.hbaseWriteBufferSize = Long.parseLong(properties.get("hbaseWriteBufferSize".toUpperCase()));
+		}
+	}
+
+	public long getHbaseWriteBufferSize() {
+		return hbaseWriteBufferSize;
 	}
 
 	public void start(String resource) throws Throwable {

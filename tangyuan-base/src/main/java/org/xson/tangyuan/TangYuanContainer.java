@@ -32,6 +32,7 @@ public class TangYuanContainer implements TangYuanComponent {
 	// XCO返回对象包装标识
 	public final static String						XCO_PACKAGE_KEY					= "$$PACKAGE";
 	// public final static int SUCCESS_CODE_RPC = 0;
+
 	public final static int							SUCCESS_CODE					= 0;
 
 	private volatile boolean						closing							= false;

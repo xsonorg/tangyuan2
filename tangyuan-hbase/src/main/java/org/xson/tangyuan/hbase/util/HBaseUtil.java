@@ -12,14 +12,6 @@ public class HBaseUtil {
 			return Bytes.toBytes((String) val);
 		}
 
-		if (val instanceof Boolean) {
-			return Bytes.toBytes((Boolean) val);
-		}
-
-		if (val instanceof Short) {
-			return Bytes.toBytes((Short) val);
-		}
-
 		if (val instanceof Integer) {
 			return Bytes.toBytes((Integer) val);
 		}
@@ -36,10 +28,17 @@ public class HBaseUtil {
 			return Bytes.toBytes((Double) val);
 		}
 
+		if (val instanceof Boolean) {
+			return Bytes.toBytes((Boolean) val);
+		}
+
+		if (val instanceof Short) {
+			return Bytes.toBytes((Short) val);
+		}
+
 		if (val instanceof BigDecimal) {
 			return Bytes.toBytes((BigDecimal) val);
 		}
-		// TODO
 		return null;
 	}
 

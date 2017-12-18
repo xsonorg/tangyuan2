@@ -38,7 +38,7 @@ public class HBasePutNode extends AbstractHBaseNode {
 			log.info(sql);
 		}
 
-		result = xContext.getActuator().put(sql, StringUtils.trim(sql));
+		result = xContext.getActuator().put(this.dsKey, StringUtils.trim(sql));
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

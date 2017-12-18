@@ -35,6 +35,9 @@ public class PutVo extends BaseVo {
 		}
 	}
 
+	protected Object		row;
+
+	private Long			timestamp;
 	private Durability		durability;
 	private List<FamilyVo>	families;
 
@@ -46,7 +49,8 @@ public class PutVo extends BaseVo {
 		String table = json.getString("table");// Y
 		String row = json.getString("row");// Y
 
-		String _durability = json.getString("durability");// Y
+		Long timestamp = json.getLong("timestamp");
+		String _durability = json.getString("durability");// N
 
 		List<FamilyVo> families = null;
 
@@ -73,7 +77,11 @@ public class PutVo extends BaseVo {
 		this.table = table;
 		this.row = row;
 
-		this.durability = parseDurability(_durability);
+		if (null != _durability) {
+			this.durability = parseDurability(_durability);
+		}
+		this.timestamp = timestamp;
+
 		this.families = families;
 	}
 
@@ -85,12 +93,16 @@ public class PutVo extends BaseVo {
 	}
 
 	public Put getHBasePut() throws Throwable {
-		Put hbasePut = new Put(Bytes.toBytes(this.row));
+		Put hbasePut = new Put(HBaseUtil.toByte(this.row));
 		for (FamilyVo familyVo : this.families) {
 			byte[] familyNameBytes = Bytes.toBytes(familyVo.getName());
 			Map<String, Object> columns = familyVo.getColumns();
 			for (Entry<String, Object> item : columns.entrySet()) {
-				hbasePut.addColumn(familyNameBytes, Bytes.toBytes(item.getKey()), Bytes.toBytes(item.getValue().toString()));
+				if (null == this.timestamp) {
+					hbasePut.addColumn(familyNameBytes, Bytes.toBytes(item.getKey()), Bytes.toBytes(item.getValue().toString()));
+				} else {
+					hbasePut.addColumn(familyNameBytes, Bytes.toBytes(item.getKey()), this.timestamp, Bytes.toBytes(item.getValue().toString()));
+				}
 			}
 		}
 
@@ -99,7 +111,19 @@ public class PutVo extends BaseVo {
 			hbasePut.setDurability(this.durability);
 		}
 		// hbasePut.setWriteToWAL(write)
-
 		return hbasePut;
+	}
+
+	public List<Put> getHBasePuts(PutVo firstPutVo, List<String> commonds) throws Throwable {
+		List<Put> puts = new ArrayList<Put>();
+		puts.add(firstPutVo.getHBasePut());
+
+		int size = commonds.size();
+		for (int i = 1; i < size; i++) {
+			PutVo putVo = new PutVo();
+			putVo.parse(commonds.get(i));
+			puts.add(putVo.getHBasePut());
+		}
+		return puts;
 	}
 }

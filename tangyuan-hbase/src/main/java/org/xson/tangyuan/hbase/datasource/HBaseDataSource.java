@@ -78,7 +78,7 @@ public class HBaseDataSource {
 				this.pool = null;
 			}
 		} catch (Throwable e) {
-			log.error("this.pool.shutdownNow().", e);
+			log.error("this.pool.shutdownNow() error.", e);
 		}
 		try {
 			if (null != this.conn) {

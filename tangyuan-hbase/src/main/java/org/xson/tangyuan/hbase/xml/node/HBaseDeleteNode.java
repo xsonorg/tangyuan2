@@ -38,7 +38,7 @@ public class HBaseDeleteNode extends AbstractHBaseNode {
 			log.info(sql);
 		}
 
-		result = xContext.getActuator().delete(sql, StringUtils.trim(sql));
+		result = xContext.getActuator().delete(this.dsKey, StringUtils.trim(sql));
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

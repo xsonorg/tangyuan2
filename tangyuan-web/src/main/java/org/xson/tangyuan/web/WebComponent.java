@@ -49,6 +49,9 @@ public class WebComponent implements TangYuanComponent {
 	/** K/V形式的参数的是否自动转换 */
 	private boolean						kvAutoConvert				= false;
 
+	// 控制器返回结果日志
+	private boolean						printResultLog				= false;
+
 	public void setControllerMap(Map<String, ControllerVo> controllerMap) {
 		if (null == this.controllerMap) {
 			this.controllerMap = controllerMap;
@@ -108,6 +111,10 @@ public class WebComponent implements TangYuanComponent {
 			log.info("Turn on tangyuan-web k/v parameter auto-convert mode.");
 		}
 
+		if (properties.containsKey("printResultLog".toUpperCase())) {
+			this.printResultLog = Boolean.parseBoolean(properties.get("printResultLog".toUpperCase()));
+		}
+
 		log.info("config setting success, version: " + Version.getVersion());
 	}
 
@@ -141,6 +148,10 @@ public class WebComponent implements TangYuanComponent {
 
 	public boolean isKvAutoConvert() {
 		return kvAutoConvert;
+	}
+
+	public boolean isPrintResultLog() {
+		return printResultLog;
 	}
 
 	/** 是否映射服务名 */

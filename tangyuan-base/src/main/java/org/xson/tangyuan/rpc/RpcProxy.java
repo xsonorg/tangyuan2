@@ -36,7 +36,9 @@ public class RpcProxy {
 
 	public static XCO call(String url, XCO request) throws Throwable {
 		if (null == rpc) {
-			throw new TangYuanException("missing rpc component, when calling " + url);
+			//
+			// throw new TangYuanException("missing rpc component, when calling " + url);
+			throw new TangYuanException("missing rpc component or requested service does not exist. serviceURI: " + url);
 		}
 		// 日志的打印,放在服务所在的系统
 		if (null == jpc) {

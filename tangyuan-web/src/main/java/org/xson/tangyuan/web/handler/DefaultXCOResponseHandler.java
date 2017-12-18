@@ -6,14 +6,33 @@ import java.io.Writer;
 import javax.servlet.http.HttpServletResponse;
 
 import org.xson.common.object.XCO;
+import org.xson.logging.Log;
+import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.web.RequestContext;
 import org.xson.tangyuan.web.ResponseHandler;
+import org.xson.tangyuan.web.WebComponent;
 
 public class DefaultXCOResponseHandler implements ResponseHandler {
 
+	private Log log = LogFactory.getLog(DefaultXCOResponseHandler.class);
+
+	private void printResult(RequestContext context) {
+		if (WebComponent.getInstance().isPrintResultLog()) {
+			Object result = context.getResult();
+			if (null == result) {
+				log.info("controller[" + context.getUrl() + "] result: null");
+			} else {
+				log.info("controller[" + context.getUrl() + "] result: " + result.toString());
+			}
+		}
+	}
+
 	@Override
 	public void onSuccess(RequestContext context) throws IOException {
+		
+		printResult(context);
+		
 		XCO result = (XCO) context.getResult();
 		if (null != result) {
 			HttpServletResponse response = context.getResponse();

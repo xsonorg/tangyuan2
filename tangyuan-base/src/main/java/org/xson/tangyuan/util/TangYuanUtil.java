@@ -27,22 +27,36 @@ public class TangYuanUtil {
 		return retObjToXco(obj, TangYuanContainer.SUCCESS_CODE);
 	}
 
+	/** 第一版 */
+	// public static XCO retObjToXco(Object obj, int code) {
+	// XCO result = null;
+	// if (null == obj) {
+	// result = new XCO();
+	// } else {
+	// if (obj instanceof XCO) {
+	// result = (XCO) obj;
+	// } else {
+	// result = new XCO();
+	// result.setObjectValue(TangYuanContainer.XCO_DATA_KEY, obj);
+	// result.setIntegerValue(TangYuanContainer.XCO_PACKAGE_KEY, TangYuanContainer.SUCCESS_CODE);
+	// }
+	// }
+	// if (null == result.getCode()) {
+	// result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
+	// }
+	// return result;
+	// }
+
 	public static XCO retObjToXco(Object obj, int code) {
-		XCO result = null;
-		if (null == obj) {
-			result = new XCO();
-		} else {
-			if (obj instanceof XCO) {
-				result = (XCO) obj;
-			} else {
-				result = new XCO();
-				result.setObjectValue(TangYuanContainer.XCO_DATA_KEY, obj);
-				result.setIntegerValue(TangYuanContainer.XCO_PACKAGE_KEY, TangYuanContainer.SUCCESS_CODE);
-			}
+		if ((null != obj) && (obj instanceof XCO) && (((XCO) obj).exists(TangYuanContainer.XCO_CODE_KEY))) {
+			return (XCO) obj;
 		}
-		if (null == result.getCode()) {
-			result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
+		XCO result = new XCO();
+		result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
+		if (null != obj) {
+			result.setObjectValue(TangYuanContainer.XCO_DATA_KEY, obj);
 		}
+		result.setIntegerValue(TangYuanContainer.XCO_PACKAGE_KEY, TangYuanContainer.SUCCESS_CODE);
 		return result;
 	}
 

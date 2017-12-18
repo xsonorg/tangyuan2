@@ -53,7 +53,7 @@ public class HBaseGetNode extends AbstractHBaseNode {
 			log.info(sql);
 		}
 
-		result = xContext.getActuator().get(sql, StringUtils.trim(sql), this.struct);
+		result = xContext.getActuator().get(this.dsKey, StringUtils.trim(sql), this.struct);
 		context.setResult(result);
 
 		if (log.isInfoEnabled()) {

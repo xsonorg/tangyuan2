@@ -8,12 +8,14 @@ import java.util.List;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.BufferedMutatorParams;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.Filter;
@@ -21,6 +23,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.hbase.HBaseComponent;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSource;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSourceManager;
 import org.xson.tangyuan.hbase.executor.hbase.DeleteVo;
@@ -35,7 +38,7 @@ public class HBaseActuator {
 
 	@SuppressWarnings("unchecked")
 	public Object get(String dsKey, String commond, ResultStruct struct) throws Throwable {
-		GetVo getVo = new GetVo();
+		GetVo getVo = new GetVo(0);
 		getVo.parse(commond);
 
 		List<XCO> resultList = null;
@@ -44,12 +47,17 @@ public class HBaseActuator {
 		Connection conn = null;
 		Table table = null;
 		Result result = null;
+		Result[] results = null;
 		try {
 			TableName hbaseTableName = TableName.valueOf(getVo.getTableName());
 			conn = dataSource.getConnection();
 			table = conn.getTable(hbaseTableName);
-			Get get = getVo.getHBaseGet();
-			result = table.get(get);
+			if (getVo.isRows()) {
+				results = table.get(getVo.getHBaseGets());
+			} else {
+				// Get get = getVo.getHBaseGet();
+				result = table.get(getVo.getHBaseGet());
+			}
 		} catch (Throwable e) {
 			throw e;
 		} finally {
@@ -63,9 +71,94 @@ public class HBaseActuator {
 			if (null != conn) {
 				dataSource.recycleConnection(conn);
 			}
-			resultList = (List<XCO>) getResult(result, struct, null);
+
+			if (null != result) {
+				resultList = (List<XCO>) getResult(result, struct, null);
+			} else {
+				for (Result rs : results) {
+					resultList = (List<XCO>) getResult(rs, struct, resultList);
+				}
+			}
 		}
 		return resultList;
+	}
+
+	/* 同步批量PUT */
+	public Object putBatchSynch(String dsKey, List<String> commonds) throws Throwable {
+		PutVo putVo = new PutVo();
+		putVo.parse(commonds.get(0));
+
+		HBaseDataSource dataSource = HBaseDataSourceManager.getDataSource(dsKey);
+		Connection conn = null;
+		Table table = null;
+		try {
+			TableName hbaseTableName = TableName.valueOf(putVo.getTableName());
+			conn = dataSource.getConnection();
+			table = conn.getTable(hbaseTableName);
+			List<Put> puts = putVo.getHBasePuts(putVo, commonds);
+			table.put(puts);
+			return null;
+		} catch (Throwable e) {
+			throw e;
+		} finally {
+			if (null != table) {
+				try {
+					table.close();
+				} catch (IOException e) {
+					log.error("table.close failure !", e);
+				}
+			}
+			if (null != conn) {
+				dataSource.recycleConnection(conn);
+			}
+		}
+	}
+
+	/* 异步批量PUT */
+	public Object putBatchAsync(String dsKey, List<String> commonds) throws Throwable {
+
+		PutVo putVo = new PutVo();
+		putVo.parse(commonds.get(0));
+
+		HBaseDataSource dataSource = HBaseDataSourceManager.getDataSource(dsKey);
+		Connection conn = null;
+		BufferedMutator mutator = null;
+
+		try {
+			TableName hbaseTableName = TableName.valueOf(putVo.getTableName());
+			conn = dataSource.getConnection();
+
+			List<Put> puts = putVo.getHBasePuts(putVo, commonds);
+
+			BufferedMutatorParams params = new BufferedMutatorParams(hbaseTableName).listener(new BufferedMutator.ExceptionListener() {
+				@Override
+				public void onException(RetriesExhaustedWithDetailsException e, BufferedMutator mutator) {
+					for (int i = 0; i < e.getNumExceptions(); i++) {
+						log.error("Failed to sent put [" + e.getRow(i) + "]. ex: ", e.getCause(i));
+					}
+				}
+			});
+			params.writeBufferSize(HBaseComponent.getInstance().getHbaseWriteBufferSize());
+			mutator = conn.getBufferedMutator(params);
+
+			mutator.mutate(puts);
+			mutator.flush();
+			return null;
+		} catch (Throwable e) {
+			throw e;
+		} finally {
+			if (null != mutator) {
+				try {
+					mutator.close();
+				} catch (IOException e) {
+					log.error("mutator.close failure !", e);
+				}
+			}
+			if (null != conn) {
+				dataSource.recycleConnection(conn);
+			}
+		}
+
 	}
 
 	public Object put(String dsKey, String commond) throws Throwable {
@@ -100,7 +193,7 @@ public class HBaseActuator {
 	}
 
 	public Object delete(String dsKey, String commond) throws Throwable {
-		DeleteVo deleteVo = new DeleteVo();
+		DeleteVo deleteVo = new DeleteVo(0);
 		deleteVo.parse(commond);
 
 		HBaseDataSource dataSource = HBaseDataSourceManager.getDataSource(dsKey);
@@ -111,8 +204,13 @@ public class HBaseActuator {
 			TableName hbaseTableName = TableName.valueOf(deleteVo.getTableName());
 			conn = dataSource.getConnection();
 			table = conn.getTable(hbaseTableName);
-			Delete delete = deleteVo.getHBaseDelete();
-			table.delete(delete);
+
+			if (deleteVo.isRows()) {
+				table.delete(deleteVo.getHBaseDeletes());
+			} else {
+				Delete delete = deleteVo.getHBaseDelete();
+				table.delete(delete);
+			}
 			return null;
 		} catch (Exception e) {
 			throw e;

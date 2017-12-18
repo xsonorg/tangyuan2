@@ -540,17 +540,6 @@ public class ServiceActuator {
 		return result;
 	}
 
-	// private static Object executeProxy(String serviceURI, Object arg) {
-	// Object result = null;
-	// try {
-	// result = RpcProxy.call(serviceURI, (XCO) arg);
-	// return getResult(result);
-	// } catch (Throwable e) {
-	// log.error("Execute service exception: " + serviceURI, e);
-	// return TangYuanUtil.getExceptionResult(e);
-	// }
-	// }
-
 	private static AbstractServiceNode createDynamicService(String serviceURL) {
 
 		AbstractServiceNode service = null;

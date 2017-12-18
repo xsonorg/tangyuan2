@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.xson.tangyuan.hbase.util.HBaseUtil;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class DeleteVo extends BaseVo {
@@ -79,19 +80,31 @@ public class DeleteVo extends BaseVo {
 		ALL, LAST
 	}
 
+	private List<Object>	rows;
+	private int				rowsIndex;
+	private Object			row;
+
 	private Durability		durability;
 	private List<FamilyVo>	families;
 
-	// @SuppressWarnings("unchecked")
+	public DeleteVo(int rowsIndex) {
+		this.rowsIndex = rowsIndex;
+	}
+
+	public boolean isRows() {
+		return null != this.rows;
+	}
+
+	@SuppressWarnings("unchecked")
 	public void parse(String text) {
 		JSONObject json = JSON.parseObject(text);
 
 		String ns = json.getString("ns");// N
 		String table = json.getString("table");// Y
-		String row = json.getString("row");// Y
+		// String row = json.getString("row");// Y
+		Object _row = json.get("row");// Y
 
 		String _durability = json.getString("durability");// N
-		// Boolean cacheBlocks = json.getBoolean("cacheBlocks");
 
 		List<FamilyVo> families = null;
 		JSONObject family = json.getJSONObject("family");// N
@@ -120,14 +133,22 @@ public class DeleteVo extends BaseVo {
 
 		// check
 		HBaseUtil.checkNull(table, "'table' property can not be empty.\n" + text);
-		HBaseUtil.checkNull(row, "'row' property can not be empty.\n" + text);
+		HBaseUtil.checkNull(_row, "'row' property can not be empty.\n" + text);
 
 		this.ns = ns;
 		this.table = table;
-		this.row = row;
+		// this.row = row;
+		if (_row instanceof JSONArray) {
+			// check length
+			this.rows = (List<Object>) _row;
+			this.row = this.rows.get(this.rowsIndex);
+		} else {
+			this.row = _row;
+		}
 
-		this.durability = parseDurability(_durability);
-		// this.cacheBlocks = cacheBlocks;
+		if (null != _durability) {
+			this.durability = parseDurability(_durability);
+		}
 		this.families = families;
 	}
 
@@ -172,7 +193,7 @@ public class DeleteVo extends BaseVo {
 
 	public Delete getHBaseDelete() throws Throwable {
 
-		Delete delete = new Delete(Bytes.toBytes(this.row));
+		Delete delete = new Delete(HBaseUtil.toByte(this.row));
 
 		if (null != this.families) {
 			for (FamilyVo familyVo : this.families) {
@@ -213,6 +234,33 @@ public class DeleteVo extends BaseVo {
 		}
 
 		return delete;
+	}
+
+	private DeleteVo copy(int rowsIndex) {
+		DeleteVo deleteVo = new DeleteVo(rowsIndex);
+
+		deleteVo.ns = this.ns;
+		deleteVo.table = this.table;
+		deleteVo.tempFilterList = this.tempFilterList;
+		deleteVo.filterListOperator = this.filterListOperator;
+
+		deleteVo.rows = this.rows;
+		deleteVo.row = this.rows.get(rowsIndex);
+
+		deleteVo.durability = this.durability;
+		deleteVo.families = this.families;
+
+		return deleteVo;
+	}
+
+	public List<Delete> getHBaseDeletes() throws Throwable {
+		List<Delete> deletes = new ArrayList<Delete>();
+		deletes.add(this.getHBaseDelete());
+		int size = this.rows.size();
+		for (int i = 1; i < size; i++) {
+			deletes.add(this.copy(i).getHBaseDelete());
+		}
+		return deletes;
 	}
 
 }

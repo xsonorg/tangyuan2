@@ -1,15 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hbaseServices ns="">
-
-	<hbase-betch-put>
-		<putItem>put 'test_pseudo', 'row1', 'cf:a', 'micmiu.com'</putItem>
-	</hbase-betch-put>
-	<hbaseBetchPut>
-		<item>put 'test_pseudo', 'row1', 'cf:a', 'micmiu.com'</item>
-	</hbaseBetchPut>
+<hbaseServices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/hbase/service.xsd" ns="hb">
 	
-	<getSet />
-	<betchPut />
+	<putBatch id="putb1" dsKey="tb107">
+		<foreach collection="{xxx}" index="{i}">
+			<item><![CDATA[
+			{
+				ns: '',
+				table: 	"user_table",
+				row:	#{xxx[i]},
+				family:	{
+					addr: {
+						sheng: "河南",
+						shi: "新乡",
+						qu: "牧野区"
+					},
+					info: {
+						name: "daviex",
+						age: 182,
+						sex: "男"
+					}
+				}
+			}
+			]]></item>
+		</foreach>
+	</putBatch>
+	
+	<putBatch id="putb2" dsKey="tb107" async="true">
+		<foreach collection="{xxx}" index="{i}">
+			<item><![CDATA[
+			{
+				ns: '',
+				table: 	"user_table",
+				row:	#{xxx[i]},
+				family:	{
+					addr: {
+						sheng: "河南",
+						shi: "新乡",
+						qu: "牧野区"
+					},
+					info: {
+						name: "daviex",
+						age: 182,
+						sex: "男"
+					}
+				}
+			}
+			]]></item>
+		</foreach>
+	</putBatch>	
 
 	<get id="get01" dsKey="tb107"><![CDATA[
 		{
@@ -19,7 +58,33 @@
 			family:		{
 				addr: [ "sheng", "shi", "qu"],
 				info: []
+			},
+			cacheBlocks: true
+		}
+	]]></get>
+	<!-- timeRange: 	[1512368376510, 1512368376510], -->
+	<get id="get02" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 		"user_table_ver",
+			row:		"row1",
+			family:		{
+				addr: [ "sheng", "shi", "qu"],
+				info: []
 			}
+		}
+	]]></get>
+
+	<get id="get03" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 		"user_table",
+			row:		#{xxx},
+			family:		{
+				addr: [ "sheng", "shi", "qu"],
+				info: []
+			},
+			cacheBlocks: true
 		}
 	]]></get>
 
@@ -27,23 +92,185 @@
 		{
 			ns: '',
 			table: 	"user_table",
-			row:	"row1",
-			value:	[
+			row:	#{row},
+			family:	{
 				addr: {
 					sheng: "河南",
 					shi: "新乡",
 					qu: "牧野区"
 				},
 				info: {
-					name: "davie",
-					age: 18,
+					name: "daviex",
+					age: 182,
 					sex: "男"
 				}
-			]
+			},
+			durability: ""
 		}
 	]]></put>
 
+	<delete id="del01" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 	"user_table",
+			row:	#{row},
+			family:	{
+				addr: {},
+				info: {}
+			},
+			durability: "SYNC_WAL"
+		}
+	]]></delete>
+	<delete id="del02" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 	"user_table",
+			row:	#{row},
+			family:	{
+				addr: {
+					sheng: {
+						timestamp: 123, 
+						scope: "all"
+					}
+				},
+				info: {
+					timestamp: 150000,
+					version: 150000
+				}
+			},
+			durability: ""
+		}
+	]]></delete>
+	<delete id="del03" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 	"user_table",
+			row:	#{xxx}
+		}
+	]]></delete>
+			
+	<x>
+		{
+			ns: '',
+			table: 	"user_table",
+			row:	#{row},
+			family:	{
+				addr: {
+					sheng: {
+						timestamp: 123, 
+						scope: "all/last"
+					}
+				},
+				info: {
+					timestamp: 150000,
+					version: 150000
+				}
+			},
+			
+			family:	{
+				addr: {
+					sheng: {}
+				},
+				info: {}
+			},			
+			durability: "SYNC_WAL"
+		}	
+	</x>
+
 	<!-- 搜索 -->
-	<scan></scan>
+	<scan id="scan01" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 		"user_table",
+			pageSize: 	20,
+			family:		{
+				addr: [ "sheng", "shi", "qu"],
+				info: []
+			},
+			filter: {
+				SingleColumnValueFilter: {
+					family: "xxx",
+					qualifier: "xxx",
+					compareOp: ">",
+					value: "xxx",
+					comparator: 'RegexStringComparator'
+				},
+				SingleColumnValueExcludeFilter: {
+					family: "xxx",
+					qualifier: "xxx",
+					compareOp: ">",
+					value: "xxx",
+					comparator: 'RegexStringComparator'
+				},				
+				ColumnPrefixFilter: {
+					prefix: ""
+				},
+				MultipleColumnPrefixFilter: {
+					prefixes: []
+				},
+				ColumnRangeFilter: {
+					minColumn: "",
+					maxColumn: ""
+				},
+				QualifierFilter: {
+					compareOp: ">",
+					value: "xxx",
+					comparator: 'RegexStringComparator'
+				},
+				RowFilter: {
+					compareOp: ">",
+					value: "xxx",
+					comparator: 'RegexStringComparator'
+				},
+				ValueFilter: {
+					compareOp: ">",
+					value: "xxx",
+					comparator: 'RegexStringComparator'
+				},
+				ValueFilter: {},
+				InclusiveStopFilter: {
+					stopRowKey: ""
+				},
+				KeyOnlyFilter: {},
+				PageFilter: {
+					pageSize: 20
+				},
+				PrefixFilter: {
+					prefix: ""
+				},
+				SkipFilter: {
+					compareOp: ">",
+					value: "xxx",
+					comparator: 'RegexStringComparator'
+				},
+				TimestampsFilter: {
+					timestamps: []
+				},
+				operator: ""
+			}
+		}		
+	]]></scan>
+	
+	<scan id="scan02" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 	"user_table",
+			pageSize: 20,
+			startRowKey: null,
+			stopRowKey: null,
+			family:		{
+				addr: [ "sheng", "shi", "qu"],
+				info: []
+			}
+		}		
+	]]></scan>
+
+	<scan id="scan03" dsKey="tb107"><![CDATA[
+		{
+			ns: '',
+			table: 	"user_table_ver",
+			pageSize: 20
+		}		
+	]]></scan>
 
 </hbaseServices>

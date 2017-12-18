@@ -51,7 +51,7 @@ public class BaseVo {
 
 	protected String		ns					= null;
 	protected String		table				= null;
-	protected String		row					= null;
+	// protected String row = null;
 
 	protected List<Filter>	tempFilterList		= null;
 	protected Operator		filterListOperator	= null;

@@ -34,3 +34,4 @@ tangyuan-web是tangyuan框架中的控制层组件，以组件化和插件化为
 
 1. 去除domain元素的支持
 2. 增加REST-API支持
+3. 增加控制器返回结果日志输出控制:printResultLog

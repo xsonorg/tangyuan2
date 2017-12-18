@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<hbase-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/hbase/component.xsd">
 
-	<config-property name="A" value="B" />
-	<config-property name="A" value="B" />
+	<config-property name="hbaseWriteBufferSize" value="1048576" />
 
-	<!-- <dataSource id="readLife" isDefault="true" /> -->
-
-	<dataSource id="tb107" isDefault="true">
-		<property name="username" value="root" />
-		<property name="password" value="123456" />
+	<dataSource id="tb107">
+		<property name="hbase.zookeeper.property.clientPort" value="2181" />
+		<property name="hbase.zookeeper.quorum" value="192.168.0.227" />
+		<property name="thread.pool.number" value="10" />
 	</dataSource>
 
-	<!-- more -->
-	<plugin resource="service-hbase.xml" />
-	
-</configuration>
+	<plugin resource="service/service-hbase.xml" />
+
+</hbase-component>
