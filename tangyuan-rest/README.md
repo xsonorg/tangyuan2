@@ -4,7 +4,7 @@
 
 ### 1. 项目介绍
 
-tangyuan-web是tangyuan框架中的控制层组件，以组件化和插件化为思想，以XML配置为核心，无需或者只需极少的Java代码，即可完成控制层的开发。
+tangyuan-rest是tangyuan框架中的控制层组件，以组件化和插件化为思想，以XML配置为核心，无需或者只需极少的Java代码，即可完成控制层的开发。
 
 **tangyuan-web组件的优势：**
 
