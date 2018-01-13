@@ -88,7 +88,6 @@ public class TangYuanUtil {
 			errorMessage = ex.getErrorMessage();
 		} else {
 			errorCode = TangYuanContainer.getInstance().getErrorCode();
-			// errorMessage = e.getMessage();
 			errorMessage = TangYuanContainer.getInstance().getErrorMessage();
 		}
 		result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, errorCode);
@@ -128,6 +127,27 @@ public class TangYuanUtil {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(domain);
 		return matcher.matches();
+	}
+
+	/**
+	 * 转义正则特殊字符
+	 * 
+	 * '$', '(', ')', '*', '+', '.', '[', ']', '?', '\\', '^', '{', '}', '|'
+	 * 
+	 * @param regex
+	 * @return
+	 */
+	public static String escapeRegexWord(String regex) {
+		if (null == regex || 0 == regex.length()) {
+			return null;
+		}
+		String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
+		for (String key : fbsArr) {
+			if (regex.contains(key)) {
+				regex = regex.replace(key, "\\" + key);
+			}
+		}
+		return regex;
 	}
 
 }

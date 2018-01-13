@@ -16,6 +16,11 @@ import com.alibaba.fastjson.JSONObject;
 
 public class CacheBase {
 
+	private static final int	CACHE_KEY_ITEM_TYPE_CONSTANT	= 1;
+	private static final int	CACHE_KEY_ITEM_TYPE_SERVICE		= 2;
+	private static final int	CACHE_KEY_ITEM_TYPE_ARG			= 3;
+	private static final int	CACHE_KEY_ITEM_TYPE_VARIABLE	= 4;
+
 	protected TangYuanCache		cache;
 	protected String			simpleKey;
 	protected List<CacheKey>	keyList;
@@ -61,32 +66,22 @@ public class CacheBase {
 			case '$':
 				if ((i + 1) < src.length && '{' == src[i + 1] && (position = findPosition(i + 1, src, '}')) > -1) {
 					if (builder.length() > 0) {
-						keyList.add(new CacheKey(1, builder.toString()));
+						keyList.add(new CacheKey(CACHE_KEY_ITEM_TYPE_CONSTANT, builder.toString()));
 						builder = new StringBuilder();
 					}
 					// 找到${}
 					String str = new String(src, i + 2, position - i - 2);
-					// if ("service".equalsIgnoreCase(str)) {
-					// keyList.add(new CacheKey(2, service));
-					// } else if ("args".equalsIgnoreCase(str)) {
-					// keyList.add(new CacheKey(3, null));
-					// simple = false;
-					// } else {
-					// throw new CacheException("不合法的表达式标签: ${" + str + "}");
-					// }
-
 					// 新增功能
 					if ("service".equalsIgnoreCase(str) || "url".equalsIgnoreCase(str)) {
-						keyList.add(new CacheKey(2, service));
+						keyList.add(new CacheKey(CACHE_KEY_ITEM_TYPE_SERVICE, service));
 					} else if ("args".equalsIgnoreCase(str) || "arg".equalsIgnoreCase(str)) {
-						keyList.add(new CacheKey(3, null));
+						keyList.add(new CacheKey(CACHE_KEY_ITEM_TYPE_ARG, null));
 						simple = false;
 					} else {
-						throw new CacheException("不合法的表达式标签: ${" + str + "}");
+						throw new CacheException("Illegal expression tag: ${" + str + "}");
 					}
-
 					// i = position + 1;
-					i = position;// fix bug
+					i = position;// fix bug --> '}'
 				} else {
 					builder.append(k);
 				}
@@ -94,16 +89,12 @@ public class CacheBase {
 			case '{':
 				if ((i + 1) < src.length && (position = findPosition(i + 1, src, '}')) > -1) {
 					if (builder.length() > 0) {
-						keyList.add(new CacheKey(1, builder.toString()));
+						keyList.add(new CacheKey(CACHE_KEY_ITEM_TYPE_CONSTANT, builder.toString()));
 						builder = new StringBuilder();
 					}
-					// 找到{}
+					// 找到{xxx}
 					String str = new String(src, i + 1, position - i - 1);
-					// keyList.add(new CacheKey(4, str));
-					// keyList.add(new CacheKey(4, VariableParser.parse(str,
-					// false)));
-					// keyList.add(new CacheKey(4, VariableParser.parse(str, true)));
-					keyList.add(new CacheKey(4, new DefaultValueParserWarper().parse(str)));
+					keyList.add(new CacheKey(CACHE_KEY_ITEM_TYPE_VARIABLE, new DefaultValueParserWarper().parse(str)));
 					simple = false;
 					// i = position + 1;
 					i = position;// fix bug
@@ -147,9 +138,9 @@ public class CacheBase {
 		} else {
 			StringBuilder builder = new StringBuilder();
 			for (CacheKey cacheKey : keyList) {
-				if (1 == cacheKey.type || 2 == cacheKey.type) {
+				if (CACHE_KEY_ITEM_TYPE_CONSTANT == cacheKey.type || CACHE_KEY_ITEM_TYPE_SERVICE == cacheKey.type) {
 					builder.append(cacheKey.name);
-				} else if (3 == cacheKey.type) {
+				} else if (CACHE_KEY_ITEM_TYPE_ARG == cacheKey.type) {
 					if (null == obj) {
 						builder.append("null");// MD5
 					} else if (obj instanceof XCO) {
@@ -159,11 +150,11 @@ public class CacheBase {
 					} else if (obj instanceof JSONObject) {
 						builder.append(MD5(((JSONObject) obj).toJSONString()));
 					} else {
-						throw new CacheException("不支持的key参数类型:" + obj.getClass());
+						throw new CacheException("When building cache.key[3], unsupported parameter type: " + obj.getClass());
 					}
-				} else if (4 == cacheKey.type) {
+				} else if (CACHE_KEY_ITEM_TYPE_VARIABLE == cacheKey.type) {
 					if (null == obj) {
-						throw new CacheException("变量模式下参数不能为空");
+						throw new CacheException("When building cache.key[4], the argument can not be empty.");
 					} else if (obj instanceof XCO) {
 						builder.append(((Variable) cacheKey.name).getValue(obj));
 					} else if (obj instanceof Map) {
@@ -171,7 +162,7 @@ public class CacheBase {
 					} else if (obj instanceof JSONObject) {
 						builder.append(((JSONObject) obj).get(((Variable) cacheKey.name).getOriginal()));
 					} else {
-						throw new CacheException("不支持的key参数类型:" + obj.getClass());
+						throw new CacheException("When building cache.key[4], unsupported parameter type: " + obj.getClass());
 					}
 				}
 			}
