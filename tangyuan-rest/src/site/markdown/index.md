@@ -4,9 +4,9 @@
 
 ### 1. 项目介绍
 
-tangyuan-web是tangyuan框架中的控制层组件，以组件化和插件化为思想，以XML配置为核心，无需或者只需极少的Java代码，即可完成控制层的开发。
+tangyuan-rest是tangyuan框架中的REST架构风格的控制层组件，以组件化和插件化为思想，以XML配置为核心，无需或者只需极少的Java代码，即可完成控制层的开发。
 
-**tangyuan-web组件的优势：**
+**tangyuan-rest组件的优势：**
 
 1. 开发简单、高效，只要一行XML配置，即可实现一个控制器的定义；
 2. 提供多种模式的支持，包括单机模式、分布式模式和混合模式，以适用于不同的应用场景；
@@ -17,14 +17,14 @@ tangyuan-web是tangyuan框架中的控制层组件，以组件化和插件化为
 
 ### 2. 版本和引用
 
-当前最新版本：1.2.0
+当前最新版本：1.2.1.1
 
 > maven中使用
 
 	<dependency>
 		<groupId>org.xson</groupId>
-		<artifactId>tangyuan-web</artifactId>
-		<version>1.2.0</version>
+		<artifactId>tangyuan-rest</artifactId>
+		<version>${tangyuan.version}</version>
 	</dependency>
 	
 ### 3. 源码

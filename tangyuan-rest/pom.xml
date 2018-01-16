@@ -15,7 +15,7 @@
 		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tangyuan.version>1.2.1.1</tangyuan.version>
-		<xco.version>1.0.2</xco.version>
+		<xco.version>1.0.3</xco.version>
 		<xson.redis>1.0.2</xson.redis>
 		<zongzi.version>1.0.0</zongzi.version>
 	</properties>
