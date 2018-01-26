@@ -214,10 +214,4 @@ public class WebComponent implements TangYuanComponent {
 		return !initialization;
 	}
 
-	// public boolean isRemoteServiceMode() {
-	// return !localServiceMode;
-	// }
-	// public boolean isKvAutoConvert() {
-	// return kvAutoConvert;
-	// }
 }

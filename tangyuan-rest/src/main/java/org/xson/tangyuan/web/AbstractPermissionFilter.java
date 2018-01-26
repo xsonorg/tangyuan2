@@ -34,22 +34,22 @@ public abstract class AbstractPermissionFilter implements Filter {
 	private RequestTypeEnum parseRequestType(HttpServletRequest request) {
 		if (WebComponent.getInstance().isRestMode()) {
 			String requestMethod = request.getMethod();
-			if ("GET".equals(requestMethod)) {
+			if (RequestTypeEnum.GET.toString().equals(requestMethod)) {
 				return RequestTypeEnum.GET;
 			}
-			if ("POST".equals(requestMethod)) {
+			if (RequestTypeEnum.POST.toString().equals(requestMethod)) {
 				return RequestTypeEnum.POST;
 			}
-			if ("PUT".equals(requestMethod)) {
+			if (RequestTypeEnum.PUT.toString().equals(requestMethod)) {
 				return RequestTypeEnum.PUT;
 			}
-			if ("DELETE".equals(requestMethod)) {
+			if (RequestTypeEnum.DELETE.toString().equals(requestMethod)) {
 				return RequestTypeEnum.DELETE;
 			}
-			if ("HEAD".equals(requestMethod)) {
+			if (RequestTypeEnum.HEAD.toString().equals(requestMethod)) {
 				return RequestTypeEnum.HEAD;
 			}
-			if ("OPTIONS".equals(requestMethod)) {
+			if (RequestTypeEnum.OPTIONS.toString().equals(requestMethod)) {
 				return RequestTypeEnum.OPTIONS;
 			}
 

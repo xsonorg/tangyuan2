@@ -157,7 +157,7 @@ public class RESTContainer {
 		Object controller = null;
 		if (detectedList.size() > 0) {
 			for (String target : detectedList) {
-				controller = getURITree.get(ServletUtils.parseURIPathItem(target));
+				controller = tree.get(ServletUtils.parseURIPathItem(target));
 				if (null != controller) {
 					throw new XmlParseException("Ambiguous controllers [" + requestType + " " + target + "] and [" + requestType + " "
 							+ ((ControllerVo) controller).getUrl() + "].");
@@ -169,7 +169,7 @@ public class RESTContainer {
 	private void checkDynamicUndefinedMatch(List<String> detectedList, URINodeTree tree, RequestTypeEnum requestType) {
 		if (detectedList.size() > 0) {
 			for (String target : detectedList) {
-				getURITree.getAndCheck(ServletUtils.parseURIPathItem(target));
+				tree.getAndCheck(ServletUtils.parseURIPathItem(target));
 			}
 		}
 	}
