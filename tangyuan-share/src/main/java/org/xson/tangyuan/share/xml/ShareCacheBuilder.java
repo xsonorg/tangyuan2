@@ -15,30 +15,38 @@ import org.xson.logging.LogFactory;
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheGroupVo;
 import org.xson.tangyuan.cache.CacheRefVo;
+import org.xson.tangyuan.cache.CacheSerializer;
 import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.CacheVo.CacheType;
 import org.xson.tangyuan.cache.ShareCacheContainer;
 import org.xson.tangyuan.share.ShareComponent;
 import org.xson.tangyuan.share.util.ClassUtils;
+import org.xson.tangyuan.share.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.share.util.StringUtils;
+import org.xson.tangyuan.share.util.TangYuanAssert;
+import org.xson.tangyuan.share.util.TangYuanUtil;
 
 public class ShareCacheBuilder {
 
-	private Log						log			= LogFactory.getLog(getClass());
-	private XPathParser				xPathParser	= null;
-	private String					basePath	= null;
-	private Map<String, CacheVo>	cacheVoMap	= new LinkedHashMap<String, CacheVo>();
+	private Log								log				= LogFactory.getLog(getClass());
+	private XPathParser						xPathParser		= null;
+	private String							basePath		= null;
+	private Map<String, CacheVo>			cacheVoMap		= new LinkedHashMap<String, CacheVo>();
+
+	private Map<String, CacheSerializer>	serializerMap	= new HashMap<String, CacheSerializer>();
 
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = new FileInputStream(new File(basePath, resource));
-		this.xPathParser = new XPathParser(inputStream);
+		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
+		this.xPathParser = new XPathParser(in);
 		this.basePath = basePath;
-		inputStream.close();
+		in.close();
 		configurationElement(xPathParser.evalNode("/cache-component"));
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
+		buildSerializerNodes(context.evalNodes("serializer"));
 		buildCache(context.evalNodes("cache"));
 		buildCacheGroup(context.evalNodes("cacheGroup"));
 		Map<String, AbstractCache> cacheMap = new HashMap<String, AbstractCache>();
@@ -53,6 +61,22 @@ public class ShareCacheBuilder {
 		cacheVoMap.clear();
 		cacheVoMap = null;
 		ShareCacheContainer.getInstance().setCacheMap(cacheMap);
+	}
+
+	private void buildSerializerNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+			String serializerId = StringUtils.trim(context.getStringAttribute("id"));
+			String className = StringUtils.trim(context.getStringAttribute("class"));
+			TangYuanAssert.stringEmpty(serializerId, "in the <serializer> tag, the 'id' property can not be empty.");
+			TangYuanAssert.stringEmpty(className, "in the <serializer> tag, the 'class' property can not be empty.");
+			Class<?> serializerClass = ClassUtils.forName(className);
+			if (!CacheSerializer.class.isAssignableFrom(serializerClass)) {
+				throw new XmlParseException(
+						TangYuanUtil.format("The cache serializer [{}] must implement the 'CacheSerializer' interface.", className));
+			}
+			CacheSerializer serializerImpl = (CacheSerializer) serializerClass.newInstance();
+			this.serializerMap.put(serializerId, serializerImpl);
+		}
 	}
 
 	private void buildCache(List<XmlNodeWrapper> contexts) throws Throwable {
@@ -97,7 +121,22 @@ public class ShareCacheBuilder {
 
 			String sharedUse = null;
 
-			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, sharedUse, ShareComponent.getInstance().getSystemName());
+			Long expiry = null;
+			String defaultExpiry = StringUtils.trim(xNode.getStringAttribute("defaultExpiry"));
+			if (null != defaultExpiry) {
+				expiry = Long.parseLong(defaultExpiry);
+			}
+
+			CacheSerializer cs = null;
+			String serializer = StringUtils.trim(xNode.getStringAttribute("serializer"));
+			if (null != serializer) {
+				cs = this.serializerMap.get(serializer);
+				TangYuanAssert.objectEmpty(cs, TangYuanUtil.format("The referenced cache serializer[{}] does not exist", serializer));
+			}
+
+			// CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, sharedUse, ShareComponent.getInstance().getSystemName());
+			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, sharedUse, ShareComponent.getInstance().getSystemName(), expiry, cs,
+					ShareComponent.getInstance().getPlaceholderMap());
 			cacheVoMap.put(id, cVo);
 
 			log.info("add cache: " + id);
@@ -156,11 +195,8 @@ public class ShareCacheBuilder {
 			return CacheType.MEMCACHE;
 		} else if ("REDIS".equalsIgnoreCase(str)) {
 			return CacheType.REDIS;
-		} else if ("REDIS".equalsIgnoreCase(str)) {
-			return CacheType.SHARE;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	private String getResourcePath(String resource) throws IOException {

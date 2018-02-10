@@ -11,6 +11,7 @@ import java.util.Map;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.share.ShareComponent;
+import org.xson.tangyuan.share.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.share.util.StringUtils;
 import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 import org.xson.tangyuan.sql.datasource.DataSourceGroupVo;
@@ -27,10 +28,10 @@ public class ShareJdbcBuilder {
 
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		// System.out.println("@*** Start parsing: " + resource);
 		InputStream inputStream = new FileInputStream(new File(basePath, resource));
+		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
-		inputStream.close();
+		in.close();
 		configurationElement(xPathParser.evalNode("/sql-component"));
 	}
 
@@ -147,9 +148,6 @@ public class ShareJdbcBuilder {
 		} else if ("DRUID".equalsIgnoreCase(type)) {
 			return ConnPoolType.DRUID;
 		}
-		// else if ("SHARE".equalsIgnoreCase(type)) {
-		// return ConnPoolType.SHARE;
-		// }
 		return null;
 	}
 }

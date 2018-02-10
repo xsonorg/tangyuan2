@@ -15,6 +15,7 @@ import org.xson.tangyuan.mongo.datasource.MongoDataSourceGroupVo;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceVo;
 import org.xson.tangyuan.mongo.datasource.ShareMongoContainer;
 import org.xson.tangyuan.share.ShareComponent;
+import org.xson.tangyuan.share.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.share.util.StringUtils;
 
 public class ShareMongoBuilder {
@@ -26,8 +27,9 @@ public class ShareMongoBuilder {
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = new FileInputStream(new File(basePath, resource));
+		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
-		inputStream.close();
+		in.close();
 		configurationElement(xPathParser.evalNode("/mongo-component"));
 	}
 

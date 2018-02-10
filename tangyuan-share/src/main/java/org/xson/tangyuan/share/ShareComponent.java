@@ -1,5 +1,7 @@
 package org.xson.tangyuan.share;
 
+import java.util.Map;
+
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.cache.ShareCacheContainer;
@@ -9,11 +11,13 @@ import org.xson.tangyuan.sql.datasource.ShareJdbcContainer;
 
 public class ShareComponent {
 
-	private static ShareComponent	instance	= new ShareComponent();
+	private static ShareComponent	instance		= new ShareComponent();
 
-	private Log						log			= LogFactory.getLog(getClass());
+	private Log						log				= LogFactory.getLog(getClass());
 
-	private String					systemName	= "tangyuan-share";
+	private String					systemName		= "tangyuan-share";
+
+	private Map<String, String>		placeholderMap	= null;
 
 	private ShareComponent() {
 	}
@@ -49,6 +53,14 @@ public class ShareComponent {
 		}
 		// TODO mq
 		log.info("share component stop successfully.");
+	}
+
+	public Map<String, String> getPlaceholderMap() {
+		return placeholderMap;
+	}
+
+	public void setPlaceholderMap(Map<String, String> placeholderMap) {
+		this.placeholderMap = placeholderMap;
 	}
 
 	public String getSystemName() {
