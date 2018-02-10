@@ -15,6 +15,7 @@ import org.xson.tangyuan.hbase.datasource.DataSourceVo;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSource;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSourceManager;
 import org.xson.tangyuan.hbase.xml.node.XMLHBaseNodeBuilder;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
@@ -35,6 +36,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
 		this.context.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/hbase-component"));

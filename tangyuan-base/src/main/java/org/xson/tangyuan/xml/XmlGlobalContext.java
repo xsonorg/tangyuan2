@@ -11,6 +11,7 @@ public class XmlGlobalContext implements XmlContext {
 	private Map<String, Integer>		integralServiceMap		= new HashMap<String, Integer>();
 	private Map<String, Integer>		integralServiceNsMap	= new HashMap<String, Integer>();
 	private Map<String, Integer>		integralServiceClassMap	= new HashMap<String, Integer>();
+	private Map<String, String>			placeholderMap			= null;
 
 	public Map<String, TangYuanNode> getIntegralRefMap() {
 		return integralRefMap;
@@ -26,6 +27,14 @@ public class XmlGlobalContext implements XmlContext {
 
 	public Map<String, Integer> getIntegralServiceClassMap() {
 		return integralServiceClassMap;
+	}
+
+	public Map<String, String> getPlaceholderMap() {
+		return placeholderMap;
+	}
+
+	public void setPlaceholderMap(Map<String, String> placeholderMap) {
+		this.placeholderMap = placeholderMap;
 	}
 
 	public void checkNs(String ns) {
@@ -45,5 +54,7 @@ public class XmlGlobalContext implements XmlContext {
 
 		integralServiceMap = null;
 		integralServiceClassMap = null;
+
+		placeholderMap = null;
 	}
 }

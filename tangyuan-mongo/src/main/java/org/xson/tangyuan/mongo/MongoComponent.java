@@ -27,7 +27,8 @@ public class MongoComponent implements TangYuanComponent {
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.MONGO, new MongoServiceContextFactory());
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "mongo", 40, 40));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "mongo", 40, 40));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "mongo"));
 	}
 
 	private MongoComponent() {

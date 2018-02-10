@@ -11,6 +11,11 @@ public class ComponentVo {
 	private int					closeOrder;
 	private String				type;
 
+	public ComponentVo(TangYuanComponent component, String type) {
+		this.component = component;
+		this.type = type;
+	}
+
 	public ComponentVo(TangYuanComponent component, String type, int startupOrder, int closeOrder) {
 		this.component = component;
 		this.type = type;

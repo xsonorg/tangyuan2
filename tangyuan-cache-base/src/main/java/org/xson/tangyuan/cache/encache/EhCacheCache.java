@@ -1,10 +1,11 @@
 package org.xson.tangyuan.cache.encache;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheException;
+import org.xson.tangyuan.cache.CacheVo;
+import org.xson.tangyuan.cache.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.cache.util.Resources;
 
 import net.sf.ehcache.Cache;
@@ -13,7 +14,7 @@ import net.sf.ehcache.Element;
 
 public class EhCacheCache extends AbstractCache {
 
-	private String			cacheId			= null;
+	// private String cacheId = null;
 	private CacheManager	cacheManager	= null;
 	private Cache			cache			= null;
 
@@ -21,18 +22,39 @@ public class EhCacheCache extends AbstractCache {
 		this.cacheId = cacheId;
 	}
 
+	// @Override
+	// public void start(String resource, Map<String, String> properties) {
+	// if (null != cacheManager) {
+	// return;
+	// }
+	// try {
+	// InputStream inputStream = Resources.getResourceAsStream(resource);
+	// this.cacheManager = CacheManager.create(inputStream);
+	// this.cache = cacheManager.getCache(cacheManager.getCacheNames()[0]);
+	// } catch (Throwable e) {
+	// throw new CacheException(e);
+	// }
+	// }
+
 	@Override
-	public void start(String resource, Map<String, String> properties) {
+	public void start(CacheVo cacheVo) {
 		if (null != cacheManager) {
 			return;
 		}
+
+		String resource = cacheVo.getResource();
+
 		try {
 			InputStream inputStream = Resources.getResourceAsStream(resource);
+			inputStream = PlaceholderResourceSupport.processInputStream(inputStream, cacheVo.getPlaceholderMap());
 			this.cacheManager = CacheManager.create(inputStream);
 			this.cache = cacheManager.getCache(cacheManager.getCacheNames()[0]);
 		} catch (Throwable e) {
 			throw new CacheException(e);
 		}
+
+		this.defaultExpiry = cacheVo.getExpiry();
+		this.serializer = cacheVo.getSerializer();
 	}
 
 	@Override
@@ -68,10 +90,11 @@ public class EhCacheCache extends AbstractCache {
 	@Override
 	public void put(Object key, Object value, Long expiry) {
 		Element element = null;
-		if (null == expiry) {
+		Long expiryTime = getExpiry(expiry, defaultExpiry);
+		if (null == expiryTime) {
 			element = new Element(key, value);
 		} else {
-			element = new Element(key, value, expiry.intValue(), expiry.intValue());
+			element = new Element(key, value, expiryTime.intValue(), expiryTime.intValue());
 		}
 		this.cache.put(element);
 	}
@@ -103,10 +126,10 @@ public class EhCacheCache extends AbstractCache {
 		return cacheManager;
 	}
 
-	@Override
-	public String getId() {
-		return cacheId;
-	}
+	// @Override
+	// public String getId() {
+	// return cacheId;
+	// }
 
 	// //得到缓存对象占用内存的大小
 	// cache.getMemoryStoreSize();

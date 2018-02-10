@@ -6,9 +6,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class SerializationUtils {
+import org.xson.tangyuan.cache.CacheSerializer;
 
-	public static byte[] serialize(Object object) {
+public class JDKSerializer implements CacheSerializer {
+
+	public static JDKSerializer instance = new JDKSerializer();
+
+	@Override
+	public Object serialize(Object object) throws Throwable {
 		if (object == null) {
 			return null;
 		}
@@ -17,23 +22,29 @@ public class SerializationUtils {
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(object);
 			oos.flush();
+			byte[] result = baos.toByteArray();
+			oos.close();
+			return result;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Failed to serialize object of type: " + object.getClass(), ex);
 		}
-		return baos.toByteArray();
+
 	}
 
-	public static Object deserialize(byte[] bytes) {
-		if (bytes == null) {
+	@Override
+	public Object deserialize(Object object) throws Throwable {
+		if (object == null) {
 			return null;
 		}
+		byte[] buf = (byte[]) object;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-			return ois.readObject();
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(buf));
+			Object result = ois.readObject();
+			ois.close();
+			return result;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Failed to deserialize object", ex);
-		} catch (ClassNotFoundException ex) {
-			throw new IllegalStateException("Failed to deserialize object type", ex);
 		}
 	}
+
 }

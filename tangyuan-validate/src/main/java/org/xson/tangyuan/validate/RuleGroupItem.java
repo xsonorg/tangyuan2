@@ -34,7 +34,7 @@ public class RuleGroupItem {
 		parseDefaultValue(defaultValue);
 	}
 
-	public boolean check(XCO xco) {
+	public boolean check(XCO xco, boolean forcedThrowException) {
 		boolean result = false;
 		try {
 			Object value = xco.getObjectValue(fieldName);
@@ -69,8 +69,17 @@ public class RuleGroupItem {
 			log.error(null, e);
 		}
 
-		if (!result && ValidateComponent.getInstance().isThrowException()) {
-			throw new XCOValidateException(this.code, this.message);
+		// if (!result && ValidateComponent.getInstance().isThrowException()) {
+		// throw new XCOValidateException(this.code, this.message);
+		// }
+
+		if (!result) {
+			if (forcedThrowException) {
+				throw new XCOValidateException(this.code, this.message);
+			}
+			if (ValidateComponent.getInstance().isThrowException()) {
+				throw new XCOValidateException(this.code, this.message);
+			}
 		}
 
 		return result;

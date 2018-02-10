@@ -6,9 +6,8 @@ import org.xson.tangyuan.cache.AbstractCache;
 
 public class MixedCache extends AbstractCache {
 
-	private String				cacheId		= null;
-
-	private List<AbstractCache>	cacheList	= null;
+	// private String cacheId = null;
+	private List<AbstractCache> cacheList = null;
 
 	public MixedCache(String cacheId, List<AbstractCache> cacheList) {
 		this.cacheId = cacheId;
@@ -46,9 +45,9 @@ public class MixedCache extends AbstractCache {
 		return result;
 	}
 
-	@Override
-	public String getId() {
-		return cacheId;
-	}
+	// @Override
+	// public String getId() {
+	// return cacheId;
+	// }
 
 }

@@ -1,10 +1,9 @@
 package org.xson.tangyuan.cache.local;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xson.tangyuan.cache.AbstractCache;
+import org.xson.tangyuan.cache.CacheVo;
 
 public class LoggingCache extends AbstractCache {
 
@@ -19,9 +18,14 @@ public class LoggingCache extends AbstractCache {
 		this.delegate = delegate;
 	}
 
+	// @Override
+	// public void start(String resource, Map<String, String> properties) {
+	// this.delegate.start(resource, properties);
+	// }
+
 	@Override
-	public void start(String resource, Map<String, String> properties) {
-		this.delegate.start(resource, properties);
+	public void start(CacheVo cacheVo) {
+		this.delegate.start(cacheVo);
 	}
 
 	@Override

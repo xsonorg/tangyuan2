@@ -1,39 +1,49 @@
 package org.xson.tangyuan.cache.redis;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Properties;
 
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheException;
+import org.xson.tangyuan.cache.CacheSerializer;
+import org.xson.tangyuan.cache.CacheVo;
+import org.xson.tangyuan.cache.util.JDKSerializer;
+import org.xson.tangyuan.cache.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.cache.util.Resources;
-import org.xson.tangyuan.cache.util.SerializationUtils;
 import org.xson.thirdparty.redis.JedisClient;
 
 public class RedisCache extends AbstractCache {
 
-	private String		cacheId	= null;
-	private JedisClient	client	= null;
+	private JedisClient client = null;
 
 	public RedisCache(String cacheId) {
 		this.cacheId = cacheId;
 	}
 
 	@Override
-	public void start(String resource, Map<String, String> propertyMap) {
+	public void start(CacheVo cacheVo) {
 		if (null != client) {
 			return;
 		}
+
+		String resource = cacheVo.getResource();
+
 		try {
 			// client = JedisClient.getInstance();
 			client = new JedisClient();
 			Properties properties = new Properties();
 			InputStream inputStream = Resources.getResourceAsStream(resource);
 			properties.load(inputStream);
+
+			PlaceholderResourceSupport.processProperties(properties, cacheVo.getPlaceholderMap());
+
 			client.start(properties);
 		} catch (Throwable e) {
 			throw new CacheException(e);
 		}
+
+		this.defaultExpiry = cacheVo.getExpiry();
+		this.serializer = cacheVo.getSerializer();
 	}
 
 	@Override
@@ -48,10 +58,12 @@ public class RedisCache extends AbstractCache {
 
 	@Override
 	public Object get(Object key) {
+		CacheSerializer cs = getSerializer();
 		try {
 			byte[] bytes = this.client.get(parseKey(key).getBytes(keyEncode));
 			if (null != bytes) {
-				return SerializationUtils.deserialize(bytes);
+				// return SerializationUtils.deserialize(bytes);
+				return cs.deserialize(bytes);
 			}
 			return null;
 		} catch (Throwable e) {
@@ -61,9 +73,12 @@ public class RedisCache extends AbstractCache {
 
 	@Override
 	public void put(Object key, Object value, Long expiry) {
+		Long expiryTime = getExpiry(expiry, defaultExpiry);
+		CacheSerializer cs = getSerializer();
+
 		try {
-			if (null == expiry) {
-				this.client.set(parseKey(key).getBytes(keyEncode), SerializationUtils.serialize(value));
+			if (null == expiryTime) {
+				this.client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value));
 			} else {
 				// EX second ：设置键的过期时间为 second 秒。 SET key value EX second 效果等同于
 				// SETEX key second value 。
@@ -71,12 +86,12 @@ public class RedisCache extends AbstractCache {
 				// millisecond 效果等同于 PSETEX key millisecond value 。
 				// NX ：只在键不存在时，才对键进行设置操作。 SET key value NX 效果等同于 SETNX key value
 				// XX ：只在键已经存在时，才对键进行设置操作。
-				String result = this.client.set(parseKey(key).getBytes(keyEncode), SerializationUtils.serialize(value), "nx".getBytes(keyEncode),
-						"ex".getBytes(keyEncode), expiry.longValue());
+				String result = this.client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value), "nx".getBytes(keyEncode),
+						"ex".getBytes(keyEncode), expiryTime.longValue());
 				// System.out.println(result);
 				if (!"OK".equalsIgnoreCase(result)) {
-					this.client.set(parseKey(key).getBytes(keyEncode), SerializationUtils.serialize(value), "xx".getBytes(keyEncode),
-							"ex".getBytes(keyEncode), expiry.longValue());
+					this.client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value), "xx".getBytes(keyEncode),
+							"ex".getBytes(keyEncode), expiryTime.longValue());
 				}
 			}
 		} catch (Throwable e) {
@@ -97,9 +112,11 @@ public class RedisCache extends AbstractCache {
 		return client;
 	}
 
-	@Override
-	public String getId() {
-		return cacheId;
+	protected CacheSerializer getSerializer() {
+		if (null != serializer) {
+			return serializer;
+		}
+		return JDKSerializer.instance;
 	}
 
 }

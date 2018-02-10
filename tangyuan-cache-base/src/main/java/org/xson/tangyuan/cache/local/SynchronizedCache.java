@@ -1,41 +1,46 @@
 package org.xson.tangyuan.cache.local;
 
-import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.xson.tangyuan.cache.AbstractCache;
+import org.xson.tangyuan.cache.CacheVo;
 
 public class SynchronizedCache extends AbstractCache {
 
-	private AbstractCache	cache;
+	private AbstractCache	delegate;
 	private ReadWriteLock	lock;
 
-	public SynchronizedCache(AbstractCache cache) {
-		this.cache = cache;
+	public SynchronizedCache(AbstractCache delegate) {
+		this.delegate = delegate;
 		this.lock = new ReentrantReadWriteLock();
 	}
 
+	// @Override
+	// public void start(String resource, Map<String, String> properties) {
+	// this.cache.start(resource, properties);
+	// }
+
 	@Override
-	public void start(String resource, Map<String, String> properties) {
-		this.cache.start(resource, properties);
+	public void start(CacheVo cacheVo) {
+		this.delegate.start(cacheVo);
 	}
 
 	@Override
 	public void stop(String creator) {
-		this.cache.stop(creator);
+		this.delegate.stop(creator);
 	}
 
 	@Override
 	public String getId() {
-		return cache.getId();
+		return delegate.getId();
 	}
 
 	@Override
 	public void put(Object key, Object value, Long expiry) {
 		this.lock.writeLock().lock();
 		try {
-			cache.put(key, value, expiry);
+			delegate.put(key, value, expiry);
 		} finally {
 			this.lock.writeLock().unlock();
 		}
@@ -45,7 +50,7 @@ public class SynchronizedCache extends AbstractCache {
 	public Object get(Object key) {
 		this.lock.readLock().lock();
 		try {
-			return cache.get(key);
+			return delegate.get(key);
 		} finally {
 			this.lock.readLock().unlock();
 		}
@@ -55,7 +60,7 @@ public class SynchronizedCache extends AbstractCache {
 	public Object remove(Object key) {
 		this.lock.writeLock().lock();
 		try {
-			return cache.remove(key);
+			return delegate.remove(key);
 		} finally {
 			this.lock.writeLock().unlock();
 		}
@@ -65,7 +70,7 @@ public class SynchronizedCache extends AbstractCache {
 	public void clear() {
 		this.lock.writeLock().lock();
 		try {
-			cache.clear();
+			delegate.clear();
 		} finally {
 			this.lock.writeLock().unlock();
 		}
@@ -75,7 +80,7 @@ public class SynchronizedCache extends AbstractCache {
 	public int getSize() {
 		this.lock.readLock().lock();
 		try {
-			return cache.getSize();
+			return delegate.getSize();
 		} finally {
 			this.lock.readLock().unlock();
 		}

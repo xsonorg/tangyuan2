@@ -36,7 +36,8 @@ public class TimerComponent implements TangYuanComponent {
 
 	static {
 		// timer 60 20
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "timer", 60, 20));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "timer", 60, 20));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "timer"));
 	}
 
 	private TimerComponent() {
@@ -72,7 +73,6 @@ public class TimerComponent implements TangYuanComponent {
 				if (!CustomJob.class.isAssignableFrom(clazz)) {
 					throw new TangYuanException("User-defined JOB must implement org.xson.timer.client.CustomJob: " + custom);
 				}
-				// customJob = (CustomJob) clazz.newInstance();
 				customJob = (CustomJob) TangYuanUtil.newInstance(clazz);
 			}
 
@@ -127,19 +127,5 @@ public class TimerComponent implements TangYuanComponent {
 			log.error("timer client component stop error", e);
 		}
 	}
-
-	// private String checkServiceUrl(String service) {
-	// String url = service.toLowerCase().substring("http://".length());
-	// String[] array = url.split("/");
-	// // System.out.println(url);
-	// if (3 == array.length) {
-	// return service + "/@/Timer";
-	// } else if (4 == array.length) {
-	// return service + "/Timer";
-	// } else if (5 == array.length) {
-	// return service;
-	// }
-	// throw new TangYuanException("Illegal service format: " + service);
-	// }
 
 }

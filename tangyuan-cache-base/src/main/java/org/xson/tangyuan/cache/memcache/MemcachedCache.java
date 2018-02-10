@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheException;
+import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.util.PropertyUtils;
 
 import com.whalin.MemCached.MemCachedClient;
@@ -12,7 +13,7 @@ import com.whalin.MemCached.SockIOPool;
 
 public class MemcachedCache extends AbstractCache {
 
-	private String			cacheId			= null;
+	// private String cacheId = null;
 	private MemCachedClient	cachedClient	= null;
 	private SockIOPool		pool			= null;
 
@@ -21,10 +22,12 @@ public class MemcachedCache extends AbstractCache {
 	}
 
 	@Override
-	public void start(String resource, Map<String, String> properties) {
+	public void start(CacheVo cacheVo) {
 		if (null != cachedClient || null != pool) {
 			return;
 		}
+
+		Map<String, String> properties = cacheVo.getProperties();
 
 		// { "cache0.server.com:12345", "cache1.server.com:12345" };
 		String _serverlist = properties.get("serverlist");
@@ -94,6 +97,9 @@ public class MemcachedCache extends AbstractCache {
 		if (properties.containsKey("sanitizeKeys".toUpperCase())) {
 			cachedClient.setSanitizeKeys(Boolean.parseBoolean(properties.get("sanitizeKeys".toUpperCase()).trim()));
 		}
+
+		this.defaultExpiry = cacheVo.getExpiry();
+		this.serializer = cacheVo.getSerializer();
 	}
 
 	@Override
@@ -108,10 +114,11 @@ public class MemcachedCache extends AbstractCache {
 
 	@Override
 	public void put(Object key, Object value, Long expiry) {
-		if (null == expiry) {
+		Long expiryTime = getExpiry(expiry, defaultExpiry);
+		if (null == expiryTime) {
 			cachedClient.set(parseKey(key), value);
 		} else {
-			cachedClient.set(parseKey(key), value, new Date(expiry.longValue() * 1000L));
+			cachedClient.set(parseKey(key), value, new Date(expiryTime.longValue() * 1000L));
 		}
 	}
 
@@ -138,8 +145,8 @@ public class MemcachedCache extends AbstractCache {
 		return cachedClient;
 	}
 
-	@Override
-	public String getId() {
-		return cacheId;
-	}
+	// @Override
+	// public String getId() {
+	// return cacheId;
+	// }
 }

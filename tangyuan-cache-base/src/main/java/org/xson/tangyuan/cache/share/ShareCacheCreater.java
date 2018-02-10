@@ -10,7 +10,6 @@ public class ShareCacheCreater implements CacheCreater {
 
 	@Override
 	public AbstractCache newInstance(CacheVo cacheVo) {
-		// String jndiName = cacheVo.getJndiName();
 		String sharedUse = cacheVo.getSharedUse();
 		AbstractCache cache = ShareCacheContainer.getInstance().getCache(sharedUse);
 		if (null == cache) {

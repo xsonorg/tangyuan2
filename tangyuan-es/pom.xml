@@ -2,50 +2,24 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.xson</groupId>
+	<parent>
+		<groupId>org.xson</groupId>
+		<artifactId>tangyuan-parent</artifactId>
+		<version>${tangyuan.version}</version>
+	</parent>
+
 	<artifactId>tangyuan-es</artifactId>
-	<version>${tangyuan.version}</version>
 	<packaging>jar</packaging>
 
 	<name>tangyuan-es</name>
 	<url>http://xson.org/tangyuan</url>
 	<description>tangyuan-es is tangyuan framework in the Elasticsearch service components, provides access to elasticsearch and processing of results.</description>
 
-	<properties>
-		<java.version>1.7</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tangyuan.version>1.2.1.1</tangyuan.version>
-		<xco.version>1.0.2</xco.version>
-		<xson.redis>1.0.2</xson.redis>
-		<zongzi.version>1.0.0</zongzi.version>
-	</properties>
-
-	<developers>
-		<developer>
-			<id>david</id>
-			<name>david</name>
-			<email>xson_org@126.com</email>
-		</developer>
-	</developers>
-
-	<scm>
-		<url>https://github.com/xsonorg/tangyuan2.git</url>
-		<connection>scm:git:https://github.com/xsonorg/tangyuan2.git</connection>
-	</scm>
-
-	<licenses>
-		<license>
-			<name>GNU General Public License v3.0</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-		</license>
-	</licenses>
-
 	<dependencies>
 
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>common-object</artifactId>
-			<version>${xco.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -65,14 +39,12 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.1.41</version>
 			<scope>provided</scope>
 		</dependency>
 

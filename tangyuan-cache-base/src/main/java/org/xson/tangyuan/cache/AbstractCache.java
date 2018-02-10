@@ -1,14 +1,14 @@
 package org.xson.tangyuan.cache;
 
-import java.util.Map;
-
 public abstract class AbstractCache implements TangYuanCache {
 
-	protected String	keyEncode	= "UTF-8";
+	protected String			keyEncode		= "UTF-8";
+	protected String			cacheId			= null;
+	protected String			creator			= null;
+	protected Long				defaultExpiry	= null;
+	protected CacheSerializer	serializer		= null;
 
-	protected String	creator;
-
-	public void start(String resource, Map<String, String> properties) {
+	public void start(CacheVo cacheVo) {
 	}
 
 	public void stop(String creator) {
@@ -22,7 +22,7 @@ public abstract class AbstractCache implements TangYuanCache {
 	}
 
 	public String getId() {
-		return null;
+		return this.cacheId;
 	}
 
 	@Override
@@ -40,4 +40,16 @@ public abstract class AbstractCache implements TangYuanCache {
 		return key.toString();
 	}
 
+	protected Long getExpiry(Long currentExpiry, Long defaultExpiry) {
+		if (null != currentExpiry) {
+			return currentExpiry;
+		}
+		if (null != defaultExpiry) {
+			return defaultExpiry;
+		}
+		return null;
+	}
+
+	// public void start(String resource, Map<String, String> properties) {
+	// }
 }

@@ -10,7 +10,6 @@ import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 
 public class DBCPDataSource extends AbstractDataSource {
 
-	// private static Log log = LogFactory.getLog(DBCPDataSource.class);
 	private static Logger			log	= LoggerFactory.getLogger(DBCPDataSource.class);
 
 	private final BasicDataSource	dataSource;

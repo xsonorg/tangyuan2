@@ -23,7 +23,8 @@ public class WebComponent implements TangYuanComponent {
 
 	static {
 		// web 70 10
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "web", 70, 10));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "web", 70, 10));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "web"));
 	}
 
 	private WebComponent() {

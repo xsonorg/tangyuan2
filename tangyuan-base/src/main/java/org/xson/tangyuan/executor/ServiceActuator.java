@@ -236,7 +236,10 @@ public class ServiceActuator {
 		}
 	}
 
-	protected static Object getResult(Object result) {
+	protected static Object getResult(Object result, boolean ignoreWrapper) {
+		if (ignoreWrapper) {
+			return result;
+		}
 		boolean allServiceReturnXCO = TangYuanContainer.getInstance().isAllServiceReturnXCO();
 		if (allServiceReturnXCO) {
 			return TangYuanUtil.retObjToXco(result);
@@ -253,7 +256,7 @@ public class ServiceActuator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T execute(String serviceURI, Object arg) throws ServiceException {
+	public static <T> T execute(String serviceURI, Object arg, boolean ignoreWrapper) throws ServiceException {
 		check();// 检查系统是否已经正在关闭中了
 		log.info("actuator service: " + serviceURI);
 		if (onlyProxy) {
@@ -320,20 +323,27 @@ public class ServiceActuator {
 			}
 		}
 		// return (T) result;
-		return (T) getResult(result);
+		return (T) getResult(result, ignoreWrapper);
+	}
+
+	public static <T> T execute(String serviceURI, Object arg) throws ServiceException {
+		return execute(serviceURI, arg, false);
 	}
 
 	/**
 	 * 单独环境
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> T executeAlone(String serviceURI, Object arg) throws ServiceException {
-		check();// 检查系统是否已经正在关闭中了
-		return (T) executeAlone(serviceURI, arg, false);
+		return executeAlone(serviceURI, arg, false);
 	}
 
-	private static Object executeAlone(String serviceURI, Object arg, boolean throwException) throws ServiceException {
+	@SuppressWarnings("unchecked")
+	public static <T> T executeAlone(String serviceURI, Object arg, boolean ignoreWrapper) throws ServiceException {
+		return (T) executeAlone(serviceURI, arg, false, ignoreWrapper);
+	}
 
+	private static Object executeAlone(String serviceURI, Object arg, boolean throwException, boolean ignoreWrapper) throws ServiceException {
+		check();// 检查系统是否已经正在关闭中了
 		log.info("execute alone service: " + serviceURI);
 
 		if (onlyProxy) {
@@ -413,7 +423,7 @@ public class ServiceActuator {
 			}
 		}
 		// return (T) result;
-		return getResult(result);
+		return getResult(result, ignoreWrapper);
 	}
 
 	/**

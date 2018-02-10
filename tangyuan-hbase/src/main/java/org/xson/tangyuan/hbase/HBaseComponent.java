@@ -18,7 +18,8 @@ public class HBaseComponent implements TangYuanComponent {
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.HBASE, new HBaseServiceContextFactory());
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "hbase", 40, 40));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "hbase", 40, 40));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "hbase"));
 	}
 
 	private Log		log						= LogFactory.getLog(getClass());

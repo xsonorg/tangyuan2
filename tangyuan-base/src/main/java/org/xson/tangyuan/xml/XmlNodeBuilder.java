@@ -168,7 +168,6 @@ public abstract class XmlNodeBuilder {
 			if (result) {
 				TangYuanContainer.getInstance().addService(node);
 			} else {
-				// getLog().info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 				if (NumberUtils.randomSuccess()) {
 					TangYuanContainer.getInstance().addService(node);
 				}
@@ -182,7 +181,6 @@ public abstract class XmlNodeBuilder {
 		if (result) {
 			TangYuanContainer.getInstance().addService(serviceNode);
 		} else {
-			// getLog().info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 			if (NumberUtils.randomSuccess()) {
 				TangYuanContainer.getInstance().addService(serviceNode);
 			}

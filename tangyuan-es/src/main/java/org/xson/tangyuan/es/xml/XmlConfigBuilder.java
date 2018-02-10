@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.es.EsComponent;
 import org.xson.tangyuan.es.ResultConverter;
 import org.xson.tangyuan.es.converters.HitsConverter;
@@ -17,6 +18,7 @@ import org.xson.tangyuan.es.datasource.EsSourceManager;
 import org.xson.tangyuan.es.datasource.EsSourceVo;
 import org.xson.tangyuan.es.xml.node.XMLEsNodeBuilder;
 import org.xson.tangyuan.util.ClassUtils;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
@@ -38,6 +40,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
 		this.context.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/es-component"));

@@ -18,7 +18,8 @@ public class AopComponent implements TangYuanComponent {
 
 	static {
 		// sql 40 40
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "aop", 55, 40));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "aop", 55, 40));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "aop"));
 	}
 
 	private AopComponent() {

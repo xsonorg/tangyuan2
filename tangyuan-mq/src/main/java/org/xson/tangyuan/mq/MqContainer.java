@@ -33,8 +33,11 @@ public class MqContainer {
 		// 注册上下文工厂
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.MQ, new MqServiceContextFactory());
 		// mq 50 30
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(MqServiceComponent.getInstance(), "mq-service", 50, 30));
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(MqListenerComponent.getInstance(), "mq-listener", 50, 30));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(MqServiceComponent.getInstance(), "mq-service", 50, 30));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(MqListenerComponent.getInstance(), "mq-listener", 50, 30));
+
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(MqServiceComponent.getInstance(), "mq-service"));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(MqListenerComponent.getInstance(), "mq-listener"));
 	}
 
 	private MqContainer() {

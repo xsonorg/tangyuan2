@@ -11,16 +11,14 @@ import org.xson.tangyuan.cache.CacheException;
  */
 public class LocalCache extends AbstractCache {
 
-	private String				id;
-
-	private Map<Object, Object>	cache	= new HashMap<Object, Object>(1024);
-
-	public LocalCache(String id) {
-		this.id = id;
+	public enum CacheStrategyType {
+		LRU, FIFO, SOFT, WEAK, TIME
 	}
 
-	public String getId() {
-		return id;
+	private Map<Object, Object> cache = new HashMap<Object, Object>(1024);
+
+	public LocalCache(String cacheId) {
+		this.cacheId = cacheId;
 	}
 
 	public int getSize() {

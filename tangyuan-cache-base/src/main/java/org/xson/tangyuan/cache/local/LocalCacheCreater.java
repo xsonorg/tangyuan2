@@ -5,7 +5,7 @@ import java.util.Map;
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheCreater;
 import org.xson.tangyuan.cache.CacheVo;
-import org.xson.tangyuan.cache.CacheVo.CacheStrategyType;
+import org.xson.tangyuan.cache.local.LocalCache.CacheStrategyType;
 
 public class LocalCacheCreater implements CacheCreater {
 
@@ -35,10 +35,14 @@ public class LocalCacheCreater implements CacheCreater {
 			maxSize = Integer.parseInt(_maxSize);
 		}
 
-		int survivalTime = 10; // 10秒
-		String _survivalTime = properties.get("survivalTime");
-		if (null != _survivalTime) {
-			survivalTime = Integer.parseInt(_survivalTime);
+		// String _survivalTime = properties.get("survivalTime");
+		// if (null != _survivalTime) {
+		// survivalTime = Integer.parseInt(_survivalTime);
+		// }
+
+		long defaultExpiry = 10; // 10秒
+		if (null != cacheVo.getExpiry()) {
+			defaultExpiry = cacheVo.getExpiry();
 		}
 
 		// 根据设置
@@ -51,7 +55,7 @@ public class LocalCacheCreater implements CacheCreater {
 		} else if (CacheStrategyType.WEAK == strategyType) {
 			localCache = new WeakCache(localCache, maxSize);
 		} else if (CacheStrategyType.TIME == strategyType) {
-			localCache = new ScheduledCache(localCache, survivalTime);
+			localCache = new ScheduledCache(localCache, defaultExpiry);
 		}
 
 		// 如果是local必须

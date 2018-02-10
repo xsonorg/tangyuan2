@@ -42,25 +42,4 @@ public class TimerConfig {
 		return customJob;
 	}
 
-	// private Boolean rpc;
-	// private String realService;
-	// public TimerConfig(String scheduled, String service, String realService, boolean sync, boolean onExceptionBreak, String desc, CustomJob
-	// customJob,
-	// Boolean rpc) {
-	// this.scheduled = scheduled;
-	// this.service = service;
-	// this.realService = realService;
-	// this.sync = sync;
-	// this.onExceptionBreak = onExceptionBreak;
-	// this.desc = desc;
-	// this.customJob = customJob;
-	// this.rpc = rpc;
-	// }
-	// public String getRealService() {
-	// return realService;
-	// }
-	// public Boolean getRpc() {
-	// return rpc;
-	// }
-
 }

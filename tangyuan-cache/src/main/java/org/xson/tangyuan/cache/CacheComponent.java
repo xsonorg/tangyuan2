@@ -21,7 +21,8 @@ public class CacheComponent implements TangYuanComponent {
 
 	static {
 		// cache 20 60
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "cache", 20, 60));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "cache", 20, 60));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "cache"));
 	}
 
 	private CacheComponent() {

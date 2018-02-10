@@ -40,10 +40,10 @@ public class RuleGroup {
 		return code;
 	}
 
-	public boolean check(XCO xco) {
+	public boolean check(XCO xco, boolean forcedThrowException) {
 		boolean result = false;
 		for (RuleGroupItem item : this.items) {
-			result = item.check(xco);
+			result = item.check(xco, forcedThrowException);
 			if (!result) {
 				break;
 			}

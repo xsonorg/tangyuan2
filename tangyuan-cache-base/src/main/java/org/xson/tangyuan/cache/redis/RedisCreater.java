@@ -9,7 +9,8 @@ public class RedisCreater implements CacheCreater {
 	@Override
 	public AbstractCache newInstance(CacheVo cacheVo) {
 		RedisCache cache = new RedisCache(cacheVo.getId());
-		cache.start(cacheVo.getResource(), cacheVo.getProperties());
+		// cache.start(cacheVo.getResource(), cacheVo.getProperties());
+		cache.start(cacheVo);
 		return cache;
 	}
 

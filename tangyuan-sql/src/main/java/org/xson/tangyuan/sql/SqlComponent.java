@@ -9,7 +9,6 @@ import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.sharding.ShardingDefManager;
 import org.xson.tangyuan.sql.datasource.DataSourceManager;
-import org.xson.tangyuan.sql.executor.JavaServiceContextFactory;
 import org.xson.tangyuan.sql.executor.SqlServiceContextFactory;
 import org.xson.tangyuan.sql.xml.XmlConfigBuilder;
 import org.xson.tangyuan.type.TypeHandlerRegistry;
@@ -27,9 +26,8 @@ public class SqlComponent implements TangYuanComponent {
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.SQL, new SqlServiceContextFactory());
-		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.JAVA, new JavaServiceContextFactory());
-		// sql 40 40
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "sql", 40, 40));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "sql"));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "sql", 40, 40));
 	}
 
 	private SqlComponent() {
@@ -88,8 +86,6 @@ public class SqlComponent implements TangYuanComponent {
 
 	@Override
 	public void stop(boolean wait) {
-		// TODO 所有的stop都不能抛异常
-		// TODO 需要等待所有服务都执行完毕
 		log.info("sql component stopping...");
 		try {
 			if (null != dataSourceManager) {

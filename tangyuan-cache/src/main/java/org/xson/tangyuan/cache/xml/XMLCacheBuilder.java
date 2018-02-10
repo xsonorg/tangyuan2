@@ -14,26 +14,34 @@ import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheComponent;
 import org.xson.tangyuan.cache.CacheGroupVo;
 import org.xson.tangyuan.cache.CacheRefVo;
+import org.xson.tangyuan.cache.CacheSerializer;
 import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.CacheVo.CacheType;
 import org.xson.tangyuan.util.ClassUtils;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.util.TangYuanAssert;
+import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
 import org.xson.tangyuan.xml.XmlParseException;
 
 public class XMLCacheBuilder {
 
-	private Log						log				= LogFactory.getLog(getClass());
-	private XPathParser				xPathParser		= null;
+	private Log								log				= LogFactory.getLog(getClass());
+	private XPathParser						xPathParser		= null;
 
-	private CacheVo					defaultCacheVo	= null;
-	private Map<String, CacheVo>	cacheVoMap		= new LinkedHashMap<String, CacheVo>();
+	private CacheVo							defaultCacheVo	= null;
+	private Map<String, CacheVo>			cacheVoMap		= new LinkedHashMap<String, CacheVo>();
+
+	private Map<String, CacheSerializer>	serializerMap	= new HashMap<String, CacheSerializer>();
 
 	public XMLCacheBuilder(String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
 	}
 
@@ -42,7 +50,9 @@ public class XMLCacheBuilder {
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
+
 		buildConfigNodes(context.evalNodes("config-property"));
+		buildSerializerNodes(context.evalNodes("serializer"));
 		// 解析缓存定义
 		buildCache(context.evalNodes("cache"));
 		// 解析缓存组定义
@@ -67,23 +77,40 @@ public class XMLCacheBuilder {
 		defaultCacheVo = null;
 	}
 
-	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <config-property name="A" value="B" />
 		Map<String, String> configMap = new HashMap<String, String>();
 		for (XmlNodeWrapper context : contexts) {
 			String name = StringUtils.trim(context.getStringAttribute("name"));
 			String value = StringUtils.trim(context.getStringAttribute("value"));
 			if (null == name || null == value) {
-				throw new RuntimeException("<config-property> missing names or value");
+				throw new XmlParseException("<config-property> missing name or value");
 			}
 			configMap.put(name.toUpperCase(), value);
 		}
 		if (configMap.size() > 0) {
+			// TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholder().processMap(configMap);
 			CacheComponent.getInstance().config(configMap);
 		}
 	}
 
-	private void buildCache(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildSerializerNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+			String serializerId = StringUtils.trim(context.getStringAttribute("id"));
+			String className = StringUtils.trim(context.getStringAttribute("class"));
+			TangYuanAssert.stringEmpty(serializerId, "in the <serializer> tag, the 'id' property can not be empty.");
+			TangYuanAssert.stringEmpty(className, "in the <serializer> tag, the 'class' property can not be empty.");
+			Class<?> serializerClass = ClassUtils.forName(className);
+			if (!CacheSerializer.class.isAssignableFrom(serializerClass)) {
+				throw new XmlParseException(
+						TangYuanUtil.format("The cache serializer [{}] must implement the 'CacheSerializer' interface.", className));
+			}
+			CacheSerializer serializerImpl = (CacheSerializer) TangYuanUtil.newInstance(serializerClass);
+			this.serializerMap.put(serializerId, serializerImpl);
+		}
+	}
+
+	private void buildCache(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		for (int i = 0; i < size; i++) {
 			XmlNodeWrapper xNode = contexts.get(i);
@@ -98,13 +125,14 @@ public class XMLCacheBuilder {
 			}
 
 			String className = StringUtils.trim(xNode.getStringAttribute("class"));
-			AbstractCache handler = null;
+			AbstractCache cacheImpl = null;
 			if (null != className) {
 				Class<?> handlerClass = ClassUtils.forName(className);
 				if (!AbstractCache.class.isAssignableFrom(handlerClass)) {
 					throw new XmlParseException("cache class not implement the ICache interface: " + className);
 				}
-				handler = (AbstractCache) handlerClass.newInstance();
+				// cacheImpl = (AbstractCache) handlerClass.newInstance();
+				cacheImpl = (AbstractCache) TangYuanUtil.newInstance(handlerClass);
 			}
 
 			String _defaultCache = StringUtils.trim(xNode.getStringAttribute("default"));
@@ -124,15 +152,30 @@ public class XMLCacheBuilder {
 				propertiesMap.put(StringUtils.trim(propertyNode.getStringAttribute("name")),
 						StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
+			// TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholder().processMap(propertiesMap);
 
-			if (null == handler && null == type) {
+			if (null == cacheImpl && null == type) {
 				throw new XmlParseException("cache type and cache class can not be empty.");
 			}
 
-			// String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
 			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
 
-			CacheVo cVo = new CacheVo(id, type, handler, resource, propertiesMap, sharedUse, TangYuanContainer.getInstance().getSystemName());
+			Long expiry = null;
+			String defaultExpiry = StringUtils.trim(xNode.getStringAttribute("defaultExpiry"));
+			if (null != defaultExpiry) {
+				expiry = Long.parseLong(defaultExpiry);
+			}
+
+			CacheSerializer cs = null;
+			String serializer = StringUtils.trim(xNode.getStringAttribute("serializer"));
+			if (null != serializer) {
+				cs = this.serializerMap.get(serializer);
+				TangYuanAssert.objectEmpty(cs, TangYuanUtil.format("The referenced cache serializer[{}] does not exist", serializer));
+			}
+
+			// CacheVo cVo = new CacheVo(id, type, cacheImpl, resource, propertiesMap, sharedUse, TangYuanContainer.getInstance().getSystemName());
+			CacheVo cVo = new CacheVo(id, type, cacheImpl, resource, propertiesMap, sharedUse, TangYuanContainer.getInstance().getSystemName(),
+					expiry, cs, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 			cacheVoMap.put(id, cVo);
 
 			log.info("add cache: " + id);

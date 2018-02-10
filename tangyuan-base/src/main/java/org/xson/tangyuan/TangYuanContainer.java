@@ -1,6 +1,7 @@
 package org.xson.tangyuan;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.bootstrap.StartupAndShutdownVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.executor.ServiceContextFactory;
 import org.xson.tangyuan.monitor.DeadlockMonitorWriter;
@@ -31,19 +33,16 @@ public class TangYuanContainer implements TangYuanComponent {
 	public final static String						XCO_MESSAGE_KEY					= "$$MESSAGE";
 	// XCO返回对象包装标识
 	public final static String						XCO_PACKAGE_KEY					= "$$PACKAGE";
-	// public final static int SUCCESS_CODE_RPC = 0;
 
 	public final static int							SUCCESS_CODE					= 0;
 
-	private volatile boolean						closing							= false;
-
-	private String									systemName						= "tangyuan";
 	private Log										log								= LogFactory.getLog(getClass());
+	private volatile boolean						closing							= false;
+	private String									systemName						= "tangyuan";
 	private XmlGlobalContext						xmlGlobalContext				= null;
 
 	private final Map<String, AbstractServiceNode>	tangyuanServices				= new HashMap<String, AbstractServiceNode>();
 	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices			= new ConcurrentHashMap<String, AbstractServiceNode>();
-	// private final Map<String, AbstractServiceNode> tangyuanDynamicServices = new HashMap<String, AbstractServiceNode>();
 	private AsyncTaskThread							asyncTaskThread					= null;
 	private Map<String, ServiceContextFactory>		scFactoryMap					= new HashMap<String, ServiceContextFactory>();
 
@@ -51,6 +50,10 @@ public class TangYuanContainer implements TangYuanComponent {
 	// private Map<String, TangYuanComponent> componentMap = new HashMap<String, TangYuanComponent>();
 
 	private Map<String, ComponentVo>				componentMap					= new HashMap<String, ComponentVo>();
+
+	// ss-aop
+	private List<StartupAndShutdownVo>				closingBeforeList				= null;
+	private List<StartupAndShutdownVo>				closingAfterList				= null;
 
 	private Class<?>								defaultResultType				= XCO.class;
 	private boolean									licenses						= false;
@@ -128,6 +131,11 @@ public class TangYuanContainer implements TangYuanComponent {
 		log.info("config setting success...");
 	}
 
+	public void setClosingList(List<StartupAndShutdownVo> closingBeforeList, List<StartupAndShutdownVo> closingAfterList) {
+		this.closingBeforeList = closingBeforeList;
+		this.closingAfterList = closingAfterList;
+	}
+
 	@Override
 	public void start(String resource) throws Throwable {
 		log.info("tangyuan framework starting, version: " + Version.getVersion());
@@ -166,12 +174,15 @@ public class TangYuanContainer implements TangYuanComponent {
 	@Override
 	public void stop(boolean wait) {
 		log.info("tangyuan framework stopping...");
+
 		// for (ComponentVo component : ComponentVo.sort(components, false)) {
 		// component.getComponent().stop(true);
 		// }
 
 		closing = true;
 		wait = true;
+
+		executeSSAop(this.closingBeforeList);
 
 		String type = "web".toUpperCase();
 		if (componentMap.containsKey(type)) {
@@ -253,7 +264,24 @@ public class TangYuanContainer implements TangYuanComponent {
 		if (null != deadlockMonitor) {
 			deadlockMonitor.stop();
 		}
+
+		executeSSAop(this.closingAfterList);
+
 		log.info("tangyuan framework stop successfully.");
+	}
+
+	private void executeSSAop(List<StartupAndShutdownVo> ssList) {
+		if (null == ssList) {
+			return;
+		}
+		for (StartupAndShutdownVo ssVo : ssList) {
+			try {
+				ssVo.getHandler().execute(ssVo.getProperties());
+				log.info("execute ss-aop class: " + ssVo.getClassName());
+			} catch (Throwable e) {
+				log.error("execute ss-aop exception.", e);
+			}
+		}
 	}
 
 	public XmlGlobalContext getXmlGlobalContext() {

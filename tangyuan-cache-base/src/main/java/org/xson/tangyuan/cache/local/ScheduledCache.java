@@ -8,15 +8,12 @@ import org.xson.tangyuan.cache.AbstractCache;
 public class ScheduledCache extends AbstractCache {
 
 	private AbstractCache		delegate;
-
 	private Map<Object, Long>	keyMap;
 
-	private long				defaultSurvivalTime;
-
-	public ScheduledCache(AbstractCache delegate, long defaultSurvivalTime) {
+	public ScheduledCache(AbstractCache delegate, long defaultExpiry) {
 		this.delegate = delegate;
-		this.defaultSurvivalTime = defaultSurvivalTime;
-		keyMap = new HashMap<Object, Long>();
+		this.defaultExpiry = defaultExpiry;
+		this.keyMap = new HashMap<Object, Long>();
 	}
 
 	@Override
@@ -34,11 +31,11 @@ public class ScheduledCache extends AbstractCache {
 	 */
 	@Override
 	public void put(Object key, Object value, Long expiry) {
-		long survivalTime = this.defaultSurvivalTime;
-		if (null != expiry) {
-			survivalTime = expiry.longValue();
-		}
-		keyMap.put(key, System.currentTimeMillis() + survivalTime * 1000L);
+		Long expiryTime = getExpiry(expiry, defaultExpiry);
+		// if (null != expiry) {
+		// expiryTime = expiry.longValue();
+		// }
+		keyMap.put(key, System.currentTimeMillis() + expiryTime * 1000L);
 		delegate.put(key, value);
 	}
 

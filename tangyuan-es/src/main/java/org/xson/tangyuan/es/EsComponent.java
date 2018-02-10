@@ -20,7 +20,8 @@ public class EsComponent implements TangYuanComponent {
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.ES, new EsServiceContextFactory());
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "es", 40, 40));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "es", 40, 40));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "es"));
 	}
 
 	private EsComponent() {

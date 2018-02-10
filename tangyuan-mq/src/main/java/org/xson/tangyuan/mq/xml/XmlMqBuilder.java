@@ -9,6 +9,7 @@ import javax.management.modelmbean.XMLParseException;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.mq.MqContainer;
 import org.xson.tangyuan.mq.datasource.MqManagerCreater;
 import org.xson.tangyuan.mq.datasource.MqSourceManager;
@@ -19,6 +20,7 @@ import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
 import org.xson.tangyuan.mq.vo.RabbitMqChannelVo;
 import org.xson.tangyuan.mq.xml.node.XMLMqNodeBuilder;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
@@ -42,6 +44,8 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 		context.setXmlContext((XmlGlobalContext) xmlContext);
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
 		configurationElement(xPathParser.evalNode("/mq-component"));
 		context.clean();

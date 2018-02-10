@@ -21,6 +21,7 @@ import org.xson.tangyuan.sql.transaction.XTransactionDefinition;
 import org.xson.tangyuan.sql.xml.node.XMLSqlNodeBuilder;
 import org.xson.tangyuan.type.TypeHandler;
 import org.xson.tangyuan.type.TypeHandlerRegistry;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
@@ -45,6 +46,9 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
 		this.xPathParser = new XPathParser(inputStream);
 		sqlContext.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/sql-component"));
@@ -114,11 +118,6 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			if (null == type) {
 				throw new XmlParseException("Invalid data source type.");
 			}
-
-			// String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
-			// if (ConnPoolType.SHARE == type && null == jndiName) {
-			// throw new XmlParseException("In share type, the jndiName can not be missing.");
-			// }
 
 			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
 			if (ConnPoolType.SHARE == type && null == sharedUse) {

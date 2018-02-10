@@ -18,6 +18,7 @@ import org.xson.tangyuan.mongo.datasource.MongoSupport;
 import org.xson.tangyuan.mongo.datasource.MuiltMongoDataSourceManager;
 import org.xson.tangyuan.mongo.datasource.SimpleMongoDataSourceManager;
 import org.xson.tangyuan.mongo.xml.node.XMLMongoNodeBuilder;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
@@ -41,6 +42,8 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 		this.xPathParser = new XPathParser(inputStream);
 		context.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/mongo-component"));

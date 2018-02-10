@@ -73,7 +73,8 @@ public class ValidateComponent implements TangYuanComponent {
 
 	static {
 		// validate 10 70
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "validate", 10, 70));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "validate", 10, 70));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "validate"));
 	}
 
 	private ValidateComponent() {

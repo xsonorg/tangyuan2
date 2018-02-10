@@ -28,8 +28,11 @@ public class RpcContainer {
 		});
 		// rpc 30 50
 		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "rpc", 30, 50));
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(RpcClientComponent.getInstance(), "rpc-client", 30, 50));
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(RpcServerComponent.getInstance(), "rpc-server", 30, 50));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(RpcClientComponent.getInstance(), "rpc-client", 30, 50));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(RpcServerComponent.getInstance(), "rpc-server", 30, 50));
+
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(RpcClientComponent.getInstance(), "rpc-client"));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(RpcServerComponent.getInstance(), "rpc-server"));
 	}
 
 	private RpcContainer() {

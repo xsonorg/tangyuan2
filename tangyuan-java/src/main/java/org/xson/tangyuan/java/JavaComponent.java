@@ -19,7 +19,8 @@ public class JavaComponent implements TangYuanComponent {
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.JAVA, new JavaServiceContextFactory());
-		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "java", 40, 40));
+		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "java", 40, 40));
+		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "java"));
 	}
 
 	private JavaComponent() {
@@ -44,7 +45,6 @@ public class JavaComponent implements TangYuanComponent {
 
 	@Override
 	public void stop(boolean wait) {
-		// log.info("java component stopping...");
 		log.info("java component stop successfully.");
 	}
 

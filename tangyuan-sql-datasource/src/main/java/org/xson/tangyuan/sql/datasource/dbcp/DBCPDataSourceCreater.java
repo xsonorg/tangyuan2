@@ -15,7 +15,6 @@ import org.xson.tangyuan.sql.datasource.util.DSPropertyUtil;
 
 public class DBCPDataSourceCreater implements DataSourceCreater {
 
-	// private Log log = LogFactory.getLog(DBCPDataSourceCreater.class);
 	private Logger log = LoggerFactory.getLogger(DBCPDataSourceCreater.class);
 
 	@Override
