@@ -14,7 +14,7 @@
 	<name>tangyuan-rpc</name>
 	<url>http://xson.org/tangyuan</url>
 	<description>tangyuan-rpc is an RPC component in the tangyuan framework that provides support for RPC clients and RPC servers.</description>
-	
+
 	<dependencies>
 
 		<dependency>
@@ -29,9 +29,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			<scope>provided</scope> </dependency> -->
+
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
+			<groupId>org.xson</groupId>
+			<artifactId>xson-httpclient</artifactId>
 			<scope>provided</scope>
 		</dependency>
 

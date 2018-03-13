@@ -18,6 +18,7 @@
 		<xson.redis>1.0.2</xson.redis>
 		<xson.logging>1.0.0</xson.logging>
 		<zongzi.version>1.0.0</zongzi.version>
+		<xson-httpclient.version>1.0.0</xson-httpclient.version>
 	</properties>
 
 	<developers>
@@ -53,6 +54,12 @@
 				<groupId>org.xson</groupId>
 				<artifactId>common-object</artifactId>
 				<version>${xco.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.xson</groupId>
+				<artifactId>xson-httpclient</artifactId>
+				<version>${xson-httpclient.version}</version>
 			</dependency>
 
 			<dependency>

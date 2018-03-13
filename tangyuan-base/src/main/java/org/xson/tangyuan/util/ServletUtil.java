@@ -39,6 +39,7 @@ public class ServletUtil {
 	public static void reponse(HttpServletResponse response, XCO result) throws IOException {
 		if (null != result) {
 			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			// response.setContentType("text/xml;charset=utf-8");
 			response.setCharacterEncoding("UTF-8");
 			Writer write = response.getWriter();
 			write.write(result.toXMLString());

@@ -59,3 +59,15 @@ tangyuan-es是tangyuan框架中的Elasticsearch服务组件，提供以RESTful A
 <http://www.xson.org/project/es/1.2.0/>
 
 ## 5. 更新说明
+
+1. 增加xson-httpclient使用
+	
+	<?xml version="1.0" encoding="UTF-8"?>
+	<es-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/es/component.xsd">
+		
+		<!--定义http client配置文件-->
+		<config-property name="http.client.resource" value="http.client.properties"/>
+	
+	</es-component>
+	

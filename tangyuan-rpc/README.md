@@ -60,3 +60,6 @@ Maven使用：
 	// pigeon://www.baidu.com/xxx/yyy		3
 	// {aaaaaaaaaaa}/xxx/yyy				4	
 	
+3. 增加xson-httpclient使用
+	
+	<client id="c1" use="HTTP_CLIENT" schema="http" resource="http.client.properties"/>

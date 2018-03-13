@@ -10,13 +10,16 @@ import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.es.datasource.EsSourceManager;
 import org.xson.tangyuan.es.executor.EsServiceContextFactory;
 import org.xson.tangyuan.es.xml.XmlConfigBuilder;
+import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class EsComponent implements TangYuanComponent {
 
-	private static EsComponent	instance	= new EsComponent();
+	private static EsComponent	instance			= new EsComponent();
 
-	private Log					log			= LogFactory.getLog(getClass());
+	private Log					log					= LogFactory.getLog(getClass());
+
+	private String				httpClientResource	= null;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.ES, new EsServiceContextFactory());
@@ -31,9 +34,17 @@ public class EsComponent implements TangYuanComponent {
 		return instance;
 	}
 
+	public String getHttpClientResource() {
+		return httpClientResource;
+	}
+	
 	/** 设置配置文件 */
 	public void config(Map<String, String> properties) {
 		// log.info("config setting success...");
+		// <config-property name="http.client.resource" value="http.client.properties"/>
+		if (properties.containsKey("http.client.resource".toUpperCase())) {
+			this.httpClientResource = StringUtils.trim(properties.get("http.client.resource".toUpperCase()));
+		}
 	}
 
 	public void start(String resource) throws Throwable {

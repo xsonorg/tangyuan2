@@ -32,7 +32,12 @@ public class EsSourceVo {
 		return client;
 	}
 
-	public void start() {
-		client = new EsHttpClient();
+	public void start() throws Throwable {
+		this.client = new EsHttpClient(this);
+		this.client.init();
+	}
+
+	public void stop() {
+		this.client.shutdown();
 	}
 }

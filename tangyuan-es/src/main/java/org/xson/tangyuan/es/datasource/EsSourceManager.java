@@ -37,7 +37,7 @@ public class EsSourceManager {
 		return esSourceVoMap.get(esKey);
 	}
 
-	public static void start() {
+	public static void start() throws Throwable {
 		if (null != defaultVo) {
 			defaultVo.start();
 		} else {
@@ -48,6 +48,12 @@ public class EsSourceManager {
 	}
 
 	public static void stop() {
-
+		if (null != defaultVo) {
+			defaultVo.stop();
+		} else {
+			for (Entry<String, EsSourceVo> entry : esSourceVoMap.entrySet()) {
+				entry.getValue().stop();
+			}
+		}
 	}
 }

@@ -6,6 +6,7 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.rpc.client.AbstractRpcClient;
 import org.xson.tangyuan.rpc.xml.XMLConfigBuilder;
 
 /**
@@ -16,6 +17,8 @@ public class RpcClientComponent implements TangYuanComponent {
 	private static RpcClientComponent	instance	= new RpcClientComponent();
 
 	private Log							log			= LogFactory.getLog(getClass());
+
+	private AbstractRpcClient			rpcClient	= null;
 
 	private RpcClientComponent() {
 	}
@@ -35,14 +38,20 @@ public class RpcClientComponent implements TangYuanComponent {
 		log.info("rpc client component starting, version: " + Version.getVersion());
 		XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder();
 		xmlConfigBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
-		// TODO
 		log.info("rpc client component successfully.");
 	}
 
 	@Override
 	public void stop(boolean wait) {
 		log.info("rpc client component stopping...");
+		if (null != rpcClient) {
+			rpcClient.shutdown();
+		}
 		log.info("rpc client component stop successfully.");
+	}
+
+	public void setRpcClient(AbstractRpcClient rpcClient) {
+		this.rpcClient = rpcClient;
 	}
 
 }

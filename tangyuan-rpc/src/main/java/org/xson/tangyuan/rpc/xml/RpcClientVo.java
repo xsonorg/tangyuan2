@@ -1,6 +1,6 @@
 package org.xson.tangyuan.rpc.xml;
 
-import org.xson.tangyuan.rpc.client.AbstractClientRpc;
+import org.xson.tangyuan.rpc.client.AbstractRpcClient;
 import org.xson.tangyuan.rpc.client.HttpRpcClient;
 
 public class RpcClientVo {
@@ -12,11 +12,13 @@ public class RpcClientVo {
 	private String			id;
 	private ClientUseType	use;
 	private String			schema;
+	private String			resource;
 
-	public RpcClientVo(String id, ClientUseType use, String schema) {
+	public RpcClientVo(String id, ClientUseType use, String schema, String resource) {
 		this.id = id;
 		this.use = use;
 		this.schema = schema;
+		this.resource = resource;
 	}
 
 	public String getId() {
@@ -27,13 +29,21 @@ public class RpcClientVo {
 		return schema;
 	}
 
-	public AbstractClientRpc create() {
+	public String getResource() {
+		return resource;
+	}
+
+	public AbstractRpcClient create() throws Throwable {
+
+		AbstractRpcClient client = null;
+
 		if (ClientUseType.HTTP_CLIENT == use) {
-			return new HttpRpcClient(this);
+			client = new HttpRpcClient(this);
+			client.init();
 		}
 		// if (ClientUseType.PIGEON == use) {
 		// return new PigeonRpcClient(this);
 		// }
-		return null;
+		return client;
 	}
 }

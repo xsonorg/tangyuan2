@@ -36,11 +36,17 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>xson-httpclient</artifactId>
+			<scope>provided</scope>
+		</dependency>		
 
 		<dependency>
 			<groupId>com.alibaba</groupId>

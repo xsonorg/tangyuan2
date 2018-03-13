@@ -8,12 +8,15 @@ import java.util.Map;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.rpc.RpcClientComponent;
 import org.xson.tangyuan.rpc.RpcContainer;
 import org.xson.tangyuan.rpc.RpcProxy;
 import org.xson.tangyuan.rpc.TangYuanRpcPlaceHolderHandler;
-import org.xson.tangyuan.rpc.client.AbstractClientRpc;
+import org.xson.tangyuan.rpc.client.AbstractRpcClient;
 import org.xson.tangyuan.rpc.client.MixedRpcClient;
 import org.xson.tangyuan.rpc.xml.RpcClientVo.ClientUseType;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
@@ -41,6 +44,10 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		InputStream inputStream = Resources.getResourceAsStream(resource);
+
+		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
 		this.xPathParser = new XPathParser(inputStream);
 		root = xPathParser.evalNode("/rpc-component");
 		parseNode();
@@ -69,7 +76,7 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 
 		String defaultClientId = null;
 		// clientId->rpc impl
-		Map<String, AbstractClientRpc> rpcImplMap = new HashMap<String, AbstractClientRpc>();
+		Map<String, AbstractRpcClient> rpcImplMap = new HashMap<String, AbstractRpcClient>();
 		for (RpcClientVo rcVo : clientVoList) {
 			rpcImplMap.put(rcVo.getId(), rcVo.create());
 			log.info("init rpc client: " + rcVo.getId());
@@ -77,7 +84,7 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 		}
 
 		// domain->rpc impl
-		Map<String, AbstractClientRpc> rpcClientMap = new HashMap<String, AbstractClientRpc>();
+		Map<String, AbstractRpcClient> rpcClientMap = new HashMap<String, AbstractRpcClient>();
 		for (RemoteNodeVo rnVo : remoteVoList) {
 			rpcClientMap.put(rnVo.getDomain(), rpcImplMap.get(rnVo.getClient()));
 			remoteNodeMap.put(rnVo.getId(), rnVo);
@@ -88,11 +95,20 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 		// 3. m个客户端, n个remote
 
 		// 创建客户端, 非占位节点的
+		// if (1 == rpcImplMap.size() && 0 == remoteVoList.size()) {
+		// RpcProxy.setRpc(new MixedRpcClient(rpcImplMap.get(defaultClientId)));
+		// } else {
+		// RpcProxy.setRpc(new MixedRpcClient(rpcClientMap, remoteNodeMap));
+		// }
+
+		AbstractRpcClient rpcClient = null;
 		if (1 == rpcImplMap.size() && 0 == remoteVoList.size()) {
-			RpcProxy.setRpc(new MixedRpcClient(rpcImplMap.get(defaultClientId)));
+			rpcClient = new MixedRpcClient(rpcImplMap.get(defaultClientId));
 		} else {
-			RpcProxy.setRpc(new MixedRpcClient(rpcClientMap, remoteNodeMap));
+			rpcClient = new MixedRpcClient(rpcClientMap, remoteNodeMap);
 		}
+		RpcProxy.setRpc(rpcClient);
+		RpcClientComponent.getInstance().setRpcClient(rpcClient);
 	}
 
 	private void buildConfigNodes(List<XmlNodeWrapper> contexts) {
@@ -116,6 +132,8 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			String id = StringUtils.trim(context.getStringAttribute("id"));
 			String _use = StringUtils.trim(context.getStringAttribute("use"));
 			String schema = StringUtils.trim(context.getStringAttribute("schema"));
+			String resource = StringUtils.trim(context.getStringAttribute("resource"));
+
 			if (clientIdMap.containsKey(id)) {
 				throw new XmlParseException("Duplicate client: " + id);
 			}
@@ -127,7 +145,7 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			if ((ClientUseType.HTTP_CLIENT == use) && (null == schema || "".equals(schema))) {
 				schema = "http";
 			}
-			RpcClientVo vo = new RpcClientVo(id, use, schema);
+			RpcClientVo vo = new RpcClientVo(id, use, schema, resource);
 			list.add(vo);
 		}
 		return list;

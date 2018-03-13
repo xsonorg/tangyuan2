@@ -33,6 +33,7 @@ public class TangYuanContainer implements TangYuanComponent {
 	public final static String						XCO_MESSAGE_KEY					= "$$MESSAGE";
 	// XCO返回对象包装标识
 	public final static String						XCO_PACKAGE_KEY					= "$$PACKAGE";
+	public final static String						XCO_HEADER_KEY					= "$$HEADER";
 
 	public final static int							SUCCESS_CODE					= 0;
 

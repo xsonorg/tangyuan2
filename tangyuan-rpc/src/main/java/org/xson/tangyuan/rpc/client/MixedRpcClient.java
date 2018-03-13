@@ -2,10 +2,10 @@ package org.xson.tangyuan.rpc.client;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.rpc.RpcException;
-import org.xson.tangyuan.rpc.TangYuanRpc;
 import org.xson.tangyuan.rpc.xml.RemoteNodeVo;
 
 // www.baidu.com/xxx/yyy			1
@@ -13,23 +13,25 @@ import org.xson.tangyuan.rpc.xml.RemoteNodeVo;
 // pigeon://www.baidu.com/xxx/yyy	3
 // {aaaaaaaaaaa}/xxx/yyy			4
 
-public class MixedRpcClient implements TangYuanRpc {
+//public class MixedRpcClient implements TangYuanRpc {
+
+public class MixedRpcClient extends AbstractRpcClient {
 
 	// domain-->Client
-	private Map<String, AbstractClientRpc>	rpcClientMap;
+	private Map<String, AbstractRpcClient>	rpcClientMap;
 	// id-->remote-node
 	private Map<String, RemoteNodeVo>		remoteNodeMap;
 
-	private AbstractClientRpc				defaultClientRpc;
+	private AbstractRpcClient				defaultClientRpc;
 
 	private String							separator	= "/";
 
-	public MixedRpcClient(Map<String, AbstractClientRpc> rpcClientMap, Map<String, RemoteNodeVo> remoteNodeMap) {
+	public MixedRpcClient(Map<String, AbstractRpcClient> rpcClientMap, Map<String, RemoteNodeVo> remoteNodeMap) {
 		this.rpcClientMap = rpcClientMap;
 		this.remoteNodeMap = remoteNodeMap;
 	}
 
-	public MixedRpcClient(AbstractClientRpc defaultClientRpc) {
+	public MixedRpcClient(AbstractRpcClient defaultClientRpc) {
 		this.defaultClientRpc = defaultClientRpc;
 	}
 
@@ -64,7 +66,7 @@ public class MixedRpcClient implements TangYuanRpc {
 				domain = url.substring(0, beginIndex);
 			}
 		}
-		AbstractClientRpc rpc = rpcClientMap.get(domain);
+		AbstractRpcClient rpc = rpcClientMap.get(domain);
 		if (null == rpc) {
 			throw new RpcException("Illegal service URI: " + url);
 		}
@@ -80,6 +82,22 @@ public class MixedRpcClient implements TangYuanRpc {
 			url = defaultClientRpc.getSchema() + "://" + url;
 		}
 		return defaultClientRpc.call(url, request);
+	}
+
+	@Override
+	public void init() throws Throwable {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void shutdown() {
+		if (null != defaultClientRpc) {
+			defaultClientRpc.shutdown();
+		} else {
+			for (Entry<String, AbstractRpcClient> entry : rpcClientMap.entrySet()) {
+				entry.getValue().shutdown();
+			}
+		}
 	}
 
 }
