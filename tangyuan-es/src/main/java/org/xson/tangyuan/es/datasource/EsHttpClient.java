@@ -142,7 +142,7 @@ public class EsHttpClient {
 			inputStream.close();
 			vo = new HttpClientVo(properties);
 		}
-		this.factory = new HttpClientFactory(vo);
+		this.factory = new HttpClientFactory(vo, true);
 	}
 
 	public void shutdown() {
