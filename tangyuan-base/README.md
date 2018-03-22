@@ -21,3 +21,4 @@ tangyuan-base是tangyuan框架的基础类库。
 3. 增加zongzi依赖
 4. update TangYuanJPCBridge
 5. 增加服务统一返回XCO对象的控制参数, allServiceReturnXCO, code, message, data
+6. fix 默认值中的负数解析
