@@ -23,6 +23,13 @@
 			<version>${tangyuan.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-cache</artifactId>
+			<version>${tangyuan.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>

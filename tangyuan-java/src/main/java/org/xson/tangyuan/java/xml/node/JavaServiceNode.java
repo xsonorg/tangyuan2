@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.cache.apply.CacheCleanVo;
+import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
@@ -13,24 +15,50 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode;
  */
 public class JavaServiceNode extends AbstractServiceNode {
 
-	private static Log	log	= LogFactory.getLog(JavaServiceNode.class);
+	private static Log		log	= LogFactory.getLog(JavaServiceNode.class);
 
-	private Object		instance;
+	private Object			instance;
 
-	private Method		method;
+	private Method			method;
 
-	public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method) {
+	private CacheUseVo		cacheUse;
+
+	private CacheCleanVo	cacheClean;
+
+	// public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method) {
+	// this.id = id;
+	// this.ns = ns;
+	// this.serviceKey = serviceKey;
+	// this.instance = instance;
+	// this.method = method;
+	// this.serviceType = TangYuanServiceType.JAVA;
+	// }
+
+	public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method, CacheUseVo cacheUse, CacheCleanVo cacheClean) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
 		this.instance = instance;
 		this.method = method;
 		this.serviceType = TangYuanServiceType.JAVA;
+
+		this.cacheUse = cacheUse;
+		this.cacheClean = cacheClean;
 	}
 
 	@Override
 	public boolean execute(ServiceContext context, Object arg) throws Throwable {
 		Object result = null;
+
+		// 1. cache使用
+		if (null != cacheUse) {
+			result = cacheUse.getObject(arg);
+			if (null != result) {
+				context.setResult(result);
+				return true;
+			}
+		}
+
 		long startTime = System.currentTimeMillis();
 		try {
 			result = method.invoke(instance, arg);
@@ -45,6 +73,14 @@ public class JavaServiceNode extends AbstractServiceNode {
 			log.info("java execution time: " + getSlowServiceLog(startTime));
 		}
 		context.setResult(result);
+
+		if (null != cacheUse) {
+			cacheUse.putObject(arg, result);
+		}
+		if (null != cacheClean) {
+			cacheClean.removeObject(arg);
+		}
+
 		return true;
 	}
 
