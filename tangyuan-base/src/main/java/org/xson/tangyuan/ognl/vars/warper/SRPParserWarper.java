@@ -36,16 +36,22 @@ public class SRPParserWarper extends ParserWarper {
 			return callParser.parse(text);
 		}
 
+		// fixBug: 默认值处理
+		DefaultValueParser defaultValueParser = new DefaultValueParser();
+		if (defaultValueParser.check(text)) {
+			return defaultValueParser.parse(text);
+		}
+
 		// 是否是运算表达式, 只包含[+,-,*,/,%]
 		OperaExprParser exprParser = new OperaExprParser();
 		if (exprParser.check(text)) {
 			return exprParser.parse(text);
 		}
 
-		DefaultValueParser defaultValueParser = new DefaultValueParser();
-		if (defaultValueParser.check(text)) {
-			return defaultValueParser.parse(text);
-		}
+		// DefaultValueParser defaultValueParser = new DefaultValueParser();
+		// if (defaultValueParser.check(text)) {
+		// return defaultValueParser.parse(text);
+		// }
 
 		// 普通变量
 		return new NormalParser().parse(text);

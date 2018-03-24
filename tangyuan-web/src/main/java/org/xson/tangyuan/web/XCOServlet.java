@@ -48,7 +48,7 @@ public class XCOServlet extends HttpServlet {
 			}
 			return;
 		}
-
+		
 		RequestContext context = pretreatmentContext(req, resp, requestType);
 
 		ControllerVo cVo = container.getControllerVo(context.getUrl());
