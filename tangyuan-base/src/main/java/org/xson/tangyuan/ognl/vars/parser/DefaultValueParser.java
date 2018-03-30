@@ -25,6 +25,7 @@ public class DefaultValueParser extends AbstractParser {
 			switch (key) {
 			case '\'':
 				isString = !isString;
+				break;// bug
 			case '|':
 				if (!isString) {
 					return i;

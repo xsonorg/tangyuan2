@@ -18,7 +18,6 @@ public class BSONUtil {
 		if (value instanceof org.bson.types.ObjectId) {
 			xco.setStringValue(key, value.toString());
 		} else if (value instanceof DBObject) {
-			// BSONToXCO((DBObject) value, xco);
 			xco.setXCOValue(key, BSONToXCO((DBObject) value));
 		} else if (value instanceof BasicDBList) {
 			BasicDBList list = (BasicDBList) value;
@@ -46,7 +45,6 @@ public class BSONUtil {
 		if (value instanceof org.bson.types.ObjectId) {
 			map.put(key, value.toString());
 		} else if (value instanceof DBObject) {
-			// BSONToMap((DBObject) value, map);
 			map.put(key, BSONToMap((DBObject) value));
 		} else if (value instanceof BasicDBList) {
 			BasicDBList list = (BasicDBList) value;

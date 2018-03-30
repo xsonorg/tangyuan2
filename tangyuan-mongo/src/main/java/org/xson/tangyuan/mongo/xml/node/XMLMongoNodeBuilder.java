@@ -211,6 +211,7 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 		List<AbstractServiceNode> insertList = buildInsertNodes(context.evalNodes("insert"));
 		List<AbstractServiceNode> updateList = buildUpdateNodes(context.evalNodes("update"));
 		List<AbstractServiceNode> deleteList = buildDeleteNodes(context.evalNodes("delete"));
+		List<AbstractServiceNode> commandList = buildCommandNodes(context.evalNodes("mongo-command"));
 		List<AbstractServiceNode> sqlServiceList = buildSqlServiceNodes(context.evalNodes("mongo-service"));
 
 		registerService(selectSetList, "selectSet");
@@ -219,6 +220,7 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 		registerService(insertList, "insert");
 		registerService(updateList, "update");
 		registerService(deleteList, "delete");
+		registerService(commandList, "mongo-command");
 		registerService(sqlServiceList, "mongo-service");
 	}
 
@@ -479,6 +481,44 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 				MongoDeleteNode deleteNode = new MongoDeleteNode(id, ns, getFullId(id), dsKey, sqlNode, cacheClean);
 				list.add(deleteNode);
 			}
+		}
+		return list;
+	}
+
+	private List<AbstractServiceNode> buildCommandNodes(List<XmlNodeWrapper> contexts) {
+		List<AbstractServiceNode> list = new ArrayList<AbstractServiceNode>();
+		for (XmlNodeWrapper context : contexts) {
+
+			TangYuanNode sqlNode = parseNode(context, false);
+			if (null == sqlNode) {
+				continue;
+			}
+
+			String id = StringUtils.trim(context.getStringAttribute("id")); // xml
+			existingService(id);
+
+			String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
+			dsKey = checkDsKey(dsKey, id);
+
+			String _resultType = StringUtils.trim(context.getStringAttribute("resultType"));
+			String _resultMap = StringUtils.trim(context.getStringAttribute("resultMap"));
+			SelectResult selectResult = parseSelectResult(_resultType, _resultMap);
+
+			String _cacheUse = StringUtils.trim(context.getStringAttribute("cacheUse"));
+			CacheUseVo cacheUse = null;
+			if (null != _cacheUse && _cacheUse.length() > 0) {
+				cacheUse = parseCacheUse(_cacheUse, getFullId(id));
+			}
+
+			String _cacheClean = StringUtils.trim(context.getStringAttribute("cacheClean"));
+			CacheCleanVo cacheClean = null;
+			if (null != _cacheClean && _cacheClean.length() > 0) {
+				cacheClean = parseCacheClean(_cacheClean, getFullId(id));
+			}
+
+			MongoCommandNode commandNode = new MongoCommandNode(id, ns, getFullId(id), dsKey, sqlNode, cacheUse, cacheClean, selectResult.resultType,
+					selectResult.resultMap);
+			list.add(commandNode);
 		}
 		return list;
 	}
@@ -953,6 +993,54 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 		}
 	}
 
+	private class CommandHandler implements NodeHandler {
+		public void handleNode(XmlNodeWrapper nodeToHandle, List<TangYuanNode> targetContents) {
+			TangYuanNode sqlNode = parseNode(nodeToHandle, true);
+
+			String dsKey = StringUtils.trim(nodeToHandle.getStringAttribute("dsKey"));
+			if (null == dsKey) {
+				dsKey = dsKeyWithSqlService;
+			} else {
+				checkInnerDsKey(dsKey, "mongo-command");
+			}
+
+			String rowCount = StringUtils.trim(nodeToHandle.getStringAttribute("rowCount"));
+			if (null != rowCount) {
+				if (!checkVar(rowCount)) {
+					throw new XmlParseException("<mongo-command> rowCount is not legal, should be {xxx}.");
+				}
+				rowCount = getRealVal(rowCount);
+			}
+
+			String resultKey = StringUtils.trim(nodeToHandle.getStringAttribute("resultKey"));
+			if (null != resultKey) {
+				if (!checkVar(resultKey)) {
+					throw new XmlParseException("<mongo-command> resultKey is not legal, should be {xxx}");
+				}
+				resultKey = getRealVal(resultKey);
+			}
+			
+			if(null == resultKey){
+				resultKey = rowCount;
+			}
+
+			String _cacheUse = StringUtils.trim(nodeToHandle.getStringAttribute("cacheUse"));
+			CacheUseVo cacheUse = null;
+			if (null != _cacheUse && _cacheUse.length() > 0) {
+				cacheUse = parseCacheUse(_cacheUse, "");
+			}
+
+			String _cacheClean = StringUtils.trim(nodeToHandle.getStringAttribute("cacheClean"));
+			CacheCleanVo cacheClean = null;
+			if (null != _cacheClean && _cacheClean.length() > 0) {
+				cacheClean = parseCacheClean(_cacheClean, "");
+			}
+
+			InternalMongoCommandNode commandNode = new InternalMongoCommandNode(dsKey, resultKey, sqlNode, cacheUse, cacheClean);
+			targetContents.add(commandNode);
+		}
+	}
+
 	private Map<String, NodeHandler> nodeHandlers = new HashMap<String, NodeHandler>() {
 		private static final long serialVersionUID = 1L;
 
@@ -972,6 +1060,7 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 			put("update", new UpdateHandler());
 			put("delete", new DeleteHandler());
 			put("insert", new InsertHandler());
+			put("mongo-command", new CommandHandler());
 			put("call", new CallHandler());
 		}
 	};

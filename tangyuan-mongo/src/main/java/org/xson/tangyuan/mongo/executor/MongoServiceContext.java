@@ -9,6 +9,7 @@ import org.xson.tangyuan.executor.IServiceContext;
 import org.xson.tangyuan.executor.IServiceExceptionInfo;
 import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.mapping.MappingVo;
+import org.xson.tangyuan.mongo.executor.cmd.CommandActuator;
 import org.xson.tangyuan.mongo.xml.node.AbstractMongoNode;
 
 public class MongoServiceContext implements IServiceContext {
@@ -21,9 +22,11 @@ public class MongoServiceContext implements IServiceContext {
 	private String			realDsKey		= null;
 
 	private MongoActuator	mongoActuator	= null;
+	private CommandActuator	commandActuator	= null;
 
 	protected MongoServiceContext() {
 		this.mongoActuator = new MongoActuator();
+		this.commandActuator = new CommandActuator();
 	}
 
 	/**
@@ -98,6 +101,12 @@ public class MongoServiceContext implements IServiceContext {
 	public Object executeInsert(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Object result = mongoActuator.insert(dsKey, getSql(), arg);
+		return result;
+	}
+
+	public Object executeCommand(AbstractMongoNode sqlNode, Object arg, Class<?> resultType, MappingVo resultMap) throws Throwable {
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		Object result = commandActuator.execute(getSql(), dsKey, resultType, resultMap);
 		return result;
 	}
 
