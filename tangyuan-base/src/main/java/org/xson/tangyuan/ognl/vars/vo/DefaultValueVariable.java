@@ -33,7 +33,7 @@ public class DefaultValueVariable extends Variable {
 				return new java.util.Date();
 			} else if (2 == defaultValueType) {
 				return new java.sql.Date(new java.util.Date().getTime());
-			} else {
+			} else if (3 == defaultValueType) {
 				return new java.sql.Time(new java.util.Date().getTime());
 			}
 		}

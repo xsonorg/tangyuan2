@@ -211,7 +211,8 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 		List<AbstractServiceNode> insertList = buildInsertNodes(context.evalNodes("insert"));
 		List<AbstractServiceNode> updateList = buildUpdateNodes(context.evalNodes("update"));
 		List<AbstractServiceNode> deleteList = buildDeleteNodes(context.evalNodes("delete"));
-		List<AbstractServiceNode> commandList = buildCommandNodes(context.evalNodes("mongo-command"));
+		// List<AbstractServiceNode> commandList = buildCommandNodes(context.evalNodes("mongo-command"));
+		List<AbstractServiceNode> commandList = buildCommandNodes(context.evalNodes("command"));
 		List<AbstractServiceNode> sqlServiceList = buildSqlServiceNodes(context.evalNodes("mongo-service"));
 
 		registerService(selectSetList, "selectSet");
@@ -220,7 +221,8 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 		registerService(insertList, "insert");
 		registerService(updateList, "update");
 		registerService(deleteList, "delete");
-		registerService(commandList, "mongo-command");
+//		registerService(commandList, "mongo-command");
+		registerService(commandList, "command");
 		registerService(sqlServiceList, "mongo-service");
 	}
 
@@ -1001,13 +1003,13 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 			if (null == dsKey) {
 				dsKey = dsKeyWithSqlService;
 			} else {
-				checkInnerDsKey(dsKey, "mongo-command");
+				checkInnerDsKey(dsKey, "command");
 			}
 
 			String rowCount = StringUtils.trim(nodeToHandle.getStringAttribute("rowCount"));
 			if (null != rowCount) {
 				if (!checkVar(rowCount)) {
-					throw new XmlParseException("<mongo-command> rowCount is not legal, should be {xxx}.");
+					throw new XmlParseException("<command> rowCount is not legal, should be {xxx}.");
 				}
 				rowCount = getRealVal(rowCount);
 			}
@@ -1015,12 +1017,12 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 			String resultKey = StringUtils.trim(nodeToHandle.getStringAttribute("resultKey"));
 			if (null != resultKey) {
 				if (!checkVar(resultKey)) {
-					throw new XmlParseException("<mongo-command> resultKey is not legal, should be {xxx}");
+					throw new XmlParseException("<command> resultKey is not legal, should be {xxx}");
 				}
 				resultKey = getRealVal(resultKey);
 			}
-			
-			if(null == resultKey){
+
+			if (null == resultKey) {
 				resultKey = rowCount;
 			}
 
@@ -1060,7 +1062,7 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 			put("update", new UpdateHandler());
 			put("delete", new DeleteHandler());
 			put("insert", new InsertHandler());
-			put("mongo-command", new CommandHandler());
+			put("command", new CommandHandler());
 			put("call", new CallHandler());
 		}
 	};

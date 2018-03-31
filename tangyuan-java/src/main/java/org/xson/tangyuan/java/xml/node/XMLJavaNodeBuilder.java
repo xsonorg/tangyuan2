@@ -106,7 +106,8 @@ public class XMLJavaNodeBuilder extends XmlNodeBuilder {
 			}
 
 			// 缓存解析
-			Map<String, JavaServiceCacheVo> serviceCacheMap = parseServiceCache(context.evalNodes("cache"));
+			// Map<String, JavaServiceCacheVo> serviceCacheMap = parseServiceCache(context.evalNodes("cache"));
+			Map<String, JavaServiceCacheVo> serviceCacheMap = parseServiceCache(context.evalNodes("methodCache"));
 
 			parseClass(ns, clazz, includeList, excludeList, serviceCacheMap);
 

@@ -3,6 +3,7 @@ package com.mongodb.util;
 import java.util.regex.Pattern;
 
 import org.bson.BSONCallback;
+import org.bson.types.ObjectId;
 
 public class JSONExt {
 
@@ -206,6 +207,18 @@ class JSONParser {
 		case '\"':
 			value = parseString(true);
 			break;
+		// ObjectId
+		case 'O':
+			read('O');
+			read('b');
+			read('j');
+			read('e');
+			read('c');
+			read('t');
+			read('I');
+			read('d');
+			value = parseObjectId(name);
+			break;
 		// number
 		case '0':
 		case '1':
@@ -239,15 +252,29 @@ class JSONParser {
 		return value;
 	}
 
+	protected Object parseObjectId(final String name) {
+		int start = s.indexOf("\"", pos + 1);
+		if (-1 == start) {
+			throw new IllegalStateException("parse ObjectId error.\n" + s);
+		}
+		int end = s.indexOf("\"", start + 1);
+		if (-1 == end) {
+			throw new IllegalStateException("parse ObjectId error.\n" + s);
+		}
+		int next = s.indexOf(")", end + 1);
+		if (-1 == next) {
+			throw new IllegalStateException("parse ObjectId error.\n" + s);
+		}
+		this.pos = next + 1;
+		// System.out.println("ObjectId:" + s.substring(start + 1, end));
+		return new ObjectId(s.substring(start + 1, end));
+	}
+
 	protected Object parseRegex(final String name) {
-		// System.out.println(this.pos);
-		// System.out.println(this.s);
 
 		int start = pos + 1;
 		int end = -1;
 		char current;
-
-		// System.out.println("XX:" + s.charAt(start));
 
 		while (start < s.length()) {
 			// /abc/ig,
@@ -261,24 +288,6 @@ class JSONParser {
 
 		if (end > 0) {
 			String regexString = s.substring(pos + 1, end);
-			// System.out.println("reg===================" + regexString);
-			// System.out.println("XX:" + s.charAt(start));
-
-			// this.pos = start;
-			// int flags = 0;
-			// while (start < s.length()) {
-			// if ((start + 1) < s.length()) {
-			// current = s.charAt(start + 1);
-			// if (JSRegexUtil.isFlag(current)) {
-			// flags = JSRegexUtil.regexFlags(current, flags);
-			// start++;
-			// } else {
-			// break;
-			// }
-			// }
-			// }
-			// this.pos = start + 1;
-
 			start++;
 			int flags = 0;
 			while (start < s.length()) {
@@ -358,11 +367,15 @@ class JSONParser {
 			_callback.gotLong(name, (Long) value);
 		} else if (value instanceof Double) {
 			_callback.gotDouble(name, (Double) value);
+		} else if (value instanceof ObjectId) {
+			_callback.gotObjectId(name, (ObjectId) value);
 		}
+
 		// regex
 		else if (value instanceof Pattern) {
 			((JSONExtCallback) _callback).gotRegex(name, (Pattern) value);
 		}
+
 	}
 
 	/**

@@ -39,21 +39,35 @@ public class CommandActuator {
 	private CommandParser						parser					= new CommandParser();
 
 	static {
-		collectionHandlerMap.put("count", new CountHandler());
-		collectionHandlerMap.put("find", new FindHandler());
-		collectionHandlerMap.put("findAndModify", new FindAndModifyHandler());
-		collectionHandlerMap.put("findOne", new FindOneHandler());
-		// collectionHandlerMap.put("", new CountHandler());
-		collectionHandlerMap.put("group", new GroupHandler());
-		collectionHandlerMap.put("insert", new InsertHandler());
-		collectionHandlerMap.put("remove", new RemoveHandler());
-		collectionHandlerMap.put("save", new SaveHandler());
-		collectionHandlerMap.put("update", new UpdateHandler());
+		// collectionHandlerMap.put("count", new CountHandler());
+		// collectionHandlerMap.put("find", new FindHandler());
+		// collectionHandlerMap.put("findAndModify", new FindAndModifyHandler());
+		// collectionHandlerMap.put("findOne", new FindOneHandler());
+		// collectionHandlerMap.put("group", new GroupHandler());
+		// collectionHandlerMap.put("insert", new InsertHandler());
+		// collectionHandlerMap.put("remove", new RemoveHandler());
+		// collectionHandlerMap.put("save", new SaveHandler());
+		// collectionHandlerMap.put("update", new UpdateHandler());
+		//
+		// cursorHandlerMap.put("count", new CursorCountHandler());
+		// cursorHandlerMap.put("limit", new CursorLimitHandler());
+		// cursorHandlerMap.put("skip", new CursorSkipHandler());
+		// cursorHandlerMap.put("sort", new CursorSortHandler());
 
-		cursorHandlerMap.put("count", new CursorCountHandler());
-		cursorHandlerMap.put("limit", new CursorLimitHandler());
-		cursorHandlerMap.put("skip", new CursorSkipHandler());
-		cursorHandlerMap.put("sort", new CursorSortHandler());
+		collectionHandlerMap.put("count".toUpperCase(), new CountHandler());
+		collectionHandlerMap.put("find".toUpperCase(), new FindHandler());
+		collectionHandlerMap.put("findAndModify".toUpperCase(), new FindAndModifyHandler());
+		collectionHandlerMap.put("findOne".toUpperCase(), new FindOneHandler());
+		collectionHandlerMap.put("group".toUpperCase(), new GroupHandler());
+		collectionHandlerMap.put("insert".toUpperCase(), new InsertHandler());
+		collectionHandlerMap.put("remove".toUpperCase(), new RemoveHandler());
+		collectionHandlerMap.put("save".toUpperCase(), new SaveHandler());
+		collectionHandlerMap.put("update".toUpperCase(), new UpdateHandler());
+
+		cursorHandlerMap.put("count".toUpperCase(), new CursorCountHandler());
+		cursorHandlerMap.put("limit".toUpperCase(), new CursorLimitHandler());
+		cursorHandlerMap.put("skip".toUpperCase(), new CursorSkipHandler());
+		cursorHandlerMap.put("sort".toUpperCase(), new CursorSortHandler());
 	}
 
 	public Object execute(String context, String dsKey, Class<?> resultType, MappingVo resultMap) {
@@ -81,14 +95,14 @@ public class CommandActuator {
 			return MongoSupport.getCollection(dsKey, vo.getAction());
 			// return ((DB) target).getCollection(vo.getAction());
 		} else if (target instanceof DBCollection) {
-			CommandHandler handler = collectionHandlerMap.get(vo.getAction());
-			if (null != handler) {
+			CommandHandler handler = collectionHandlerMap.get(vo.getAction().toUpperCase());
+			if (null == handler) {
 				throw new TangYuanException("Unsupported DBCollection action: " + vo.getAction());
 			}
 			return handler.process(target, vo, MongoSupport.getDefaultWriteConcern(dsKey));
 		} else if (target instanceof DBCursor) {
-			CommandHandler handler = cursorHandlerMap.get(vo.getAction());
-			if (null != handler) {
+			CommandHandler handler = cursorHandlerMap.get(vo.getAction().toUpperCase());
+			if (null == handler) {
 				throw new TangYuanException("Unsupported DBCursor action: " + vo.getAction());
 			}
 			return handler.process(target, vo, MongoSupport.getDefaultWriteConcern(dsKey));
@@ -121,7 +135,8 @@ public class CommandActuator {
 			WriteResult result = (WriteResult) mongoResult;
 			return result.getN();
 		}
-		throw new TangYuanException("Command return unsupported data type: " + mongoResult.getClass().getName());
+		// throw new TangYuanException("Command return unsupported data type: " + mongoResult.getClass().getName());
+		return mongoResult;
 	}
 
 	private List<Map<String, Object>> getResults(DBCursor cursor, MappingVo resultMap) {

@@ -27,6 +27,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="setvar"/>
 					<xs:element ref="log"/>
 					<xs:element ref="if"/>
@@ -99,6 +100,27 @@
 			<xs:attribute name="cacheUse" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="command">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="include"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="dsKey" type="xs:string"/>
+			<xs:attribute name="resultType" type="xs:string"/>
+			<xs:attribute name="resultMap" type="xs:string"/>
+			<xs:attribute name="resultKey" type="xs:string"/>
+			<xs:attribute name="rowCount" type="xs:string"/>
+			<xs:attribute name="cacheUse" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="insert">
 		<xs:complexType>
 			<xs:sequence>
@@ -160,6 +182,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="setvar"/>
 					<xs:element ref="log"/>
 					<xs:element ref="if"/>
@@ -227,6 +250,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="setvar"/>
 					<xs:element ref="log"/>
 					<xs:element ref="if"/>
@@ -251,6 +275,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="setvar"/>
 					<xs:element ref="log"/>
 					<xs:element ref="if"/>
@@ -275,6 +300,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="setvar"/>
 					<xs:element ref="log"/>
 					<xs:element ref="if"/>
@@ -298,6 +324,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="setvar"/>
 					<xs:element ref="log"/>
 					<xs:element ref="if"/>
@@ -385,6 +412,7 @@
 					<xs:element ref="insert"/>
 					<xs:element ref="update"/>
 					<xs:element ref="delete"/>
+					<xs:element ref="command"/>
 					<xs:element ref="mongo-service"/>
 				</xs:choice>
 			</xs:sequence>

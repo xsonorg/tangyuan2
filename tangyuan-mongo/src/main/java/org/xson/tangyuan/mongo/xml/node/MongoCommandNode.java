@@ -54,6 +54,9 @@ public class MongoCommandNode extends AbstractMongoNode {
 			}
 		}
 
+		// 2. 清理和重置执行环境
+		mongoContext.resetExecEnv();
+
 		long startTime = System.currentTimeMillis();
 		Object result = null;
 
@@ -110,7 +113,7 @@ public class MongoCommandNode extends AbstractMongoNode {
 			return getResultBean(context);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Object getResultBean(Object value) {
 		if (null == resultMap) {

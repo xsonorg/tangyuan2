@@ -25,7 +25,7 @@ public class DefaultValueParser extends AbstractParser {
 			switch (key) {
 			case '\'':
 				isString = !isString;
-				break;// bug
+				break;// fix bug
 			case '|':
 				if (!isString) {
 					return i;
@@ -36,10 +36,6 @@ public class DefaultValueParser extends AbstractParser {
 	}
 
 	public boolean check(String text) {
-		// if (text.indexOf("|") > -1) {
-		// return true;
-		// }
-		// return false;
 		int pos = getDefaultMarkPos(text);
 		if (pos > -1) {
 			return true;
