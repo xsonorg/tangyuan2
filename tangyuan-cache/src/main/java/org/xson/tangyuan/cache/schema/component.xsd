@@ -4,11 +4,18 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/cache/component" targetNamespace="http://xson.org/schema/tangyuan/cache/component" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="config-property">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="serializer">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="cache">
@@ -37,6 +44,8 @@
 			<xs:attribute name="class" type="xs:string" use="optional"/>
 			<xs:attribute name="resource" type="xs:string" use="optional"/>
 			<xs:attribute name="default" type="xs:boolean" use="optional"/>
+			<xs:attribute name="defaultExpiry" type="xs:long" use="optional"/>
+			<xs:attribute name="serializer" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="cacheGroup">
@@ -59,6 +68,7 @@
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="config-property"/>
+					<xs:element ref="serializer"/>
 					<xs:element ref="cache"/>
 					<xs:element ref="cacheGroup"/>
 				</xs:choice>

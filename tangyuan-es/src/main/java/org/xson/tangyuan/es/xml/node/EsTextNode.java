@@ -63,6 +63,8 @@ public class EsTextNode implements TangYuanNode {
 	public boolean execute(ServiceContext context, Object arg) throws Throwable {
 		EsServiceContext mongoContext = (EsServiceContext) context.getServiceContext(TangYuanServiceType.ES);
 
+		boolean ignoreQuotes = mongoContext.getIgnoreQuotes();
+
 		if (null == this.dynamicVarList) {
 			mongoContext.addSql(this.staticSql);
 		} else {
@@ -97,8 +99,11 @@ public class EsTextNode implements TangYuanNode {
 					}
 
 					if (val instanceof String) {
-						// val = "'" + (String) val + "'";
-						val = "\"" + (String) val + "\"";
+						// 专用于URL中
+						if (!ignoreQuotes) {
+							// val = "'" + (String) val + "'";
+							val = "\"" + (String) val + "\"";
+						}
 					}
 
 					// support array and collection

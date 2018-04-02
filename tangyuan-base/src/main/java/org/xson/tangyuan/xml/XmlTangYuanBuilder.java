@@ -148,14 +148,19 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			}
 			PlaceholderResourceSupport.processMap(properties, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 
+			// startup-before
+			// startup-after
+			// shutdown-before
+			// shutdown-after
+
 			StartupAndShutdownHandler handler = (StartupAndShutdownHandler) TangYuanUtil.newInstance(handlerClass);
-			if ("starting_before".equalsIgnoreCase(type)) {
+			if ("startup-before".equalsIgnoreCase(type)) {
 				this.startingBeforeList.add(new StartupAndShutdownVo(handler, properties, className));
-			} else if ("starting_after".equalsIgnoreCase(type)) {
+			} else if ("startup-after".equalsIgnoreCase(type)) {
 				this.startingAfterList.add(new StartupAndShutdownVo(handler, properties, className));
-			} else if ("closing_before".equalsIgnoreCase(type)) {
+			} else if ("shutdown-before".equalsIgnoreCase(type)) {
 				closingBeforeList.add(new StartupAndShutdownVo(handler, properties, className));
-			} else if ("closing_after".equalsIgnoreCase(type)) {
+			} else if ("shutdown-after".equalsIgnoreCase(type)) {
 				closingAfterList.add(new StartupAndShutdownVo(handler, properties, className));
 			} else {
 				throw new XmlParseException(TangYuanUtil.format("Unsupported ss-aop type: {}", type));

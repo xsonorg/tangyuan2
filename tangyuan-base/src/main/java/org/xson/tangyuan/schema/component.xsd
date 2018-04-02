@@ -6,6 +6,11 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/component" targetNamespace="http://xson.org/schema/tangyuan/component" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="placeholder">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="config-property">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -30,27 +35,40 @@
 						<xs:enumeration value="aop"/>
 					</xs:restriction>
 				</xs:simpleType>
-			</xs:attribute>			
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="initBefore">
+	<xs:element name="ss-aop">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="initAfter">
-		<xs:complexType>
-			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="startup-before"/>
+						<xs:enumeration value="startup-after"/>
+						<xs:enumeration value="shutdown-before"/>
+						<xs:enumeration value="shutdown-after"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="tangyuan-component">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="placeholder"/>
 					<xs:element ref="config-property"/>
-					<xs:element ref="initBefore"/>
+					<xs:element ref="ss-aop"/>
 					<xs:element ref="component"/>
-					<xs:element ref="initAfter"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>

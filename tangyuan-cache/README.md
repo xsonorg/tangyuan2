@@ -31,3 +31,7 @@ tangyuan-cache是tangyuan框架中的缓存组件，提供缓存的技术实现�
 ### 版本更新
 
 1. share模式
+
+2. 增加serializer节点，增加CacheSerializer接口
+
+3. cache节点增加defaultExpiry属性、serializer属性

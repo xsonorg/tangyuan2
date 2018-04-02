@@ -53,6 +53,7 @@ public class EsPostNode extends AbstractEsNode {
 
 		// 2. 清理和重置执行环境
 		esContext.resetExecEnv();
+		esContext.setIgnoreQuotes();
 		sqlNode.execute(context, arg); // 获取URL
 		String url = StringUtils.trim(esContext.getSql());
 
