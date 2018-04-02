@@ -27,6 +27,8 @@
 						<xs:enumeration value="java"/>
 						<xs:enumeration value="mongo"/>
 						<xs:enumeration value="mq"/>
+						<xs:enumeration value="es"/>
+						<xs:enumeration value="hbase"/>
 						<xs:enumeration value="timer"/>
 						<xs:enumeration value="rpc"/>
 						<xs:enumeration value="web"/>

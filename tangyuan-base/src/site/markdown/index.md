@@ -26,7 +26,7 @@ TangYuan默认提供的10种基础功能支持均以组件化的方式存在，�
 
 > 1.多样化的组件
 
-Tangyuan默认提供10种基础功能组件，包括sql、java、mongo、mq、aop、rpc、cache、timer、validate和web，为开发者提供完备的基础功能支持；
+Tangyuan默认提供12种基础功能组件，包括sql、java、mongo、mq、hbase、elasticsearch、aop、rpc、cache、timer、validate和web，为开发者提供完备的基础功能支持；
 
 > 2.可定制型
 
@@ -42,7 +42,7 @@ Tangyuan默认提供10种基础功能组件，包括sql、java、mongo、mq、ao
 	
 > 5.可扩展性
 
-由于组件化的设计模式，框架可以很方便的提供基础功能的扩展。比如增加Hbase的支持，则只需要开发一套Hbase组件，整合进Tangyuan如何即可。
+由于组件化的设计模式，框架可以很方便的提供基础功能的扩展。比如增加Hive的支持，则只需要开发一套Hive组件，整合进Tangyuan如何即可。
 
 
 ### 2. TangYuan组件
@@ -53,49 +53,65 @@ Tangyuan默认提供10种基础功能组件，包括sql、java、mongo、mq、ao
 
 > SQL组件
 
-提供SQL服务的功能支持，详见<http://www.xson.org/project/sql/1.2.0/>
+提供SQL服务的功能支持，详见<http://www.xson.org/project/sql/1.2.2/>
 
 > JAVA组件
 
-提供JAVA服务的功能支持，详见<http://www.xson.org/project/java/1.2.0/>
+提供JAVA服务的功能支持，详见<http://www.xson.org/project/java/1.2.2/>
 
 > MONGO组件
 
-提供MONGO服务的功能支持，详见<http://www.xson.org/project/mongo/1.2.0/>
+提供MONGO服务的功能支持，详见<http://www.xson.org/project/mongo/1.2.2/>
 
 > MQ组件
 
-提供消息服务的功能支持，详见<http://www.xson.org/project/mq/1.2.0/>
+提供消息服务的功能支持，详见<http://www.xson.org/project/mq/1.2.2/>
+
+> HBASE组件
+
+提供HBase服务的功能支持，详见<http://www.xson.org/project/hbase/1.2.2/>
+
+> ElasticSearch组件
+
+提供ElasticSearch服务的功能支持，详见<http://www.xson.org/project/es/1.2.2/>
 
 > WEB组件
 
-提供控制层的功能支持，详见<http://www.xson.org/project/web/1.2.0/>
+提供控制层的功能支持，详见<http://www.xson.org/project/web/1.2.2/>
 
 > AOP组件
 
-提供AOP的功能支持，详见<http://www.xson.org/project/aop/1.2.0/>
+提供AOP的功能支持，详见<http://www.xson.org/project/aop/1.2.2/>
 
 > RPC组件
 
-提供RPC的功能支持，详见<http://www.xson.org/project/rpc/1.2.0/>
+提供RPC的功能支持，详见<http://www.xson.org/project/rpc/1.2.2/>
 
 > CACHE组件
 
-提供缓存的功能支持，详见<http://www.xson.org/project/cache/1.2.0/>
+提供缓存的功能支持，详见<http://www.xson.org/project/cache/1.2.2/>
 
 > VALIDATE组件
 
-提供数据验证的功能支持，详见<http://www.xson.org/project/validate/1.2.0/>
+提供数据验证的功能支持，详见<http://www.xson.org/project/validate/1.2.2/>
 
 > TIMER组件
 
-提供定时程序的功能支持，详见<http://www.xson.org/project/timer/1.2.0/>
+提供定时程序的功能支持，详见<http://www.xson.org/project/timer/1.2.2/>
 
 ### 3. 最新版本
 
-当前最新版本：1.2.0
+当前最新版本：1.2.2
 
 ### 4. 源码
 
 <https://github.com/xsonorg/tangyuan2>
 
+### 5. 新版本功能
+
++ 新增Hbase组件，提供Hbase服务的支持；
++ 新增ElasticSearch组件，提供ElasticSearch服务的支持；
++ 新增RESTful控制器的支持；
++ 新增占位变量的支持；
++ 新增Java服务缓存的支持；
++ Mongo组件新增命令模式的支持；

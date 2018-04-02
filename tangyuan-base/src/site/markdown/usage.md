@@ -1,6 +1,174 @@
 # 使用说明
 
-### 1. 服务的访问
+## 1. 配置示例
 
-### 2. 返回结果
+sdfsdffffffffffffffffff
+
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
+		
+		<!--系统变量配置-->
+		<config-property name="maxWaitTimeForShutDown" value="60"/>
+		
+		<!--启动、关闭时的AOP配置-->
+		<ss-aop type="startup-before" class="org.xson.tangyuan2.demo.ssaop.StartupBefore" />
+		<ss-aop type="startup-after" class="org.xson.tangyuan2.demo.ssaop.StartupAfter" />
+		<ss-aop type="shutdown-before" class="org.xson.tangyuan2.demo.ssaop.ShutdownBefore" />
+		<ss-aop type="shutdown-after" class="org.xson.tangyuan2.demo.ssaop.ShutdownAfter" />
+		
+		<!--组件配置-->
+		<component resource="component-sql.xml" type="sql" />
+		<component resource="component-mongo.xml" type="mongo" />
+		<component resource="component-java.xml" type="java" />
+		<component resource="component-hbase.xml" type="hbase" />
+		<component resource="component-es.xml" type="es" />
+		<component resource="component-mq.xml" type="mq" />
+		<component resource="component-cache.xml" type="cache" />
+		<component resource="component-rpc.xml" type="rpc" />
+		<component resource="component-timer.xml" type="timer" />
+		<component resource="component-aop.xml" type="aop" />
+		<component resource="component-validate.xml" type="validate" />
+		<component resource="component-web.xml" type="web" />
+
+	</tangyuan-component>
+
+### 2. 配置说明
+
+#### 2.1 系统变量配置
+
+tangyuan框架中，如果想覆盖一些系统预设的变量，可以通过`<config-property>`标签进行配置。
+
+> config-property节点属性说明
+
+| 属性 | 用途 | 必填 | 取值 |
+| --- | --- | --- | --- |
+| name | 系统变量名 | Y | String |
+| value | 系统变量值 | Y | String |
+
+> 目前所支持的系统变量
+
+| 系统变量名 | 用途 | 取值 | 默认值 |
+| --- | --- | --- | --- |
+| errorCode | 服务异常时，默认返回的错误码 | int | -1 |
+| errorMessage | 服务异常时，默认返回的错误信息 | String | '服务异常' |
+| jdkProxy | 创建类实例的时候，是否使用JDK反射方式创建 | boolean | false |
+| maxWaitTimeForShutDown | 容器关闭时等待现有服务执行完毕的最大等待时间(单位：秒) | long | 10 |
+| allServiceReturnXCO | 服务返回对象是否统一为XCO类型 | boolean | false |
+
+
+#### 2.2 启动、关闭时的AOP配置
+
+如果开发者希望在tangyuan框架启动或者关闭的时候，执行一些自定义的方法，可以通过`<ss-aop>`标签进行配置。
+
+> ss-aop节点属性说明
+
+| 属性 | 用途 | 必填 | 取值 |
+| --- | --- | --- | --- |
+| type | AOP的类型，也代表了其执行时机。 | Y | String |
+| class | AOP实现类，注意：此处的实现类需要实现`StartupAndShutdownHandler`接口。 | Y | String |
+
+> ss-aop类型和执行时机
+
+| 类型 | 描述 |
+| --- | --- |
+| startup-before | 在tangyuan各组件初始化之前 |
+| startup-after | 在tangyuan各组件初始化之后 |
+| shutdown-before | 在tangyuan各组件关闭之前 |
+| shutdown-after | 在tangyuan各组件关闭之后 |
+
+#### 2.3 组件配置
+
+tangyuan框架中，各种组件是通过`<component>`标签进行配置的。注意：同一种用途的组件，最多只能配置一项。
+
+> component节点属性说明
+
+| 属性 | 用途 | 必填 | 取值 |
+| --- | --- | --- | --- |
+| resource | 组件的配置文件 | Y | String |
+| type | 组件的类型，详见：组件类型列表 | Y | String |
+
+> 组件类型列表
+
+| 组件类型 | 描述 |
+| --- | --- |
+| sql | SQL服务组件 |
+| java | JAVA服务组件 |
+| mongo | MONGO服务组件 |
+| mq | 消息服务组件 |
+| es | ElasticSearch服务组件 |
+| hbase | HBase服务组件 |
+| timer | 定时程序组件 |
+| rpc | RPC通讯服务组件 |
+| web | WEB组件 |
+| cache | 缓存组件 |
+| validate | 数据验证组件 |
+| aop | AOP组件 |
+
+## 2. 服务的访问
+
+在tangyuan框架中，假如我们定义了一个SQL服务，那我们该如何访问它呢？
+
+### 1. 示例
+
+> 服务定义
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/service.xsd"
+		ns="role">
+	
+		<selectSet id="getRoleList" dsKey="readDB" txRef="tx_01">
+			select * from system_role
+		</selectSet>
+	
+	</sqlservices>
+
+> 访问
+
+	@Test
+	public void testApp() throws Throwable {
+		XCO request = new XCO();
+		Object result = ServiceActuator.execute("role/getRoleList", request);
+		System.out.println(result);
+	}
+
+> 说明
+
+通过上述示例我们可以看到，我们是通过`ServiceActuator`类的`execute`方法来进行服务的访问。其中：`role/getRoleList`是完整的服务名,`request`是请求参数，上例中为一个XCO对象，也是tangyuan中默认的参数对象类型。
+
+### 2. tangyuan中的服务名
+
+上文提到的`完整的服务名`。什么是完整的服务名呢？在tangyuan框架中服务是核心，所以服务的名称也需要遵循一些规范。一个完整的服务名定义如下：
+
+**[scheme:][//host[:port]]/NS/ID**
+
+比如上例中的`role/getRoleList`，其中`role`为NS(命名空间)，getRoleList为ID(服务ID)，之间用`/`相连。但为什么没有`[scheme:][//host[:port]]`部分呢？因为示例中是的调用者和服务定义位于一个系统中，如果是分布式系统之间的调用（调用者和服务位于不同的系统），则需要增加前面的部分，例如：`http://xson.org/user/getUserList`。
+
+	
+	
+
+### 2. 访问方式
+
+上例中我们通过`ServiceActuator`类的`execute`方法来进行服务的访问，而在`ServiceActuator`类中，一共有三个方法可以进行服务的访问，具体的区别如下：
+
+	// 同步调用，使用当前存在的上下文，如果当前不存在上下文，则开启一个新的上下文
+	public static <T> T execute(String serviceURI, Object arg) throws ServiceException {
+		...
+	}
+
+	// 同步调用，开启一个新的上下文
+	public static <T> T executeAlone(String serviceURI, Object arg) throws ServiceException {
+		...
+	}
+
+	// 异步调用，开启一个新的上下文
+	public static void executeAsync(final String serviceURI, final Object arg) {
+		...
+	}
+
+### 3. 上下文
+
+### 4. 返回结果
 

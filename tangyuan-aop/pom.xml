@@ -4,7 +4,7 @@
 
 	<groupId>org.xson</groupId>
 	<artifactId>tangyuan-aop</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.2</version>
 	<packaging>jar</packaging>
 
 	<name>tangyuan-aop</name>

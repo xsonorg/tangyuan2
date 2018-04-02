@@ -7,7 +7,7 @@ tangyuan-aop是tangyuan框架中的AOP组件，是基于AOP（面向切面编程
 
 ### 2. 版本和引用
 
-当前最新版本：1.2.0
+当前最新版本：1.2.2
 
 该组件位于tangyuan-base项目中，无需单独引用。
 
