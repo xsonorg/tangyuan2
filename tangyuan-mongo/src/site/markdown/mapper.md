@@ -1,4 +1,5 @@
 # 数据映射
+
 ---
 
 ## 1. 返回结果映射
@@ -61,7 +62,7 @@
 		}
 	}
 
-#### 2.1 示例1
+### 2.1 示例1
 
 > 示例1：
 
@@ -76,9 +77,9 @@
 
 > 说明：
 
-示例1中，`<selectOne>`标签的`resultType`属性值为map，表示其返回结果的载体类型为Map。
+示例1中，`<selectOne>`标签的`resultType`属性值为map，表示其返回结果类型为Map。
 
-#### 2.2 示例2
+### 2.2 示例2
 
 > 示例2：
 
@@ -93,9 +94,9 @@
 
 > 说明：
 
-示例2中，`<selectOne>`标签的`resultType`属性值为`org.xson.tangyuan.vo.User1`，表示其返回结果的载体类型为一个具体JavaBean类型。
+示例2中，`<selectOne>`标签的`resultType`属性值为`org.xson.tangyuan.vo.User1`，表示其返回结果类型为一个具体JavaBean类型。
 
-#### 2.3 示例3
+### 2.3 示例3
 
 > 示例3：
 
@@ -121,9 +122,9 @@ SQL服务的XML中：
 
 > 说明：
 
-示例3中，首先在`mapper.xml`文件中配置了一个返回结果的映射规则userResult1，其载体类型为User2对象，user表中列和User2对象中属性的对于关系则依照result中的配置。然后在`<selectOne>`标签中通过`resultMap`属性来进行使用。
+示例3中，首先在`mapper.xml`文件中配置了一个返回结果的映射规则userResult1，其类型为User2对象，user表中列和User2对象中属性的对于关系则依照result中的配置。然后在`<selectOne>`标签中通过`resultMap`属性来进行使用。
 
-#### 2.4 示例4
+### 2.4 示例4
 
 > 示例4：
 
@@ -146,9 +147,9 @@ SQL服务的XML中：
 
 > 说明：
 
-示例4中，先配置一个自定义的列到属性的处理器user2Mapper（需要实现`org.xson.tangyuan.mapping.MappingHandler`接口），然后在`mapper.xml`文件中配置一个返回结果的映射规则userResult2，其载体类型为User2对象，使用user2Mapper来处理数据库列到User2中属性的映射关系。最后在`<selectOne>`标签中通过`resultMap`属性来进行使用。
+示例4中，先配置一个自定义的列到属性的处理器user2Mapper（需要实现`org.xson.tangyuan.mapping.MappingHandler`接口），然后在`mapper.xml`文件中配置一个返回结果的映射规则userResult2，其返回结果类型为User2对象，使用user2Mapper来处理数据库列到User2中属性的映射关系。最后在`<selectOne>`标签中通过`resultMap`属性来进行使用。
 
-#### 2.5 示例5
+### 2.5 示例5
 
 > 示例5：
 
@@ -169,9 +170,9 @@ SQL服务的XML中：
 
 > 说明：
 
-示例5中，在`mapper.xml`文件中配置一个返回结果的映射规则userResult3，`type="*"`表示返回结果的载体将为SQL服务标签中`resultType`属性所设置的具体载体对象，使用user2Mapper来处理数据库列到具体对象中属性的映射关系。最后在`<selectOne>`标签中通过`resultMap`属性设置返回结果的映射规则，通过`resultType`属性来设置返回结果的载体为User2对象。
+示例5中，在`mapper.xml`文件中配置一个返回结果的映射规则userResult3，`type="*"`表示返回结果的类型将为SQL服务标签中`resultType`属性所设置的具体类型，使用user2Mapper来处理数据库列到结果对象中属性的映射关系。最后在`<selectOne>`标签中通过`resultMap`属性设置返回结果的映射规则，通过`resultType`属性来设置返回结果的类型为User2对象。
 
-#### 2.6 示例6
+### 2.6 示例6
 
 > 示例6：
 
@@ -201,8 +202,7 @@ SQL服务的XML中：
 
 返回结果的映射功能只能在`<selectSet>`，`<selectOne>`服务标签中，通过`resultMap`使用；并且`<selectSet>`，`<selectOne>`必须为简单服务时才有效，在组合服务中设置无效。
 
-
-#### 2.7 节点和属性说明
+### 2.7 节点和属性说明
 
 > Schema设计图：
 
@@ -212,9 +212,9 @@ SQL服务的XML中：
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | 返回结果映射规则的唯一标识，不能重复 | Y | 用户定义 |
-| type | 返回结果载体对象类型 | N | 用户定义 |
-| rule | 所引用的列到属性处理器实现类id | N | 用户定义 |
+| id | 返回结果映射规则的唯一标识，不能重复 | Y | String |
+| type | 返回结果类型 | N | String |
+| rule | 所引用的列到属性处理器实现类id | N | String |
 
 > Schema设计图：
 
@@ -224,5 +224,5 @@ SQL服务的XML中：
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | 列到属性处理器的唯一标识，不能重复 | Y | 用户定义 |
-| class | 列到属性处理器全类名，需要实现`org.xson.tangyuan.mapping.MappingHandler`接口 | Y | 用户定义 |
+| id | 列到属性处理器的唯一标识，不能重复 | Y | String |
+| class | 列到属性处理器全类名，需要实现`org.xson.tangyuan.mapping.MappingHandler`接口 | Y | String |

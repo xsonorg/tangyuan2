@@ -13,7 +13,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 		
 		<!--添加Java服务组件 -->
 		<component resource="component-java.xml" type="java" />
@@ -39,13 +39,13 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<javaservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/java/service.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/java/1.2.2/service.xsd">
 
 		<service class="org.xson.tangyuan2.demo.AopService" ns="aop"/>
 		
 	</javaservices>
 
-关于Java服务的相关内容，可参考<http://www.xson.org/project/java/1.2.0/>
+关于Java服务的相关内容，可参考<http://www.xson.org/project/java/1.2.2/>
 
 > d. 配置组件
 

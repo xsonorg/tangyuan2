@@ -1,10 +1,12 @@
 # Home
 
-### 1. 项目介绍
+---
 
-tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的支持。具体的使用请参考[使用说明](usage.html)。
+## 1. 项目介绍
 
-### 2. 使用场景
+tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的实现。
+
+## 2. 使用场景
 
 > 分布式
 
@@ -24,42 +26,29 @@ tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的�
 | :-- | :--| :-- | :-- | :-- |
 | www.xson.com | 门面 | N | N | N |
 
-### 3. 功能特点
+## 3. 功能特点
 
 - 提供HttpClient客户端访问
 - 提供多节点混合传输支持
 
-### 4. 版本和引用
+## 4. 版本和引用
 
-当前版本：1.2.0
+当前版本：1.2.2
 
 Maven使用：
 
 	<dependency>
 	  <groupId>org.xson</groupId>
 	  <artifactId>tangyuan-rpc</artifactId>
-	  <version>1.2.0</version>
+	  <version>1.2.2</version>
 	</dependency>
 
-### 5. 技术文档
+## 5. 技术文档
 
-<http://www.xson.org/project/rpc/1.2.0/>
+<http://www.xson.org/project/rpc/1.2.2/>
 
-### 4. 版本更新
+## 6. 版本更新
 
-1. 增加占位remote-node
-	
-	<remote-node id="serviceA" domain="@"/>
-	<remote-node id="serviceB" domain="@"/>
-	<remote-node id="serviceC" domain="@"/>
-	
-2. fixbug 服务协议格式支持
-	
-	// www.baidu.com/xxx/yyy				1
-	// http://www.baidu.com/xxx/yyy		2
-	// pigeon://www.baidu.com/xxx/yyy		3
-	// {aaaaaaaaaaa}/xxx/yyy				4	
-	
-3. 增加xson-httpclient使用
-	
-	<client id="c1" use="HTTP_CLIENT" schema="http" resource="http.client.properties"/>
++ 新增：`<remote-node>`中占位变量的支持；
++ 整合：xson-httpclient工具包
++ 修复：服务协议格式解析

@@ -31,7 +31,8 @@
 			<item name="首页" href="index.html" />
 			<item name="使用示例" href="usage.html" />
 			<item name="数据映射" href="mapper.html" />
-			<item name="Mongo服务" href="sql.html" />
+			<item name="Mongo服务-SQL模式" href="sql.html" />
+			<item name="Mongo服务-Shell模式" href="command.html" />
 		</menu>
 		
 		<menu name="PROJECT DOCUMENTATION">

@@ -2,8 +2,7 @@
 
 ## 1. 配置示例
 
-sdfsdffffffffffffffffff
-
+在我们使用tangyuan框架的时候，首先需要一个容器的配置文件，一般情况下我们将其命名为`tangyuan.xml`，示例如下：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -38,7 +37,7 @@ sdfsdffffffffffffffffff
 
 #### 2.1 系统变量配置
 
-tangyuan框架中，如果想覆盖一些系统预设的变量，可以通过`<config-property>`标签进行配置。
+在tangyuan框架中，如果想覆盖一些系统预设的变量，可以通过`<config-property>`标签进行配置。
 
 > config-property节点属性说明
 
@@ -144,10 +143,7 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 **[scheme:][//host[:port]]/NS/ID**
 
-比如上例中的`role/getRoleList`，其中`role`为NS(命名空间)，getRoleList为ID(服务ID)，之间用`/`相连。但为什么没有`[scheme:][//host[:port]]`部分呢？因为示例中是的调用者和服务定义位于一个系统中，如果是分布式系统之间的调用（调用者和服务位于不同的系统），则需要增加前面的部分，例如：`http://xson.org/user/getUserList`。
-
-	
-	
+比如上例中的`role/getRoleList`，其中`role`为NS(命名空间)，getRoleList为ID(服务ID)，之间用`/`相连。但为什么没有`[scheme:][//host[:port]]`部分呢？因为示例中是的调用者和服务定义位于一个系统中，如果是分布式系统之间的调用（调用者和服务位于不同的系统），则需要增加前面的部分，例如：`http://xson.org/role/getRoleList`。
 
 ### 2. 访问方式
 
@@ -170,5 +166,10 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 ### 3. 上下文
 
+在一个服务的调用过程中，可能会涉及许多内容，比如：预处理的SQL脚本、动态数据源、临时结果、事务、返回结果等等，这些内容统一存放在一个对象中，而这个对象就是前中所提到的上下文。tangyuan服务的执行过程中一定会包含一个上下文对象。
+
 ### 4. 返回结果
 
+在tangyuan中，不同的组件支持不同类型的服务，而不同服务的返回结果也不尽相同，比如：在SQL服务组件中，通过`<selectSet>`标签定义的SQL服务，其返回结果为`List<XCO>`类型，通过`<selectOne>`标签定义的SQL服务，其返回结果为`XCO`类型。
+
+我们可以通过在`tangyuan.xml`中设置系统变量`<config-property name="allServiceReturnXCO" value="true"/>`，让tangyuan框架中的所有服务都统一返回一个XCO包装对象，然后再通过其`getData()`方法获取真实的返回对象。

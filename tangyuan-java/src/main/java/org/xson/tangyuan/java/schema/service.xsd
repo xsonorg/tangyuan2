@@ -17,6 +17,13 @@
 				<xs:choice maxOccurs="unbounded">
 					<xs:element name="include"/>
 					<xs:element name="exclude"/>
+					<xs:element name="methodCache">
+						<xs:complexType>
+							<xs:attribute name="method" type="xs:string" use="required"/>
+							<xs:attribute name="cacheUse" type="xs:string" use="optional"/>
+							<xs:attribute name="cacheClean" type="xs:string" use="optional"/>
+						</xs:complexType>
+					</xs:element>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>

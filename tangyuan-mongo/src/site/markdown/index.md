@@ -1,27 +1,25 @@
 # Home
 ------
 
-### 1. 项目介绍
+## 1. 项目介绍
 
-tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将一系列的Mongo操作封装成Tangyuan中的服务，并提供统一的方式进行访问；同时还提供以SQL语法的方式访问Mongo。
+tangyuan-mongo是tangyuan框架中的Mongo服务组件，tangyuan-mongo组件将一系列的Mongo操作封装成tangyuan中的服务，并提供统一的方式进行服务的访问；组件支持使用SQL语法或者Shell命令的方式来定义Mongo服务。
 
-
-### 2. 项目优势
+## 2. 项目优势
 
 如果我们要查询性别为女性，年龄在18岁到28岁之间的用户，如果使用Mongo原始的语法，我们需要这样写：
 
 	db.user.find({"sex":"女", "age":{"$gte":18, "$lte":28}})
 
-现在，我们只需要使用下面的方式：
+现在，我们可以使用下面的方式：
 
 	select * from user where sex = '女' and age >= 18 and age <= 28
 
 是不是感觉就像SQL查询？是的没错，tangyuan-mongo就是提供以SQL语法的方式访问Mongo。
 
+## 3. SQL语法及支持
 
-### 3. SQL语法及支持
-
-#### 3.1 查询
+### 3.1 查询
 
 > 语法
 
@@ -65,7 +63,7 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 	select * from table limit 10
 	select * from table limit 0, 20
 
-#### 3.2 插入
+### 3.2 插入
 
 > 语法
 
@@ -81,7 +79,7 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 		'张三', 18
 	);
 
-#### 3.3 更新
+### 3.3 更新
 
 > 语法
 
@@ -100,7 +98,7 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 
 同`SELECT`的WHERE表达式
 
-#### 3.4 删除
+### 3.4 删除
 
 > 语法
 
@@ -115,17 +113,61 @@ tangyuan-mongo是tangyuan框架中的MONGO服务组件，tangyuan-mongo组件将
 
 同`SELECT`的WHERE表达式
 
-### 4. 版本和引用
+## 4. Shell命令模式的支持
 
-当前最新版本：1.2.0
+tangyuan-mongo组件支持使用原生的Shell命令来定义Mongo服务。
+
+> 示例
+
+	<command id="shell-insert" dsKey="mongods"><![CDATA[
+		db.products.insert( { item: "card", qty: 15 } )
+	]]></command>
+
+	<command id="shell-find" dsKey="mongods"><![CDATA[
+		db.products.find( { qty: { $gt: 25 } } )
+	]]></command>
+
+	<command id="shell-update" dsKey="mongods"><![CDATA[
+		db.products.update( { _id: ObjectId("5abf07c412f81f3738116231") } ,{name: "张三"})
+	]]></command>
+
+	<command id="shell-remove" dsKey="mongods"><![CDATA[
+		db.products.remove( { item: "book123", qty: 40 } )	
+	]]></command>
+
+> 支持的Shell命令
+
++ db.collection.count()
++ db.collection.find()
++ db.collection.findAndModify()
++ db.collection.findOne()
++ db.collection.group()
++ db.collection.insert()
++ db.collection.remove()
++ db.collection.save()
++ db.collection.update()
+
+## 5. 版本和引用
+
+当前最新版本：1.2.2
 
 	<dependency>
 	    <groupId>org.xson</groupId>
 	    <artifactId>tangyuan-mongo</artifactId>
-	    <version>1.2.0</version>
+	    <version>1.2.2</version>
 	</dependency>
 
-### 5. 源码
+## 6. 源码
 
 <https://github.com/xsonorg/tangyuan2>
+
+## 7. 版本更新
+
++ SQL模式中Long类型的支持；
++ SQL模式中ARRAY类型插入、更新的支持；
++ SQL模式中乘法操作的支持；
++ SQL模式中自定义函数`@{xxx}`的支持
++ SQL模式中增加段定义和引用；
++ Shell命令模式的支持；
++ sharedUse的支持；
 

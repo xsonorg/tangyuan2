@@ -1,15 +1,36 @@
 # 使用说明
 ---
 
-### 1. 使用示例
+## 1. 使用示例
 
 > a. 增加依赖的Jar
 
+	<!--Cache组件-->
 	<dependency>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-cache</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.2</version>
 	</dependency>
+
+	<!--第三方依赖，可选-->
+	<dependency>
+		<groupId>org.xson</groupId>
+		<artifactId>xson-redis</artifactId>
+		<version>1.0.2</version>
+	</dependency>
+
+	<dependency>
+		<groupId>net.sf.ehcache</groupId>
+		<artifactId>ehcache</artifactId>
+		<version>2.10.1</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.whalin</groupId>
+		<artifactId>Memcached-Java-Client</artifactId>
+		<version>3.0.2</version>
+	</dependency>
+
 
 > b. 添加组件
 
@@ -17,7 +38,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 	
 		<!--添加cache组件 -->
 		<component resource="component-cache.xml" type="cache" />
@@ -30,13 +51,12 @@ tangyuan-cache组件的配置(component-cache.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<cache-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/cache/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/cache/1.2.2/component.xsd">
 	
-		<cache id="cache1" type="local">
+		<cache id="cache1" type="local" defaultExpiry="10">
 			<property name="strategy" value="time" />
-			<property name="survivalTime" value="10" />
 			<property name="log" value="true" />
-		</cache> 
+		</cache>
 
 	</cache-component>
 
@@ -58,7 +78,7 @@ tangyuan-cache组件的配置(component-cache.xml)：
 
 	<c url="/news/newslist" transfer="news/newslist" cache="id:cache01; key:${url}${arg}; expiry:10"/>
 
-### 2. 基本概念
+## 2. 基本概念
 
 > 1.内置的缓存功能
 
@@ -74,7 +94,7 @@ tangyuan-cache组件对其进行和整合和封装，我们只需要做一些简
 
 tangyuan-cache组件中的缓存实例分为两种；一种是独立缓存，另一种是缓存组；独立缓存就是单一缓存技术的实例，通过`<cache>`节点配置；而缓存组则是多个独立缓存或者缓存组实例的集合；通过`<cacheGroup>`节点配置；
 
-### 3. 独立缓存配置
+## 3. 独立缓存配置
 
 ### 3.1 `<cache>`节点属性说明
 
@@ -82,11 +102,10 @@ tangyuan-cache组件中的缓存实例分为两种；一种是独立缓存，另
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<cache-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/cache/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/cache/1.2.2/component.xsd">
 	
-		<cache id="cache1" type="local">
+		<cache id="cache1" type="local" defaultExpiry="10">
 			<property name="strategy" value="time" />
-			<property name="survivalTime" value="10" />
 			<property name="log" value="true" />
 		</cache> 
 
@@ -96,11 +115,13 @@ tangyuan-cache组件中的缓存实例分为两种；一种是独立缓存，另
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | cache的唯一标识，不可重复 | Y | 用户定义 |
+| id | cache的唯一标识，不可重复 | Y | String |
 | type | cache的实例类型，如果用户需要使用自定义的缓存实现，可省略此项配置，设置class属性。 | N | local/ehcache/memcache/redis |
-| class | 用户自定义的缓存实现类;需要实现org.xson.tangyuan.cache.AbstractCache类 | N | 用户定义 |
-| resource | 缓存配置文件的资源路径 | N | 用户定义 |
-| default | 是否是默认缓存，如果系统中配置多个缓存包括cacheGroup，则只能有一个为默认的 | N | 用户定义 |
+| class | 用户自定义的缓存实现类;需要实现org.xson.tangyuan.cache.AbstractCache类 | N | String |
+| resource | 缓存配置文件的资源路径 | N | String |
+| default | 是否是默认缓存，如果系统中配置多个缓存包括cacheGroup，则只能有一个为默认的 | N | boolean |
+| defaultExpiry | 默认的过期时间（单位：秒） | N | long |
+| serializer | 所使用的序列化器 | N | String |
 
 > property节点属性说明：
 
@@ -115,11 +136,10 @@ localcache为本地缓存，其核心是一个基于Java内存的key/value Cache
 
 > 配置示例：
 
-		<cache id="cache1" type="local">
-			<property name="strategy" value="time" />		<!--使用有效期策略-->
-			<property name="survivalTime" value="10" />		<!--有效期时间10秒-->
-			<property name="log" value="true" />			<!--开启命中率日志，需要把日志级别设为debug-->
-		</cache> 
+	<cache id="cache1" type="local">
+		<property name="strategy" value="time" />		<!--使用有效期策略-->
+		<property name="log" value="true" />			<!--开启命中率日志，需要把日志级别设为debug-->
+	</cache> 
 
 > 说明：
 
@@ -128,10 +148,8 @@ localcache为本地缓存，其核心是一个基于Java内存的key/value Cache
 | name | 用途及说明 | value取值 | value说明 |
 | :-- | :--| :-- | :-- |
 | strategy | localcache的缓存策略 | LRU:近期最少使用策略<br />FIFO:先进先出策略<br />SOFT:软引用策略<br />WEAK:弱引用策略<br />TIME:过期时间策略 | 默认为LRU |
-| survivalTime | 过期时间，单位秒；适用于TIME策略 | int | 默认为10 |
 | maxSize | 缓存最大容量，适用于LRU、FIFO、SOFT、WEAK策略 | int | 默认为1024 |
 | log | 开启命中率日志，需要把日志级别设为debug | boolean | false |
-
 
 ### 3.3 ehcache配置
 
@@ -196,7 +214,45 @@ property节点中可设置memcached具体的参数，详见memcached Java API官
 
 xxx.UserCache需要继承org.xson.tangyuan.cache.AbstractCache类，并实现其抽象方法，如果用户想在定义cache的时候设置一些参数的可使用property节点和resource属性。
 
-### 4. 缓存组配置
+
+### 3.7 自定义序列化器的配置
+
+> 配置示例：
+
+tangyuan-cache组件的配置(component-cache.xml)：
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<cache-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/cache/1.2.2/component.xsd">
+		
+		<!--自定义序列化器-->
+		<serializer id="MyCacheSerializer" class="xxx.MyCacheSerializer" />
+
+		<!--使用自定义序列化器-->
+		<cache id="cache4" type="redis" serializer="MyCacheSerializer" resource="redis.basic.properties"/>
+
+	</cache-component>
+
+> 说明：
+
+自定义的序列化器需要实现`org.xson.tangyuan.cache.CacheSerializer`接口，其接口声明如下：
+
+	public interface CacheSerializer {
+	
+		/**
+		 * 序列化
+		 */
+		public Object serialize(Object object) throws Throwable;
+	
+		/**
+		 * 反序列化
+		 */
+		public Object deserialize(Object object) throws Throwable;
+	
+	}
+
+
+## 4. 缓存组配置
 
 > 配置示例：
 
@@ -230,11 +286,11 @@ xxx.UserCache需要继承org.xson.tangyuan.cache.AbstractCache类，并实现其
 | :-- | :--| :-- | :-- |
 | ref | 所引用cache的id | Y | 用户定义 |
 
-### 5. cacheUse
+## 5. cacheUse
 
 `cacheUse`属性的用途是从缓存中取数据(get)和将数据放入缓存中(put)。当一个服务或者控制器配置`cacheUse`属性后，其执行流程将会有所影响；每次访问服务或者控制器的时候会先从cache中获取数据，如果取得数据则直接返回，否则将执行服务或者控制器方法，并将返回的结果放入cache中，然后返回结果。
 
-**说明：**此章节后面所描述cacheUse属性的应用场景指的是在Tangyuan服务中cacheUse属性的使用，关于在控制器中如何使用cacheUse属性，请参考<http://www.xson.org/project/web/1.2.0/>
+**说明：**此章节后面所描述cacheUse属性的应用场景指的是在Tangyuan服务中cacheUse属性的使用，关于在控制器中如何使用cacheUse属性，请参考<http://www.xson.org/project/web/1.2.2/>
 
 > 使用示例：
 
@@ -275,6 +331,7 @@ xxx.UserCache需要继承org.xson.tangyuan.cache.AbstractCache类，并实现其
 2. `<selectVar>`节点
 3. `<selectOne>`节点
 4. `<sql-service>`节点
+5. ...
 
 **MONG服务中：**
 
@@ -282,8 +339,11 @@ xxx.UserCache需要继承org.xson.tangyuan.cache.AbstractCache类，并实现其
 2. `<selectVar>`节点
 3. `<selectOne>`节点
 4. `<mongo-service>`节点
+5. ...
 
-### 6. cacheClean
+**更多的请参考各个服务组件的使用说明**
+
+## 6. cacheClean
 
 `cacheClean`属性的用途是清理缓存中某个缓存项。当一个服务配置`cacheClean`属性后，当执行完本身的逻辑后，会清除缓存中（基于表达式）的某个缓存项；
 
@@ -316,6 +376,7 @@ xxx.UserCache需要继承org.xson.tangyuan.cache.AbstractCache类，并实现其
 2. `<insert>`节点
 3. `<delete>`节点
 4. `<sql-service>`节点
+5. ...
 
 **MONG服务中：**
 
@@ -323,3 +384,6 @@ xxx.UserCache需要继承org.xson.tangyuan.cache.AbstractCache类，并实现其
 2. `<insert>`节点
 3. `<delete>`节点
 4. `<mongo-service>`节点
+5. ...
+
+**更多的请参考各个服务组件的使用说明**
