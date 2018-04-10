@@ -221,7 +221,7 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 		registerService(insertList, "insert");
 		registerService(updateList, "update");
 		registerService(deleteList, "delete");
-//		registerService(commandList, "mongo-command");
+		// registerService(commandList, "mongo-command");
 		registerService(commandList, "command");
 		registerService(sqlServiceList, "mongo-service");
 	}
@@ -1038,7 +1038,7 @@ public class XMLMongoNodeBuilder extends XmlNodeBuilder {
 				cacheClean = parseCacheClean(_cacheClean, "");
 			}
 
-			InternalMongoCommandNode commandNode = new InternalMongoCommandNode(dsKey, resultKey, sqlNode, cacheUse, cacheClean);
+			InternalMongoCommandNode commandNode = new InternalMongoCommandNode(dsKey, resultKey, sqlNode, serviceResultType, cacheUse, cacheClean);
 			targetContents.add(commandNode);
 		}
 	}

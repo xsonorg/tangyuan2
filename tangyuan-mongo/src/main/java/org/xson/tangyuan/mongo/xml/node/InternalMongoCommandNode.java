@@ -21,10 +21,12 @@ public class InternalMongoCommandNode extends AbstractMongoNode {
 	private CacheUseVo		cacheUse;
 	private CacheCleanVo	cacheClean;
 
-	public InternalMongoCommandNode(String dsKey, String resultKey, TangYuanNode sqlNode, CacheUseVo cacheUse, CacheCleanVo cacheClean) {
+	public InternalMongoCommandNode(String dsKey, String resultKey, TangYuanNode sqlNode, Class<?> resultType, CacheUseVo cacheUse,
+			CacheCleanVo cacheClean) {
 		this.dsKey = dsKey;
 		this.resultKey = resultKey;
 		this.sqlNode = sqlNode;
+		this.resultType = resultType;
 		this.simple = false;
 		this.cacheUse = cacheUse;
 		this.cacheClean = cacheClean;
