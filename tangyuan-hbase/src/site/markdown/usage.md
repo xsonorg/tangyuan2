@@ -17,7 +17,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 		
 		<!--添加HBase服务组件 -->
 		<component resource="component-hbase.xml" type="hbase" />
@@ -30,7 +30,7 @@ tangyuan-hbase组件本身的配置(component-hbase.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<hbase-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/hbase/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/hbase/1.2.2/component.xsd">
 	
 		<dataSource id="hb_db">
 			<property name="hbase.zookeeper.property.clientPort" value="2181" />
@@ -48,7 +48,7 @@ tangyuan-hbase组件本身的配置(component-hbase.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<hbaseServices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/hbase/service.xsd" ns="hb">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/hbase/1.2.2/service.xsd" ns="hb">
 
 		<get id="get01" dsKey="hb_db"><![CDATA[
 			{

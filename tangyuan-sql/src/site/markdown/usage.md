@@ -1,14 +1,30 @@
 # 使用说明
+
 ---
 
-### 1. 使用示例
+## 1. 使用示例
 	
 > a. 增加依赖的Jar
 
+	<!--SQL组件-->
 	<dependency>
 		<groupId>org.xson</groupId>
-		<artifactId>tangyuan-web</artifactId>
-		<version>1.2.0</version>
+		<artifactId>tangyuan-sql</artifactId>
+		<version>1.2.2</version>
+	</dependency>
+
+	<!--连接池-->
+	<dependency>
+		<groupId>commons-dbcp</groupId>
+		<artifactId>commons-dbcp</artifactId>
+		<version>1.4</version>
+	</dependency>
+
+	<!--数据库-->
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.28</version>
 	</dependency>
 
 > b. 添加组件
@@ -17,7 +33,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 	
 		<!--添加sql组件 -->
 		<component resource="component-sql.xml" type="sql" />
@@ -30,7 +46,7 @@ tangyuan-sql组件本身的配置(component-sql.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<sql-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/1.2.2/component.xsd">
 		
 		<!-- 数据源配置:读库 -->
 		<dataSource id="readDB" type="DBCP">
@@ -107,7 +123,7 @@ tangyuan-sql组件本身的配置(component-sql.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/services.xsd"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/1.2.2/services.xsd"
 		ns="user">
 		
 		<!-- 角色停用、启用 -->
@@ -157,11 +173,11 @@ tangyuan-sql组件本身的配置(component-sql.xml)：
 		System.out.println(obj);
 	}
 
-### 2. 数据源配置
+## 2. 数据源配置
 
 tangyuan-sql组件中数据源配置分为两种，一种是普通数据源，适用于普通的数据库应用项目；另一种是数据源组，适用于数据量和数据并发访问量大的应用场景，同时需要配合分库分表模块共同使用。数据源的配置位于`component-sql.xml`中。
 
-#### 2.1 普通数据源
+### 2.1 普通数据源
 
 > 配置示例
 
@@ -180,18 +196,18 @@ tangyuan-sql组件中数据源配置分为两种，一种是普通数据源，�
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | 此数据源的唯一标识，不可重复 |Y|用户定义，但是不能出现”.”|
-| type | 数据源连接池的实现方式 |Y|DBCP/C3P0/PROXOOL/DRUID/JNDI|
-| isDefault | 是否是默认数据源，如果系统中配置多个数据源，则只能有一个为默认的 |N|true/false|
+| id | 数据源的唯一标识，不可重复。注意：不能出现”.” |Y| String |
+| type | 数据源连接池的实现方式 | Y | DBCP/C3P0/PROXOOL/DRUID/JNDI |
+| isDefault | 是否是默认数据源，如果系统中配置多个数据源，则只能有一个为默认的 | N | boolean |
 
 > property节点属性说明
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| name | 连接池的属性名称 |Y|用户定义|
-| value | 连接池的属性值 |Y|用户定义|
+| name | 连接池的属性名称 | Y | String |
+| value | 连接池的属性值 | Y | |
 
-#### 2.2 数据源组
+### 2.2 数据源组
 
 > 配置示例
 
@@ -217,37 +233,36 @@ tangyuan-sql组件中数据源配置分为两种，一种是普通数据源，�
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | 此数据源的唯一标识，不可重复 |Y|用户定义，但是不能出现”.”|
+| id | 数据源的唯一标识，不可重复。注意：不能出现”.” |Y| String |
 | type | 数据源连接池的实现方式 |Y|DBCP/C3P0/PROXOOL/DRUID/JNDI|
-| isDefault | 是否是默认数据源，如果系统中配置多个数据源，则只能有一个为默认的 |N|true/false|
-| start | 开始索引，默认为0 |N|整数类型，用户定义|
-| end | 结束索引 |Y|整数类型，用户定义|
+| isDefault | 是否是默认数据源，如果系统中配置多个数据源，则只能有一个为默认的 |N| boolean |
+| start | 开始索引，默认为0 |N| int |
+| end | 结束索引 |Y| int |
 
 > property节点属性说明
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| name | 连接池的属性名称 |Y|用户定义|
-| value | 连接池的属性值 |Y|用户定义|
+| name | 连接池的属性名称 | Y | String |
+| value | 连接池的属性值 | Y |  |
 
-### 3. 事务配置
+## 3. 事务配置
 
-#### 3.1. 事务的定义
+### 3.1. 事务的定义
 
 tangyuan-sql组件中，我们可以通过以下配置定义一个事务，该配置位于组件配置文件`component-sql.xml`中：
 
 	<transaction id="tx_01" behavior="required" isolation="default" />
 
-> transaction节点属性说明：
+> transaction节点属性说明
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | 事务定义标识，不可重复 |Y|用户定义|
+| id | 事务定义标识，不可重复 |Y| String |
 | behavior | 事务的传播级别，默认required |N|required<br />supports<br />mandatory<br />requires_new<br />not_supported |
-| never | 事务的隔离级别，默认default |N|default<br />read_uncommitted<br />read_committed<br />repeatable_read<br />serializable<br />|
+| isolation | 事务的隔离级别，默认default |N|default<br />read_uncommitted<br />read_committed<br />repeatable_read<br />serializable<br />|
 
-
-> behavior事务传播属性说明：
+> behavior事务传播属性说明
 
 | 取值 | 用途说明 |
 | :-- | :--|
@@ -257,8 +272,7 @@ tangyuan-sql组件中，我们可以通过以下配置定义一个事务，该�
 | requires_new | 表示当前方法必须运行在它自己的事务中。一个新的事务将启动，而且如果有一个现有的事务在运行的话，则这个方法将在运行期被挂起，直到新的事务提交或者回滚才恢复执行。 |
 | not_supported | 表示该方法不应该在一个事务中运行。如果有一个事务正在运行，他将在运行期被挂起，直到这个事务提交或者回滚才恢复执行 |
 
-
-> isolation说明:
+> isolation说明
 
 | 取值 | 用途说明 |
 | :-- | :-- |
@@ -268,7 +282,7 @@ tangyuan-sql组件中，我们可以通过以下配置定义一个事务，该�
 | repeatable_read | 可重复读取<br />* 可重复读(Repeatable Read)，当使用可重复读隔离级别时，在事务执行期间会锁定该事务以任何方式引用的所有行。 因此，如果在同一个事务中发出同一个SELECT语句两次或更多次，那么产生的结果数据集总是相同的。<br /> * 因此，使用可重复读隔离级别的事务可以多次检索同一行集，并对它们执行任意操作，直到提交或回滚操作终止该事务。 |
 | serializable | 同步事务<br /> * 提供严格的事务隔离。它要求事务序列化执行，事务只能一个接着一个地执行，但不能并发执行。<br /> * 如果仅仅通过“行级锁”是无法实现事务序列化的，必须通过其他机制保证新插入的数据不会被刚执行查询操作的事务访问到。 |
 
-#### 3.2. 事务的使用
+### 3.2. 事务的使用
 
 tangyuan-sql组件中每个SQL服务都需要使用事务，或者说每个SQL服务在执行期间都需要按照指定的事务定义开启事务，执行SQL命令。我们可以通过三种方式设置SQL服务使用的事务定义。
 
@@ -278,7 +292,7 @@ tangyuan-sql组件中每个SQL服务都需要使用事务，或者说每个SQL�
 		SELECT * from user WHERE user_id = #{user_id}
 	</selectOne>
 
-示例中的配置通过`txRef`属性手工指定使用`tx_01`的事务定义
+示例中的配置通过`txRef`属性手工指定使用`tx_01`的事务定义。
 
 > 2.按照SQL服务ID匹配
 
@@ -290,7 +304,7 @@ tangyuan-sql组件中每个SQL服务都需要使用事务，或者说每个SQL�
 		<property name="delete*" 	value="tx_02"/>
 	</setDefaultTransaction>
 
-示例中的配置表示按照SQL服务的名称也就是ID来匹配需要使用的事务定义。比如SQL服务`selectUser`将使用`tx_01`事务定义，SQL服务`updateUser`将使用`tx_02`事务定义，需要注意的复合SQL(**XXX**)将不会根据`setDefaultTransaction`来匹配事务，需要用户手工指定。
+示例中的配置表示按照SQL服务的名称也就是ID来匹配需要使用的事务定义。比如SQL服务`selectUser`将使用`tx_01`事务定义，SQL服务`updateUser`将使用`tx_02`事务定义，需要注意的组合服务将不会根据`setDefaultTransaction`来匹配事务，需要用户手工指定。
 
 > 3.按照SQL服务类型匹配
 
@@ -302,9 +316,9 @@ tangyuan-sql组件中每个SQL服务都需要使用事务，或者说每个SQL�
 		<property name="delete" 	value="tx_01"/>
 	</setDefaultTransaction>
 
-示例中的配置表示按照SQL服务的类型也就是标签来匹配需要使用的事务定义。比如用`<selectOne>`标签定义SQL服务将使用`tx_01`事务定义，用`<update>`标签定义的SQL服务将使用`tx_02`事务定义，需要注意的复合SQL(**XXX**)将不会根据`setDefaultTransaction`来匹配事务，需要用户手工指定。
+示例中的配置表示按照SQL服务的类型也就是标签来匹配需要使用的事务定义。比如用`<selectOne>`标签定义SQL服务将使用`tx_01`事务定义，用`<update>`标签定义的SQL服务将使用`tx_02`事务定义，需要注意的组合服务将不会根据`setDefaultTransaction`来匹配事务，需要用户手工指定。
 
-#### 3.3. setDefaultTransaction节点配置
+### 3.3. setDefaultTransaction节点配置
 
 > Schema设计图
 
@@ -320,10 +334,10 @@ tangyuan-sql组件中每个SQL服务都需要使用事务，或者说每个SQL�
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| name | method模式下：SQL服务名称，支持*表达式<br />command模式下:SQL服务标签名 |Y|用户定义|
-| value | 需要引用的事务定义ID |Y|用户定义|
+| name | method模式下：SQL服务名称，支持*表达式<br />command模式下:SQL服务标签名 |Y| String |
+| value | 需要引用的事务定义ID |Y| String |
 
-### 4. 插件配置
+## 4. 插件配置
 
 tangyuan-sql组件中可以通过插件来服务的定义、管理和功能的扩展；按用途可分为三种：
 
@@ -351,4 +365,4 @@ tangyuan-sql组件中可以通过插件来服务的定义、管理和功能的�
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :--: | :-- |
-| resource | 插件的资源文件路径 |Y|用户定义|
+| resource | 插件的资源文件路径 |Y| String |

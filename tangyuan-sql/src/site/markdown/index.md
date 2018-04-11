@@ -1,11 +1,11 @@
 # Home
 ---
 
-### 1. 项目介绍
+## 1. 项目介绍
 
 tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的功能支持。
 
-### 2. 项目特性
+## 2. 项目特性
 
 > * 数据源相关
 
@@ -27,21 +27,21 @@ tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的
 
 支持单条的SQL语句访问，同时并支持复杂的组合SQL语句访问，让数据库的应用开发更为高效、简单。
 
-### 3. 系统架构
+## 3. 系统架构
 
 ![系统架构图](images/00.png)
 
-### 4. 版本和Maven依赖
+## 4. 版本和Maven依赖
 
-当前版本：1.2.0
+当前版本：1.2.2
 
 	<dependency>
 		<groupId>org.xson</groupId>
-		<artifactId>tangyuan-rpc</artifactId>
-		<version>1.2.0</version>
+		<artifactId>tangyuan-sql</artifactId>
+		<version>1.2.2</version>
 	</dependency>
 
-### 5. 代码片段
+## 5. 代码片段
 
 	<sql-service id="updateProject" dsKey="writeDB" txRef="tx_02">
 		<if test="{through} == 2">
@@ -85,6 +85,11 @@ tangyuan-sql是tangyuan框架中的SQL服务组件，提供SQL语句即服务的
 		</else>
 	</sql-service>
 
-### 6. 源码
+## 6. 源码
 
 <https://github.com/xsonorg/tangyuan2>
+
+## 7. 版本更新
+
++ 增加段定义和引用；
++ DataSource对于sharedUse的支持；

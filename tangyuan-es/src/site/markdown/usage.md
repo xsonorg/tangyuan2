@@ -17,7 +17,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 		
 		<!--添加es服务组件 -->
 		<component resource="component-es.xml" type="es" />
@@ -30,7 +30,7 @@ tangyuan-es组件本身的配置(component-es.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<es-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/es/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/es/1.2.2/component.xsd">
 	
 		<esSource id="es" host="http://192.168.0.214:9200" />
 	
@@ -44,7 +44,7 @@ tangyuan-es组件本身的配置(component-es.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<esservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/es/service.xsd"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/es/1.2.2/service.xsd"
 		ns="es">
 
 		<post id="search" converter="@hits">

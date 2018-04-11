@@ -2,11 +2,11 @@
 
 ------
 
-### 1. 项目介绍
+## 1. 项目介绍
 
 tangyuan-rest是tangyuan框架中的REST架构风格的控制层组件，以组件化和插件化为思想，以XML配置为核心，无需或者只需极少的Java代码，即可完成控制层的开发。
 
-**tangyuan-rest组件的优势：**
+> tangyuan-rest组件的优势
 
 1. 开发简单、高效，只要一行XML配置，即可实现一个控制器的定义；
 2. 提供多种模式的支持，包括单机模式、分布式模式和混合模式，以适用于不同的应用场景；
@@ -15,9 +15,9 @@ tangyuan-rest是tangyuan框架中的REST架构风格的控制层组件，以组�
 5. 组件化的功能支持，对于生命周期中的每个环节的功能，均可以以组件化和插件化的方式提供其支持；
 
 
-### 2. 版本和引用
+## 2. 版本和引用
 
-当前最新版本：1.2.1.1
+当前最新版本：1.2.2
 
 > maven中使用
 
@@ -27,7 +27,12 @@ tangyuan-rest是tangyuan框架中的REST架构风格的控制层组件，以组�
 		<version>${tangyuan.version}</version>
 	</dependency>
 	
-### 3. 源码
+## 3. 源码
 
 <https://github.com/xsonorg/tangyuan2>
 
+## 4. 版本更新
+
++ 去除domain元素
++ 增加REST-API支持
++ 增加控制器返回结果日志输出控制

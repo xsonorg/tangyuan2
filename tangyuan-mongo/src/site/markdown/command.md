@@ -25,6 +25,18 @@
 
 在Mongo服务插件中，我们通过`<command>`标签，来进行Mongo服务的定义。
 
+> 支持的Shell命令
+
++ db.collection.count()
++ db.collection.find()
++ db.collection.findAndModify()
++ db.collection.findOne()
++ db.collection.group()
++ db.collection.insert()
++ db.collection.remove()
++ db.collection.save()
++ db.collection.update()
+
 ## 2. command标签
 
 `<command>`标签和SQL模式章节中的`<selectSet>`、`<selectOne>`等服务标签一样，既可以作为基本服务标签，又可以作为组合服务中的内部服务标签。
@@ -72,7 +84,7 @@
 		db.products.insert( { item: "card", qty: 15 } )
 	]]></command>
 
-返回内容：插入文档的`_id`值，返回类型:String
+返回内容：插入文档的`_id`值，返回类型:`String`
 
 > 示例 3.1.2.2 
 
@@ -86,7 +98,7 @@
 		)
 	]]></command>
 
-返回内容：插入文档的`_id`值集合，返回类型:String[]
+返回内容：插入文档的`_id`值集合，返回类型:`String[]`
 
 ### 3.2. count
 
@@ -104,7 +116,7 @@
 		db.products.count()
 	]]></command>
 
-返回内容：记录总数，返回类型:Long
+返回内容：记录总数，返回类型:`Long`
 
 > 示例 3.2.2.2
 
@@ -112,7 +124,7 @@
 		db.products.count( { } )
 	]]></command>
 
-返回内容：记录总数，返回类型:Long
+返回内容：记录总数，返回类型:`Long`
 
 > 示例 3.2.2.3
 
@@ -120,7 +132,7 @@
 		db.products.find().count()
 	]]></command>
 
-返回内容：记录总数，返回类型:Long
+返回内容：记录总数，返回类型:`Long`
 
 ### 3.3. find
 

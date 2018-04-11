@@ -438,7 +438,7 @@ Mongo服务插件中包含两类标签，一类是服务标签，此类标签所
 			</selectOne>
 		</segment>
 	
-		<sql-service id="getOrder" dsKey="readtvr" txRef="tx_01">
+		<mongo-service id="getOrder" dsKey="mongods">
 			<include ref="user/getUser"/>
 			<selectOne resultKey="{order}">
 				select * from order where order_id = #{order_id}
@@ -447,9 +447,9 @@ Mongo服务插件中包含两类标签，一类是服务标签，此类标签所
 				<property value="{user}"/>
 				<property value="{order}"/>
 			</return>		
-		</sql-service>
+		</mongo-service>
 	
-		<sql-service id="getPayment" dsKey="readtvr" txRef="tx_01">
+		<mongo-service id="getPayment" dsKey="mongods">
 			<include ref="user/getUser"/>
 			<selectOne resultKey="{payment}">
 				select * from payment where payment_id = #{payment_id}
@@ -458,9 +458,9 @@ Mongo服务插件中包含两类标签，一类是服务标签，此类标签所
 				<property value="{user}"/>
 				<property value="{payment}"/>
 			</return>
-		</sql-service>
+		</mongo-service>
 	
-	</sqlservices>
+	</mongoservices>
 
 > 说明
 
@@ -670,6 +670,8 @@ Mongo服务插件中包含两类标签，一类是服务标签，此类标签所
 
 示例4.6.1中我们定义了一个Mongo组合服务`myService5`，其内部包含了了一个`<delete>`标签，当程序执行完`<delete>`标签所定义的内部服务后，会将影响行数以nCount为key，放入上下文中。然后通过`<exception>`标签判断nCount的有效性；如果nCount不满足条件，则服务将抛出服务异常，并回滚之前的操作。
 
+> 返回结果
+
 **无**
 
 > delete节点属性和变化说明：
@@ -787,7 +789,7 @@ Mongo服务插件中包含两类标签，一类是服务标签，此类标签所
 
 > 说明
 
-示例4.8.1其实就是整合之前的示例4.2.1到示例4.7.1，在一个服务中完成6个操作，并根据需要返回结果，就如同SQL中的存储过程，Java中的函数一般，这才是Mongo组合服务的优势所在，通过一些基本服务的组合，和一些辅助标签，实现复杂的业务逻辑，使其开发人员即使不懂的Mongo也可完成大部分的服务开发工作。
+示例4.8.1其实就是整合之前的示例4.2.1到示例4.7.1，在一个服务中完成6个操作，并根据需要返回结果，就如同SQL中的存储过程，Java中的函数一般，这才是Mongo组合服务的优势所在，通过一些基本服务的组合，和一些辅助标签，实现复杂的业务逻辑，使其开发人员即使不懂得Mongo也可完成大部分的服务开发工作。
 
 ### 4.9 return标签的使用
 

@@ -7,7 +7,7 @@
 
 	<dependency>
 		<groupId>org.xson</groupId>
-		<artifactId>tangyuan-web</artifactId>
+		<artifactId>tangyuan-rest</artifactId>
 		<version>${tangyuan.version}</version>
 	</dependency>
 
@@ -17,7 +17,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 	
 		<!--添加web组件 -->
 		<component resource="component-web.xml" type="web" />
@@ -30,7 +30,7 @@ tangyuan-web组件本身的配置(component-web.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/component.xsd">
 		
 		<!--web组件系统常量-->
 		<config-property name="urlAutoMappingMode" value="false" />
@@ -47,7 +47,7 @@ tangyuan-web组件本身的配置(component-web.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/controller.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
 	
 		<!-- 查询新闻列表 -->
 		<c url="/news/newslist" validate="news/newslist" transfer="{service}/news/newslist" />

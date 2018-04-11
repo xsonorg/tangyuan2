@@ -10,7 +10,7 @@ tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的�
 
 > 分布式
 
-![分布式](http://www.xson.org/project/rpc/1.2.0/images/01.png)
+![分布式](http://www.xson.org/project/rpc/1.2.2/images/01.png)
 
 | 系统 | 系统类型 | 是否使用RPC组件 | RPC Client | RPC Server |
 | :-- | :--| :-- | :-- | :-- |
@@ -20,7 +20,7 @@ tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的�
 
 > 单系统
 
-![单系统](http://www.xson.org/project/rpc/1.2.0/images/02.png)
+![单系统](http://www.xson.org/project/rpc/1.2.2/images/02.png)
 
 | 系统 | 系统类型 | 是否使用RPC组件 | RPC Client | RPC Server |
 | :-- | :--| :-- | :-- | :-- |

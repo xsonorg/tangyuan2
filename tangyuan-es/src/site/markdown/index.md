@@ -7,7 +7,7 @@ tangyuan-es是tangyuan框架中的Elasticsearch服务组件，提供以RESTful A
 
 ## 2. 版本和引用
 
-当前最新版本：1.2.1.1
+当前最新版本：1.2.2
 
 	<dependency>
 	    <groupId>org.xson</groupId>
@@ -59,3 +59,5 @@ tangyuan-es是tangyuan框架中的Elasticsearch服务组件，提供以RESTful A
 <https://github.com/xsonorg/tangyuan2>
 
 ## 5. 更新说明
+
++ 增加xson-httpclient使用

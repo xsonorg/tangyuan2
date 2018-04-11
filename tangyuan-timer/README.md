@@ -2,25 +2,25 @@
 
 ------
 
-### 1. 项目介绍
+## 1. 项目介绍
 
 tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，提供定时程序的功能。
 
 什么是定时程序呢？其实定时程序就是定时器+程序；这里的程序指的是tangyuan中的服务，也就是我的业务逻辑实现，而定时器呢？则是我们tangyuan-timer组建所提供的功能；
 
-### 2. 版本与maven使用
+## 2. 版本与maven使用
 
-当前最新版本：1.2.0
+当前最新版本：1.2.2
 
 > maven中使用
 
 	<dependency>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-timer</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.2</version>
 	</dependency>
 
-### 3. 使用场景
+## 3. 使用场景
 
 假设有这样一个需求，用户在线每超过一个小时，赠送10积分；
 
@@ -29,16 +29,16 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 
 对于一些复杂的业务，我们可以通过定时程序的方式，将其进行细化和拆分，以达到解耦合的效果；
 
-### 4. 使用教程
+## 4. 使用教程
 
-首先我们需要编写一个服务`demo/sendPointsOnline`来实现上述需求；具体服务的编写可参考tangyuan框架其他章节<http://xson.org/project/tangyuan/1.2.0>，接下来是定时器部分的使用和配置了；
+首先我们需要编写一个服务`demo/sendPointsOnline`来实现上述需求；具体服务的编写可参考tangyuan框架其他章节<http://xson.org/project/tangyuan/1.2.2>，接下来是定时器部分的使用和配置了；
 
 > a. 增加依赖的Jar
 
     <dependency>
        <groupId>org.xson</groupId>
        <artifactId>tangyuan-timer</artifactId>
-       <version>1.2.0</version>
+       <version>1.2.2</version>
     </dependency>
 
 	<dependency>
@@ -61,7 +61,7 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 	
 	    <component resource="component-sql.xml" type="sql" />
 	    <!--添加timer组件-->
@@ -73,7 +73,7 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<timer-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/timer/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/timer/1.2.2/component.xsd">
 		
 		<!-- 在线送积分 -->
 		<timer scheduled="0 0/5 * * * ?" service="demo/sendPointsOnline" desc="在线送积分" sync="true"/>
@@ -82,7 +82,7 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 
 通过上述3个步骤，我们就定义了好了这个定时程序，每隔5分钟执行一次`demo/sendPointsOnline`服务，也就是我们的在线送积分服务；
 
-### 5. 定时器
+## 5. 定时器
 
 定时器是通过`component-timer.xml`中的`timer`节点来配置的，`timer`节点的具体属性如下：
 
@@ -119,17 +119,17 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 		<!-- 在线送积分 -->
 		<timer scheduled="0 0/5 * * * ?" desc="在线送积分" sync="true" custom="org.xson.demo.MyJob"/>
 
-### 6. 如何部署
+## 6. 如何部署
 
 定时程序的部署可以分为两种方式，一种是和服务整合在一起，作为一套系统部署；另一种是独立部署；
 
-![timer部署](http://www.xson.org/project/timer/1.2.0/images/deploy.png)
+![timer部署](images/deploy.png)
 
 在上述使用教程中示例中`<timer scheduled="0 0/5 * * * ?" service="demo/sendPointsOnline" desc="在线送积分" sync="true"/>`使用就是整合部署，如果使用独立部署的应该做如下调整：
 
 1.新建一套系统(xxx.xson.timer)，只用作与定时程序；
 
-2.该系统增加tangyuan-rpc组件，详见<http://xson.org/project/rpc/1.2.0/>
+2.该系统增加tangyuan-rpc组件，详见<http://xson.org/project/rpc/1.2.2/>
 
 3.修改component-timer.xml配置文件如下：
 
@@ -137,9 +137,9 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 	<timer scheduled="0 0/5 * * * ?" service="xxx.xson.service/demo/sendPointsOnline" desc="在线送积分" sync="true"/>
 
 
-### 7. 类图
+## 7. 类图
 
-![类图](http://www.xson.org/project/timer/1.2.0/images/class.png)
+![类图](images/class.png)
 
 1. `TimerConfig`：每个定时器的参数类，对应`timer`节点配置信息；
 2. `org.quartz.Job`：quartz框架中的Job接口；
@@ -148,6 +148,6 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 5. `NonConcurrentJob`：标记类，标记为不可并发执行系统定时器Job；
 6. `CustomJob`：用户自定义的定时器Job；
 
-### 8. 技术文档
+## 8. 技术文档
 
-<http://www.xson.org/project/timer/1.2.0/>
+<http://www.xson.org/project/timer/1.2.2/>

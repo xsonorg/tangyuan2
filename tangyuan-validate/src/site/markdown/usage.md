@@ -1,7 +1,8 @@
 # 使用说明
+
 ---
 
-### 引言
+## 引言
 
 假设我们有一个名叫addUser的服务，此服务用来在数据库中新增一条用户数据；该服务的请求参数需要有2个字段：
 
@@ -23,14 +24,14 @@
 
 基于上述需求，我们看看通过`tangyuan-validate`组件，是如何来实现数据验证的。
 
-### 1. 使用示例
+## 1. 使用示例
 
 > a. 增加依赖的Jar
 
     <dependency>
        <groupId>org.xson</groupId>
        <artifactId>tangyuan-validate</artifactId>
-       <version>1.2.0</version>
+       <version>1.2.2</version>
     </dependency>
 
 > b. 添加组件
@@ -39,7 +40,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 	
 	    <component resource="component-sql.xml" type="sql" />
 	    <!--添加validate组件-->
@@ -53,7 +54,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<validate-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/1.2.2/component.xsd">
 		
 		<!--验证插件-->
 		<plugin resource="validate/validate-rule.xml" />
@@ -66,7 +67,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/rule.xsd" ns="demo">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/1.2.2/rule.xsd" ns="demo">
 	
 		<ruleGroup id="addUser" desc="添加用户">
 			<item name="userName" type="string" require="true" desc="用户名" message="用户名不合法">
@@ -88,13 +89,13 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/controller.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
 	
 		<c url="/demo/addUser" validate="demo/addUser" transfer="{service}/demo/addUser" />
 
 	</web-controller>
 
-**说明** 关于控制器的配置文件也就是tangyuan-web的相关内容，可参考<http://xson.org/project/web/1.2.0/>
+**说明** 关于控制器的配置文件也就是tangyuan-web的相关内容，可参考<http://xson.org/project/web/1.2.2/>
 
 2.在代码中手工调用（当验证失败后抛出异常）
 
@@ -129,13 +130,13 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 三处配置错误信息的优先级是(c) > (b) > (a)，但如果(c)未配置错误信息，则使用(b)的配置，依次类推；如果三处都为配置，则使用系统默认的错误信息`数据验证错误`。
 
-### 2. component-validat.xml配置文件说明
+## 2. component-validat.xml配置文件说明
 
 我们先看一个配置示例：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<validate-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/1.2.2/component.xsd">
 	
 		<config-property name="throwException" value="true"/>
 		<config-property name="xxx" value="yyy"/>
@@ -165,7 +166,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 `plugin`节点是用来配置验证规则插件的，其中`resource`属性代表插件的资源路径，需要位于classpath下；`plugin`节点可以配置一个或者多个；
 
-### 3. plugin.xml配置文件说明
+## 3. plugin.xml配置文件说明
 
 `plugin.xml`就是用来配置具体的验证规则；tangyuan-validate组件本身提供的是请求参数对象的验证规则，那我们首先要了解请求参数对象和验证规则之间的关系，
 
@@ -175,7 +176,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/rule.xsd" ns="demo">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/1.2.2/rule.xsd" ns="demo">
 	
 		<def id="checkUserType">
 			<rule name="枚举值" value="1,2,3,4"/>
@@ -243,7 +244,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 | id | `def`节点的标识 | Y | String | 同资源文件引用无需增加命名空间，如果定义和引用分属于不同的资源文件，则需要用增加命名空间 |
 
 
-### 4. 自定义验证器使用
+## 4. 自定义验证器使用
 
 对于`age`字段的取值，假如我们男性的年龄要求在40到100之间，女性的年龄要求在30到90之间，对于这个需要，我们可以通过自定义的数据验证器来实现；
 
@@ -270,7 +271,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<validate-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/validate/1.2.2/component.xsd">
 		
 		<!-- 自定义验证器 -->
 		<checker id="myChecker" class="org.xson.demo.MyChecker" />
@@ -289,7 +290,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 		......
 	</ruleGroup>
 
-### 5. 类设计
+## 5. 类设计
 
 ![类设计](images/04.png)
 
@@ -301,7 +302,7 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 6. `ValidateComponent`：容器类，持有tangyuan-validate组件内容所定义的所有验证组和验证器
 7. `XxxChecker`：具体的验证器实现类，具体可参考`org.xson.tangyuan.validate.rule`包
 
-### 6. 附录：数据类型和验证规则
+## 6. 附录：数据类型和验证规则
 
 | 数据类型 | 验证规则 | 使用示例 | 说明 |
 | --- | --- | --- | --- |
@@ -341,3 +342,26 @@ tangyuan-validate组件本身的配置(component-validat.xml)：
 | Collection | 最大长度 | 同String最大长度 | 集合的长度 <= 6 |
 | Collection | 最小长度 | 同String最小长度 | 3 <= 集合的长度 |
 
+## 6. 类型验证
+
+> 新增支持的类型验证
+
++ xco
++ byte
++ boolean
++ short
++ char
++ int_array
++ long_array
++ float_array
++ double_array
++ byte_array
++ boolean_array
++ short_array
++ char_array
++ string_array
++ xco_array
++ string_list
++ xco_list
++ string_set
++ xco_set

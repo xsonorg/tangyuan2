@@ -120,13 +120,13 @@ public class CommandActuator {
 		} else if (mongoResult instanceof org.bson.types.ObjectId) {
 			return ((org.bson.types.ObjectId) mongoResult).toString();
 		} else if (mongoResult instanceof DBObject) {
-			if (XCO.class == resultType) {
+			if (XCO.class == resultType || null == resultType) {
 				return BSONUtil.BSONToXCO((BSONObject) mongoResult);
 			} else {
 				return BSONUtil.BSONToMap((BSONObject) mongoResult);
 			}
 		} else if (mongoResult instanceof DBCursor) {
-			if (XCO.class == resultType) {
+			if (XCO.class == resultType || null == resultType) {
 				return getXCOResults((DBCursor) mongoResult, resultMap);
 			} else {
 				return getResults((DBCursor) mongoResult, resultMap);

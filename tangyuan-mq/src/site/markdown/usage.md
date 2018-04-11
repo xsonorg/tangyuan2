@@ -8,7 +8,7 @@
 	<dependency>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-mq</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.2</version>
 	</dependency>
 
 如果使用ActiveMQ中间件，需要增加以下依赖：
@@ -33,7 +33,7 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 	
 		<component resource="component-java.xml" type="java" />
 		<!--添加mq组件 -->
@@ -47,7 +47,7 @@ component-mq组件本身的配置(component-mq.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<mq-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/mq/component.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/mq/1.2.2/component.xsd">
 		
 		<!--定义ActiveMQ源-->
 		<mqSource id="mq01" type="ActiveMQ">
@@ -83,13 +83,13 @@ component-mq组件本身的配置(component-mq.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<javaservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/java/service.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/java/1.2.2/service.xsd">
 	
 		<service class="org.xson.tangyuan2.demo.MQService" ns="mqs"/>
 		
 	</javaservices>
 
-**说明:**关于Java服务的使用和配置，可参考<http://www.xson.org/project/java/1.2.0/> 
+**说明:**关于Java服务的使用和配置，可参考<http://www.xson.org/project/java/1.2.2/> 
 
 > e. 配置服务和监听
 
@@ -97,7 +97,7 @@ component-mq组件本身的配置(component-mq.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<mqservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/mq/service.xsd" ns="mq">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/mq/1.2.2/service.xsd" ns="mq">
 		
 		<!--定义消息服务:s1-->	
 		<mq-service id="s1" channels="q1,t1" />
@@ -159,7 +159,7 @@ component-mq组件本身的配置(component-mq.xml)：
 
 > property属性说明
 
-对于`<property>`内部节点的配置，根据所使用的中间件类型的不同，配置各不相同；如果使用ActiveMQ，请参考<http://www.xson.org/project/mq/1.2.0/activemq.html>，如果使用RabbitMQ，请参考<http://www.xson.org/project/mq/1.2.0/rabbitmq.html>。
+对于`<property>`内部节点的配置，根据所使用的中间件类型的不同，配置各不相同；如果使用ActiveMQ，请参考<http://www.xson.org/project/mq/1.2.2/activemq.html>，如果使用RabbitMQ，请参考<http://www.xson.org/project/mq/1.2.2/rabbitmq.html>。
 
 ### 3. 队列的配置
 
@@ -188,7 +188,7 @@ component-mq组件本身的配置(component-mq.xml)：
 
 > property属性说明
 
-对于`<queue>`节点的内部节点`<property>`的配置，根据所属的中间件类型的不同，配置各不相同；如当前队列所属ActiveMQ，请参考<http://www.xson.org/project/mq/1.2.0/activemq.html>，如当前队列所属RabbitMQ，请参考<http://www.xson.org/project/mq/1.2.0/rabbitmq.html>。
+对于`<queue>`节点的内部节点`<property>`的配置，根据所属的中间件类型的不同，配置各不相同；如当前队列所属ActiveMQ，请参考<http://www.xson.org/project/mq/1.2.2/activemq.html>，如当前队列所属RabbitMQ，请参考<http://www.xson.org/project/mq/1.2.2/rabbitmq.html>。
 
 ### 4. 主题的配置
 
@@ -217,7 +217,7 @@ component-mq组件本身的配置(component-mq.xml)：
 
 > property属性说明
 
-对于`<topic>`节点的内部节点`<property>`的配置，根据所属的中间件类型的不同，配置各不相同；如当前主题所属ActiveMQ，请参考<http://www.xson.org/project/mq/1.2.0/activemq.html>，如当前主题所属RabbitMQ，请参考<http://www.xson.org/project/mq/1.2.0/rabbitmq.html>。
+对于`<topic>`节点的内部节点`<property>`的配置，根据所属的中间件类型的不同，配置各不相同；如当前主题所属ActiveMQ，请参考<http://www.xson.org/project/mq/1.2.2/activemq.html>，如当前主题所属RabbitMQ，请参考<http://www.xson.org/project/mq/1.2.2/rabbitmq.html>。
 
 ### 5. 插件的配置
 
@@ -293,7 +293,7 @@ component-mq组件中，消息的发送是通过服务来实现的。要实现�
 
 **说明**
 
-对于发送消息路由选择的目标如果是一个主题，并且所属RabbitMQ，其含义会有些变化，具体的请参考<http://www.xson.org/project/mq/1.2.0/rabbitmq.html>
+对于发送消息路由选择的目标如果是一个主题，并且所属RabbitMQ，其含义会有些变化，具体的请参考<http://www.xson.org/project/mq/1.2.2/rabbitmq.html>
 
 #### 6.5 属性说明
 

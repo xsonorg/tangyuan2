@@ -7,7 +7,7 @@ tangyuan-hbase是tangyuan框架中的HBase服务组件，提供以JavaScript语�
 
 ## 2. 版本和引用
 
-当前最新版本：1.2.1.1
+当前最新版本：1.2.2
 
 	<dependency>
 	    <groupId>org.xson</groupId>
@@ -66,7 +66,7 @@ tangyuan-hbase是tangyuan框架中的HBase服务组件，提供以JavaScript语�
 
 ## 4. 技术文档
 
-<http://www.xson.org/project/hbase/1.2.0/>
+<http://www.xson.org/project/hbase/1.2.2/>
 
 ## 5. 更新说明
 

@@ -30,12 +30,12 @@ tangyuan-mq是tangyuan框架中的消息服务组件，其整合了RabbitMQ和Ac
 
 ### 3. 版本和Maven依赖
 
-当前版本：1.2.0
+当前版本：1.2.2
 
 	<dependency>
 	    <groupId>org.xson</groupId>
 	    <artifactId>tangyuan-mq</artifactId>
-	    <version>1.2.0</version>
+	    <version>1.2.2</version>
 	</dependency>
 	
 ### 4. 源码
