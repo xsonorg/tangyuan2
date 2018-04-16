@@ -32,8 +32,8 @@ tangyuan-web组件本身的配置(component-web.xml)：
 	<web-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/component.xsd">
 		
-		<!--web组件系统常量-->
-		<config-property name="urlAutoMappingMode" value="false" />
+		<!--开启REST模式-->
+		<config-property name="restMode" value="true" />
 	
 		<!--控制器插件-->
 		<plugin resource="controller/controller.xml"/>
@@ -78,7 +78,7 @@ tangyuan-web组件本身的配置(component-web.xml)：
 		
 	</web-app>
 
-通过上述五个步骤，我们就搭建了一套基于tangyuan-rest组件最基本的WEB应用，前端就可以通过`/news/newslist.xco`来访问我们的WEB系统；
+通过上述五个步骤，我们就搭建了一套基于tangyuan-web组件最基本的WEB应用，前端就可以通过`/news/newslist.xco`来访问我们的WEB系统；
 
 ## 2. 生命周期
 
@@ -88,27 +88,27 @@ tangyuan-web组件本身的配置(component-web.xml)：
 
 1. 数据组装、Before Handler、After Handler由tangyuan-web组件中AOP模块提供功能支持；
 2. 缓存使用（get）、缓存使用（put）由tangyuan-cache组件提供功能支持；对于缓存使用（get）在上图中出现了两次，用虚线框表示；其代表的含义是：或者在Before Handler之前处理，或者在Before Handler之后处理，通过控制器配置文件中`c`节点的`cacheInAop`属性可以进行设置；缓存使用（put）和缓存使用（get）的处理机制相同；
-3. 对于Execute环节，如果是自定义控制器，则代表控制器方法的调用；而如果是简单控制器则代表将请求参数从控制器转发至后端服务，并取得服务响应结果；
+3. 对于Execute环节，如果是自定义控制器，则代表控制器方法的调用；而如果是简单控制器则代表将请求参数从控制器转发至后端服务，并返回服务响应结果；
 
-具体每个环节的用途和使用方式，在后面的内容将会详细说明；
+具体每个环节的用途和使用方式，在后面的内容将会详细说明。
 
 ## 3. 开发模式
 
 tangyuan-web组件支持三种开发模式，单系统模式、分布式模式和混合模式；
 
-1. 单系统模式：控制器和服务整合在同一系统中；
+1. 单系统模式：控制器和服务属于同一系统中；
 2. 分布式模式：控制器和服务隶属于不同的系统，控制器通过RPC进行服务的访问；
-3. 混合模式：是单系统模式和分布式模式的合集，如果从控制器角度来说，就是控制器所需访问的服务，既有位于当前系统中的，又有存在于不同的系统中的；
+3. 混合模式：是单系统模式和分布式模式的合集，如果从控制器角度来说，就是控制器所需访问的服务，既有当前系统中的，又有其他系统中的；
 
-如果当前开发模式为单系统模式的时候，我们可以使用URL自动映射功能；所谓URL自动映射，就是将当前系统中的服务名自动映射为简单控制器；比如：在我们系统中有一个名为`news/newslist`的服务，当开启URL自动映射模式后，会在当前系统中自动生成一个url为`/news/newslist`的控制器，而无需手工配置和编码；关于如何配置URL自动映射，可参考后续章节；
+如果当前开发模式为单系统模式的时候，我们可以使用URL自动映射功能；所谓URL自动映射，就是将当前系统中的服务名自动映射为简单控制器；比如：在我们系统中有一个名为`news/newslist`的服务，当开启URL自动映射模式后，会在当前系统中自动生成一个URL为`/news/newslist`的控制器，而无需手工配置和编码。关于如何配置URL自动映射，可参考后续章节；
 
-## 4. component-web.xml配置文件说明
+## 4. 组件的配置
 
-`component-web.xml`用来配置tangyuan-web组件所包含的控制器插件和该组件的系统常量。
+tangyuan-web组件的配置包括组件自身系统常量的配置和控制器插件的配置。我们还以使用示例中的`component-web.xml`文件为例，对其配置进行具体的说明：
 
-> a. config-property
+### 4.1 系统常量的配置
 
-`config-property`节点是用来配置tangyuan-web组件的系统常量的，具体可配置的系统常量为如下列表：
+`<config-property>`节点是用来配置tangyuan-web组件的系统常量的，具体可配置的系统常量为如下列表：
 
 | name | 用途  | value取值 | 默认值 |
 | --- | --- | --- | --- |
@@ -121,20 +121,20 @@ tangyuan-web组件支持三种开发模式，单系统模式、分布式模式�
 | restMode | 是否开启REST模式,全局默认配置 | boolean | false |
 | printResultLog | 是否输出控制器的返回结果日志,全局默认配置 | boolean | false |
 
-> b. plugin
+### 4.1 插件的配置
 
-`plugin`节点是用来配置控制器插件的，其中`resource`属性代表插件的资源地址，需要位于classpath下；`plugin`节点可以配置一个或者多个。
+`<plugin>`节点是用来配置控制器插件的，其中`resource`属性代表插件的资源地址，需要位于classpath下；`<plugin>`节点可以配置一个或者多个。
 
 ## 5. 控制器
 
-tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java代码实现的控制器，我们称之为自定义控制器；另一种无需编写任何Java代码的控制器，称之为简单控制器。但无论使用哪一种，都需要在`controller.xml`中通过`c`节点进行配置。
+tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java代码实现的控制器，我们称之为自定义控制器；另一种无需编写任何Java代码的控制器，称之为简单控制器。但无论使用哪一种，都需要在控制器插件配置文件中通过`<c>`节点进行配置。比如使用示例中的`controller.xml`。
 
-### 5.1. `c`节点属性说明
+### 5.1. c节点属性说明
 
 | 属性 | 用途 | 必填 | 取值 | 默认值 |
 | --- | --- | --- | --- |
 | url | 控制器的URL,格式如：/news/newslist | Y | String | |
-| type | 请求方式 | REST模式下必填 | GET/POST/PUT/DELETE |  |
+| type | 请求方式 | REST模式下必填 | GET/POST/PUT/DELETE | |
 | validate | 数据验证标识 | N | String | |
 | transfer | 请求的服务，需要满足tangyuan服务命名规范 | 简单控制器必填 | String | |
 | exec | 自定义控制器 | 自定义控制器必填 | String | |
@@ -143,9 +143,7 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 | converter | 所使用的数据转换处理器 | N | String | 根据请求方式和Content-Type自动选择 |
 | permission | 权限标识 | N | String | |
 
-下面我们看一下两种控制器具体的使用方式。
-
-**说明：**为了方便阅读，后文中出现的`controller.xml`就代表控制器插件。
+下面我们看一下两种控制器具体的使用方式。**说明：**为了方便阅读，后文中出现的`controller.xml`就代表控制器插件。
 
 ### 5.2. 简单控制器
 
@@ -153,9 +151,7 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 
 	<c url="/news/newslist" transfer="{service}/news/newslist" />
 
-上述配置就定义了一个URL为`/news/newslist.xco`的控制器；当用户访问此URL后，控制器会将用户的请求转发至服务`{service}/news/newslist`；当服务处理完毕后将结果返回给控制器，控制器再将结果反馈给用户。
-
-`{service}/news/newslist`表示当前为分布式模式，控制器和服务隶属于不同的系统，通过RPC进行访问。关于`{service}`和RPC相关内容，具体可参考<http://xson.org/project/rpc/1.2.0/>
+上述配置就定义了一个URL为`/news/newslist.xco`的控制器；当用户访问此URL后，控制器会将用户的请求转发至服务`{service}/news/newslist`；当服务处理完毕后将结果返回给控制器，控制器再将结果反馈给用户。`{service}/news/newslist`表示当前为分布式模式，控制器和服务隶属于不同的系统，通过RPC进行访问。关于`{service}`和RPC相关内容，具体可参考<http://xson.org/project/rpc/1.2.2/>
 
 如果是单系统模式，配置如下：
 
@@ -175,7 +171,7 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 
 > 1.编写自定义控制器
 
-自定义控制器的编写其实就是新建一个类（也可是使用之前已存在的类），然后定义一个方法，此方法为控制器执行方法，示例如下：
+自定义控制器的编写其实就是创建一个类（也可是使用之前已存在的类），然后定义一个方法，此方法为控制器执行方法，示例如下：
 
 	public class MyController {
 	
@@ -199,7 +195,7 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/controller.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
 	
 		<!-- 自定义控制器 -->
 		<bean id="my" class="org.xson.tangyuan.web.MyController" />
@@ -209,11 +205,11 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 	
 	</web-controller>
 
-`bean`节点用来配置一个自定义控制器所在的类的实例，`id`属性表示实例的标识，`class`属性表示该该类的全类名；`exec="{my}.newslist"`则表示此控制器的执行方法为`MyController`类的`newslist`方法。
+`<bean>`节点用来配置一个自定义控制器所在的类的实例，`id`属性表示实例的标识，`class`属性表示该类的全类名；`exec="{my}.newslist"`则表示此控制器的执行方法为`MyController`类的`newslist`方法。
 
-> 3.`RequestContext`对象
+> 3.RequestContext对象
 
-`RequestContext`是请求的上下文对象，其中封装了`HttpServletRequest`和`HttpServletResponse`对象以及其他一些相关信息，在开发自定义控制器的时候，我们会经常和它打交道，下面我们来看一下其内部的一些重要属性和方法；
+`org.xson.tangyuan.web.RequestContext`是请求的上下文对象，其中封装了`HttpServletRequest`和`HttpServletResponse`对象以及其他一些相关信息，在开发自定义控制器的时候，我们会经常和它打交道，下面我们来看一下其内部的一些重要属性和方法；
 
 > 属性
 
@@ -227,6 +223,8 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 	private String				path;
 	// 请求URL中的查询字符串
 	private String				queryString;
+	// 是否是视图请求
+	private boolean				viewRequest;
 	// 请求转发或者重定向的视图
 	private String				view;
 	// 是否是请求重定向
@@ -235,8 +233,6 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 	private String				contextType;
 	// 请求的类型，Get/Post
 	private RequestTypeEnum		requestType;
-	// 是否是视图请求
-	private boolean				viewRequest;
 	// 返回对象
 	private Object				result;
 	// 请求参数对象
@@ -308,7 +304,7 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 
 ## 6. 权限拦截器
 
-tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开发人员可以通过继承`AbstractPermissionFilter`类，来实现自己系统的权限验证；`AbstractPermissionFilter`类是一个抽象类，其中下面两个抽象方法，是开发过程中需要实现的；
+tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开发人员可以通过继承`org.xson.tangyuan.web.AbstractPermissionFilter`类，来实现自己系统的权限验证；`AbstractPermissionFilter`类是一个抽象类，其中下面两个抽象方法，是开发过程中需要实现的；
 
 	/**
 	 * 权限检测
@@ -498,7 +494,7 @@ tangyuan-web组件中，请求参数的类型分为四种：
 
 > 1.增加和配置tangyuan-validate组件
 	
-关于tangyuan-validate组件的相关内容，可参考<http://www.xson.org/project/validate/1.2.0/>
+关于tangyuan-validate组件的相关内容，可参考<http://www.xson.org/project/validate/1.2.2/>
 
 > 2.控制器的配置
 
@@ -518,7 +514,7 @@ tangyuan-web组件中，请求参数的类型分为四种：
 
 > 1.增加和配置tangyuan-cache组件
 	
-关于tangyuan-cache组件的相关内容，可参考<http://www.xson.org/project/cache/1.2.0/>
+关于tangyuan-cache组件的相关内容，可参考<http://www.xson.org/project/cache/1.2.2/>
 
 > 2.控制器的配置
 
@@ -550,7 +546,7 @@ tangyuan-web组件中，请求参数的类型分为四种：
 	
 	cacheUse="id:cache01; key:abc{user_id}; expiry:10"	<!--常量+变量，对应的key=abc+请求参数中user_id所对应的值-->
 
-注意：在`c`节点中，可以通过配置`cacheInAop`属性来改变cache功能的执行位置；`cacheInAop=false`表示cache的get操作在Before Handler之前，cache的put操作在After Handler之后，`cacheInAop=true`表示cache的get操作在Before Handler之后，cache的put操作在After Handler之前。
+注意：在`<c>`节点中，可以通过配置`cacheInAop`属性来改变cache功能的执行位置；`cacheInAop=false`表示cache的get操作在Before Handler之前，cache的put操作在After Handler之后，`cacheInAop=true`表示cache的get操作在Before Handler之后，cache的put操作在After Handler之前。
 
 当控制器使用cache功能，在`缓存使用（get）`的时候，如果可以取到值，则直接返回，将不再执行后续的流程；否则将执行后续的`Execute`流程，并将相应结果放入缓存中；
 
@@ -594,7 +590,7 @@ tangyuan-web组件中，请求参数的类型分为四种：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/controller.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
 	
 		<!-- 定义数据组装类 -->
 		<bean id="myDataAssembler" class="org.xson.tangyuan.demo.MyDataAssembler" />
@@ -681,7 +677,7 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/controller.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
 	
 		<!--配置Bean-->
 		<bean id="cs" class="org.xson.demo.ControllerStatistics" />
@@ -712,7 +708,7 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/controller.xsd">
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
 	
 		<bean id="cs" class="..." />
 		
@@ -731,8 +727,7 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 	
 上述配置中，我们在控制器`/demo/getNews`的Before Handler环节，增加了三个执行方法，`{cs}.method1`、`{cs}.method2`和`{cs}.method3`，这三个执行方法的执行顺序是`{cs}.method3`、`{cs}.method2`和`{cs}.method1`，这个执行顺序可通过`order`属性进行设置，`order`属性的默认值是10；
 
-在`<c>`节点内部的`<before>`节点无需配置其子节点`<include>`和`<exclude>`，
-因为内部的`<before>`节点本身所包含的控制器就是`<c>`节点本身；
+在`<c>`节点内部的`<before>`节点无需配置其子节点`<include>`和`<exclude>`，因为内部的`<before>`节点本身所包含的控制器就是`<c>`节点本身；
 
 `<c>`节点内部配置示例：
 
