@@ -10,6 +10,7 @@ import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
+import org.xson.tangyuan.web.ResponseHandler;
 import org.xson.tangyuan.web.util.ServletUtils;
 
 public class ControllerVo {
@@ -22,18 +23,21 @@ public class ControllerVo {
 	protected List<MethodObject>	beforeMethods;
 	protected List<MethodObject>	afterMethods;
 
-	// 权限设置: 用户可自行处理
+	/** 权限设置: 用户可自行处理 */
 	protected String				permission;
 	protected CacheUseVo			cacheUse;
 	protected boolean				cacheInAop;
 
-	// 数据转换器
+	/** 数据转换器 */
 	protected DataConverter			dataConverter;
 	protected RequestTypeEnum		requestType;
 
+	/** 返回结果处理器 */
+	private ResponseHandler			responseHandler;
+
 	public ControllerVo(String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
 			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
-			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop) {
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler) {
 		this.url = url;
 		this.requestType = requestType;
 		this.transfer = transfer;
@@ -47,6 +51,8 @@ public class ControllerVo {
 		this.cacheUse = cacheUse;
 		this.dataConverter = dataConverter;
 		this.cacheInAop = cacheInAop;
+
+		this.responseHandler = responseHandler;
 	}
 
 	public String getUrl() {
@@ -73,12 +79,16 @@ public class ControllerVo {
 		return cacheInAop;
 	}
 
-	public boolean existDataConverter() {
-		return null == this.dataConverter ? false : true;
-	}
+	// public boolean existDataConverter() {
+	// return null == this.dataConverter ? false : true;
+	// }
 
 	public RequestTypeEnum getRequestType() {
 		return requestType;
+	}
+
+	public ResponseHandler getResponseHandler() {
+		return responseHandler;
 	}
 
 	public void dataConvert(RequestContext context) throws Throwable {
@@ -144,12 +154,6 @@ public class ControllerVo {
 					request = new XCO();
 				}
 				XCO result = null;
-				// if (WebComponent.getInstance().isRemoteServiceMode()) {
-				// result = RpcProxy.call(transfer, request);
-				// } else {
-				// Object retObj = ServiceActuator.execute(transfer, request);
-				// result = TangYuanUtil.retObjToXco(retObj);
-				// }
 				// 统一服务调用
 				Object retObj = ServiceActuator.execute(transfer, request);
 				result = TangYuanUtil.retObjToXco(retObj);

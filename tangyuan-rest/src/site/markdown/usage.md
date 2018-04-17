@@ -108,7 +108,7 @@ tangyuan-web组件的配置包括组件自身系统常量的配置和控制器�
 
 ### 4.1 系统常量的配置
 
-`<config-property>`节点是用来配置tangyuan-web组件的系统常量的，具体可配置的系统常量为如下列表：
+`<config-property>`节点用来配置tangyuan-web组件的系统常量，具体可配置的系统常量为如下列表：
 
 | name | 用途  | value取值 | 默认值 |
 | --- | --- | --- | --- |

@@ -78,16 +78,11 @@ public class XCOServlet extends HttpServlet {
 
 		RequestContext context = pretreatmentContext(req, resp, requestType);
 
+		// find controller
 		ControllerVo cVo = container.getControllerVo(requestType, context.getPath());
 		if (null == cVo) {
-			// log.error("It does not match the URL: " + context.getPath());
-			// context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			// doResponseError(context, null, null);
-			// return;
-
-			// log.error("It does not match the URL: " + context.getPath());
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			doResponseError(context, null, "No matching controller.");
+			doResponseError(context, null, null, "No matching controller.");
 			return;
 		}
 
@@ -96,11 +91,10 @@ public class XCOServlet extends HttpServlet {
 			cVo.dataConvert(context);
 			if (log.isInfoEnabled()) {
 				log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
-				// log.info(context.getPath() + " :" + context.getArg());
 			}
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			doResponseError(context, e, "data convert error.");
+			doResponseError(context, cVo, e, "data convert error.");
 			return;
 		}
 
@@ -109,7 +103,7 @@ public class XCOServlet extends HttpServlet {
 			cVo.assembly(context);
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			doResponseError(context, e, "assembly error.");
+			doResponseError(context, cVo, e, "assembly error.");
 			return;
 		}
 
@@ -120,17 +114,17 @@ public class XCOServlet extends HttpServlet {
 				boolean checkResult = XCOValidate.validate(validateId, (XCO) context.getArg());
 				if (!checkResult) {
 					context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-					doResponseError(context, null, "validate error.");
+					doResponseError(context, cVo, null, "validate error.");
 					return;
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				if (e instanceof XCOValidateException) {
 					XCOValidateException xcoEx = (XCOValidateException) e;
 					context.setErrorInfo(xcoEx.getErrorCode(), xcoEx.getErrorMessage());
 				} else {
 					context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
 				}
-				doResponseError(context, e, "validate error.");
+				doResponseError(context, cVo, e, "validate error.");
 				return;
 			}
 		}
@@ -138,9 +132,8 @@ public class XCOServlet extends HttpServlet {
 	}
 
 	private void exec(RequestContext context, ControllerVo cVo) {
-		Throwable ex = null;
+		// Throwable ex = null;
 		try {
-
 			if (cVo.isCacheInAop()) {
 				// 新的执行顺序
 				cVo.before(context);
@@ -159,24 +152,33 @@ public class XCOServlet extends HttpServlet {
 					cVo.cachePut(context);
 				}
 			}
-
-		} catch (Throwable e) {
-			ex = e;
-		} finally {
-			if (null == ex) {
-				doResponseSuccess(context);
+			// Response
+			doResponseSuccess(context, cVo);
+		} catch (Throwable ex) {
+			// ex = e;
+			if (ex instanceof ServiceException) {
+				ServiceException se = (ServiceException) ex;
+				context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
 			} else {
-				// context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-				// fix bug
-				if (ex instanceof ServiceException) {
-					ServiceException se = (ServiceException) ex;
-					context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
-				} else {
-					context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-				}
-				doResponseError(context, ex, "exec error.");
+				context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
 			}
+			doResponseError(context, cVo, ex, "exec error.");
 		}
+		// finally {
+		// if (null == ex) {
+		// doResponseSuccess(context, cVo);
+		// } else {
+		// // context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+		// // fix bug
+		// if (ex instanceof ServiceException) {
+		// ServiceException se = (ServiceException) ex;
+		// context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
+		// } else {
+		// context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+		// }
+		// doResponseError(context, cVo, ex, "exec error.");
+		// }
+		// }
 	}
 
 	/**
@@ -193,12 +195,18 @@ public class XCOServlet extends HttpServlet {
 		return context;
 	}
 
-	private void doResponseError(RequestContext context, Throwable ex, String errorMessage) {
-		// if (null != ex) {
-		// log.error(errorMessage + ": " + context.getPath(), ex);
-		// }
+	private void doResponseError(RequestContext context, ControllerVo cVo, Throwable ex, String errorMessage) {
 		log.error(context.getPath() + ": " + errorMessage, ex);
 		try {
+			ResponseHandler handler = null;
+			if (null != cVo) {
+				handler = cVo.getResponseHandler();
+			}
+			if (null != handler) {
+				handler.onError(context);
+				return;
+			}
+
 			if (context.isViewRequest()) {
 				context.getResponse().sendRedirect(WebComponent.getInstance().getErrorRedirectPage());
 			} else {
@@ -219,10 +227,20 @@ public class XCOServlet extends HttpServlet {
 		}
 	}
 
-	private void doResponseSuccess(RequestContext context) {
+	private void doResponseSuccess(RequestContext context, ControllerVo cVo) {
 		HttpServletResponse response = context.getResponse();
 		HttpServletRequest request = context.getRequest();
 		try {
+
+			ResponseHandler handler = null;
+			if (null != cVo) {
+				handler = cVo.getResponseHandler();
+			}
+			if (null != handler) {
+				handler.onSuccess(context);
+				return;
+			}
+
 			if (context.isViewRequest()) {
 				String view = context.getView();
 				if (null != view) {

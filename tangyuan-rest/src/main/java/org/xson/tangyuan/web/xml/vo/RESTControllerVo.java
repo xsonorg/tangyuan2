@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.web.DataConverter;
+import org.xson.tangyuan.web.ResponseHandler;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
 import org.xson.tangyuan.web.rest.RestURIVo;
 
@@ -14,9 +15,9 @@ public class RESTControllerVo extends ControllerVo {
 
 	public RESTControllerVo(String originalURI, String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
 			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
-			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, RestURIVo restURIVo) {
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler, RestURIVo restURIVo) {
 		super(url, requestType, transfer, validate, execMethod, assemblyMethods, beforeMethods, afterMethods, permission, cacheUse, dataConverter,
-				cacheInAop);
+				cacheInAop, responseHandler);
 		this.originalURI = originalURI;
 		this.restURIVo = restURIVo;
 	}

@@ -13,6 +13,7 @@ import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.validate.RuleDataConverter;
 import org.xson.tangyuan.web.WebComponent;
 import org.xson.tangyuan.web.convert.JSONDataConverter;
+import org.xson.tangyuan.web.convert.NothingConverter;
 import org.xson.tangyuan.web.convert.XCODataConverter;
 import org.xson.tangyuan.web.convert.XCORESTURIBodyDataConverter;
 import org.xson.tangyuan.web.convert.XCORESTURIDataConverter;
@@ -57,6 +58,8 @@ public class XMLConfigBuilder {
 	}
 
 	private void initDataConverter() throws Throwable {
+
+		this.context.getConverterIdMap().put("@no", NothingConverter.instance);
 
 		this.context.getConverterIdMap().put("@xco", XCODataConverter.instance);
 		this.context.getConverterIdMap().put("@json", JSONDataConverter.instance);

@@ -20,6 +20,7 @@ import org.xson.tangyuan.util.TangYuanAssert;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
+import org.xson.tangyuan.web.ResponseHandler;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
 import org.xson.tangyuan.web.WebComponent;
 import org.xson.tangyuan.web.convert.MixedDataConverter;
@@ -31,6 +32,7 @@ import org.xson.tangyuan.web.xml.vo.InterceptVo;
 import org.xson.tangyuan.web.xml.vo.InterceptVo.InterceptType;
 import org.xson.tangyuan.web.xml.vo.MethodObject;
 import org.xson.tangyuan.web.xml.vo.RESTControllerVo;
+import org.xson.tangyuan.web.xml.vo.ResponseConvertVo;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
 import org.xson.tangyuan.xml.XmlParseException;
@@ -54,6 +56,8 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		buildInterceptNode(this.root.evalNodes("assembly"), InterceptType.ASSEMBLY);
 		buildInterceptNode(this.root.evalNodes("before"), InterceptType.BEFORE);
 		buildInterceptNode(this.root.evalNodes("after"), InterceptType.AFTER);
+		// 增加响应转换器
+		buildResponseConvertNode(this.root.evalNodes("response-convert"));
 	}
 
 	public void parseRef2() throws Throwable {
@@ -209,6 +213,58 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		}
 	}
 
+	private void buildResponseConvertNode(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+
+			String bean = StringUtils.trim(context.getStringAttribute("bean"));
+			TangYuanAssert.stringEmpty(bean, "'bean' attribute can not be null in <response-convert>.");
+
+			Object beanInstance = this.context.getBeanIdMap().get(bean);
+			TangYuanAssert.objectEmpty(beanInstance, "reference bean does not exist: " + bean);
+
+			if (!(beanInstance instanceof ResponseHandler)) {
+				throw new XmlParseException("instances of use of the bean[" + bean + "] attribute must implement the 'ResponseHandler' interface.");
+			}
+			ResponseHandler handler = (ResponseHandler) beanInstance;
+
+			List<String> includeList = new ArrayList<String>();
+			List<String> excludeList = new ArrayList<String>();
+
+			// <include></include>
+			List<XmlNodeWrapper> includeNodes = context.evalNodes("include");
+			for (XmlNodeWrapper include : includeNodes) {
+				String body = StringUtils.trim(include.getStringBody());
+				if (null != body) {
+					includeList.add(body);
+				}
+			}
+			if (includeList.size() == 0) {
+				includeList = null;
+			}
+
+			// <exclude></exclude>
+			List<XmlNodeWrapper> excludeNodes = context.evalNodes("exclude");
+			for (XmlNodeWrapper exclude : excludeNodes) {
+				String body = StringUtils.trim(exclude.getStringBody());
+				if (null != body) {
+					excludeList.add(body);
+				}
+			}
+			if (excludeList.size() == 0) {
+				excludeList = null;
+			}
+
+			if (null == includeList && null == excludeList) {
+				throw new XmlParseException("<response-convert> node missing <include|exclude>: " + bean);
+			}
+
+			ResponseConvertVo rcVo = new ResponseConvertVo(handler, includeList, excludeList);
+			this.context.addResponseConvert(rcVo);
+
+			// log
+		}
+	}
+
 	private void buildRestControllerNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		for (XmlNodeWrapper context : contexts) {
 
@@ -279,9 +335,11 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			List<InterceptVo> afterList = new ArrayList<InterceptVo>();
 			buildInnerInterceptNode(context.evalNodes("after"), afterList);
 
+			ResponseHandler responseHandler = getResponseHandler(url);
+
 			RESTControllerVo cVo = new RESTControllerVo(fullUrl, url, requestType, transfer, validate, execMethod,
 					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
-					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, restURIVo);
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler, restURIVo);
 
 			this.context.addRestController(cVo);
 			// log.info("Add <c> :" + requestType + " " + fullUrl);
@@ -364,9 +422,11 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			List<InterceptVo> afterList = new ArrayList<InterceptVo>();
 			buildInnerInterceptNode(context.evalNodes("after"), afterList);
 
+			ResponseHandler responseHandler = getResponseHandler(url);
+
 			ControllerVo cVo = new ControllerVo(url, requestType, transfer, validate, execMethod,
 					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
-					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop);
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler);
 
 			this.context.getControllerMap().put(cVo.getUrl(), cVo);
 			log.info("Add <c> :" + cVo.getUrl());
@@ -611,6 +671,20 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			return uri.replaceAll(regex, "$1$2={$2}");
 		}
 		return uri;
+	}
+
+	private ResponseHandler getResponseHandler(String url) {
+		ResponseHandler handler = null;
+		List<ResponseConvertVo> responseConvertList = this.context.getResponseConvertList();
+		for (ResponseConvertVo rcVo : responseConvertList) {
+			if (rcVo.match(url)) {
+				if (null != handler) {
+					throw new XmlParseException("only one response converter can be bound to each controller: " + url);
+				}
+				handler = rcVo.getResponseHandler();
+			}
+		}
+		return handler;
 	}
 
 	public static void main(String[] args) {

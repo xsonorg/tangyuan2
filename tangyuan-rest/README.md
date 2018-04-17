@@ -34,6 +34,7 @@ tangyuan-rest是tangyuan框架中的控制层组件。tangyuan-rest以组件化�
 
 ## 4. 版本更新
 
-+ 增加RESTful API的支持
-+ 增加控制器返回结果日志输出控制
-+ 去除domain元素
++ 增加RESTful API的支持；
++ 增加控制器返回结果日志输出控制；
++ 返回对象数据转换的支持；
++ 去除domain元素；

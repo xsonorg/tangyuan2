@@ -11,6 +11,7 @@ import org.xson.tangyuan.web.xml.vo.ControllerVo;
 import org.xson.tangyuan.web.xml.vo.InterceptVo;
 import org.xson.tangyuan.web.xml.vo.MethodObject;
 import org.xson.tangyuan.web.xml.vo.RESTControllerVo;
+import org.xson.tangyuan.web.xml.vo.ResponseConvertVo;
 
 /**
  * 解析过程中的上下文
@@ -31,6 +32,9 @@ public class XMLWebContext {
 	private Map<String, String>			beforeMap				= new HashMap<String, String>();
 	private Map<String, String>			afterMap				= new HashMap<String, String>();
 	private Map<String, String>			assemblyMap				= new HashMap<String, String>();
+
+	private List<ResponseConvertVo>		responseConvertList		= new ArrayList<ResponseConvertVo>();
+	// private Map<String, String> responseHandlerMap = new HashMap<String, String>();
 
 	private Map<String, Integer>		restControllerFlagMap	= new HashMap<String, Integer>();
 	private List<RESTControllerVo>		restControllerList		= new ArrayList<RESTControllerVo>();
@@ -57,6 +61,10 @@ public class XMLWebContext {
 	public void addRestController(RESTControllerVo cVo) {
 		this.restControllerList.add(cVo);
 		this.restControllerFlagMap.put(RestUtil.getRestKey(cVo.getRequestType(), cVo.getRestURIVo().getPath()), 0);
+	}
+
+	public void addResponseConvert(ResponseConvertVo rcVo) {
+		this.responseConvertList.add(rcVo);
 	}
 
 	public List<InterceptVo> getBeforeList() {
@@ -99,6 +107,10 @@ public class XMLWebContext {
 		return converterClassMap;
 	}
 
+	public List<ResponseConvertVo> getResponseConvertList() {
+		return responseConvertList;
+	}
+
 	public void clear() {
 		// this.domainMap.clear();
 		this.beanIdMap.clear();
@@ -115,6 +127,8 @@ public class XMLWebContext {
 		this.converterIdMap.clear();
 		this.converterClassMap.clear();
 
+		this.responseConvertList.clear();
+
 		// this.domainMap = null;
 		this.beanIdMap = null;
 		this.beanClassMap = null;
@@ -129,5 +143,7 @@ public class XMLWebContext {
 		this.restControllerList = null;
 		this.converterIdMap = null;
 		this.converterClassMap = null;
+
+		this.responseConvertList = null;
 	}
 }
