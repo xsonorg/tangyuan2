@@ -72,8 +72,10 @@ public class WebComponent implements TangYuanComponent {
 	}
 
 	protected ControllerVo getControllerVo(RequestTypeEnum requestType, String path) {
+
 		if (this.restMode) {
-			return this.restContainer.getControllerVo(requestType, path);// REST模式下
+			// REST模式下
+			return this.restContainer.getControllerVo(requestType, path);
 		}
 		// if(this.forwardingMode){
 		// TODO

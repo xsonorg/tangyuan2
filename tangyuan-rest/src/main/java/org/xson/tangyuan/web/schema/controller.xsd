@@ -3,6 +3,8 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/web/controller" targetNamespace="http://xson.org/schema/tangyuan/web/controller" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="web-controller">
 		<xs:complexType>
@@ -10,10 +12,11 @@
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="bean"/>
 					<xs:element ref="converter"/>
-					<xs:element ref="converterGroup"/>
+					<xs:element ref="converter-group"/>
 					<xs:element ref="assembly"/>
 					<xs:element ref="before"/>
 					<xs:element ref="after"/>
+					<xs:element ref="response"/>
 					<xs:element ref="c"/>
 				</xs:choice>
 			</xs:sequence>
@@ -32,7 +35,7 @@
 			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="converterGroup">
+	<xs:element name="converter-group">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="converter" minOccurs="2" maxOccurs="unbounded">
@@ -78,6 +81,17 @@
 			</xs:sequence>
 			<xs:attribute name="call" type="xs:string" use="required"/>
 			<xs:attribute name="order" type="xs:int" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="include"/>
+					<xs:element name="exclude"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="bean" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="c">

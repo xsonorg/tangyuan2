@@ -63,7 +63,7 @@ public class XCOServlet extends HttpServlet {
 		WebComponent container = WebComponent.getInstance();
 		if (container.isclosing()) {
 			try {
-				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The current system is shutting down");
+				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The current system is shutting down.");
 			} catch (IOException e) {
 			}
 			return;

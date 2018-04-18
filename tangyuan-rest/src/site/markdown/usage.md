@@ -82,7 +82,7 @@ tangyuan-web组件本身的配置(component-web.xml)：
 
 ## 2. 生命周期
 
-![生命周期](images/01.png)
+![生命周期](images/02.png)
 
 上图中描述的是控制器的整个生命周期，对于图中每一个蓝色的方框内容，都是一个独立的处理环节，其中：
 
@@ -398,95 +398,68 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 
 ## 7. 数据转换
 
-数据转换指的是将Http请求中原始的请求参数，转换成当前系统需要的数据格式的过程。
+数据转换是将Http请求中原始的请求参数转换成当前系统需要的数据类型的过程。而具体的实现是通过数据转换接口`org.xson.tangyuan.web.DataConverter`来完成。
 
-数据转换指的是将Http请求中原始的请求参数，转换成当前系统需要的数据格式的过程。
+### 7.1 使用示例
 
-在这个过程中涉及到以下几个概念。
+> 示例 7.1.1
 
-1. 原始的请求参数：
-	在这其中，又分为原始参数的位置和参数的类型。
-	参数的位置指的是，请求参数是位于body体内还是URL查询字符串中，或者又是REST模式下，的PATH部分中。
-	请求的参数类型：
-2. 转换的目标：也就是我们希望转换成的数据格式。
-3. 转换的实现：数据转换的具体工作是通过数据转换器来实现的。
-4. 辅助条件：
+	<?xml version="1.0" encoding="UTF-8"?>
+	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
+		
+		<c url="/news/newslist" transfer="{service}/news/newslist" converter="@xco" />
+	 	
+	</web-controller>
 
-参数的位置
-参数的类型
+> 说明
 
-请求方式
-请求的Content-Type
+示例7.1.1中，我们在`<c>`标签中通过`converter`属性为当前控制器手工指定了一个数据转换器`@xco`，其作用是将Http请求中Body区内的数据转换成`XCO`对象。数据转换器是数据转换工作的具体实施者，需要实现`org.xson.tangyuan.web.DataConverter`接口。而我们在之前的示例中，似乎并没有配置数据转换器，那数据转换是如何实现呢？下面我们将详细说明。
 
-转换的目标
+### 7.2 默认转换器
 
-转换的工具
+如果开发人员在定义控制器的时候，没有手工指定具体的数据转换器，那么当一个用户请求访问该控制器的时候，tangyuan-web组件会根据用户请求中的一些特殊信息和请求方式，从系统自身提供的转换器中，寻找一个所匹配的，作为默认的数据转换器。当然，也可能未找到任何匹配的控制器，那么后续将不会做任何数据转换的处理。
 
-辅助条件
+> 系统自身提供的转换器和匹配方式
 
-### 4. 请求的模式
+| 名称 | 用途 | 条件 | 请求方式 |
+| --- | --- | --- | --- |
+| @xco | 将Http请求中Body区内的数据转换成`XCO`对象 | 非REST模式下，Content-Type中包含`xco`字符串 | POST |
+| @json | 将Http请求中Body区内的数据转换成`JSONObject`对象 | 非REST模式下，Content-Type中包含`json`字符串 | POST |
+| @rule | 将Http请求中的K/V形式的参数，根据验证规则，转换成`XCO`对象 | 需要手工指定 | GET/POST |
+| @xco_rest_uri | 将Http请求URL中的参数（K/V形式），根据验证规则，转换成`XCO`对象 | REST模式下，Content-Type中包含`xco`字符串 | GET/DELETE |
+| @xco_rest_uri_body | 将Http请求中URL和Body区内的参数（K/V形式），根据验证规则，转换成`XCO`对象 | REST模式下，Content-Type中包含`xco`字符串 | POST/PUT |
+| @no | 对于Http请求中原始的请求参数不做任何转换 | 需要手工指定  | ALL |
 
-在tangyuan框架中，请求的模式分为两种，一种是数据请求，另一种是控制请求；这是以请求的响应结果和请求的处理方式来进行进行划分的。
+### 7.3 自定义数据转换器
 
-> 数据请求
+当系统自身提供的转换器不能满足我们需求的时候，我们可以通过自定义的数据转换器来满足我们的需要。具体如下：
 
-数据请求指的是响应结果只是纯粹的数据内容，比如：
+> 1.编写自定义数据转换器类
 
-1. HTML中发起的Ajax请求；
-2. 客户端（Java、android、ios）发起的请求；
+	public class MyConverter implements DataConverter {
 	
-数据请求响应的结果为XCO(XML)、JSON或者String内容；
+		@Override
+		public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
+			// 逻辑实现
+		}
 	
-> 控制请求
-	
-包括请求的转发和重定义；一般用于页面操作中。
+	}
 
+**说明：**自定义的数据转换器类需要实现`org.xson.tangyuan.web.DataConverter`接口。
 
-### 7.1 请求参数类型：
+> 2.配置和使用自定义数据转换器
 
-tangyuan-web组件中，请求参数的类型分为四种：
+	<?xml version="1.0" encoding="UTF-8"?>
+	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
+		
+		<!--配置自定义的数据转换器-->
+		<converter id="myConverter" class="org.xson.tangyuan2.demo.MyConverter" />
 
-1. XCO：请求参数为XCO格式的字符串，比如xco请求；
-2. JSON：请求参数为JSON格式的字符串；比如json请求；
-3. KV：请求参数为key/value形式；比如普通的get请求和form表单提交；
-4. FILE：对应于文件上传；
-
-### 7.2 数据转换：
-
-数据转换指的是将Http请求中原始的请求参数，转换成当前系统需要的数据格式的过程；tangyuan-web组件默认数据转换后的结果为XCO对象；
-
-对于四种类型的请求参数，数据转换分别会做如下的处理：
-
-1. XCO类型的请求参数，数据转换会将其转换成XCO对象；
-2. JSON类型的请求参数，数据转换会将其转换成JSON对象；
-3. KV类型的请求参数，有两种转换方式：
-	1. 直接转换，将每一个key/value参数转换成XCO对象中的一个数据项；
-通过这种方式转换后，每个XCO对象中的数据项数据类型均为String；
-	2. 基于验证规则转换，通过增加数据验证来配合数据转换，
-	这样得到的XCO对象中的每一个数据项的都将是按照数据验证中验证项的数据类型进行转换的；
-4. 对于FILE类型的请求参数，系统不做处理，需要用户编码处理；
-
-如何配置KV类型的数据转换：
-
-> 1.全局配置
-	
-`component-web.xml`文件配置：	
-	
-	<config-property name="kvAutoConvert" value="true" />
-	
-通过上述配置，将开启全局默认的KV类型参数的数据转换，其规则是：对于一个KV类型的请求，如果控制器上配置了数据验证，将使用KV类型转换的第二种方式，否则使用第一种方式；
-	
-> 2.在控制器上配置
-
-在`controller.xml`文件中，通过`<c>`节点的`convert`属性进行配置：
-
-	<c url="/demo/getUser" validate="@" convert="KV_RULE_XCO" />
-	
-其中`convert`属性的取值，`convert="KV_RULE_XCO"`表示使用第二种方式进行转换，`convert="KV_XCO"`表示使用第一种方式进行转换。
-
-### 系统默认的数据转换处理器
-
-### 结果返回
+		<c url="/news/newslist" transfer="{service}/news/newslist" converter="myConverter" />
+	 	
+	</web-controller>
 
 ## 8. 使用数据验证
 
@@ -668,7 +641,7 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 		}
 	}
 
-其中需要注意的是：
+**其中需要注意的是：**
 
 1. `beforeHandler`和`afterHandler`方法的入参类型必须是`RequestContext`
 2. 该类需要一个无参的public级别的构造函数；
@@ -699,8 +672,7 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 
 其中`<before>`用来配置Before Handler，`<after>`用来配置After Handler；
 
-经过上述操作，我们通过在控制器`/demo/getNews`中增加了Before Handler和After Handler
-环节的扩展，实现了使用场景中的需求；
+经过上述操作，我们通过在控制器`/demo/getNews`中增加了Before Handler和After Handler环节的扩展，实现了使用场景中的需求。
 
 ### 10.3 高级应用
 
@@ -740,8 +712,13 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 
 关于After Handler环节所对应的`<after>`节点以及数据组装环节所对应的`<assembly>`节点和此示例相同，在此不在重复。
 
+## 11. 响应结果处理
 
-## 11. 开发规范建议
+响应结果处理指的是对于控制器的执行结果的后续处理。一般情况下，tangyuan-web组件会直接将控制器执行结果写入到用户请求的响应对象(HttpServletResponse)中。但是，假如在写入执行结果之前，我们希望增加一些特殊处理的内容，在这种情况下，我们就需要使用自定义响应结果处理。
+
+### 11.1 自定义响应结果处理
+
+## 12. 开发规范建议
 
 > 1.组件文件命名
 	

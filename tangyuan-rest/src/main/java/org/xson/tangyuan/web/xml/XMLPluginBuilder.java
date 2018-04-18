@@ -57,11 +57,11 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		buildInterceptNode(this.root.evalNodes("before"), InterceptType.BEFORE);
 		buildInterceptNode(this.root.evalNodes("after"), InterceptType.AFTER);
 		// 增加响应转换器
-		buildResponseConvertNode(this.root.evalNodes("response-convert"));
+		buildResponseConvertNode(this.root.evalNodes("response"));
 	}
 
 	public void parseRef2() throws Throwable {
-		buildConverterGroupNode(this.root.evalNodes("converterGroup"));
+		buildConverterGroupNode(this.root.evalNodes("converter-group"));
 	}
 
 	public void parseControllerNode() throws Throwable {
@@ -123,7 +123,7 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		for (XmlNodeWrapper context : contexts) {
 			String id = StringUtils.trim(context.getStringAttribute("id"));
 			if (this.context.getConverterIdMap().containsKey(id)) {
-				throw new XmlParseException("Duplicate Converter: " + id);
+				throw new XmlParseException("Duplicate converter: " + id);
 			}
 			List<XmlNodeWrapper> converterRefList = context.evalNodes("converter");
 			TangYuanAssert.collectionEmpty(converterRefList, "Internal converter node can not be empty: " + id);
@@ -135,7 +135,7 @@ public class XMLPluginBuilder extends ControllerBuilder {
 				converters.add(converter);
 			}
 			this.context.getConverterIdMap().put(id, new MixedDataConverter(converters));
-			log.info("Add <converterGroup> :" + id);
+			log.info("Add <converter-group> :" + id);
 		}
 	}
 
@@ -202,14 +202,16 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			if (InterceptType.ASSEMBLY == type) {
 				this.context.getAssemblyList().add(baVo);
 				this.context.getAssemblyMap().put(call, call);
+				log.info("Add <assembly> :" + call);
 			} else if (InterceptType.BEFORE == type) {
 				this.context.getBeforeList().add(baVo);
 				this.context.getBeforeMap().put(call, call);
+				log.info("Add <before> :" + call);
 			} else {
 				this.context.getAfterList().add(baVo);
 				this.context.getAfterMap().put(call, call);
+				log.info("Add <after> :" + call);
 			}
-
 		}
 	}
 
@@ -217,7 +219,7 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		for (XmlNodeWrapper context : contexts) {
 
 			String bean = StringUtils.trim(context.getStringAttribute("bean"));
-			TangYuanAssert.stringEmpty(bean, "'bean' attribute can not be null in <response-convert>.");
+			TangYuanAssert.stringEmpty(bean, "'bean' attribute can not be null in <response>.");
 
 			Object beanInstance = this.context.getBeanIdMap().get(bean);
 			TangYuanAssert.objectEmpty(beanInstance, "reference bean does not exist: " + bean);
@@ -255,13 +257,14 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			}
 
 			if (null == includeList && null == excludeList) {
-				throw new XmlParseException("<response-convert> node missing <include|exclude>: " + bean);
+				throw new XmlParseException("<response> node missing <include|exclude>: " + bean);
 			}
 
 			ResponseConvertVo rcVo = new ResponseConvertVo(handler, includeList, excludeList);
 			this.context.addResponseConvert(rcVo);
 
 			// log
+			log.info("Add <response> :" + bean);
 		}
 	}
 
