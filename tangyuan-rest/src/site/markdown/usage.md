@@ -1,4 +1,5 @@
 # 使用说明
+
 ---
 
 ## 1. 使用示例
@@ -87,7 +88,7 @@ tangyuan-web组件本身的配置(component-web.xml)：
 上图中描述的是控制器的整个生命周期，对于图中每一个蓝色的方框内容，都是一个独立的处理环节，其中：
 
 1. 数据组装、Before Handler、After Handler由tangyuan-web组件中AOP模块提供功能支持；
-2. 缓存使用（get）、缓存使用（put）由tangyuan-cache组件提供功能支持；对于缓存使用（get）在上图中出现了两次，用虚线框表示；其代表的含义是：或者在Before Handler之前处理，或者在Before Handler之后处理，通过控制器配置文件中`c`节点的`cacheInAop`属性可以进行设置；缓存使用（put）和缓存使用（get）的处理机制相同；
+2. 缓存使用（get）、缓存使用（put）由tangyuan-cache组件提供功能支持；对于缓存使用（get）在上图中出现了两次，用虚线框表示；其代表的含义是：或者在Before Handler之前处理，或者在Before Handler之后处理，通过控制器配置文件中`<c>`标签的`cacheInAop`属性可以进行设置；缓存使用（put）和缓存使用（get）的处理机制相同；
 3. 对于Execute环节，如果是自定义控制器，则代表控制器方法的调用；而如果是简单控制器则代表将请求参数从控制器转发至后端服务，并返回服务响应结果；
 
 具体每个环节的用途和使用方式，在后面的内容将会详细说明。
@@ -108,7 +109,7 @@ tangyuan-web组件的配置包括组件自身系统常量的配置和控制器�
 
 ### 4.1 系统常量的配置
 
-`<config-property>`节点用来配置tangyuan-web组件的系统常量，具体可配置的系统常量为如下列表：
+`<config-property>`标签用来配置tangyuan-web组件的系统常量，具体可配置的系统常量为如下列表：
 
 | name | 用途  | value取值 | 默认值 |
 | --- | --- | --- | --- |
@@ -123,13 +124,13 @@ tangyuan-web组件的配置包括组件自身系统常量的配置和控制器�
 
 ### 4.1 插件的配置
 
-`<plugin>`节点是用来配置控制器插件的，其中`resource`属性代表插件的资源地址，需要位于classpath下；`<plugin>`节点可以配置一个或者多个。
+`<plugin>`标签是用来配置控制器插件的，其中`resource`属性代表插件的资源地址，需要位于classpath下；`<plugin>`标签可以配置一个或者多个。
 
 ## 5. 控制器
 
-tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java代码实现的控制器，我们称之为自定义控制器；另一种无需编写任何Java代码的控制器，称之为简单控制器。但无论使用哪一种，都需要在控制器插件配置文件中通过`<c>`节点进行配置。比如使用示例中的`controller.xml`。
+tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java代码实现的控制器，我们称之为自定义控制器；另一种无需编写任何Java代码的控制器，称之为简单控制器。但无论使用哪一种，都需要在控制器插件配置文件中通过`<c>`标签进行配置。比如使用示例中的`controller.xml`。
 
-### 5.1. c节点属性说明
+### 5.1. <c>标签属性说明
 
 | 属性 | 用途 | 必填 | 取值 | 默认值 |
 | --- | --- | --- | --- |
@@ -205,7 +206,7 @@ tangyuan-web组件中的控制器分为两种：一种是用户通过编写Java�
 	
 	</web-controller>
 
-`<bean>`节点用来配置一个自定义控制器所在的类的实例，`id`属性表示实例的标识，`class`属性表示该类的全类名；`exec="{my}.newslist"`则表示此控制器的执行方法为`MyController`类的`newslist`方法。
+`<bean>`标签用来配置一个自定义控制器所在的类的实例，`id`属性表示实例的标识，`class`属性表示该类的全类名；`exec="{my}.newslist"`则表示此控制器的执行方法为`MyController`类的`newslist`方法。
 
 > 3.RequestContext对象
 
@@ -322,7 +323,7 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 	 */
 	abstract public void authFailed(RequestContext requestContext);
 
-其中`permissionCheck`方法的入参`permission`为权限标记，对应`c`节点的`permission`属性，下面给出一个使用示例：
+其中`permissionCheck`方法的入参`permission`为权限标记，对应`<c>`标签的`permission`属性，下面给出一个使用示例：
 
 > 1. 定义权限拦截器
 
@@ -495,7 +496,7 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 
 	<c url="/news/newslist" transfer="news/newslist" cacheUse="id:cache01; key:${url}${arg}; expiry:10"/>
 
-这样，我们就给上例中的控制器增加了缓存的使用；通过`cacheUse`属性，我们定义了具体的缓存使用方式；这这里我们使用了一个cache表达式，表达式具体分为三部分；
+这样，我们就给上例中的控制器增加了缓存的使用。通过`cacheUse`属性，我们定义了具体的缓存使用方式,这这里我们使用了一个cache表达式，表达式具体分为三部分：
 
 1. `id:cache01`表示使用在tangyuan-cache组件中所定义的id为cache01的cache实例；
 2. `key:${url}${arg}`表示此cache项的key值为`/news/newslist`+`MD5(请求参数)`
@@ -509,7 +510,6 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 4. {xxx}		控制器请求参数中的xxx项
 
 使用示例：
-
 	
 	cacheUse="id:cache01; key:abc; expiry:10"			<!--常量，对应的key=abc-->
 	
@@ -519,7 +519,7 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 	
 	cacheUse="id:cache01; key:abc{user_id}; expiry:10"	<!--常量+变量，对应的key=abc+请求参数中user_id所对应的值-->
 
-注意：在`<c>`节点中，可以通过配置`cacheInAop`属性来改变cache功能的执行位置；`cacheInAop=false`表示cache的get操作在Before Handler之前，cache的put操作在After Handler之后，`cacheInAop=true`表示cache的get操作在Before Handler之后，cache的put操作在After Handler之前。
+注意：在`<c>`标签中，可以通过配置`cacheInAop`属性来改变cache功能的执行位置；`cacheInAop=false`表示cache的get操作在Before Handler之前，cache的put操作在After Handler之后，`cacheInAop=true`表示cache的get操作在Before Handler之后，cache的put操作在After Handler之前。
 
 当控制器使用cache功能，在`缓存使用（get）`的时候，如果可以取到值，则直接返回，将不再执行后续的流程；否则将执行后续的`Execute`流程，并将相应结果放入缓存中；
 
@@ -529,7 +529,7 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 
 ### 10.1 数据组装
 
-**使用场景：**
+#### 10.1.1 使用场景
 
 比如用户在执行下订单操作的时候，用户请求会先经过控制器，然后由控制器转发给（或者说调用）后端服务；假设订单服务需要两部分数据，用户选择的商品数据和用户数据；商品数据由前端的请求中包含，而用户数据该如何处理呢？
 
@@ -541,7 +541,7 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 
 其中第三步，就是数据组装的工作内容。
 
-**使用示例：**
+#### 10.1.2 使用示例
 
 权限验证，可参考之前我们自定义权限拦截器类`MyPermissionFilter`；数据转换，我们假设就是一个异步请求，数据转换后得到XCO请求对象；接下来就开始我们数据组装的工作。
 
@@ -578,9 +578,9 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 	
 	</web-controller>
 
-通过上述操作，我们就完成了使用场景中我们需要实现的数据组装环节处理用户数据的工作。在第二步配置数据组装中，`<bean>`节点用来配置一个数据组装类的实例，`id`属性表示实例的标识，`class`属性表示该该类的全类名；`<assembly>`节点用来配置数据组装类所涉及，或者所影响的控制器；其子节点`<include>`节点用来配置所包含的控制器，可以支持通配符`*`；
+通过上述操作，我们就完成了使用场景中我们需要实现的数据组装环节处理用户数据的工作。在第二步配置数据组装中，`<bean>`标签用来配置一个数据组装类的实例，`id`属性表示实例的标识，`class`属性表示该该类的全类名；`<assembly>`标签用来配置数据组装类所涉及，或者所影响的控制器；其子标签`<include>`标签用来配置所包含的控制器，可以支持通配符`*`；
 
-其他配置示例：
+> 3.其他配置示例
 
 		<!--包含所有的控制器-->
 		<assembly call="{myDataAssembler}.assembleUserInfo">
@@ -604,18 +604,17 @@ tangyuan-web组件中默认提供基于Filter方式的权限验证功能，开�
 			<exclude>/login/userLogin</exclude>
 		</assembly>	
 	
-`<assembly>`节点的子节点`<exclude>`节点用来配置所要排除的控制器；
+`<assembly>`标签的子标签`<exclude>`标签用来配置所要排除的控制器；
 
 ### 10.2 Before Handler和After Handler
 
-Before Handler所定义的环节及其执行方法是在控制器方法之前执行，而After Handler是在之后执行，下面我们来看一下这两个环节的具体使用：
+Before Handler所定义的环节及其执行方法是在控制器方法之前执行，而After Handler是在之后执行，下面我们来看一下这两个环节的具体使用。
 
-**使用场景：**
+#### 10.2.1 使用场景
 
-比如：我们要计算某些控制器执行方法的执行时间和服务调用结果，并输出到日志中；
-基于Before Handler和After Handler，我们该如何实现呢，下面我们看一下示例：
+假如我们要计算某些控制器执行方法的执行时间和服务调用结果，并输出到日志中。基于Before Handler和After Handler，我们该如何实现呢，下面我们看一下示例：
 
-**使用示例：**
+#### 10.2.1 使用示例
 
 > 1.定义执行方法
 
@@ -676,7 +675,7 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 
 ### 10.3 高级应用
 
-示例：
+> 示例10.3.1
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -699,9 +698,9 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 	
 上述配置中，我们在控制器`/demo/getNews`的Before Handler环节，增加了三个执行方法，`{cs}.method1`、`{cs}.method2`和`{cs}.method3`，这三个执行方法的执行顺序是`{cs}.method3`、`{cs}.method2`和`{cs}.method1`，这个执行顺序可通过`order`属性进行设置，`order`属性的默认值是10；
 
-在`<c>`节点内部的`<before>`节点无需配置其子节点`<include>`和`<exclude>`，因为内部的`<before>`节点本身所包含的控制器就是`<c>`节点本身；
+在`<c>`标签内部的`<before>`标签无需配置其子标签`<include>`和`<exclude>`，因为内部的`<before>`标签本身所包含的控制器就是`<c>`标签本身；
 
-`<c>`节点内部配置示例：
+> <c>标签内部配置示例
 
 	<c url="/demo/getUser" validate="@" transfer="demo/getUser">
 		<assembly call="..." />
@@ -710,13 +709,51 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 		<after call="..."/>
 	</c>
 
-关于After Handler环节所对应的`<after>`节点以及数据组装环节所对应的`<assembly>`节点和此示例相同，在此不在重复。
+关于After Handler环节所对应的`<after>`标签以及数据组装环节所对应的`<assembly>`标签和此示例相同，在此不在重复。
 
 ## 11. 响应结果处理
 
-响应结果处理指的是对于控制器的执行结果的后续处理。一般情况下，tangyuan-web组件会直接将控制器执行结果写入到用户请求的响应对象(HttpServletResponse)中。但是，假如在写入执行结果之前，我们希望增加一些特殊处理的内容，在这种情况下，我们就需要使用自定义响应结果处理。
+响应结果处理指的是对于控制器的执行结果的后续处理。一般情况下，tangyuan-web组件会直接将控制器执行结果写入到用户请求的响应对象(HttpServletResponse)中。但如果在写入执行结果之前，我们希望增加一些特殊处理的内容，在这种情况下，我们就需要使用自定义响应结果处理。
 
 ### 11.1 自定义响应结果处理
+
+> 1.编写自定义响应处理器类
+
+	public class MyResponseHandler implements ResponseHandler {
+	
+		@Override
+		public void onSuccess(RequestContext context) throws IOException {
+			// TODO 控制器执行成功后的影响处理逻辑
+		}
+	
+		@Override
+		public void onError(RequestContext context) throws IOException {
+			// TODO 控制器执行失败后的影响处理逻辑
+		}
+	
+	}
+
+**说明：**自定义的响应处理器类需要实现`org.xson.tangyuan.web.ResponseHandler`接口。
+
+> 配置和使用
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/web/1.2.2/controller.xsd">
+		
+		<!--定义响应处理器类-->
+		<bean id="myResponseHandler" class="org.xson.tangyuan2.demo.MyResponseHandler" />
+		
+		<!--配置自定义响应处理器的所影响的控制器-->
+		<response bean="myResponseHandler">
+			<include>/*</include>
+		</response>
+		
+		<c url="/news/newslist" transfer="{service}/news/newslist" />
+	 	
+	</web-controller>
+
+其中：`<response>`标签是一个类似`<assembly>`的AOP标签，用来配置自定义响应处理器所影响的控制器。其内部同样包含子标签`<include>`和`<exclude>`，子标签的配置和使用可参考数据组装章节。
 
 ## 12. 开发规范建议
 
@@ -735,4 +772,4 @@ Before Handler所定义的环节及其执行方法是在控制器方法之前执
 
 > 4.插件内容
 	
-`<bean>`节点的配置统一放在`controller.xml`中；全局的`<assembly>`、`<before>`、`<after>`配置放在`controller.xml`中，这里全局指的是所影响的控制器分布于多个插件中；	`controller.xml`中不包含`<c>`节点，`<c>`节点在具体的模块文件中配置，比如`controller-news.xml`中；
+`<bean>`标签的配置统一放在`controller.xml`中；全局的`<assembly>`、`<before>`、`<after>`配置放在`controller.xml`中，这里全局指的是所影响的控制器分布于多个插件中；	`controller.xml`中不包含`<c>`标签，`<c>`标签在具体的模块文件中配置，比如`controller-news.xml`中；

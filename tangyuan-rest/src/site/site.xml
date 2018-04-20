@@ -31,6 +31,7 @@
 		<menu name="OVERVIEW">
 			<item name="首页" href="index.html" />
 			<item name="使用说明" href="usage.html" />
+			<item name="REST模式" href="rest.html" />
 		</menu>
 		<menu name="PROJECT DOCUMENTATION">
 			<item name="Dependencies" href="dependencies.html" />
