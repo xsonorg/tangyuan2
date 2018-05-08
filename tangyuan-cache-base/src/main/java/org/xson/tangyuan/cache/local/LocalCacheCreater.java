@@ -1,17 +1,41 @@
 package org.xson.tangyuan.cache.local;
 
+import java.io.InputStream;
 import java.util.Map;
+import java.util.Properties;
 
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheCreater;
+import org.xson.tangyuan.cache.CacheException;
 import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.local.LocalCache.CacheStrategyType;
+import org.xson.tangyuan.cache.util.PlaceholderResourceSupport;
+import org.xson.tangyuan.cache.util.ResourceManager;
 
 public class LocalCacheCreater implements CacheCreater {
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public AbstractCache newInstance(CacheVo cacheVo) {
-		Map<String, String> properties = cacheVo.getProperties();
+
+		//		Map<String, String> properties = cacheVo.getProperties();
+
+		Map<String, String> properties = null;
+		String resource = cacheVo.getResource();
+		try {
+			if (null == resource) {
+				properties = cacheVo.getProperties();
+				PlaceholderResourceSupport.processMap(properties, cacheVo.getPlaceholderMap());
+			} else {
+				InputStream inputStream = ResourceManager.getInputStream(resource, cacheVo.getPlaceholderMap());
+				Properties p = new Properties();
+				p.load(inputStream);
+				inputStream.close();
+				properties = (Map) p;
+			}
+		} catch (Throwable e) {
+			throw new CacheException(e);
+		}
 
 		AbstractCache localCache = new LocalCache(cacheVo.getId());
 

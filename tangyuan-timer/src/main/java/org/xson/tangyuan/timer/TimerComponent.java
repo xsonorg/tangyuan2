@@ -21,7 +21,7 @@ import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.util.ClassUtils;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XPathParser;
@@ -52,7 +52,8 @@ public class TimerComponent implements TangYuanComponent {
 	private List<TimerConfig>	timerList			= null;
 
 	private void parse(String resource) throws Throwable {
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		XPathParser xPathParser = new XPathParser(inputStream);
 		XmlNodeWrapper root = xPathParser.evalNode("/timer-component");
 		List<XmlNodeWrapper> nodeList = root.evalNodes("timer");

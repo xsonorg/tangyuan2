@@ -8,8 +8,9 @@ public class DataSourceGroupVo extends DataSourceVo {
 	private int	end;
 	private int	count;
 
-	public DataSourceGroupVo(String id, ConnPoolType type, boolean defaultDs, Map<String, String> properties, String creator, int start, int end) {
-		super(id, type, defaultDs, properties, null, creator);
+	public DataSourceGroupVo(String id, ConnPoolType type, boolean defaultDs, Map<String, String> properties, String creator, int start, int end,
+			String resource) {
+		super(id, type, defaultDs, properties, null, creator, resource);
 		this.start = start;
 		this.end = end;
 		this.count = this.end - this.start + 1;

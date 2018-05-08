@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.rpc.RpcClientComponent;
 import org.xson.tangyuan.rpc.RpcContainer;
 import org.xson.tangyuan.rpc.RpcProxy;
@@ -16,8 +15,7 @@ import org.xson.tangyuan.rpc.TangYuanRpcPlaceHolderHandler;
 import org.xson.tangyuan.rpc.client.AbstractRpcClient;
 import org.xson.tangyuan.rpc.client.MixedRpcClient;
 import org.xson.tangyuan.rpc.xml.RpcClientVo.ClientUseType;
-import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -43,14 +41,18 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 
 		this.xPathParser = new XPathParser(inputStream);
 		root = xPathParser.evalNode("/rpc-component");
 		parseNode();
+
+		inputStream.close();
 	}
 
 	public void parseNode() throws Throwable {

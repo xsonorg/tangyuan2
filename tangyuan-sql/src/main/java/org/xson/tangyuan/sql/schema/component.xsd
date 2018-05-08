@@ -36,6 +36,7 @@
 			</xs:attribute>
 			<xs:attribute name="sharedUse" type="xs:string" use="optional"/>
 			<xs:attribute name="isDefault" type="xs:boolean" default="false"/>
+			<xs:attribute name="resource" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="dataSourceGroup">
@@ -64,6 +65,7 @@
 			<xs:attribute name="start" type="xs:int" use="optional" default="0"/>
 			<xs:attribute name="end" type="xs:int" use="required"/>
 			<xs:attribute name="isDefault" type="xs:boolean" default="false"/>
+			<xs:attribute name="resource" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="transaction">

@@ -59,9 +59,8 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 
 	@Override
 	public void parseRef() {
-		buildRefNode(this.root.evalNodes("sql"));
-		// 增加段定义和引用
-		buildSegmentNode(this.root.evalNodes("segment"));
+		buildRefNode(this.root.evalNodes("sql"));			// 解析<sql>节点
+		buildSegmentNode(this.root.evalNodes("segment"));	// 增加段定义和引用
 	}
 
 	@Override

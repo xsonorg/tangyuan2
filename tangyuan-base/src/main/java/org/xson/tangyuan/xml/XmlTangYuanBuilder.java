@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
@@ -14,7 +15,10 @@ import org.xson.tangyuan.bootstrap.StartupAndShutdownHandler;
 import org.xson.tangyuan.bootstrap.StartupAndShutdownVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.util.ClassUtils;
+import org.xson.tangyuan.util.INIX;
+import org.xson.tangyuan.util.InixLoader;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.Resources;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanAssert;
@@ -38,8 +42,9 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
 
-		buildPlaceholderNodes(context.evalNodes("placeholder"));// 解析占位项
-		buildConfigNodes(context.evalNodes("config-property"));// 解析配置项
+		buildPlaceholderNodes(context.evalNodes("placeholder"));// 解析占位属性
+		buildInixNodes(context.evalNodes("inix"));				// 解析inix配置文件
+		buildConfigNodes(context.evalNodes("config-property"));	// 解析配置项
 
 		buildSSNodes(context.evalNodes("ss-aop"));
 		executeSSAop(startingBeforeList, false);
@@ -85,15 +90,32 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 		TangYuanAssert.stringEmpty(resource, "in the <placeholder> tag, the 'resource' property can not be empty.");
 
-		Properties props = null;
-		if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
-			// TODO 这个要考虑加密
-			props = Resources.getUrlAsProperties(resource);
-		} else {
-			props = Resources.getResourceAsProperties(resource);
-		}
+		// TODO 这个要考虑加密和解密
+		Properties props = ResourceManager.getProperties(resource);
+
 		TangYuanContainer.getInstance().getXmlGlobalContext().setPlaceholderMap((Map) props);
 		log.info("add placeholder properties: " + resource);
+	}
+
+	private void buildInixNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+		int size = contexts.size();
+		if (size > 1) {
+			throw new XmlParseException("The <inix> node can have at most one.");
+		}
+		if (size == 0) {
+			return;
+		}
+
+		XmlNodeWrapper xNode = contexts.get(0);
+		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+		TangYuanAssert.stringEmpty(resource, "in the <inix> tag, the 'resource' property can not be empty.");
+
+		InputStream in = ResourceManager.getInputStream(resource, true);
+		XCO data = new InixLoader().load(in);
+		INIX.init(data);
+		in.close();
+
+		log.info("add inix resource: " + resource);
 	}
 
 	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Throwable {

@@ -5,8 +5,7 @@ import java.io.InputStream;
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheException;
 import org.xson.tangyuan.cache.CacheVo;
-import org.xson.tangyuan.cache.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.cache.util.Resources;
+import org.xson.tangyuan.cache.util.ResourceManager;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -22,20 +21,6 @@ public class EhCacheCache extends AbstractCache {
 		this.cacheId = cacheId;
 	}
 
-	// @Override
-	// public void start(String resource, Map<String, String> properties) {
-	// if (null != cacheManager) {
-	// return;
-	// }
-	// try {
-	// InputStream inputStream = Resources.getResourceAsStream(resource);
-	// this.cacheManager = CacheManager.create(inputStream);
-	// this.cache = cacheManager.getCache(cacheManager.getCacheNames()[0]);
-	// } catch (Throwable e) {
-	// throw new CacheException(e);
-	// }
-	// }
-
 	@Override
 	public void start(CacheVo cacheVo) {
 		if (null != cacheManager) {
@@ -45,8 +30,12 @@ public class EhCacheCache extends AbstractCache {
 		String resource = cacheVo.getResource();
 
 		try {
-			InputStream inputStream = Resources.getResourceAsStream(resource);
-			inputStream = PlaceholderResourceSupport.processInputStream(inputStream, cacheVo.getPlaceholderMap());
+
+			// InputStream inputStream = Resources.getResourceAsStream(resource);
+			// inputStream = PlaceholderResourceSupport.processInputStream(inputStream, cacheVo.getPlaceholderMap());
+
+			InputStream inputStream = ResourceManager.getInputStream(resource, cacheVo.getPlaceholderMap());
+
 			this.cacheManager = CacheManager.create(inputStream);
 			this.cache = cacheManager.getCache(cacheManager.getCacheNames()[0]);
 		} catch (Throwable e) {

@@ -9,7 +9,7 @@ import org.xson.logging.LogFactory;
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.validate.rule.ArrayLengthIntervalChecker;
 import org.xson.tangyuan.validate.rule.ArrayLengthMaxChecker;
 import org.xson.tangyuan.validate.rule.ArrayLengthMinChecker;
@@ -264,7 +264,8 @@ public class ValidateComponent implements TangYuanComponent {
 		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		log.info("validate component starting, version: " + Version.getVersion());
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		XMLConfigBuilder builder = new XMLConfigBuilder(inputStream);
 		builder.parseNode();
 		initChecker();// 初始化checker

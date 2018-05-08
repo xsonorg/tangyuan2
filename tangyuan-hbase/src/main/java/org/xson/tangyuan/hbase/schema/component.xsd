@@ -18,6 +18,7 @@
 				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="resource" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="plugin">

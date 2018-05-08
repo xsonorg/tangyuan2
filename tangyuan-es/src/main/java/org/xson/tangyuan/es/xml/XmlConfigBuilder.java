@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.es.EsComponent;
 import org.xson.tangyuan.es.ResultConverter;
 import org.xson.tangyuan.es.converters.HitsConverter;
@@ -18,8 +17,7 @@ import org.xson.tangyuan.es.datasource.EsSourceManager;
 import org.xson.tangyuan.es.datasource.EsSourceVo;
 import org.xson.tangyuan.es.xml.node.XMLEsNodeBuilder;
 import org.xson.tangyuan.util.ClassUtils;
-import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XPathParser;
@@ -39,13 +37,18 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
 		this.context.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/es-component"));
 		context.clean();
+
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -118,7 +121,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -136,7 +139,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			}
 
 			// log.info("*** Start parsing(ref): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			XPathParser parser = new XPathParser(inputStream);
 			XmlNodeBuilder nodeBuilder = getXmlNodeBuilder(parser);
 			// nodeBuilder.parseRef();

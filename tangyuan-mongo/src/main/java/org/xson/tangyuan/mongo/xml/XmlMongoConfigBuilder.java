@@ -19,7 +19,8 @@ import org.xson.tangyuan.mongo.datasource.MuiltMongoDataSourceManager;
 import org.xson.tangyuan.mongo.datasource.SimpleMongoDataSourceManager;
 import org.xson.tangyuan.mongo.xml.node.XMLMongoNodeBuilder;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.PropertyUtils;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -41,13 +42,18 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
 		context.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/mongo-component"));
 		context.clean();
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -79,7 +85,8 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 		}
 	}
 
-	private List<MongoDataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<MongoDataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		List<MongoDataSourceVo> dsList = new ArrayList<MongoDataSourceVo>();
 		for (int i = 0; i < size; i++) {
@@ -106,21 +113,40 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 			// String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
 			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					//					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+					//							StringUtils.trim(propertyNode.getStringAttribute("value")));
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
+
 			// MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs);
-			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, sharedUse, TangYuanContainer.getInstance().getSystemName());
+			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, sharedUse, TangYuanContainer.getInstance().getSystemName(), resource);
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}
 		return dsList;
 	}
 
-	private List<MongoDataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<MongoDataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// log.info("解析数据源:" + contexts.size());
 		int size = contexts.size();
 		List<MongoDataSourceVo> dsList = new ArrayList<MongoDataSourceVo>();
@@ -157,15 +183,33 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 				}
 			}
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					//					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+					//							StringUtils.trim(propertyNode.getStringAttribute("value")));
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
+
 			// MongoDataSourceGroupVo dsGroupVo = new MongoDataSourceGroupVo(id, defaultDs, data, start, end);
 			MongoDataSourceGroupVo dsGroupVo = new MongoDataSourceGroupVo(id, defaultDs, data, TangYuanContainer.getInstance().getSystemName(), start,
-					end);
+					end, resource);
 
 			dsList.add(dsGroupVo);
 
@@ -225,7 +269,8 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 		XmlNodeWrapper xNode = contexts.get(0);
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource")); // xml v
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		InputStream inputStream = ResourceManager.getInputStream(resource, false);
 		XmlMongoMapperBuilder xmlMapperBuilder = new XmlMongoMapperBuilder(inputStream);
 		xmlMapperBuilder.parse(this.context);
 	}
@@ -243,12 +288,15 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource")); // xml
 		// v
 		log.info("Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
 		XmlMongoShardingBuilder xmlShardingBuilder = new XmlMongoShardingBuilder(inputStream);
 		xmlShardingBuilder.parse(this.context);
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -261,7 +309,9 @@ public class XmlMongoConfigBuilder implements XmlExtendBuilder {
 			XmlNodeWrapper xNode = contexts.get(i);
 			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 			log.info("*** Start parsing(ref): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
+
 			XmlNodeBuilder xmlSqlNodeBuilder = getXmlNodeBuilder(new XPathParser(inputStream));
 
 			xmlSqlNodeBuilder.parseRef();

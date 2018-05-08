@@ -9,7 +9,6 @@ import javax.management.modelmbean.XMLParseException;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.mq.MqContainer;
 import org.xson.tangyuan.mq.datasource.MqManagerCreater;
 import org.xson.tangyuan.mq.datasource.MqSourceManager;
@@ -21,7 +20,8 @@ import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
 import org.xson.tangyuan.mq.vo.RabbitMqChannelVo;
 import org.xson.tangyuan.mq.xml.node.XMLMqNodeBuilder;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.PropertyUtils;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -43,12 +43,17 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		context.setXmlContext((XmlGlobalContext) xmlContext);
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
 		configurationElement(xPathParser.evalNode("/mq-component"));
 		context.clean();
+
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -61,6 +66,7 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 		buildPluginNodes(context.evalNodes("plugin"));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void buildHostNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 
 		if (0 == contexts.size()) {
@@ -95,13 +101,29 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 				}
 			}
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
-			MqSourceVo hostVo = new MqSourceVo(id, type, data);
+
+			MqSourceVo hostVo = new MqSourceVo(id, type, data, resource);
 			context.getMqSourceMap().put(id, hostVo);
 			log.info("add mq source: " + id);
 		}
@@ -223,7 +245,7 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 		}
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -233,7 +255,8 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 			// log.info("Start parsing(1): " + resource);
 			log.info("Start parsing: " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			XPathParser parser = new XPathParser(inputStream);
 			XmlNodeBuilder xmlNodeBuilder = getXmlNodeBuilder(parser);
 			xmlNodeBuilder.parseService();

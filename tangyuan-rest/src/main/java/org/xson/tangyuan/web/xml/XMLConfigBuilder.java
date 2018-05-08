@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.validate.RuleDataConverter;
 import org.xson.tangyuan.web.WebComponent;
@@ -106,7 +106,8 @@ public class XMLConfigBuilder {
 		XMLPluginBuilder[] builders = new XMLPluginBuilder[resourceList.size()];
 		for (String resource : resourceList) {
 			log.info("Start parsing(bean|intercept): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			builders[i] = new XMLPluginBuilder(inputStream, this.context);
 			builders[i].parseRef();
 			i++;

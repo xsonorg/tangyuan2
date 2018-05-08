@@ -8,8 +8,7 @@ import org.xson.tangyuan.cache.CacheException;
 import org.xson.tangyuan.cache.CacheSerializer;
 import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.util.JDKSerializer;
-import org.xson.tangyuan.cache.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.cache.util.Resources;
+import org.xson.tangyuan.cache.util.ResourceManager;
 import org.xson.thirdparty.redis.JedisClient;
 
 public class RedisCache extends AbstractCache {
@@ -31,11 +30,18 @@ public class RedisCache extends AbstractCache {
 		try {
 			// client = JedisClient.getInstance();
 			client = new JedisClient();
-			Properties properties = new Properties();
-			InputStream inputStream = Resources.getResourceAsStream(resource);
-			properties.load(inputStream);
+			//			Properties properties = new Properties();
+			//			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//			properties.load(inputStream);
+			//
+			//			PlaceholderResourceSupport.processProperties(properties, cacheVo.getPlaceholderMap());
 
-			PlaceholderResourceSupport.processProperties(properties, cacheVo.getPlaceholderMap());
+			InputStream inputStream = ResourceManager.getInputStream(resource, cacheVo.getPlaceholderMap());
+			//			inputStream = PlaceholderResourceSupport.processInputStream(inputStream, cacheVo.getPlaceholderMap());
+
+			Properties properties = new Properties();
+			properties.load(inputStream);
+			inputStream.close();
 
 			client.start(properties);
 		} catch (Throwable e) {

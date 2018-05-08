@@ -9,16 +9,20 @@ public class MqSourceVo {
 		RabbitMQ, ActiveMQ
 	}
 
-	private String				id;
+	private String				id			= null;
 
-	private MqSourceType		type;
+	private MqSourceType		type		= null;
 
-	private Map<String, String>	properties;
+	private Map<String, String>	properties	= null;
 
-	public MqSourceVo(String id, MqSourceType type, Map<String, String> properties) {
+	private String				resource	= null;
+
+	public MqSourceVo(String id, MqSourceType type, Map<String, String> properties, String resource) {
 		this.id = id;
 		this.type = type;
 		this.properties = properties;
+
+		this.resource = resource;
 	}
 
 	public String getId() {
@@ -31,6 +35,10 @@ public class MqSourceVo {
 
 	public MqSourceType getType() {
 		return type;
+	}
+
+	public String getResource() {
+		return resource;
 	}
 
 }

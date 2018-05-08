@@ -21,7 +21,7 @@ import org.xson.tangyuan.aop.vo.AfterJoinVo;
 import org.xson.tangyuan.aop.vo.BeforeAloneVo;
 import org.xson.tangyuan.aop.vo.BeforeCheckVo;
 import org.xson.tangyuan.aop.vo.BeforeJoinVo;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XPathParser;
@@ -46,9 +46,12 @@ public class XmlAopBuilder {
 
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		this.xPathParser = new XPathParser(inputStream);
 		configurationElement(xPathParser.evalNode("/aop-component"));
+
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {

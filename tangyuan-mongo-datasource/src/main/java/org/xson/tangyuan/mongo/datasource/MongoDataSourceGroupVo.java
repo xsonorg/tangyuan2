@@ -8,9 +8,8 @@ public class MongoDataSourceGroupVo extends MongoDataSourceVo {
 	private int	end;
 	private int	count;
 
-	public MongoDataSourceGroupVo(String id, boolean defaultDs, Map<String, String> properties, String creator, int start, int end) {
-		// super(id, properties, defaultDs);
-		super(id, properties, defaultDs, null, creator);
+	public MongoDataSourceGroupVo(String id, boolean defaultDs, Map<String, String> properties, String creator, int start, int end, String resource) {
+		super(id, properties, defaultDs, null, creator, resource);
 		this.start = start;
 		this.end = end;
 		this.count = this.end - this.start + 1;

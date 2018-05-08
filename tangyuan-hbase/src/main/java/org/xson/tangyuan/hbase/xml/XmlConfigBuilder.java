@@ -16,7 +16,7 @@ import org.xson.tangyuan.hbase.datasource.HBaseDataSource;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSourceManager;
 import org.xson.tangyuan.hbase.xml.node.XMLHBaseNodeBuilder;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -35,13 +35,18 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
 		this.context.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/hbase-component"));
 		context.clean();
+
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -65,6 +70,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void buildDataSourceNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 
 		int size = contexts.size();
@@ -83,15 +89,30 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			}
 			String sharedUse = StringUtils.trim(xNode.getStringAttribute("sharedUse"));
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				// data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-				// StringUtils.trim(propertyNode.getStringAttribute("value")));
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				// data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//				// StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(resource, true);
+				//data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				//data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
 
-			DataSourceVo dsVo = new DataSourceVo(id, data, sharedUse, TangYuanContainer.getInstance().getSystemName());
+			DataSourceVo dsVo = new DataSourceVo(id, data, sharedUse, TangYuanContainer.getInstance().getSystemName(), resource);
 			dataSourceVoMap.put(id, dsVo);
 			defaultDsKey = id;
 		}
@@ -110,7 +131,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		}
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -128,7 +149,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			}
 
 			// log.info("*** Start parsing(ref): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//			InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			XPathParser parser = new XPathParser(inputStream);
 			XmlNodeBuilder nodeBuilder = getXmlNodeBuilder(parser);
 			nodeBuilder.parseRef();
@@ -154,10 +176,4 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			throw new XmlParseException("Unsupported root node in the service plug-in");
 		}
 	}
-
-	// private void testStringEmpty(String str, String message) {
-	// if (null == str || 0 == str.length()) {
-	// throw new XmlParseException(message);
-	// }
-	// }
 }

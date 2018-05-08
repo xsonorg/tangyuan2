@@ -9,7 +9,7 @@ import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
 import org.xson.tangyuan.web.rest.RESTContainer;
 import org.xson.tangyuan.web.xml.XMLConfigBuilder;
@@ -197,7 +197,8 @@ public class WebComponent implements TangYuanComponent {
 			// 是否存在本地服务
 			this.existLocalService = TangYuanContainer.getInstance().getServicesKeySet().size() > 0;
 			log.info("*** Start parsing: " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, true);
 			XMLConfigBuilder builder = new XMLConfigBuilder(inputStream);
 			builder.parseNode();
 			initialization = true;

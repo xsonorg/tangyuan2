@@ -4,19 +4,23 @@ import java.util.Map;
 
 public class MongoDataSourceVo {
 
-	private String				id;
-	private Map<String, String>	properties;
-	private boolean				defaultDs	= false;
-	protected boolean			group		= false;
+	protected String				id			= null;
+	protected Map<String, String>	properties	= null;
+	protected boolean				defaultDs	= false;
+	protected boolean				group		= false;
 	// protected String jndiName = null;
-	protected String			sharedUse	= null;
-	protected String			creator		= null;
+	protected String				sharedUse	= null;
+	protected String				creator		= null;
 
-	public MongoDataSourceVo(String id, Map<String, String> properties, boolean defaultDs, String sharedUse, String creator) {
+	protected String				resource	= null;
+
+	public MongoDataSourceVo(String id, Map<String, String> properties, boolean defaultDs, String sharedUse, String creator, String resource) {
 		this.id = id;
 		this.properties = properties;
 		this.defaultDs = defaultDs;
 		this.sharedUse = sharedUse;
+
+		this.resource = resource;
 	}
 
 	public String getId() {

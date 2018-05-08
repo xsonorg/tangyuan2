@@ -12,9 +12,8 @@ public class EhCacheCreater implements CacheCreater {
 		EhCacheCache cache = new EhCacheCache(cacheVo.getId());
 		String resource = cacheVo.getResource();
 		if (null == resource) {
-			throw new CacheException("missing resource in ehcache type");
+			throw new CacheException("missing resource in ehcache type.");
 		}
-		// cache.start(resource, cacheVo.getProperties());
 		cache.start(cacheVo);
 		return cache;
 	}

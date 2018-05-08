@@ -16,13 +16,18 @@ public class DataSourceVo {
 	protected String			sharedUse	= null;
 	protected String			creator		= null;
 
-	public DataSourceVo(String id, ConnPoolType type, boolean defaultDs, Map<String, String> properties, String sharedUse, String creator) {
+	protected String			resource	= null;
+
+	public DataSourceVo(String id, ConnPoolType type, boolean defaultDs, Map<String, String> properties, String sharedUse, String creator,
+			String resource) {
 		this.id = id;
 		this.type = type;
 		this.defaultDs = defaultDs;
 		this.properties = properties;
 		this.sharedUse = sharedUse;
 		this.creator = creator;
+
+		this.resource = resource;
 	}
 
 	public String getId() {

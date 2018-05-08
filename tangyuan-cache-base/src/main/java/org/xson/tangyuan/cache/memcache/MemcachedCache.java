@@ -1,19 +1,22 @@
 package org.xson.tangyuan.cache.memcache;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheException;
 import org.xson.tangyuan.cache.CacheVo;
+import org.xson.tangyuan.cache.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.cache.util.PropertyUtils;
+import org.xson.tangyuan.cache.util.ResourceManager;
 
 import com.whalin.MemCached.MemCachedClient;
 import com.whalin.MemCached.SockIOPool;
 
 public class MemcachedCache extends AbstractCache {
 
-	// private String cacheId = null;
 	private MemCachedClient	cachedClient	= null;
 	private SockIOPool		pool			= null;
 
@@ -21,13 +24,31 @@ public class MemcachedCache extends AbstractCache {
 		this.cacheId = cacheId;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void start(CacheVo cacheVo) {
 		if (null != cachedClient || null != pool) {
 			return;
 		}
 
-		Map<String, String> properties = cacheVo.getProperties();
+		//		Map<String, String> properties = cacheVo.getProperties();
+
+		Map<String, String> properties = null;
+		String resource = cacheVo.getResource();
+		try {
+			if (null == resource) {
+				properties = cacheVo.getProperties();
+				PlaceholderResourceSupport.processMap(properties, cacheVo.getPlaceholderMap());
+			} else {
+				InputStream inputStream = ResourceManager.getInputStream(resource, cacheVo.getPlaceholderMap());
+				Properties p = new Properties();
+				p.load(inputStream);
+				inputStream.close();
+				properties = (Map) p;
+			}
+		} catch (Throwable e) {
+			throw new CacheException(e);
+		}
 
 		// { "cache0.server.com:12345", "cache1.server.com:12345" };
 		String _serverlist = properties.get("serverlist");
@@ -145,8 +166,4 @@ public class MemcachedCache extends AbstractCache {
 		return cachedClient;
 	}
 
-	// @Override
-	// public String getId() {
-	// return cacheId;
-	// }
 }

@@ -22,7 +22,8 @@ import org.xson.tangyuan.sql.xml.node.XMLSqlNodeBuilder;
 import org.xson.tangyuan.type.TypeHandler;
 import org.xson.tangyuan.type.TypeHandlerRegistry;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.PropertyUtils;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -45,14 +46,18 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 
 		this.xPathParser = new XPathParser(inputStream);
 		sqlContext.setXmlContext((XmlGlobalContext) xmlContext);
 		configurationElement(xPathParser.evalNode("/sql-component"));
 		sqlContext.clean();
+		
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -104,7 +109,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		log.info("add default transaction rule, type is " + type);
 	}
 
-	private List<DataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<DataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		List<DataSourceVo> dsList = new ArrayList<DataSourceVo>();
 		for (int i = 0; i < size; i++) {
@@ -132,21 +138,41 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 					defaultDataSourceCount++;
 				}
 			}
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					//					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+					//							StringUtils.trim(propertyNode.getStringAttribute("value")));
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
-			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, sharedUse, TangYuanContainer.getInstance().getSystemName());
+
+			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, sharedUse, TangYuanContainer.getInstance().getSystemName(), resource);
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}
 		return dsList;
 	}
 
-	private List<DataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) {
-		// log.info("解析数据源:" + contexts.size());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<DataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+
 		int size = contexts.size();
 		List<DataSourceVo> dsList = new ArrayList<DataSourceVo>();
 		for (int i = 0; i < size; i++) {
@@ -176,14 +202,30 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 				}
 			}
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
+
 			DataSourceGroupVo dsGroupVo = new DataSourceGroupVo(id, type, defaultDs, data, TangYuanContainer.getInstance().getSystemName(), start,
-					end);
+					end, resource);
 			dsList.add(dsGroupVo);
 
 			dataSourceVoMap.put(id, dsGroupVo);
@@ -243,7 +285,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			XmlNodeWrapper xNode = contexts.get(i);
 			String id = StringUtils.trim(xNode.getStringAttribute("id"));
 			if (null != transactionMap.get(id)) {
-				throw new XmlParseException("重复的事务定义:" + id);
+				throw new XmlParseException("Duplicate transaction definition: " + id);
 			}
 			String name = StringUtils.trim(xNode.getStringAttribute("name"));
 
@@ -274,7 +316,6 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			XTransactionDefinition transactionDefinition = new XTransactionDefinition(id, name, behavior, isolation, timeout, readOnly);
 			transactionMap.put(id, transactionDefinition);
 
-			// log.info("载入事务定义:" + id);
 			log.info("add transaction definition: " + id);
 		}
 
@@ -284,7 +325,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	/**
 	 * 解析mapper
 	 */
-	private void buildMapperNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildMapperNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			Map<String, TypeHandler<?>> jdbcTypeMap = new HashMap<String, TypeHandler<?>>();
@@ -299,8 +340,12 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		XmlNodeWrapper xNode = contexts.get(0);
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource")); // xml v
 
-		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//log.info("*** Start parsing: " + resource);
+		log.info("*** Start parsing mapper plugin: " + resource);
+
+		//InputStream inputStream = Resources.getResourceAsStream(resource);
+		InputStream inputStream = ResourceManager.getInputStream(resource, false);
+
 		XmlMapperBuilder xmlMapperBuilder = new XmlMapperBuilder(inputStream);
 		xmlMapperBuilder.parse(this.sqlContext);
 	}
@@ -308,7 +353,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	/**
 	 * 解析Sharding
 	 */
-	private void buildShardingNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildShardingNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -318,13 +363,15 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		}
 		XmlNodeWrapper xNode = contexts.get(0);
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource")); // xml v
-		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		// log.info("*** Start parsing: " + resource);
+		log.info("*** Start parsing sharding plugin: " + resource);
+		// InputStream inputStream = Resources.getResourceAsStream(resource);
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		XmlShardingBuilder xmlShardingBuilder = new XmlShardingBuilder(inputStream);
 		xmlShardingBuilder.parse(this.sqlContext);
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -338,7 +385,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 
 			log.info("*** Start parsing(ref): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			// InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			XPathParser parser = new XPathParser(inputStream);
 			XmlNodeBuilder nodeBuilder = getXmlNodeBuilder(parser);
 			nodeBuilder.parseRef();
@@ -360,15 +408,14 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			XmlNodeBuilder nodeBuilder = new XMLSqlNodeBuilder();
 			nodeBuilder.setContext(_root, sqlContext);
 			return nodeBuilder;
+		} else {
+			throw new XmlParseException("Unsupported root node in the service plug-in");
 		}
 		// else if (null != (_root = parser.evalNode("/javaservices"))) {
 		// XmlNodeBuilder nodeBuilder = new XMLJavaNodeBuilder();
 		// nodeBuilder.setContext(_root, sqlContext);
 		// return nodeBuilder;
 		// }
-		else {
-			throw new XmlParseException("Unsupported root node in the service plug-in");
-		}
 	}
 
 	private ConnPoolType getConnPoolType(String type) {

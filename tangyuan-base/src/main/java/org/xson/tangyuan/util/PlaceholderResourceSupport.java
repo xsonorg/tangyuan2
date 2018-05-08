@@ -7,9 +7,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.xson.tangyuan.TangYuanContainer;
+
 public class PlaceholderResourceSupport {
 
 	public static final String PLACEHOLDER_SYMBOL = "%"; // symbol
+
+	public static void processMap(Map<String, String> properties) throws Throwable {
+		processMap(properties, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+	}
 
 	public static void processMap(Map<String, String> properties, Map<String, String> placeholderMap) throws Throwable {
 		if (null == properties || 0 == properties.size()) {

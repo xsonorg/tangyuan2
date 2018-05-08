@@ -18,8 +18,7 @@ import org.xson.tangyuan.cache.CacheSerializer;
 import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.CacheVo.CacheType;
 import org.xson.tangyuan.util.ClassUtils;
-import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanAssert;
 import org.xson.tangyuan.util.TangYuanUtil;
@@ -39,10 +38,12 @@ public class XMLCacheBuilder {
 
 	public XMLCacheBuilder(String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		this.xPathParser = new XPathParser(inputStream);
+		inputStream.close();
 	}
 
 	public void parse() throws Throwable {
@@ -135,7 +136,7 @@ public class XMLCacheBuilder {
 				cacheImpl = (AbstractCache) TangYuanUtil.newInstance(handlerClass);
 			}
 
-			String _defaultCache = StringUtils.trim(xNode.getStringAttribute("default"));
+			String _defaultCache = StringUtils.trim(xNode.getStringAttribute("isDefault"));
 			boolean defaultCache = false;
 			if (null != _defaultCache) {
 				defaultCache = Boolean.parseBoolean(_defaultCache);
@@ -194,7 +195,7 @@ public class XMLCacheBuilder {
 			if (cacheVoMap.containsKey(id)) {
 				throw new XmlParseException("duplicate cache: " + id);
 			}
-			String _defaultCache = StringUtils.trim(xNode.getStringAttribute("default"));
+			String _defaultCache = StringUtils.trim(xNode.getStringAttribute("isDefault"));
 			boolean defaultCache = false;
 			if (null != _defaultCache) {
 				defaultCache = Boolean.parseBoolean(_defaultCache);
@@ -229,9 +230,11 @@ public class XMLCacheBuilder {
 				throw new XmlParseException("The referenced cache can not be empty.");
 			}
 
-			String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			//			fix bug
+			//			String jndiName = StringUtils.trim(xNode.getStringAttribute("jndiName"));
+			//			CacheVo cVo = new CacheGroupVo(id, cacheRefList, jndiName);
 
-			CacheVo cVo = new CacheGroupVo(id, cacheRefList, jndiName);
+			CacheVo cVo = new CacheGroupVo(id, cacheRefList, TangYuanContainer.getInstance().getSystemName());
 
 			cacheVoMap.put(id, cVo);
 			log.info("add cache group: " + id);

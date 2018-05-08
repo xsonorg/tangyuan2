@@ -9,7 +9,6 @@ public class MemcacheCreater implements CacheCreater {
 	@Override
 	public AbstractCache newInstance(CacheVo cacheVo) {
 		MemcachedCache cache = new MemcachedCache(cacheVo.getId());
-		// cache.start(cacheVo.getResource(), cacheVo.getProperties());
 		cache.start(cacheVo);
 		return cache;
 	}

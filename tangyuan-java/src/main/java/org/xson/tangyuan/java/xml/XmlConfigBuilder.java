@@ -10,7 +10,7 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.java.JavaComponent;
 import org.xson.tangyuan.java.xml.node.XMLJavaNodeBuilder;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -29,9 +29,14 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
 		this.context = xmlContext;
-		InputStream inputStream = Resources.getResourceAsStream(resource);
+		//		InputStream inputStream = Resources.getResourceAsStream(resource);
+
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
 		configurationElement(xPathParser.evalNode("/java-component"));
+
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -55,7 +60,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		}
 	}
 
-	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
@@ -73,7 +78,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			}
 
 			// log.info("*** Start parsing(ref): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//			InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			XPathParser parser = new XPathParser(inputStream);
 			XmlNodeBuilder nodeBuilder = getXmlNodeBuilder(parser);
 			// nodeBuilder.parseRef();

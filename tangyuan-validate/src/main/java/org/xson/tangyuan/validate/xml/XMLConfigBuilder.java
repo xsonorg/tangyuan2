@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.util.Resources;
+import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.validate.Checker;
 import org.xson.tangyuan.validate.RuleDef;
@@ -85,7 +85,8 @@ public class XMLConfigBuilder {
 		int i = 0;
 		for (String resource : resourceList) {
 			log.info("Start parsing(ref): " + resource);
-			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			builders[i] = new XMLRuleBuilder(inputStream, globleDefMap, ruleGroupMap, customCheckerMap);
 			builders[i].parseDefNode();
 			i++;
