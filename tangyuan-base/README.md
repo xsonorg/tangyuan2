@@ -25,3 +25,4 @@ tangyuan-base是tangyuan框架的基础类库。
 7. 新增<ss-aop>节点,去除<init>节点
 8. 新增inix类型属性文件的支持
 9. 新增占位属性数据的支持
+10. 
