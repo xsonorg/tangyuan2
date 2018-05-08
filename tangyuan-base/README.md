@@ -23,3 +23,4 @@ tangyuan-base是tangyuan框架的基础类库。
 5. 增加服务统一返回XCO对象的控制参数, allServiceReturnXCO, code, message, data
 6. 修复默认值中负数的问题
 7. 新增<ss-aop>节点,去除<init>节点
+8. 新增属性文件的处理
