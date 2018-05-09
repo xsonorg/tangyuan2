@@ -9,8 +9,8 @@ import java.util.Properties;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.cache.util.Resources;
 import org.xson.tangyuan.share.ShareComponent;
+import org.xson.tangyuan.share.util.ResourceManager;
 import org.xson.tangyuan.share.util.StringUtils;
 import org.xson.tangyuan.share.util.TangYuanAssert;
 
@@ -22,10 +22,12 @@ public class ShareTangYuanBuilder {
 
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
+		this.basePath = basePath;
+
 		InputStream inputStream = new FileInputStream(new File(basePath, resource));
 		this.xPathParser = new XPathParser(inputStream);
-		this.basePath = basePath;
 		inputStream.close();
+
 		configurationElement(xPathParser.evalNode("/share-component"));
 	}
 
@@ -51,13 +53,16 @@ public class ShareTangYuanBuilder {
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 		TangYuanAssert.stringEmpty(resource, "in the <placeholder> tag, the 'resource' property can not be empty.");
 
-		Properties props = null;
-		if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
-			// TODO 这个要考虑加密
-			props = Resources.getUrlAsProperties(resource);
-		} else {
-			props = Resources.getResourceAsProperties(resource);
-		}
+		//		Properties props = null;
+		//		if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
+		//			// TODO 这个要考虑加密
+		//			props = Resources.getUrlAsProperties(resource);
+		//		} else {
+		//			props = Resources.getResourceAsProperties(resource);
+		//		}
+
+		Properties props = ResourceManager.getProperties(this.basePath, resource);
+
 		ShareComponent.getInstance().setPlaceholderMap((Map) props);
 		log.info("add placeholder properties: " + resource);
 	}

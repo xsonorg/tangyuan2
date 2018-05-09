@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.app.ExtArg;
 import org.xson.tangyuan.bootstrap.StartupAndShutdownVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.executor.ServiceContextFactory;
@@ -36,6 +37,9 @@ public class TangYuanContainer implements TangYuanComponent {
 	public final static String						XCO_HEADER_KEY					= "$$HEADER";
 
 	public final static int							SUCCESS_CODE					= 0;
+
+	// 默认扩展参数前缀
+	//	public final static String						DEFAULT_EXT_ARG_PREFIX			= "EXT:";
 
 	private Log										log								= LogFactory.getLog(getClass());
 	private volatile boolean						closing							= false;
@@ -79,6 +83,9 @@ public class TangYuanContainer implements TangYuanComponent {
 
 	// 所有服务统一返回XCO
 	private boolean									allServiceReturnXCO				= false;
+
+	// 外部扩展参数
+	private ExtArg									extArg							= new ExtArg();
 
 	private TangYuanContainer() {
 	}
@@ -393,4 +400,9 @@ public class TangYuanContainer implements TangYuanComponent {
 	public boolean isAllServiceReturnXCO() {
 		return allServiceReturnXCO;
 	}
+
+	public ExtArg getExtArg() {
+		return extArg;
+	}
+
 }

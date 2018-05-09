@@ -11,12 +11,12 @@ import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.app.AppProperty;
 import org.xson.tangyuan.bootstrap.StartupAndShutdownHandler;
 import org.xson.tangyuan.bootstrap.StartupAndShutdownVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.util.ClassUtils;
-import org.xson.tangyuan.util.INIX;
-import org.xson.tangyuan.util.InixLoader;
+import org.xson.tangyuan.util.INIXLoader;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.Resources;
@@ -111,9 +111,12 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		TangYuanAssert.stringEmpty(resource, "in the <inix> tag, the 'resource' property can not be empty.");
 
 		InputStream in = ResourceManager.getInputStream(resource, true);
-		XCO data = new InixLoader().load(in);
-		INIX.init(data);
+		XCO data = new INIXLoader().load(in);
+		AppProperty.init(data);
 		in.close();
+
+		// TODO:添加外部参数使用前缀
+		TangYuanContainer.getInstance().getExtArg().addExtArg("EXT:", data);
 
 		log.info("add inix resource: " + resource);
 	}

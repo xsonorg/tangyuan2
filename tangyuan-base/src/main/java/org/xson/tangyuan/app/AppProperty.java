@@ -1,11 +1,11 @@
-package org.xson.tangyuan.util;
+package org.xson.tangyuan.app;
 
 import org.xson.common.object.XCO;
 
 /**
- * Tangyuan应用常量
+ * Tangyuan 应用常量
  */
-public class INIX {
+public class AppProperty {
 
 	private static XCO appConst = null;
 

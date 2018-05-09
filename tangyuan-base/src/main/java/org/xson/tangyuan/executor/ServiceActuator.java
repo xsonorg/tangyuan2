@@ -1,6 +1,7 @@
 package org.xson.tangyuan.executor;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
@@ -8,6 +9,8 @@ import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.aop.AopSupport;
 import org.xson.tangyuan.aop.AspectVo.PointCut;
+import org.xson.tangyuan.mr.MapReduce;
+import org.xson.tangyuan.mr.MapReduceHander;
 import org.xson.tangyuan.ognl.convert.ParameterConverter;
 import org.xson.tangyuan.rpc.RpcProxy;
 import org.xson.tangyuan.rpc.RpcServiceNode;
@@ -34,8 +37,7 @@ public class ServiceActuator {
 		/**
 		 * 获取或者创建新的上下文
 		 * 
-		 * @param isNew
-		 *            是否创建新的上下文
+		 * @param isNew 是否创建新的上下文
 		 */
 		public ServiceContext getOrCreate(boolean isNew) {
 			// 最初
@@ -572,5 +574,69 @@ public class ServiceActuator {
 		aop.checkAndsetIntercepted(serviceURL, service);
 		TangYuanContainer.getInstance().addDynamicService(service);
 		return service;
+	}
+
+	/* ===================================Map Reduce====================================== */
+
+	//	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
+	//		return executeMapReduce(serviceURI, args, handler, timeout, false);
+	//	}
+	//
+	//	@SuppressWarnings("unchecked")
+	//	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
+	//			throws ServiceException {
+	//		// 检查系统是否已经正在关闭中了
+	//		check();
+	//		Object result = null;
+	//		try {
+	//			result = MapReduce.execute(serviceURI, args, handler, timeout, true);
+	//		} catch (Throwable e) {
+	//			result = getExceptionResult(e);// 防止异常处理后的返回
+	//		}
+	//		return (T) getResult(result, ignoreWrapper);
+	//	}
+	//
+	//	public static <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
+	//		return executeMapReduce(services, args, handler, timeout, false);
+	//	}
+	//
+	//	public static <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
+	//			throws ServiceException {
+	//		return null;
+	//	}
+
+	public static <T> T executeAloneMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
+		return executeAloneMapReduce(serviceURI, args, handler, timeout, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T executeAloneMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
+			throws ServiceException {
+		check();
+		Object result = null;
+		try {
+			result = MapReduce.execute(serviceURI, args, handler, timeout, true);
+		} catch (Throwable e) {
+			result = getExceptionResult(e);// 防止异常处理后的返回
+		}
+		return (T) getResult(result, ignoreWrapper);
+	}
+
+	public static <T> T executeAloneMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout)
+			throws ServiceException {
+		return executeAloneMapReduce(services, args, handler, timeout, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T executeAloneMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
+			throws ServiceException {
+		check();
+		Object result = null;
+		try {
+			result = MapReduce.execute(services, args, handler, timeout, true);
+		} catch (Throwable e) {
+			result = getExceptionResult(e);// 防止异常处理后的返回
+		}
+		return (T) getResult(result, ignoreWrapper);
 	}
 }

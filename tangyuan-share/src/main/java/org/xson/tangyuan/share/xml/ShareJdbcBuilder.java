@@ -1,7 +1,5 @@
 package org.xson.tangyuan.share.xml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +10,8 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.share.ShareComponent;
 import org.xson.tangyuan.share.util.PlaceholderResourceSupport;
+import org.xson.tangyuan.share.util.PropertyUtils;
+import org.xson.tangyuan.share.util.ResourceManager;
 import org.xson.tangyuan.share.util.StringUtils;
 import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 import org.xson.tangyuan.sql.datasource.DataSourceGroupVo;
@@ -26,13 +26,18 @@ public class ShareJdbcBuilder {
 	private XPathParser					xPathParser		= null;
 	private Map<String, DataSourceVo>	dataSourceVoMap	= new HashMap<String, DataSourceVo>();
 
+	private String						basePath		= null;
+
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = new FileInputStream(new File(basePath, resource));
-		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
+		//		InputStream inputStream = new FileInputStream(new File(basePath, resource));
+		//		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
+		this.basePath = basePath;
+		InputStream inputStream = ResourceManager.getInputStream(basePath, resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
-		in.close();
 		configurationElement(xPathParser.evalNode("/sql-component"));
+		inputStream.close();
 	}
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
@@ -41,7 +46,8 @@ public class ShareJdbcBuilder {
 		addDataSource(dsList, dsGroupList);
 	}
 
-	private List<DataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<DataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		List<DataSourceVo> dsList = new ArrayList<DataSourceVo>();
 		for (int i = 0; i < size; i++) {
@@ -60,20 +66,37 @@ public class ShareJdbcBuilder {
 			String sharedUse = null;
 			boolean defaultDs = false;
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(this.basePath, resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
-			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, sharedUse, ShareComponent.getInstance().getSystemName());
+
+			DataSourceVo dsVo = new DataSourceVo(id, type, defaultDs, data, sharedUse, ShareComponent.getInstance().getSystemName(), resource);
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}
 		return dsList;
 	}
 
-	private List<DataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<DataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// log.info("解析数据源:" + contexts.size());
 		int size = contexts.size();
 		List<DataSourceVo> dsList = new ArrayList<DataSourceVo>();
@@ -97,13 +120,30 @@ public class ShareJdbcBuilder {
 			int end = Integer.parseInt(tmp);
 			boolean defaultDs = false;
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(this.basePath, resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
-			DataSourceGroupVo dsGroupVo = new DataSourceGroupVo(id, type, defaultDs, data, ShareComponent.getInstance().getSystemName(), start, end);
+
+			DataSourceGroupVo dsGroupVo = new DataSourceGroupVo(id, type, defaultDs, data, ShareComponent.getInstance().getSystemName(), start, end,
+					resource);
 			dsList.add(dsGroupVo);
 
 			dataSourceVoMap.put(id, dsGroupVo);

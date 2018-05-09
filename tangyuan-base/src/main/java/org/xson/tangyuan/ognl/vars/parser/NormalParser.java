@@ -3,6 +3,7 @@ package org.xson.tangyuan.ognl.vars.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.ognl.vars.Variable;
 import org.xson.tangyuan.ognl.vars.vo.NormalVariable;
 import org.xson.tangyuan.ognl.vars.vo.VariableItem;
@@ -85,12 +86,25 @@ public class NormalParser extends AbstractParser {
 
 	@Override
 	public Variable parse(String text) {
+		//		text = text.trim();
+		//		if (isSimpleProperty(text)) {
+		//			return new NormalVariable(text, new VariableItemWraper(text, new VariableItem(text, false)));
+		//		}
+		//		List<VariableItem> itemList = parseProperty0(text);
+		//		return new NormalVariable(text, new VariableItemWraper(text, itemList));
+
 		text = text.trim();
+		String prefix = TangYuanContainer.getInstance().getExtArg().isExtProperty(text);
+		if (null != prefix) {
+			text = text.substring(prefix.length());
+		}
+
 		if (isSimpleProperty(text)) {
-			return new NormalVariable(text, new VariableItemWraper(text, new VariableItem(text, false)));
+			return new NormalVariable(text, new VariableItemWraper(text, prefix, new VariableItem(text, false)));
 		}
 		List<VariableItem> itemList = parseProperty0(text);
-		return new NormalVariable(text, new VariableItemWraper(text, itemList));
+		return new NormalVariable(text, new VariableItemWraper(text, prefix, itemList));
+
 	}
 
 }

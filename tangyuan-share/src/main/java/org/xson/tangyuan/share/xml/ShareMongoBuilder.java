@@ -1,7 +1,5 @@
 package org.xson.tangyuan.share.xml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +14,8 @@ import org.xson.tangyuan.mongo.datasource.MongoDataSourceVo;
 import org.xson.tangyuan.mongo.datasource.ShareMongoContainer;
 import org.xson.tangyuan.share.ShareComponent;
 import org.xson.tangyuan.share.util.PlaceholderResourceSupport;
+import org.xson.tangyuan.share.util.PropertyUtils;
+import org.xson.tangyuan.share.util.ResourceManager;
 import org.xson.tangyuan.share.util.StringUtils;
 
 public class ShareMongoBuilder {
@@ -23,23 +23,30 @@ public class ShareMongoBuilder {
 	private Log								log				= LogFactory.getLog(getClass());
 	private XPathParser						xPathParser		= null;
 	private Map<String, MongoDataSourceVo>	dataSourceVoMap	= new HashMap<String, MongoDataSourceVo>();
+	private String							basePath		= null;
 
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = new FileInputStream(new File(basePath, resource));
-		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
+
+		//		InputStream inputStream = new FileInputStream(new File(basePath, resource));
+		//		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
+
+		this.basePath = basePath;
+		InputStream inputStream = ResourceManager.getInputStream(basePath, resource, true);
+
 		this.xPathParser = new XPathParser(inputStream);
-		in.close();
+		inputStream.close();
 		configurationElement(xPathParser.evalNode("/mongo-component"));
 	}
 
-	private void configurationElement(XmlNodeWrapper context) {
+	private void configurationElement(XmlNodeWrapper context) throws Throwable {
 		List<MongoDataSourceVo> dsList = buildDataSourceNodes(context.evalNodes("dataSource"));// 解析dataSource
 		List<MongoDataSourceVo> dsGroupList = buildDataSourceGroupNodes(context.evalNodes("dataSourceGroup"));// 解析dataSourceGroup
 		addDataSource(dsList, dsGroupList);
 	}
 
-	private List<MongoDataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<MongoDataSourceVo> buildDataSourceNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		List<MongoDataSourceVo> dsList = new ArrayList<MongoDataSourceVo>();
 		for (int i = 0; i < size; i++) {
@@ -52,20 +59,37 @@ public class ShareMongoBuilder {
 			// String jndiName = null;
 			String sharedUse = null;
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(this.basePath, resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
-			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, sharedUse, ShareComponent.getInstance().getSystemName());
+
+			MongoDataSourceVo dsVo = new MongoDataSourceVo(id, data, defaultDs, sharedUse, ShareComponent.getInstance().getSystemName(), resource);
 			dsList.add(dsVo);
 			dataSourceVoMap.put(id, dsVo);
 		}
 		return dsList;
 	}
 
-	private List<MongoDataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<MongoDataSourceVo> buildDataSourceGroupNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		List<MongoDataSourceVo> dsList = new ArrayList<MongoDataSourceVo>();
 		for (int i = 0; i < size; i++) {
@@ -84,14 +108,30 @@ public class ShareMongoBuilder {
 			int end = Integer.parseInt(tmp);
 			boolean defaultDs = false;
 
-			Map<String, String> data = new HashMap<String, String>();
-			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			Map<String, String> data = new HashMap<String, String>();
+			//			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+			//			for (XmlNodeWrapper propertyNode : properties) {
+			//				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
+			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			//			}
+
+			Map<String, String> data = null;
+			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			if (null != resource) {
+				data = (Map) ResourceManager.getProperties(this.basePath, resource, true);
+				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+			} else {
+				data = new HashMap<String, String>();
+				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
+				for (XmlNodeWrapper propertyNode : properties) {
+					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
+				}
+				PlaceholderResourceSupport.processMap(data);	// 占位替换
+				data = PropertyUtils.keyToUpperCase(data);		// key转大写
 			}
+
 			MongoDataSourceGroupVo dsGroupVo = new MongoDataSourceGroupVo(id, defaultDs, data, ShareComponent.getInstance().getSystemName(), start,
-					end);
+					end, resource);
 
 			dsList.add(dsGroupVo);
 			dataSourceVoMap.put(id, dsGroupVo);

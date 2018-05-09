@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.xml.XmlParseException;
 
 public class ResourceManager {
 
@@ -24,16 +25,20 @@ public class ResourceManager {
 	}
 
 	public static InputStream getInputStream(String resource, boolean placeholder) throws Throwable {
-		InputStream in = null;
-		if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
-			in = Resources.getUrlAsStream(resource);// TODO 这个要考虑加密
-		} else {
-			in = Resources.getResourceAsStream(resource);
+		try {
+			InputStream in = null;
+			if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
+				in = Resources.getUrlAsStream(resource);// TODO 这个要考虑加密
+			} else {
+				in = Resources.getResourceAsStream(resource);
+			}
+			if (placeholder) {
+				in = PlaceholderResourceSupport.processInputStream(in, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+			}
+			return in;
+		} catch (Throwable e) {
+			throw new XmlParseException("get inputStream exception: " + resource, e);
 		}
-		if (placeholder) {
-			in = PlaceholderResourceSupport.processInputStream(in, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
-		}
-		return in;
 	}
 
 	//		Properties props = null;

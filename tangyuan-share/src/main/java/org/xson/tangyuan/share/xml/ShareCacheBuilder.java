@@ -1,7 +1,6 @@
 package org.xson.tangyuan.share.xml;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import org.xson.tangyuan.cache.CacheVo.CacheType;
 import org.xson.tangyuan.cache.ShareCacheContainer;
 import org.xson.tangyuan.share.ShareComponent;
 import org.xson.tangyuan.share.util.ClassUtils;
-import org.xson.tangyuan.share.util.PlaceholderResourceSupport;
+import org.xson.tangyuan.share.util.ResourceManager;
 import org.xson.tangyuan.share.util.StringUtils;
 import org.xson.tangyuan.share.util.TangYuanAssert;
 import org.xson.tangyuan.share.util.TangYuanUtil;
@@ -37,11 +36,14 @@ public class ShareCacheBuilder {
 
 	public void parse(String basePath, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		InputStream inputStream = new FileInputStream(new File(basePath, resource));
-		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
-		this.xPathParser = new XPathParser(in);
+		//		InputStream inputStream = new FileInputStream(new File(basePath, resource));
+		//		InputStream in = PlaceholderResourceSupport.processInputStream(inputStream, ShareComponent.getInstance().getPlaceholderMap());
+
+		InputStream inputStream = ResourceManager.getInputStream(basePath, resource, true);
+
+		this.xPathParser = new XPathParser(inputStream);
 		this.basePath = basePath;
-		in.close();
+		inputStream.close();
 		configurationElement(xPathParser.evalNode("/cache-component"));
 	}
 

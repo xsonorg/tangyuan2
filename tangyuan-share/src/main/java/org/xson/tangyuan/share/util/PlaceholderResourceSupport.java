@@ -4,12 +4,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
+
+import org.xson.tangyuan.share.ShareComponent;
 
 public class PlaceholderResourceSupport {
 
 	public static final String PLACEHOLDER_SYMBOL = "%"; // symbol
+
+	public static void processMap(Map<String, String> properties) throws Throwable {
+		processMap(properties, ShareComponent.getInstance().getPlaceholderMap());
+	}
 
 	public static void processMap(Map<String, String> properties, Map<String, String> placeholderMap) throws Throwable {
 		if (null == properties || 0 == properties.size()) {

@@ -16,7 +16,7 @@ import org.xson.tangyuan.TangYuanException;
 /**
  * inix配置文件读取
  */
-public class InixLoader {
+public class INIXLoader {
 
 	public XCO load(InputStream in) throws IOException {
 		return load(in, null);
