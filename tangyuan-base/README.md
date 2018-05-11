@@ -16,13 +16,13 @@ tangyuan-base是tangyuan框架的基础类库。
 
 ### 5. 版本更新
 
-1. fix 服务启动时的onlyProxyMode
-2. add CloseHandler
-3. 增加zongzi依赖
-4. update TangYuanJPCBridge
-5. 增加服务统一返回XCO对象的控制参数, allServiceReturnXCO, code, message, data
-6. 修复默认值中负数的问题
-7. 新增<ss-aop>节点,去除<init>节点
-8. 新增inix类型属性文件的支持
-9. 新增占位属性数据的支持
-10. 
++ 新增:INIX类型配置文件的支持；
++ 新增:占位替换变量配置文件的支持；
++ 新增:应用属性配置文件的支持；
++ 新增:异步任务线程池配置的支持；
++ 新增:<system-aop>标签，移除<init>标签；
++ 新增:服务统一返回XCO对象的控制参数；
++ 更新:TangYuanJPCBridge；
++ 修复:zongzi依赖；
++ 修复服务启动时的onlyProxyMode；
++ 修复默认值中负数的问题；

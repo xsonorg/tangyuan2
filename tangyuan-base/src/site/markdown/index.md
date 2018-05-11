@@ -112,6 +112,8 @@ Tangyuan默认提供12种基础功能组件，包括sql、java、mongo、mq、hb
 + 新增Hbase组件，提供Hbase服务的支持；
 + 新增ElasticSearch组件，提供ElasticSearch服务的支持；
 + 新增RESTful控制器的支持；
-+ 新增占位变量的支持；
 + 新增Java服务缓存的支持；
 + Mongo组件新增命令模式的支持；
++ 新增占位变量的支持；
++ 新增属性配置文件的支持；
++ 新增线程池的支持；

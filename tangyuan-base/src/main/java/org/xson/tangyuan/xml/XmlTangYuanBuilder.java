@@ -11,9 +11,9 @@ import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.aop.sys.SystemAopHandler;
+import org.xson.tangyuan.aop.sys.SystemAopVo;
 import org.xson.tangyuan.app.AppProperty;
-import org.xson.tangyuan.bootstrap.StartupAndShutdownHandler;
-import org.xson.tangyuan.bootstrap.StartupAndShutdownVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.INIXLoader;
@@ -26,11 +26,11 @@ import org.xson.tangyuan.util.TangYuanUtil;
 
 public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
-	private Log							log					= LogFactory.getLog(getClass());
-	private XPathParser					xPathParser			= null;
+	private Log					log					= LogFactory.getLog(getClass());
+	private XPathParser			xPathParser			= null;
 
-	private List<StartupAndShutdownVo>	startingBeforeList	= new ArrayList<StartupAndShutdownVo>();
-	private List<StartupAndShutdownVo>	startingAfterList	= new ArrayList<StartupAndShutdownVo>();
+	private List<SystemAopVo>	startingBeforeList	= new ArrayList<SystemAopVo>();
+	private List<SystemAopVo>	startingAfterList	= new ArrayList<SystemAopVo>();
 
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
@@ -42,11 +42,12 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
 
-		buildPlaceholderNodes(context.evalNodes("placeholder"));// 解析占位属性
-		buildInixNodes(context.evalNodes("inix"));				// 解析inix配置文件
-		buildConfigNodes(context.evalNodes("config-property"));	// 解析配置项
+		buildPlaceholderNode(context.evalNodes("app-placeholder"));		// 解析占位属性
+		buildAppPropertyNode(context.evalNodes("app-property"));		// 解析App配置文件
+		buildConfigNodes(context.evalNodes("config-property"));			// 解析配置项
+		buildThreadPoolNode(context.evalNodes("thread-pool"));			// 配置线程池
+		buildSystemAopNodes(context.evalNodes("system-aop"));			// 配置系统拦截器
 
-		buildSSNodes(context.evalNodes("ss-aop"));
 		executeSSAop(startingBeforeList, false);
 		buildComponentNodes(context.evalNodes("component"));
 		executeSSAop(startingAfterList, false);
@@ -61,14 +62,14 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		startingAfterList = null;
 	}
 
-	private void executeSSAop(List<StartupAndShutdownVo> ssList, boolean ignoreException) throws Throwable {
-		for (StartupAndShutdownVo ssVo : ssList) {
+	private void executeSSAop(List<SystemAopVo> ssList, boolean ignoreException) throws Throwable {
+		for (SystemAopVo ssVo : ssList) {
 			try {
 				ssVo.getHandler().execute(ssVo.getProperties());
-				log.info("execute ss-aop class: " + ssVo.getClassName());
+				log.info("execute system-aop class: " + ssVo.getClassName());
 			} catch (Throwable e) {
 				if (ignoreException) {
-					log.error("execute ss-aop exception.", e);
+					log.error("execute system-aop exception.", e);
 				} else {
 					throw e;
 				}
@@ -77,10 +78,10 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void buildPlaceholderNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+	private void buildPlaceholderNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size > 1) {
-			throw new XmlParseException("The <placeholder> node can have at most one.");
+			throw new XmlParseException("The <app-placeholder> node can have at most one.");
 		}
 		if (size == 0) {
 			return;
@@ -88,19 +89,19 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
 		XmlNodeWrapper xNode = contexts.get(0);
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
-		TangYuanAssert.stringEmpty(resource, "in the <placeholder> tag, the 'resource' property can not be empty.");
+		TangYuanAssert.stringEmpty(resource, "in the <app-placeholder> tag, the 'resource' property can not be empty.");
 
 		// TODO 这个要考虑加密和解密
 		Properties props = ResourceManager.getProperties(resource);
 
 		TangYuanContainer.getInstance().getXmlGlobalContext().setPlaceholderMap((Map) props);
-		log.info("add placeholder properties: " + resource);
+		log.info("add app-placeholder resource: " + resource);
 	}
 
-	private void buildInixNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+	private void buildAppPropertyNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size > 1) {
-			throw new XmlParseException("The <inix> node can have at most one.");
+			throw new XmlParseException("The <app-property> node can have at most one.");
 		}
 		if (size == 0) {
 			return;
@@ -108,17 +109,42 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
 		XmlNodeWrapper xNode = contexts.get(0);
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
-		TangYuanAssert.stringEmpty(resource, "in the <inix> tag, the 'resource' property can not be empty.");
+		TangYuanAssert.stringEmpty(resource, "in the <app-property> tag, the 'resource' property can not be empty.");
 
 		InputStream in = ResourceManager.getInputStream(resource, true);
 		XCO data = new INIXLoader().load(in);
 		AppProperty.init(data);
 		in.close();
 
-		// TODO:添加外部参数使用前缀
+		// 添加外部参数使用前缀
 		TangYuanContainer.getInstance().getExtArg().addExtArg("EXT:", data);
 
-		log.info("add inix resource: " + resource);
+		log.info("add app-property resource: " + resource);
+	}
+
+	private void buildThreadPoolNode(List<XmlNodeWrapper> contexts) throws Throwable {
+		int size = contexts.size();
+		if (size > 1) {
+			throw new XmlParseException("The <thread-pool> node can have at most one.");
+		}
+		if (size == 0) {
+			Properties p = new Properties();
+			TangYuanContainer.getInstance().startThreadPool(p);
+			return;
+		}
+
+		XmlNodeWrapper xNode = contexts.get(0);
+		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+		TangYuanAssert.stringEmpty(resource, "in the <thread-pool> tag, the 'resource' property can not be empty.");
+
+		InputStream in = ResourceManager.getInputStream(resource, true);
+		Properties p = new Properties();
+		p.load(in);
+		in.close();
+
+		TangYuanContainer.getInstance().startThreadPool(p);
+
+		log.info("add thread-pool resource: " + resource);
 	}
 
 	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Throwable {
@@ -139,27 +165,27 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 	}
 
 	/**
-	 * build StartupAndShutdownHandler
+	 * build SystemAopHandler
 	 */
-	private void buildSSNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+	private void buildSystemAopNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		int size = contexts.size();
 		if (size == 0) {
 			return;
 		}
 
-		List<StartupAndShutdownVo> closingBeforeList = new ArrayList<StartupAndShutdownVo>();
-		List<StartupAndShutdownVo> closingAfterList = new ArrayList<StartupAndShutdownVo>();
+		List<SystemAopVo> closingBeforeList = new ArrayList<SystemAopVo>();
+		List<SystemAopVo> closingAfterList = new ArrayList<SystemAopVo>();
 
 		for (XmlNodeWrapper context : contexts) {
 			String className = StringUtils.trim(context.getStringAttribute("class"));
-			String type = StringUtils.trim(context.getStringAttribute("type"));
+			String type = StringUtils.trim(context.getStringAttribute("pointcut"));
 
-			TangYuanAssert.stringEmpty(className, "in the <ss-aop> tag, the 'class' property can not be empty.");
-			TangYuanAssert.stringEmpty(type, "in the <ss-aop> tag, the 'type' property can not be empty.");
+			TangYuanAssert.stringEmpty(className, "in the <system-aop> tag, the 'class' property can not be empty.");
+			TangYuanAssert.stringEmpty(type, "in the <system-aop> tag, the 'pointcut' property can not be empty.");
 
 			Class<?> handlerClass = ClassUtils.forName(className);
-			if (!StartupAndShutdownHandler.class.isAssignableFrom(handlerClass)) {
-				throw new XmlParseException("ss-aop class must implement 'StartupAndShutdownHandler' interface: " + className);
+			if (!SystemAopHandler.class.isAssignableFrom(handlerClass)) {
+				throw new XmlParseException("system-aop class must implement 'SystemAopHandler' interface: " + className);
 			}
 
 			Map<String, String> properties = new HashMap<String, String>();
@@ -167,8 +193,8 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			for (XmlNodeWrapper innerContext : innerContexts) {
 				String name = StringUtils.trim(innerContext.getStringAttribute("name"));
 				String value = StringUtils.trim(innerContext.getStringAttribute("value"));
-				TangYuanAssert.stringEmpty(name, "in the <ss-aop->property> tag, the 'name' property can not be empty.");
-				TangYuanAssert.stringEmpty(value, "in the <ss-aop->property> tag, the 'value' property can not be empty.");
+				TangYuanAssert.stringEmpty(name, "in the <system-aop->property> tag, the 'name' property can not be empty.");
+				TangYuanAssert.stringEmpty(value, "in the <system-aop->property> tag, the 'value' property can not be empty.");
 				properties.put(name, value);
 			}
 			PlaceholderResourceSupport.processMap(properties, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
@@ -178,49 +204,23 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			// shutdown-before
 			// shutdown-after
 
-			StartupAndShutdownHandler handler = (StartupAndShutdownHandler) TangYuanUtil.newInstance(handlerClass);
+			SystemAopHandler handler = (SystemAopHandler) TangYuanUtil.newInstance(handlerClass);
 			if ("startup-before".equalsIgnoreCase(type)) {
-				this.startingBeforeList.add(new StartupAndShutdownVo(handler, properties, className));
+				this.startingBeforeList.add(new SystemAopVo(handler, properties, className));
 			} else if ("startup-after".equalsIgnoreCase(type)) {
-				this.startingAfterList.add(new StartupAndShutdownVo(handler, properties, className));
+				this.startingAfterList.add(new SystemAopVo(handler, properties, className));
 			} else if ("shutdown-before".equalsIgnoreCase(type)) {
-				closingBeforeList.add(new StartupAndShutdownVo(handler, properties, className));
+				closingBeforeList.add(new SystemAopVo(handler, properties, className));
 			} else if ("shutdown-after".equalsIgnoreCase(type)) {
-				closingAfterList.add(new StartupAndShutdownVo(handler, properties, className));
+				closingAfterList.add(new SystemAopVo(handler, properties, className));
 			} else {
-				throw new XmlParseException(TangYuanUtil.format("Unsupported ss-aop type: {}", type));
+				throw new XmlParseException(TangYuanUtil.format("Unsupported system-aop pointcut: {}", type));
 			}
-			log.info("add ss-aop class: " + className);
+			log.info("add system-aop class: " + className);
 		}
 
 		TangYuanContainer.getInstance().setClosingList(closingBeforeList, closingAfterList);
 	}
-
-	// private void buildInitHandler(List<XmlNodeWrapper> contexts) {
-	// int size = contexts.size();
-	// if (size > 1) {
-	// throw new XmlParseException("The <init> node can have at most one.");
-	// }
-	// if (size == 0) {
-	// return;
-	// }
-	//
-	// XmlNodeWrapper xNode = contexts.get(0);
-	// String className = StringUtils.trim(xNode.getStringAttribute("class"));
-	// if (null == className) {
-	// return;
-	// }
-	//
-	// Class<?> handlerClass = ClassUtils.forName(className);
-	// if (!TangYuanInitHandler.class.isAssignableFrom(handlerClass)) {
-	// throw new XmlParseException("init class not implement the TangYuanInitHandler interface: " + className);
-	// }
-	//
-	// log.info("execute init class: " + className);
-	//
-	// TangYuanInitHandler handler = (TangYuanInitHandler) TangYuanUtil.newInstance(handlerClass, true);
-	// handler.execute();
-	// }
 
 	private void buildComponentNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		Map<String, String> resourceMap = new HashMap<String, String>();

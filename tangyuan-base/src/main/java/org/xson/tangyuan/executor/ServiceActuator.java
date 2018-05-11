@@ -578,62 +578,44 @@ public class ServiceActuator {
 
 	/* ===================================Map Reduce====================================== */
 
-	//	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
-	//		return executeMapReduce(serviceURI, args, handler, timeout, false);
-	//	}
-	//
-	//	@SuppressWarnings("unchecked")
-	//	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
-	//			throws ServiceException {
-	//		// 检查系统是否已经正在关闭中了
-	//		check();
-	//		Object result = null;
-	//		try {
-	//			result = MapReduce.execute(serviceURI, args, handler, timeout, true);
-	//		} catch (Throwable e) {
-	//			result = getExceptionResult(e);// 防止异常处理后的返回
-	//		}
-	//		return (T) getResult(result, ignoreWrapper);
-	//	}
-	//
-	//	public static <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
-	//		return executeMapReduce(services, args, handler, timeout, false);
-	//	}
-	//
-	//	public static <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
-	//			throws ServiceException {
-	//		return null;
-	//	}
+	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
+		return executeMapReduce(null, serviceURI, args, handler, timeout);
+	}
 
-	public static <T> T executeAloneMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
-		return executeAloneMapReduce(serviceURI, args, handler, timeout, false);
+	public static <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<Object> args, MapReduceHander handler, long timeout)
+			throws ServiceException {
+		return executeMapReduce(mapReduceContext, serviceURI, args, handler, timeout, false);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T executeAloneMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
-			throws ServiceException {
+	public static <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<Object> args, MapReduceHander handler, long timeout,
+			boolean ignoreWrapper) throws ServiceException {
 		check();
 		Object result = null;
 		try {
-			result = MapReduce.execute(serviceURI, args, handler, timeout, true);
+			result = MapReduce.execute(mapReduceContext, serviceURI, args, handler, timeout);
 		} catch (Throwable e) {
 			result = getExceptionResult(e);// 防止异常处理后的返回
 		}
 		return (T) getResult(result, ignoreWrapper);
 	}
 
-	public static <T> T executeAloneMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout)
+	public static <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout) throws ServiceException {
+		return executeMapReduce(null, services, args, handler, timeout);
+	}
+
+	public static <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<Object> args, MapReduceHander handler, long timeout)
 			throws ServiceException {
-		return executeAloneMapReduce(services, args, handler, timeout, false);
+		return executeMapReduce(mapReduceContext, services, args, handler, timeout, false);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T executeAloneMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout, boolean ignoreWrapper)
-			throws ServiceException {
+	public static <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<Object> args, MapReduceHander handler, long timeout,
+			boolean ignoreWrapper) throws ServiceException {
 		check();
 		Object result = null;
 		try {
-			result = MapReduce.execute(services, args, handler, timeout, true);
+			result = MapReduce.execute(mapReduceContext, services, args, handler, timeout);
 		} catch (Throwable e) {
 			result = getExceptionResult(e);// 防止异常处理后的返回
 		}

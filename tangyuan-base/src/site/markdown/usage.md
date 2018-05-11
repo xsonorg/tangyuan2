@@ -1,6 +1,8 @@
 # 使用说明
 
-## 1. 配置示例
+## 1. 使用示例
+
+### 1.1. 配置示例
 
 在我们使用tangyuan框架的时候，首先需要一个容器的配置文件，一般情况下我们将其命名为`tangyuan.xml`，示例如下：
 
@@ -8,14 +10,20 @@
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
 		
+		<!--占位变量配置文件-->
+		<app-placeholder resource="app-placeholder.properties"/>
+	
+		<!--应用程序属性配置文件-->
+		<app-property resource="app.inix"/>
+
 		<!--系统变量配置-->
 		<config-property name="maxWaitTimeForShutDown" value="60"/>
 		
 		<!--启动、关闭时的AOP配置-->
-		<ss-aop type="startup-before" class="org.xson.tangyuan2.demo.ssaop.StartupBefore" />
-		<ss-aop type="startup-after" class="org.xson.tangyuan2.demo.ssaop.StartupAfter" />
-		<ss-aop type="shutdown-before" class="org.xson.tangyuan2.demo.ssaop.ShutdownBefore" />
-		<ss-aop type="shutdown-after" class="org.xson.tangyuan2.demo.ssaop.ShutdownAfter" />
+		<system-aop pointcut="startup-before" class="org.xson.tangyuan2.demo.ssaop.StartupBefore" />
+		<system-aop pointcut="startup-after" class="org.xson.tangyuan2.demo.ssaop.StartupAfter" />
+		<system-aop pointcut="shutdown-before" class="org.xson.tangyuan2.demo.ssaop.ShutdownBefore" />
+		<system-aop pointcut="shutdown-after" class="org.xson.tangyuan2.demo.ssaop.ShutdownAfter" />
 		
 		<!--组件配置-->
 		<component resource="component-sql.xml" type="sql" />
@@ -33,9 +41,13 @@
 
 	</tangyuan-component>
 
-### 2. 配置说明
+### 1.2. 配置说明
 
-#### 2.1 系统变量配置
+#### 1.2.1 占位变量配置
+
+#### 1.2.2 应用程序属性配置
+
+#### 1.2.3 系统变量配置
 
 在tangyuan框架中，如果想覆盖一些系统预设的变量，可以通过`<config-property>`标签进行配置。
 
@@ -56,28 +68,29 @@
 | maxWaitTimeForShutDown | 容器关闭时等待现有服务执行完毕的最大等待时间(单位：秒) | long | 10 |
 | allServiceReturnXCO | 服务返回对象是否统一为XCO类型 | boolean | false |
 
+#### 1.2.4 线程池配置
 
-#### 2.2 启动、关闭时的AOP配置
+#### 1.2.5 系统AOP配置
 
-如果开发者希望在tangyuan框架启动或者关闭的时候，执行一些自定义的方法，可以通过`<ss-aop>`标签进行配置。
+如果开发者希望在tangyuan框架启动或者关闭的时候，执行一些自定义的方法，可以通过`<system-aop>`标签进行配置。
 
-> ss-aop节点属性说明
+> <system-aop>标签属性说明
 
 | 属性 | 用途 | 必填 | 取值 |
 | --- | --- | --- | --- |
-| type | AOP的类型，也代表了其执行时机。 | Y | String |
-| class | AOP实现类，注意：此处的实现类需要实现`StartupAndShutdownHandler`接口。 | Y | String |
+| pointcut | AOP执行时机。 | Y | String |
+| class | AOP实现类，注意：此处的实现类需要实现`org.xson.tangyuan.aop.sys.SystemAopHandler`接口。 | Y | String |
 
-> ss-aop类型和执行时机
+> 执行时机说明
 
-| 类型 | 描述 |
+| 名称 | 描述 |
 | --- | --- |
 | startup-before | 在tangyuan各组件初始化之前 |
 | startup-after | 在tangyuan各组件初始化之后 |
 | shutdown-before | 在tangyuan各组件关闭之前 |
 | shutdown-after | 在tangyuan各组件关闭之后 |
 
-#### 2.3 组件配置
+#### 1.2.6 组件配置
 
 tangyuan框架中，各种组件是通过`<component>`标签进行配置的。注意：同一种用途的组件，最多只能配置一项。
 
@@ -109,7 +122,7 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 在tangyuan框架中，假如我们定义了一个SQL服务，那我们该如何访问它呢？
 
-### 1. 示例
+### 2.1. 示例
 
 > 服务定义
 
@@ -137,7 +150,7 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 通过上述示例我们可以看到，我们是通过`ServiceActuator`类的`execute`方法来进行服务的访问。其中：`role/getRoleList`是完整的服务名,`request`是请求参数，上例中为一个XCO对象，也是tangyuan中默认的参数对象类型。
 
-### 2. tangyuan中的服务名
+### 2.2. tangyuan中的服务名
 
 上文提到的`完整的服务名`。什么是完整的服务名呢？在tangyuan框架中服务是核心，所以服务的名称也需要遵循一些规范。一个完整的服务名定义如下：
 
@@ -145,7 +158,7 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 比如上例中的`role/getRoleList`，其中`role`为NS(命名空间)，getRoleList为ID(服务ID)，之间用`/`相连。但为什么没有`[scheme:][//host[:port]]`部分呢？因为示例中是的调用者和服务定义位于一个系统中，如果是分布式系统之间的调用（调用者和服务位于不同的系统），则需要增加前面的部分，例如：`http://xson.org/role/getRoleList`。
 
-### 2. 访问方式
+### 2.3. 访问方式
 
 上例中我们通过`ServiceActuator`类的`execute`方法来进行服务的访问，而在`ServiceActuator`类中，一共有三个方法可以进行服务的访问，具体的区别如下：
 
@@ -164,12 +177,17 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 		...
 	}
 
-### 3. 上下文
+### 2.4. 上下文
 
 在一个服务的调用过程中，可能会涉及许多内容，比如：预处理的SQL脚本、动态数据源、临时结果、事务、返回结果等等，这些内容统一存放在一个对象中，而这个对象就是前中所提到的上下文。tangyuan服务的执行过程中一定会包含一个上下文对象。
 
-### 4. 返回结果
+### 2.5. 返回结果
 
 在tangyuan中，不同的组件支持不同类型的服务，而不同服务的返回结果也不尽相同，比如：在SQL服务组件中，通过`<selectSet>`标签定义的SQL服务，其返回结果为`List<XCO>`类型，通过`<selectOne>`标签定义的SQL服务，其返回结果为`XCO`类型。
 
 我们可以通过在`tangyuan.xml`中设置系统变量`<config-property name="allServiceReturnXCO" value="true"/>`，让tangyuan框架中的所有服务都统一返回一个XCO包装对象，然后再通过其`getData()`方法获取真实的返回对象。
+
+
+
+
+

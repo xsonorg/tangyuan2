@@ -3,23 +3,21 @@ package org.xson.tangyuan;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.aop.sys.SystemAopVo;
 import org.xson.tangyuan.app.ExtArg;
-import org.xson.tangyuan.bootstrap.StartupAndShutdownVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.executor.ServiceContextFactory;
-import org.xson.tangyuan.monitor.DeadlockMonitorWriter;
 import org.xson.tangyuan.monitor.ServiceDeadlockMonitor;
+import org.xson.tangyuan.pool.ThreadPool;
 import org.xson.tangyuan.task.AsyncTask;
-import org.xson.tangyuan.task.AsyncTaskThread;
-import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.LicensesHelper;
-import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XmlGlobalContext;
 import org.xson.tangyuan.xml.XmlTangYuanBuilder;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
@@ -27,65 +25,66 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class TangYuanContainer implements TangYuanComponent {
 
-	private static TangYuanContainer				instance						= new TangYuanContainer();
+	private static TangYuanContainer				instance					= new TangYuanContainer();
 
-	public final static String						XCO_DATA_KEY					= "$$DATA";
-	public final static String						XCO_CODE_KEY					= "$$CODE";
-	public final static String						XCO_MESSAGE_KEY					= "$$MESSAGE";
+	public final static String						XCO_DATA_KEY				= "$$DATA";
+	public final static String						XCO_CODE_KEY				= "$$CODE";
+	public final static String						XCO_MESSAGE_KEY				= "$$MESSAGE";
 	// XCO返回对象包装标识
-	public final static String						XCO_PACKAGE_KEY					= "$$PACKAGE";
-	public final static String						XCO_HEADER_KEY					= "$$HEADER";
+	public final static String						XCO_PACKAGE_KEY				= "$$PACKAGE";
+	public final static String						XCO_HEADER_KEY				= "$$HEADER";
 
-	public final static int							SUCCESS_CODE					= 0;
+	public final static int							SUCCESS_CODE				= 0;
 
 	// 默认扩展参数前缀
 	//	public final static String						DEFAULT_EXT_ARG_PREFIX			= "EXT:";
 
-	private Log										log								= LogFactory.getLog(getClass());
-	private volatile boolean						closing							= false;
-	private String									systemName						= "tangyuan";
-	private XmlGlobalContext						xmlGlobalContext				= null;
+	private Log										log							= LogFactory.getLog(getClass());
+	private volatile boolean						closing						= false;
+	private String									systemName					= "tangyuan";
+	private XmlGlobalContext						xmlGlobalContext			= null;
 
-	private final Map<String, AbstractServiceNode>	tangyuanServices				= new HashMap<String, AbstractServiceNode>();
-	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices			= new ConcurrentHashMap<String, AbstractServiceNode>();
-	private AsyncTaskThread							asyncTaskThread					= null;
-	private Map<String, ServiceContextFactory>		scFactoryMap					= new HashMap<String, ServiceContextFactory>();
+	private final Map<String, AbstractServiceNode>	tangyuanServices			= new HashMap<String, AbstractServiceNode>();
+	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices		= new ConcurrentHashMap<String, AbstractServiceNode>();
+	//	private AsyncTaskThread							asyncTaskThread					= null;
+	private ThreadPool								threadPool					= null;
+	private Map<String, ServiceContextFactory>		scFactoryMap				= new HashMap<String, ServiceContextFactory>();
 
 	// private List<ComponentVo> components = new ArrayList<ComponentVo>();
 	// private Map<String, TangYuanComponent> componentMap = new HashMap<String, TangYuanComponent>();
 
-	private Map<String, ComponentVo>				componentMap					= new HashMap<String, ComponentVo>();
+	private Map<String, ComponentVo>				componentMap				= new HashMap<String, ComponentVo>();
 
 	// ss-aop
-	private List<StartupAndShutdownVo>				closingBeforeList				= null;
-	private List<StartupAndShutdownVo>				closingAfterList				= null;
+	private List<SystemAopVo>						closingBeforeList			= null;
+	private List<SystemAopVo>						closingAfterList			= null;
 
-	private Class<?>								defaultResultType				= XCO.class;
-	private boolean									licenses						= false;
+	private Class<?>								defaultResultType			= XCO.class;
+	private boolean									licenses					= false;
 
 	/** true:jdk, false:cglib */
-	private boolean									jdkProxy						= false;
+	private boolean									jdkProxy					= false;
 
 	// 错误信息编码
-	private int										errorCode						= -1;
-	private String									errorMessage					= "服务异常";
-	private String									nsSeparator						= "/";
+	private int										errorCode					= -1;
+	private String									errorMessage				= "服务异常";
+	private String									nsSeparator					= "/";
 
 	// 服务死锁监控
-	private boolean									openDeadlockMonitor				= false;
-	private ServiceDeadlockMonitor					deadlockMonitor					= null;
-	private String									deadlockMonitorWriterClassName	= null;
-	private long									deadlockMonitorSleepTime		= 2L;
-	private long									deadlockIntervalTime			= 10L;
+	private boolean									openDeadlockMonitor			= false;
+	private ServiceDeadlockMonitor					deadlockMonitor				= null;
+	//	private String									deadlockMonitorWriterClassName	= null;
+	private long									deadlockMonitorSleepTime	= 2L;
+	private long									deadlockIntervalTime		= 10L;
 
 	// 最大关闭等待时间(秒)
-	private long									maxWaitTimeForShutDown			= 10L;
+	private long									maxWaitTimeForShutDown		= 10L;
 
 	// 所有服务统一返回XCO
-	private boolean									allServiceReturnXCO				= false;
+	private boolean									allServiceReturnXCO			= false;
 
 	// 外部扩展参数
-	private ExtArg									extArg							= new ExtArg();
+	private ExtArg									extArg						= new ExtArg();
 
 	private TangYuanContainer() {
 	}
@@ -113,20 +112,19 @@ public class TangYuanContainer implements TangYuanComponent {
 		}
 
 		// deadlock
-		if (properties.containsKey("openDeadlockMonitor".toUpperCase())) {
-			openDeadlockMonitor = Boolean.parseBoolean(properties.get("openDeadlockMonitor".toUpperCase()));
-		}
-		if (properties.containsKey("deadlockMonitorWriter".toUpperCase())) {
-			deadlockMonitorWriterClassName = properties.get("deadlockMonitorWriter".toUpperCase());
-		}
-		if (properties.containsKey("deadlockMonitorSleepTime".toUpperCase())) {
-			deadlockMonitorSleepTime = Long.parseLong(properties.get("deadlockMonitorSleepTime".toUpperCase()));
-		}
-		if (properties.containsKey("deadlockIntervalTime".toUpperCase())) {
-			deadlockIntervalTime = Long.parseLong(properties.get("deadlockIntervalTime".toUpperCase()));
-		}
+		//		if (properties.containsKey("openDeadlockMonitor".toUpperCase())) {
+		//			openDeadlockMonitor = Boolean.parseBoolean(properties.get("openDeadlockMonitor".toUpperCase()));
+		//		}
+		//		if (properties.containsKey("deadlockMonitorWriter".toUpperCase())) {
+		//			deadlockMonitorWriterClassName = properties.get("deadlockMonitorWriter".toUpperCase());
+		//		}
+		//		if (properties.containsKey("deadlockMonitorSleepTime".toUpperCase())) {
+		//			deadlockMonitorSleepTime = Long.parseLong(properties.get("deadlockMonitorSleepTime".toUpperCase()));
+		//		}
+		//		if (properties.containsKey("deadlockIntervalTime".toUpperCase())) {
+		//			deadlockIntervalTime = Long.parseLong(properties.get("deadlockIntervalTime".toUpperCase()));
+		//		}
 
-		//
 		if (properties.containsKey("maxWaitTimeForShutDown".toUpperCase())) {
 			maxWaitTimeForShutDown = Long.parseLong(properties.get("maxWaitTimeForShutDown".toUpperCase()));
 		}
@@ -139,9 +137,16 @@ public class TangYuanContainer implements TangYuanComponent {
 		log.info("config setting success...");
 	}
 
-	public void setClosingList(List<StartupAndShutdownVo> closingBeforeList, List<StartupAndShutdownVo> closingAfterList) {
+	public void setClosingList(List<SystemAopVo> closingBeforeList, List<SystemAopVo> closingAfterList) {
 		this.closingBeforeList = closingBeforeList;
 		this.closingAfterList = closingAfterList;
+	}
+
+	public void startThreadPool(Properties p) throws Throwable {
+		if (null == this.threadPool) {
+			threadPool = new ThreadPool();
+			threadPool.start(p, this.maxWaitTimeForShutDown);
+		}
 	}
 
 	@Override
@@ -156,19 +161,19 @@ public class TangYuanContainer implements TangYuanComponent {
 		}
 
 		// 异步队列
-		asyncTaskThread = new AsyncTaskThread();
-		asyncTaskThread.start();
+		//		asyncTaskThread = new AsyncTaskThread();
+		//		asyncTaskThread.start();
 
 		// 死锁服务监控
-		if (openDeadlockMonitor) {
-			DeadlockMonitorWriter writer = null;
-			if (null != deadlockMonitorWriterClassName) {
-				Class<?> clazz = ClassUtils.forName(deadlockMonitorWriterClassName);
-				writer = (DeadlockMonitorWriter) TangYuanUtil.newInstance(clazz);
-			}
-			deadlockMonitor = new ServiceDeadlockMonitor(writer);
-			deadlockMonitor.start();
-		}
+		//		if (openDeadlockMonitor) {
+		//			DeadlockMonitorWriter writer = null;
+		//			if (null != deadlockMonitorWriterClassName) {
+		//				Class<?> clazz = ClassUtils.forName(deadlockMonitorWriterClassName);
+		//				writer = (DeadlockMonitorWriter) TangYuanUtil.newInstance(clazz);
+		//			}
+		//			deadlockMonitor = new ServiceDeadlockMonitor(writer);
+		//			deadlockMonitor.start();
+		//		}
 
 		xmlGlobalContext = new XmlGlobalContext();
 
@@ -266,28 +271,33 @@ public class TangYuanContainer implements TangYuanComponent {
 			componentMap.get(type).getComponent().stop(wait);
 		}
 
-		if (null != asyncTaskThread) {
-			asyncTaskThread.stop();
+		//		if (null != asyncTaskThread) {
+		//			asyncTaskThread.stop();
+		//		}
+
+		if (null != threadPool) {
+			threadPool.stop();
 		}
-		if (null != deadlockMonitor) {
-			deadlockMonitor.stop();
-		}
+
+		//		if (null != deadlockMonitor) {
+		//			deadlockMonitor.stop();
+		//		}
 
 		executeSSAop(this.closingAfterList);
 
 		log.info("tangyuan framework stop successfully.");
 	}
 
-	private void executeSSAop(List<StartupAndShutdownVo> ssList) {
+	private void executeSSAop(List<SystemAopVo> ssList) {
 		if (null == ssList) {
 			return;
 		}
-		for (StartupAndShutdownVo ssVo : ssList) {
+		for (SystemAopVo ssVo : ssList) {
 			try {
 				ssVo.getHandler().execute(ssVo.getProperties());
-				log.info("execute ss-aop class: " + ssVo.getClassName());
+				log.info("execute system-aop class: " + ssVo.getClassName());
 			} catch (Throwable e) {
-				log.error("execute ss-aop exception.", e);
+				log.error("execute system-aop exception.", e);
 			}
 		}
 	}
@@ -313,7 +323,8 @@ public class TangYuanContainer implements TangYuanComponent {
 	}
 
 	public void addAsyncTask(AsyncTask task) {
-		asyncTaskThread.addTask(task);
+		// asyncTaskThread.addTask(task);
+		this.threadPool.execute(task);
 	}
 
 	public ServiceContextFactory getContextFactory(TangYuanServiceType type) {
@@ -405,4 +416,7 @@ public class TangYuanContainer implements TangYuanComponent {
 		return extArg;
 	}
 
+	public ThreadPool getThreadPool() {
+		return threadPool;
+	}
 }
