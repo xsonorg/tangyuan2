@@ -231,6 +231,8 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 					_defaultDsKey);
 		}
 		SqlComponent.getInstance().setDataSourceManager(dataSourceManager);
+		
+		this.sqlContext.setDataSourceVoMap(this.dataSourceVoMap);
 	}
 
 	private void buildTransactionNodes(List<XmlNodeWrapper> contexts) {
