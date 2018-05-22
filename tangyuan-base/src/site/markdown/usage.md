@@ -186,8 +186,3 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 在tangyuan中，不同的组件支持不同类型的服务，而不同服务的返回结果也不尽相同，比如：在SQL服务组件中，通过`<selectSet>`标签定义的SQL服务，其返回结果为`List<XCO>`类型，通过`<selectOne>`标签定义的SQL服务，其返回结果为`XCO`类型。
 
 我们可以通过在`tangyuan.xml`中设置系统变量`<config-property name="allServiceReturnXCO" value="true"/>`，让tangyuan框架中的所有服务都统一返回一个XCO包装对象，然后再通过其`getData()`方法获取真实的返回对象。
-
-
-
-
-
