@@ -12,7 +12,7 @@ public class DefaultValueVariable extends Variable {
 	private Object		defaultValue		= null;
 
 	/**
-	 * 默认值类型: 0:普通, 1:now(), 2:date(), 3:time()
+	 * 默认值类型: 0:普通, 1:now(), 2:date(), 3:time(), 4:timestamp()
 	 */
 	private int			defaultValueType	= 0;
 
@@ -35,6 +35,8 @@ public class DefaultValueVariable extends Variable {
 				return new java.sql.Date(new java.util.Date().getTime());
 			} else if (3 == defaultValueType) {
 				return new java.sql.Time(new java.util.Date().getTime());
+			} else if (4 == defaultValueType) {
+				return new java.sql.Timestamp(new java.util.Date().getTime());
 			}
 		}
 		return result;

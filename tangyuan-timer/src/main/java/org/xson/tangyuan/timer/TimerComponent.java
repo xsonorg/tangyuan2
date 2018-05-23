@@ -2,6 +2,7 @@ package org.xson.tangyuan.timer;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,11 +22,13 @@ import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.util.ClassUtils;
+import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
+import org.xson.tangyuan.xml.XmlParseException;
 
 public class TimerComponent implements TangYuanComponent {
 
@@ -56,8 +59,73 @@ public class TimerComponent implements TangYuanComponent {
 		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		XPathParser xPathParser = new XPathParser(inputStream);
 		XmlNodeWrapper root = xPathParser.evalNode("/timer-component");
-		List<XmlNodeWrapper> nodeList = root.evalNodes("timer");
-		timerList = new ArrayList<TimerConfig>();
+
+		buildConfigNodes(root.evalNodes("config-property"));
+		buildTimerNodes(root.evalNodes("timer"));
+
+		//		timerList = new ArrayList<TimerConfig>();
+		//		for (XmlNodeWrapper node : nodeList) {
+		//			String scheduled = StringUtils.trim(node.getStringAttribute("scheduled"));
+		//			String service = StringUtils.trim(node.getStringAttribute("service"));
+		//			String desc = StringUtils.trim(node.getStringAttribute("desc"));
+		//			boolean sync = true;
+		//			String _sync = StringUtils.trim(node.getStringAttribute("sync"));
+		//			if (null != _sync) {
+		//				sync = Boolean.parseBoolean(_sync);
+		//			}
+		//			CustomJob customJob = null;
+		//			String custom = StringUtils.trim(node.getStringAttribute("custom"));
+		//			if (null != custom) {
+		//				Class<?> clazz = ClassUtils.forName(custom);
+		//				if (!CustomJob.class.isAssignableFrom(clazz)) {
+		//					throw new TangYuanException("User-defined JOB must implement org.xson.timer.client.CustomJob: " + custom);
+		//				}
+		//				customJob = (CustomJob) TangYuanUtil.newInstance(clazz);
+		//			}
+		//
+		//			if (null == customJob && null == service) {
+		//				throw new TangYuanException("job and service can not be empty");
+		//			}
+		//
+		//			// 自定义参数
+		//			Map<String, String> propertiesMap = new HashMap<String, String>();
+		//			Map<String, Object> preProperties = null;
+		//			List<XmlNodeWrapper> properties = node.evalNodes("property");
+		//			for (XmlNodeWrapper propertyNode : properties) {
+		//				propertiesMap.put(StringUtils.trim(propertyNode.getStringAttribute("name")),
+		//						StringUtils.trim(propertyNode.getStringAttribute("value")));
+		//			}
+		//			if (propertiesMap.size() > 0) {
+		//				PlaceholderResourceSupport.processMap(propertiesMap);
+		//				preProperties = TimerUtil.parseProperties(propertiesMap);
+		//			} else {
+		//				propertiesMap = null;
+		//			}
+		//
+		//			TimerConfig config = new TimerConfig(scheduled, service, sync, false, desc, customJob, propertiesMap, preProperties);
+		//			timerList.add(config);
+		//		}
+	}
+
+	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+		// <config-property name="A" value="B" />
+		Map<String, String> configMap = new HashMap<String, String>();
+		for (XmlNodeWrapper context : contexts) {
+			String name = StringUtils.trim(context.getStringAttribute("name"));
+			String value = StringUtils.trim(context.getStringAttribute("value"));
+			if (null == name || null == value) {
+				throw new XmlParseException("<config-property> missing name or value");
+			}
+			configMap.put(name.toUpperCase(), value);
+		}
+		if (configMap.size() > 0) {
+			PlaceholderResourceSupport.processMap(configMap);
+			config(configMap);
+		}
+	}
+
+	private void buildTimerNodes(List<XmlNodeWrapper> nodeList) throws Throwable {
+		this.timerList = new ArrayList<TimerConfig>();
 		for (XmlNodeWrapper node : nodeList) {
 			String scheduled = StringUtils.trim(node.getStringAttribute("scheduled"));
 			String service = StringUtils.trim(node.getStringAttribute("service"));
@@ -80,7 +148,23 @@ public class TimerComponent implements TangYuanComponent {
 			if (null == customJob && null == service) {
 				throw new TangYuanException("job and service can not be empty");
 			}
-			TimerConfig config = new TimerConfig(scheduled, service, sync, false, desc, customJob);
+
+			// 自定义参数
+			Map<String, String> propertiesMap = new HashMap<String, String>();
+			Map<String, Object> preProperties = null;
+			List<XmlNodeWrapper> properties = node.evalNodes("property");
+			for (XmlNodeWrapper propertyNode : properties) {
+				propertiesMap.put(StringUtils.trim(propertyNode.getStringAttribute("name")),
+						StringUtils.trim(propertyNode.getStringAttribute("value")));
+			}
+			if (propertiesMap.size() > 0) {
+				PlaceholderResourceSupport.processMap(propertiesMap);
+				preProperties = TimerUtil.parseProperties(propertiesMap);
+			} else {
+				propertiesMap = null;
+			}
+
+			TimerConfig config = new TimerConfig(scheduled, service, sync, false, desc, customJob, propertiesMap, preProperties);
 			timerList.add(config);
 		}
 	}

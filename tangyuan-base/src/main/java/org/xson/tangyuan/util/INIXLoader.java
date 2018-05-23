@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.xson.common.object.XCO;
@@ -17,6 +18,8 @@ import org.xson.tangyuan.TangYuanException;
  * inix配置文件读取
  */
 public class INIXLoader {
+
+	private String separator = ",";
 
 	public XCO load(InputStream in) throws IOException {
 		return load(in, null);
@@ -109,7 +112,21 @@ public class INIXLoader {
 				value = new BigInteger(val);
 			} else if ("M".equalsIgnoreCase(type)) {
 				value = new BigDecimal(val);
-			} else {
+			}
+
+			else if ("SA".equalsIgnoreCase(type)) {
+				value = val.split(separator);
+			} else if ("IA".equalsIgnoreCase(type)) {
+				value = val.split(separator);
+				value = toNumberArray((String[]) value, int.class);
+			}
+
+			else if ("SL".equalsIgnoreCase(type)) {
+				value = val.split(separator);
+				value = Arrays.asList(value);
+			}
+
+			else {
 				throw new TangYuanException("Unknown data type: " + type);
 			}
 		}
@@ -134,6 +151,20 @@ public class INIXLoader {
 		}
 		reader.close();
 		return list;
+	}
+
+	private Object toNumberArray(String[] arr, Class<?> type) {
+		if (int.class == type) {
+			if (null == arr || 0 == arr.length) {
+				return new int[0];
+			}
+			int[] result = new int[arr.length];
+			for (int i = 0; i < arr.length; i++) {
+				result[i] = Integer.parseInt(arr[i]);
+			}
+			return result;
+		}
+		return null;
 	}
 
 }

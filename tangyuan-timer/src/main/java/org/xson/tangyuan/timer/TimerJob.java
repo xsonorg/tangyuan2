@@ -23,7 +23,8 @@ public abstract class TimerJob implements Job {
 			if (null == customJob) {
 				final String service = config.getService();
 				// Object retObj = ServiceActuator.execute(config.getRealService(), new XCO());
-				Object retObj = ServiceActuator.execute(service, new XCO());
+				//				Object retObj = ServiceActuator.execute(service, new XCO());
+				Object retObj = ServiceActuator.execute(service, config.getArg(null));
 				XCO result = TangYuanUtil.retObjToXco(retObj);
 				getLogger().info(config.getDesc() + ":" + service + " end. code[" + result.getCode() + "], message[" + result.getMessage() + "]");
 			} else {

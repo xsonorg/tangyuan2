@@ -11,7 +11,7 @@ public class DefaultValueParser extends AbstractParser {
 	 * 默认值类型
 	 */
 	public enum DefaultValueEnum {
-		NOW, DATE, TIME
+		NOW, DATE, TIME, TIMESTAMP
 	}
 
 	/**
@@ -74,6 +74,8 @@ public class DefaultValueParser extends AbstractParser {
 			return DefaultValueEnum.DATE;
 		} else if ("time()".equalsIgnoreCase(defaultString)) {
 			return DefaultValueEnum.TIME;
+		} else if ("timestamp()".equalsIgnoreCase(defaultString)) {
+			return DefaultValueEnum.TIMESTAMP;
 		}
 
 		else if ("byte.null".equalsIgnoreCase(defaultString)) {
@@ -121,6 +123,9 @@ public class DefaultValueParser extends AbstractParser {
 			defaultValue = null;
 		} else if (DefaultValueEnum.TIME == defaultValue) {
 			defaultValueType = 3;
+			defaultValue = null;
+		} else if (DefaultValueEnum.TIMESTAMP == defaultValue) {
+			defaultValueType = 4;
 			defaultValue = null;
 		}
 		return new DefaultValueVariable(original, new NormalParser().parse(property), defaultValue, defaultValueType);
