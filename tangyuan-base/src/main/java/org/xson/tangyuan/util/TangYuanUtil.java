@@ -95,6 +95,24 @@ public class TangYuanUtil {
 		return result;
 	}
 
+	public static ServiceException getServiceException(Throwable e) {
+		return getServiceException(e, null);
+	}
+
+	public static ServiceException getServiceException(Throwable e, String message) {
+		Throwable tx = e;
+		if (e instanceof InvocationTargetException) {
+			tx = ((InvocationTargetException) e).getTargetException();
+		}
+		if (tx instanceof ServiceException) {
+			return (ServiceException) tx;
+		}
+		if (null != message) {
+			return new ServiceException(message, tx);
+		}
+		return new ServiceException(tx);
+	}
+
 	public static <T> T newInstance(Class<T> clazz) {
 		return newInstance(clazz, TangYuanContainer.getInstance().isJdkProxy());
 	}

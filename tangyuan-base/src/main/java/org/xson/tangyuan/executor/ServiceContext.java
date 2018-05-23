@@ -6,6 +6,7 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.monitor.ServiceDeadlockInfo;
+import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class ServiceContext {
@@ -211,10 +212,12 @@ public class ServiceContext {
 			this.exceptionInfo = null;
 			log.error(message, e);
 		} else {
-			if (e instanceof ServiceException) {
-				throw (ServiceException) e;
-			}
-			throw new ServiceException(message, e);
+			//			if (e instanceof ServiceException) {
+			//				throw (ServiceException) e;
+			//			}
+			//			throw new ServiceException(message, e);
+			throw TangYuanUtil.getServiceException(e, message);
 		}
 	}
+
 }
