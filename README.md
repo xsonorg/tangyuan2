@@ -53,43 +53,51 @@ Tangyuan默认提供10种基础功能组件，包括sql、java、mongo、mq、ao
 
 > SQL组件
 
-提供SQL服务的功能支持，详见<http://www.xson.org/project/sql/1.2.0/>
+提供SQL服务的功能支持，详见<http://www.xson.org/project/sql/1.2.2/>
 
 > JAVA组件
 
-提供JAVA服务的功能支持，详见<http://www.xson.org/project/java/1.2.0/>
+提供JAVA服务的功能支持，详见<http://www.xson.org/project/java/1.2.2/>
 
 > MONGO组件
 
-提供MONGO服务的功能支持，详见<http://www.xson.org/project/mongo/1.2.0/>
+提供MONGO服务的功能支持，详见<http://www.xson.org/project/mongo/1.2.2/>
 
 > MQ组件
 
-提供消息服务的功能支持，详见<http://www.xson.org/project/mq/1.2.0/>
+提供消息服务的功能支持，详见<http://www.xson.org/project/mq/1.2.2/>
+
+> HBASE组件
+
+提供HBase服务的功能支持，详见<http://www.xson.org/project/hbase/1.2.2/>
+
+> ElasticSearch组件
+
+提供ElasticSearch服务的功能支持，详见<http://www.xson.org/project/es/1.2.2/>
 
 > WEB组件
 
-提供控制层的功能支持，详见<http://www.xson.org/project/web/1.2.0/>
+提供控制层的功能支持，详见<http://www.xson.org/project/web/1.2.2/>
 
 > AOP组件
 
-提供AOP的功能支持，详见<http://www.xson.org/project/aop/1.2.0/>
+提供AOP的功能支持，详见<http://www.xson.org/project/aop/1.2.2/>
 
 > RPC组件
 
-提供RPC的功能支持，详见<http://www.xson.org/project/rpc/1.2.0/>
+提供RPC的功能支持，详见<http://www.xson.org/project/rpc/1.2.2/>
 
 > CACHE组件
 
-提供缓存的功能支持，详见<http://www.xson.org/project/cache/1.2.0/>
+提供缓存的功能支持，详见<http://www.xson.org/project/cache/1.2.2/>
 
 > VALIDATE组件
 
-提供数据验证的功能支持，详见<http://www.xson.org/project/validate/1.2.0/>
+提供数据验证的功能支持，详见<http://www.xson.org/project/validate/1.2.2/>
 
 > TIMER组件
 
-提供定时程序的功能支持，详见<http://www.xson.org/project/timer/1.2.0/>
+提供定时程序的功能支持，详见<http://www.xson.org/project/timer/1.2.2/>
 
 ### 3. 最新版本
 
