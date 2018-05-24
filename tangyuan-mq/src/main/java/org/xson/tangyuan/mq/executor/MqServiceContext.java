@@ -5,12 +5,10 @@ import java.util.List;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.executor.IServiceContext;
-import org.xson.tangyuan.executor.IServiceExceptionInfo;
-import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.executor.DefaultServiceContext;
 import org.xson.tangyuan.mq.executor.MqTransactionObject.State;
 
-public class MqServiceContext implements IServiceContext {
+public class MqServiceContext extends DefaultServiceContext {
 
 	private static Log					log				= LogFactory.getLog(MqServiceContext.class);
 
@@ -53,9 +51,9 @@ public class MqServiceContext implements IServiceContext {
 		log.info("mq rollback.");
 	}
 
-	@Override
-	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
-		// 这里不能处理任务错误,统一上抛
-		return false;
-	}
+	//	@Override
+	//	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
+	//		// 这里不能处理任务错误,统一上抛
+	//		return false;
+	//	}
 }

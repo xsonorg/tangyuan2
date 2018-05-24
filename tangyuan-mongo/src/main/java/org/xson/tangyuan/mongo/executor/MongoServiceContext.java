@@ -5,14 +5,12 @@ import java.util.Map;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.TangYuanException;
-import org.xson.tangyuan.executor.IServiceContext;
-import org.xson.tangyuan.executor.IServiceExceptionInfo;
-import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.executor.DefaultServiceContext;
 import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.mongo.executor.cmd.CommandActuator;
 import org.xson.tangyuan.mongo.xml.node.AbstractMongoNode;
 
-public class MongoServiceContext implements IServiceContext {
+public class MongoServiceContext extends DefaultServiceContext {
 
 	private StringBuilder	sqlBuilder		= null;
 
@@ -121,19 +119,5 @@ public class MongoServiceContext implements IServiceContext {
 	// InsertReturn result = mongoActuator.insertReturn(dsKey, getSql());
 	// return result;
 	// }
-
-	@Override
-	public void commit(boolean confirm) throws Throwable {
-	}
-
-	@Override
-	public void rollback() {
-	}
-
-	@Override
-	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
-		// 这里不能处理任务错误,统一上抛
-		return false;
-	}
 
 }

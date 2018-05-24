@@ -278,9 +278,14 @@ public class SqlServiceContext implements IServiceContext {
 
 	@Override
 	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
-		if (null == exceptionInfo) {
-			throw new ServiceException("exceptionInfo is null");
+		//		if (null == exceptionInfo) {
+		//			throw new ServiceException("exceptionInfo is null");
+		//		}
+		if (null == exceptionInfo) {	//  fix:info为空, sql上下文将不能准确的处理异常, 认为是系统未考虑到的特殊异常
+			log.error("exceptionInfo is null.");
+			return false;
 		}
+
 		SqlServiceExceptionInfo info = (SqlServiceExceptionInfo) exceptionInfo;
 		if (info.isNewTranscation()) {
 			if (info.isCreatedTranscation()) {

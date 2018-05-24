@@ -37,7 +37,6 @@ public class AopComponent implements TangYuanComponent {
 	public void start(String resource) throws Throwable {
 		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		log.info("aop component starting, version: " + Version.getVersion());
-		// log.info("Start parsing: " + resource);
 		XmlAopBuilder xmlBuilder = new XmlAopBuilder();
 		xmlBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
 		log.info("aop component successfully.");

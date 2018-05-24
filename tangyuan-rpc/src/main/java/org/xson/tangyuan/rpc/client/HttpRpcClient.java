@@ -1,6 +1,5 @@
 package org.xson.tangyuan.rpc.client;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Properties;
 
@@ -11,11 +10,9 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.xson.common.object.XCO;
-import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.rpc.RpcException;
 import org.xson.tangyuan.rpc.xml.RpcClientVo;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
 import org.xson.tools.httpclient.HttpClientFactory;
 import org.xson.tools.httpclient.HttpClientVo;
 import org.xson.tools.httpclient.XHttpClient;
@@ -65,13 +62,14 @@ public class HttpRpcClient extends AbstractRpcClient {
 		HttpClientVo vo = null;
 		String resource = this.rpcClientVo.getResource();
 		if (null != resource) {
-			Properties properties = new Properties();
-			InputStream inputStream = Resources.getResourceAsStream(resource);
-			inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-					TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
-			properties.load(inputStream);
-			inputStream.close();
-			vo = new HttpClientVo(properties);
+			//			Properties properties = new Properties();
+			//			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//			inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+			//					TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+			//			properties.load(inputStream);
+			//			inputStream.close();
+			Properties properties = PlaceholderResourceSupport.getProperties(resource);
+			vo = new HttpClientVo(properties, resource);
 		}
 		this.factory = new HttpClientFactory(vo, true);
 	}

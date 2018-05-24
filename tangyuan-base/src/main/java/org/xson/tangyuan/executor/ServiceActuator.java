@@ -6,7 +6,6 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.aop.AopSupport;
-import org.xson.tangyuan.aop.AspectVo.PointCut;
 import org.xson.tangyuan.mr.MapReduce;
 import org.xson.tangyuan.mr.MapReduceHander;
 import org.xson.tangyuan.ognl.convert.ParameterConverter;
@@ -106,13 +105,6 @@ public class ServiceActuator {
 				}
 
 				// fix bug: 这里的异常需要上抛
-				//				if (null != ex) {
-				//					if (ex instanceof ServiceException) {
-				//						throw (ServiceException) ex;
-				//					}
-				//					throw new ServiceException(ex);// 是否需要区分反射异常 TODO
-				//				}
-
 				if (null != ex) {
 					throw TangYuanUtil.getServiceException(ex);
 				}
@@ -123,7 +115,7 @@ public class ServiceActuator {
 	}
 
 	/** 发生异常的结束 */
-	private static void onException(Throwable throwable, String serviceURI, AbstractServiceNode service) {
+	private static void onException(Throwable throwable, String serviceURI, AbstractServiceNode service, boolean throwException) {
 		// 如果当前可以处理,当前处理; 如果当前不能处理,上抛,不做日志输出
 		ThreadServiceContext threadContext = contextThreadLocal.get();
 		ServiceContext context = threadContext.get();
@@ -135,31 +127,20 @@ public class ServiceActuator {
 			if (threadContext.recycle()) {
 				contextThreadLocal.remove();
 			}
-			// 最后一层抛出的异常
-			//			if (throwable instanceof ServiceException) {
-			//				throw (ServiceException) throwable;
-			//			}
-			//			throw new ServiceException("Execute service exception: " + service.getServiceKey(), throwable);
-			// 最后一层抛出的异常
-			throw TangYuanUtil.getServiceException(throwable);
-		} else {
-			//			ServiceException ex = null;
-			//			try {
-			//				context.onException(service.getServiceType(), throwable, "Execute service exception: " + service.getServiceKey());
-			//			} catch (ServiceException e) {
-			//				ex = e;
-			//			}
-			//			if (null != ex) {
-			//				throw ex;
-			//			}
+
+			if (throwException) {
+				// 最后一层抛出的异常
+				throw TangYuanUtil.getServiceException(throwable);
+			}
+		} else {						//不是最后一层
 			if (null != service) {
 				try {
-					context.onException(service.getServiceType(), throwable, "Execute service exception: " + serviceURI);
+					context.onException(service.getServiceType(), throwable, "execute service exception: " + serviceURI);
 				} catch (Throwable e) {
 					throw TangYuanUtil.getServiceException(e);
 				}
 			} else {
-				// service为空, 则表示未找到服务, 未做任务业务, 仅作日志输出
+				// service为空,则表示未找到服务,未做任务业务, 仅作日志输出.
 				log.error("execute service exception: " + serviceURI, throwable);
 			}
 		}
@@ -188,15 +169,20 @@ public class ServiceActuator {
 
 	/**
 	 * 获取服务<br />
-	 * a/b|www.xx.com/a/b
+	 * a/b|www.xx.com/a/b|{xxx}/a/b
 	 */
 	private static AbstractServiceNode findService(String serviceURL) {
 		try {
+			if (onlyProxy) {
+				return findProxyService(serviceURL);
+			}
+
 			// 查询本地服务
 			AbstractServiceNode service = TangYuanContainer.getInstance().getService(serviceURL);
 			if (null != service) {
 				return service;
 			}
+
 			// 查询远程服务
 			service = TangYuanContainer.getInstance().getDynamicService(serviceURL);
 			if (null != service) {
@@ -219,19 +205,13 @@ public class ServiceActuator {
 		return null;
 	}
 
-	//	private static Object executeProxy(String serviceURI, Object arg) {
-	//		Object result = null;
-	//		try {
-	//			result = RpcProxy.call(serviceURI, (XCO) arg);
-	//		} catch (Throwable e) {
-	//			if (e instanceof ServiceException) {
-	//				throw (ServiceException) e;
-	//			} else {
-	//				throw new ServiceException(e);
-	//			}
-	//		}
-	//		return result;
-	//	}
+	private static AbstractServiceNode findProxyService(String serviceURL) {
+		AbstractServiceNode service = TangYuanContainer.getInstance().getDynamicService(serviceURL);
+		if (null != service) {
+			return service;
+		}
+		return createDynamicService(serviceURL);
+	}
 
 	private static AbstractServiceNode createDynamicService(String serviceURL) {
 
@@ -268,7 +248,7 @@ public class ServiceActuator {
 		// 1. 检查系统是否已经正在关闭中了
 		check();
 
-		log.info("actuator service: " + serviceURI);
+		log.info("execute service: " + serviceURI);
 
 		// 2. 获取上下文
 		ServiceContext context = begin(false);
@@ -278,34 +258,22 @@ public class ServiceActuator {
 		Object result = null;
 		Throwable ex = null;
 		try {
-
 			service = findService(serviceURI);
 			if (null == service) {
-				throw new ServiceException("Service does not exist: " + serviceURI);// 上抛异常
+				throw new ServiceException("service does not exist: " + serviceURI);// 上抛异常
+			}
+			if (null != aop) {
+				aop.execBefore(service, arg);// 前置切面
 			}
 
-			//			if (null != aop) {
-			//				aop.execBefore(service, arg, PointCut.BEFORE_CHECK);// 前置切面
-			//				aop.execBefore(service, arg, PointCut.BEFORE_ALONE);// 前置切面
-			//			}
-			//			if (null != aop) {
-			//				aop.execBefore(service, arg, PointCut.BEFORE_JOIN);// 前置切面
-			//			}
-
-			//			if (onlyProxy) {
-			//				return (T) executeProxy(serviceURI, arg); 			// TODO 上下文的处理
-			//			}
-
-			// TODO 如果是XCO 需要考虑入参的只读特性??
-
-			Object data = converter.parameterConvert(arg, service.getResultType()); // 如果发生异常, ??
+			// TODO 如果是XCO 需要考虑入参的只读特性,:::不需要
+			Object data = converter.parameterConvert(arg, service.getResultType()); // TODO 有可能发生异常
 			service.execute(context, data);
-			result = service.getResult(context);					// 类型转换时可能发生异常
+			result = service.getResult(context);									// TODO 类型转换时可能发生异常
 
 			if (null != aop) {
-				aop.execAfter(service, arg, result, ex, PointCut.AFTER_JOIN);
+				aop.execAfter(service, arg, result, ex, true);
 			}
-
 		} catch (Throwable e) {
 			ex = e;
 			result = getExceptionResult(e);// 防止异常处理后的返回
@@ -314,7 +282,7 @@ public class ServiceActuator {
 			ServiceException throwEx = null;
 			try {
 				if (null != ex) {
-					onException(ex, serviceURI, service);
+					onException(ex, serviceURI, service, true);
 				} else {
 					onSuccess();
 				}
@@ -325,7 +293,7 @@ public class ServiceActuator {
 				}
 			}
 			if (null != aop) {
-				aop.execAfter(service, arg, result, ex, PointCut.AFTER_ALONE);
+				aop.execAfter(service, arg, result, ex, false);
 			}
 			if (null != throwEx) {
 				throw throwEx;
@@ -357,39 +325,21 @@ public class ServiceActuator {
 		Throwable ex = null;
 		try {
 
-			//			if (onlyProxy) {
-			//				try {
-			//					return executeProxy(serviceURI, arg);
-			//				} catch (Throwable e) {
-			//					log.error("Execute service exception: " + serviceURI, e);
-			//					return getExceptionResult(e);
-			//				}
-			//			}
-
 			service = findService(serviceURI);
 			if (null == service) {
-				throw new ServiceException("Service does not exist: " + serviceURI);
+				throw new ServiceException("service does not exist: " + serviceURI);
 			}
 
-			//			if (null != aop) {
-			//				try {
-			//					aop.execBefore(service, arg, PointCut.BEFORE_CHECK);// 前置切面
-			//				} catch (Throwable e) {
-			//					log.error("Execute aop exception on: " + serviceURI, e);
-			//					return getExceptionResult(e);
-			//				}
-			//				aop.execBefore(service, arg, PointCut.BEFORE_ALONE);// 前置切面
-			//			}
-			//			if (null != aop) {
-			//				aop.execBefore(service, arg, PointCut.BEFORE_JOIN);// 前置切面
-			//			}
+			if (null != aop) {
+				aop.execBefore(service, arg);// 前置切面
+			}
 
 			Object data = converter.parameterConvert(arg, service.getResultType());
 			service.execute(context, data);
-			result = service.getResult(context);// 只有类型转换是发生异常
+			result = service.getResult(context);
 
 			if (null != aop) {
-				aop.execAfter(service, arg, result, ex, PointCut.AFTER_JOIN);
+				aop.execAfter(service, arg, result, ex, true);
 			}
 
 		} catch (Throwable e) {
@@ -400,11 +350,12 @@ public class ServiceActuator {
 			ServiceException throwEx = null;
 			try {
 				if (null != ex) {
-					onException(ex, serviceURI, service);
+					onException(ex, serviceURI, service, false);
 				} else {
 					onSuccess();
 				}
 			} catch (ServiceException se) {
+				// 这里产生的异常只能是onSuccess()抛出的
 				throwEx = se;
 
 				// 防止提交产生新异常
@@ -416,13 +367,13 @@ public class ServiceActuator {
 				}
 			}
 			if (null != aop) {
-				aop.execAfter(service, arg, result, ex, PointCut.AFTER_ALONE);
+				aop.execAfter(service, arg, result, ex, false);
 			}
 			if (null != throwEx) {
 				if (throwException) {
 					throw throwEx;
 				} else {
-					log.error("Execute service exception: " + serviceURI, throwEx);
+					log.error("execute service exception: " + serviceURI, throwEx);
 				}
 			}
 		}
@@ -438,7 +389,10 @@ public class ServiceActuator {
 		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
 			@Override
 			public void run() {
-				execute(serviceURI, arg);
+				try {
+					execute(serviceURI, arg);
+				} catch (Throwable e) {
+				}
 			}
 		});
 	}

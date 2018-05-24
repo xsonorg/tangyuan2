@@ -7,8 +7,8 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
-import org.xson.tangyuan.aop.AspectVo.PointCut;
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.util.TangYuanUtil;
 
 /**
  * 切面和服务映射
@@ -24,20 +24,15 @@ public class ServiceAopVo {
 
 	private String			service			= null;
 
-	private List<AspectVo>	beforeCheckList	= null;
-	private List<AspectVo>	beforeJoinList	= null;
-	private List<AspectVo>	afterJoinList	= null;
-	private List<AspectVo>	beforeAloneList	= null;
-	private List<AspectVo>	afterAloneList	= null;
+	private List<AopVo>		beforeList		= null;
+	private List<AopVo>		afterExtendList	= null;
+	private List<AopVo>		afterList		= null;
 
-	public ServiceAopVo(String service, List<AspectVo> beforeCheckList, List<AspectVo> beforeJoinList, List<AspectVo> afterJoinList,
-			List<AspectVo> beforeAloneList, List<AspectVo> afterAloneList) {
+	public ServiceAopVo(String service, List<AopVo> beforeList, List<AopVo> afterExtendList, List<AopVo> afterList) {
 		this.service = service;
-		this.beforeCheckList = beforeCheckList;
-		this.beforeJoinList = beforeJoinList;
-		this.afterJoinList = afterJoinList;
-		this.beforeAloneList = beforeAloneList;
-		this.afterAloneList = afterAloneList;
+		this.beforeList = beforeList;
+		this.afterExtendList = afterExtendList;
+		this.afterList = afterList;
 	}
 
 	public String getService() {
@@ -60,7 +55,6 @@ public class ServiceAopVo {
 		// }
 		// return arg;
 
-		// TODO
 		throw new TangYuanException("AOP components do not support data types other than XCO.");
 	}
 
@@ -102,71 +96,57 @@ public class ServiceAopVo {
 			return pkgArg;
 		}
 
-		// TODO
 		throw new TangYuanException("AOP components do not support data types other than XCO.");
 	}
 
-	public void execBefore(String service, Object arg, PointCut pointCut) {
-		List<AspectVo> beforeList = null;
-		if (PointCut.BEFORE_CHECK == pointCut) {
-			beforeList = beforeCheckList;
-		} else if (PointCut.BEFORE_JOIN == pointCut) {
-			beforeList = beforeJoinList;
-		} else if (PointCut.BEFORE_ALONE == pointCut) {
-			beforeList = beforeAloneList;
-		}
-		if (null == beforeList) {
+	public void execBefore(String service, Object arg) throws Throwable {
+		if (null == this.beforeList || 0 == this.beforeList.size()) {
 			return;
 		}
 
 		Object pkgArg = assembleAopArg(service, arg);
 		String exec = null;
+
 		try {
-			for (AspectVo aVo : beforeList) {
+			for (AopVo aVo : this.beforeList) {
 				exec = aVo.getExec();
-				aVo.execBefore(service, pkgArg);
+				log.info(TangYuanUtil.format("execute aop before: {}, service: {}", exec, service));
+				aVo.execBefore(pkgArg);
 			}
 		} catch (Throwable e) {
-			if (PointCut.BEFORE_ALONE == pointCut) {
-				log.error("service[" + service + "] execute before-alone error. for:" + exec, e);
-			} else {
-				if (e instanceof ServiceException) {
-					throw (ServiceException) e;
-				} else {
-					throw new TangYuanException(e);
-				}
-			}
+			//			log.error("service[" + service + "] execute aop before error. due to:" + exec, e);
+			//			log.error(TangYuanUtil.format("execute service exception: {}", exec), e);
+			log.error(TangYuanUtil.format("execute service exception: {}", exec));
+			throw e;
 		}
 	}
 
-	public void execAfter(String service, Object arg, Object result, Throwable ex, PointCut pointCut) {
-		List<AspectVo> afterList = null;
-		if (PointCut.AFTER_JOIN == pointCut) {
-			afterList = afterJoinList;
-		} else if (PointCut.AFTER_ALONE == pointCut) {
-			afterList = afterAloneList;
+	public void execAfter(String service, Object arg, Object result, Throwable ex, boolean extend) {
+
+		List<AopVo> tempAfterList = null;
+		if (extend) {
+			tempAfterList = this.afterExtendList;
+		} else {
+			tempAfterList = this.afterList;
 		}
-		if (null == afterList) {
+
+		if (null == tempAfterList || 0 == tempAfterList.size()) {
 			return;
 		}
 
 		Object pkgArg = assembleAopArg(service, arg, result, ex);
 		String exec = null;
 		try {
-			for (AspectVo aVo : afterList) {
+			for (AopVo aVo : tempAfterList) {
 				exec = aVo.getExec();
-				aVo.execAfter(service, pkgArg, result, ex);
+				log.info(TangYuanUtil.format("execute aop after: {}, service: {}", exec, service));
+				aVo.execAfter(pkgArg, ex);
 			}
 		} catch (Throwable e) {
-			if (PointCut.AFTER_ALONE == pointCut) {
-				log.error("service[" + service + "] execute after-alone error. for:" + exec, e);
-			} else {
-				if (e instanceof ServiceException) {
-					throw (ServiceException) e;
-				} else {
-					throw new TangYuanException(e);
-				}
-			}
+			//			log.error("service[" + service + "] execute aop after error. due to:" + exec);
+			//			log.error(TangYuanUtil.format("execute service exception: {}", exec), e);
+			log.error(TangYuanUtil.format("execute service exception: {}", exec));
+			throw e;
 		}
 	}
 }

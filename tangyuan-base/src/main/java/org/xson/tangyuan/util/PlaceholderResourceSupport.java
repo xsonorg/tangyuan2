@@ -31,6 +31,14 @@ public class PlaceholderResourceSupport {
 		}
 	}
 
+	public static Properties getProperties(String resource) throws Throwable {
+		Properties properties = new Properties();
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+		properties.load(inputStream);
+		inputStream.close();
+		return properties;
+	}
+
 	public static void processProperties(Properties properties, Map<String, String> placeholderMap) throws Throwable {
 		if (null == properties || 0 == properties.size()) {
 			return;

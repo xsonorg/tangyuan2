@@ -5,10 +5,11 @@ import java.util.List;
 import org.xson.logging.Log;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.util.PatternMatchUtils;
+import org.xson.tangyuan.xml.node.CallNode.CallMode;
 
-public abstract class AspectVo implements Comparable<AspectVo> {
+public abstract class AopVo implements Comparable<AopVo> {
 
-	public enum AspectCondition {
+	public enum AopCondition {
 		/** 成功 */
 		SUCCESS,
 
@@ -21,7 +22,7 @@ public abstract class AspectVo implements Comparable<AspectVo> {
 
 	public enum PointCut {
 
-		BEFORE_CHECK(1), BEFORE_JOIN(2), BEFORE_ALONE(4), AFTER_JOIN(8), AFTER_ALONE(16);
+		BEFORE(1), AFTER_EXTEND(2), AFTER(4);
 
 		private int value = 0;
 
@@ -34,10 +35,9 @@ public abstract class AspectVo implements Comparable<AspectVo> {
 		}
 	}
 
-	// protected static PostCutAssembly assembly = new DefaultPostCutAssembly();
-
 	protected String		exec;
 	protected int			order;
+	protected CallMode		mode;
 	protected List<String>	includeList;
 	protected List<String>	excludeList;
 
@@ -67,16 +67,14 @@ public abstract class AspectVo implements Comparable<AspectVo> {
 	/**
 	 * 之前前置方法
 	 * 
-	 * @param service
-	 *            仅作日志标识使用
-	 * @param pkgArg
-	 *            封装后的对象
+	 * @param service 仅作日志标识使用
+	 * @param pkgArg 封装后的对象
 	 */
-	protected void execBefore(String service, Object pkgArg) {
+	protected void execBefore(Object pkgArg) {
 		throw new TangYuanException("Subclasses must override this method");
 	}
 
-	protected void execAfter(String service, Object pkgArg, Object result, Throwable ex) {
+	protected void execAfter(Object pkgArg, Throwable ex) {
 		throw new TangYuanException("Subclasses must override this method");
 	}
 
@@ -91,9 +89,8 @@ public abstract class AspectVo implements Comparable<AspectVo> {
 	}
 
 	@Override
-	public int compareTo(AspectVo o) {
+	public int compareTo(AopVo o) {
 		// 比较此对象与指定对象的顺序。如果该对象小于、等于或大于指定对象，则分别返回负整数、零或正整数。
-		// AspectVo other = (AspectVo) o;
 		if (this.order < o.getOrder()) {
 			return -1;
 		} else if (this.order > o.getOrder()) {

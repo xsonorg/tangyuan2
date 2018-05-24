@@ -1,6 +1,6 @@
 package org.xson.tangyuan.xml.node;
 
-import org.xson.tangyuan.aop.AspectVo.PointCut;
+import org.xson.tangyuan.aop.AopVo.PointCut;
 import org.xson.tangyuan.executor.ServiceContext;
 
 public abstract class AbstractServiceNode implements TangYuanNode {
@@ -61,18 +61,34 @@ public abstract class AbstractServiceNode implements TangYuanNode {
 	}
 
 	protected String getSlowServiceLog(long startTime) {
+		//		long intervals = System.currentTimeMillis() - startTime;
+		//		String slowLogInfo = "(";
+		//		if (intervals >= 1000L) {
+		//			slowLogInfo = slowLogInfo + "5level slow sql service ";
+		//		} else if (intervals >= 500L) {
+		//			slowLogInfo = slowLogInfo + "4level slow sql service ";
+		//		} else if (intervals >= 300L) {
+		//			slowLogInfo = slowLogInfo + "3level slow sql service ";
+		//		} else if (intervals >= 200L) {
+		//			slowLogInfo = slowLogInfo + "2level slow sql service ";
+		//		} else if (intervals >= 100L) {
+		//			slowLogInfo = slowLogInfo + "1level slow sql service ";
+		//		}
+		//		slowLogInfo = slowLogInfo + intervals + "ms)";
+		//		return slowLogInfo;
+
 		long intervals = System.currentTimeMillis() - startTime;
 		String slowLogInfo = "(";
 		if (intervals >= 1000L) {
-			slowLogInfo = slowLogInfo + "5level slow sql service ";
+			slowLogInfo = slowLogInfo + "5level slow service ";
 		} else if (intervals >= 500L) {
-			slowLogInfo = slowLogInfo + "4level slow sql service ";
+			slowLogInfo = slowLogInfo + "4level slow service ";
 		} else if (intervals >= 300L) {
-			slowLogInfo = slowLogInfo + "3level slow sql service ";
+			slowLogInfo = slowLogInfo + "3level slow service ";
 		} else if (intervals >= 200L) {
-			slowLogInfo = slowLogInfo + "2level slow sql service ";
+			slowLogInfo = slowLogInfo + "2level slow service ";
 		} else if (intervals >= 100L) {
-			slowLogInfo = slowLogInfo + "1level slow sql service ";
+			slowLogInfo = slowLogInfo + "1level slow service ";
 		}
 		slowLogInfo = slowLogInfo + intervals + "ms)";
 		return slowLogInfo;

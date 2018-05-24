@@ -212,10 +212,6 @@ public class ServiceContext {
 			this.exceptionInfo = null;
 			log.error(message, e);
 		} else {
-			//			if (e instanceof ServiceException) {
-			//				throw (ServiceException) e;
-			//			}
-			//			throw new ServiceException(message, e);
 			throw TangYuanUtil.getServiceException(e, message);
 		}
 	}

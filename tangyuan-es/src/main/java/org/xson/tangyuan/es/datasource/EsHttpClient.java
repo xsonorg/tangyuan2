@@ -1,6 +1,5 @@
 package org.xson.tangyuan.es.datasource;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Properties;
 
@@ -16,11 +15,9 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.es.EsComponent;
 import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
-import org.xson.tangyuan.util.Resources;
 import org.xson.tools.httpclient.HttpClientFactory;
 import org.xson.tools.httpclient.HttpClientVo;
 import org.xson.tools.httpclient.XHttpClient;
@@ -134,13 +131,14 @@ public class EsHttpClient {
 		HttpClientVo vo = null;
 		String resource = EsComponent.getInstance().getHttpClientResource();
 		if (null != resource) {
-			Properties properties = new Properties();
-			InputStream inputStream = Resources.getResourceAsStream(resource);
-			inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-					TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
-			properties.load(inputStream);
-			inputStream.close();
-			vo = new HttpClientVo(properties);
+			//			Properties properties = new Properties();
+			//			InputStream inputStream = Resources.getResourceAsStream(resource);
+			//			inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+			//					TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+			//			properties.load(inputStream);
+			//			inputStream.close();
+			Properties properties = PlaceholderResourceSupport.getProperties(resource);
+			vo = new HttpClientVo(properties, resource);
 		}
 		this.factory = new HttpClientFactory(vo, true);
 	}

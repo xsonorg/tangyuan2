@@ -3,11 +3,9 @@ package org.xson.tangyuan.hbase.executor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xson.tangyuan.executor.IServiceContext;
-import org.xson.tangyuan.executor.IServiceExceptionInfo;
-import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.executor.DefaultServiceContext;
 
-public class HBaseServiceContext implements IServiceContext {
+public class HBaseServiceContext extends DefaultServiceContext {
 
 	private HBaseActuator	actuator	= new HBaseActuator();
 
@@ -42,20 +40,6 @@ public class HBaseServiceContext implements IServiceContext {
 
 	public HBaseActuator getActuator() {
 		return actuator;
-	}
-
-	@Override
-	public void commit(boolean confirm) throws Throwable {
-	}
-
-	@Override
-	public void rollback() {
-	}
-
-	@Override
-	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
-		// 这里不能处理任务错误,统一上抛
-		return false;
 	}
 
 }

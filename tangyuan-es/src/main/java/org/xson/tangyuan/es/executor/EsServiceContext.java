@@ -1,10 +1,8 @@
 package org.xson.tangyuan.es.executor;
 
-import org.xson.tangyuan.executor.IServiceContext;
-import org.xson.tangyuan.executor.IServiceExceptionInfo;
-import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.executor.DefaultServiceContext;
 
-public class EsServiceContext implements IServiceContext {
+public class EsServiceContext extends DefaultServiceContext {
 
 	private StringBuilder	sqlBuilder		= null;
 
@@ -31,20 +29,6 @@ public class EsServiceContext implements IServiceContext {
 		boolean tempIgnoreQuotes = this.ignoreQuotes;
 		this.ignoreQuotes = false;
 		return tempIgnoreQuotes;
-	}
-
-	@Override
-	public void commit(boolean confirm) throws Throwable {
-	}
-
-	@Override
-	public void rollback() {
-	}
-
-	@Override
-	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
-		// 这里不能处理任务错误,统一上抛
-		return false;
 	}
 
 }

@@ -6,28 +6,13 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
-					<xs:element ref="before-check"/>
-					<xs:element ref="before-join"/>
-					<xs:element ref="before-alone"/>
-					<xs:element ref="after-join"/>
-					<xs:element ref="after-alone"/>
+					<xs:element ref="before"/>
+					<xs:element ref="after"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="before-check">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="exec" type="xs:string" use="required"/>
-			<xs:attribute name="order" type="xs:int" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="before-alone">
+	<xs:element name="before">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
@@ -40,27 +25,15 @@
 			<xs:attribute name="mode">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
+						<xs:enumeration value="EXTEND"/>
 						<xs:enumeration value="ALONE"/>
 						<xs:enumeration value="ASYNC"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="propagation" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="before-join">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="exec" type="xs:string" use="required"/>
-			<xs:attribute name="order" type="xs:int" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="after-alone">
+	<xs:element name="after">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
@@ -73,12 +46,12 @@
 			<xs:attribute name="mode">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
+						<xs:enumeration value="EXTEND"/>
 						<xs:enumeration value="ALONE"/>
 						<xs:enumeration value="ASYNC"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="propagation" type="xs:boolean" use="optional"/>
 			<xs:attribute name="condition">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -88,18 +61,6 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="after-join">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="exec" type="xs:string" use="required"/>
-			<xs:attribute name="order" type="xs:int" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

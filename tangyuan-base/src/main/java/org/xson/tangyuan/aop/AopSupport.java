@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.xson.tangyuan.aop.AspectVo.PointCut;
+import org.xson.tangyuan.aop.AopVo.PointCut;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
@@ -18,13 +18,12 @@ public class AopSupport {
 	private static AopSupport			instance			= new AopSupport();
 
 	private Map<String, Integer>		execMap				= null;
-	private List<AspectVo>				beforeCheckList		= null;
-	private List<AspectVo>				beforeJoinList		= null;
-	private List<AspectVo>				afterJoinList		= null;
-	private List<AspectVo>				beforeAloneList		= null;
-	private List<AspectVo>				afterAloneList		= null;
-	private Map<String, ServiceAopVo>	remoteServiceAopMap	= null;
 
+	private List<AopVo>					beforeList			= null;
+	private List<AopVo>					afterExtendList		= null;
+	private List<AopVo>					afterList			= null;
+
+	private Map<String, ServiceAopVo>	remoteServiceAopMap	= null;
 	private Map<String, ServiceAopVo>	serviceAopMap		= null;
 
 	private AopSupport() {
@@ -34,34 +33,28 @@ public class AopSupport {
 		return instance;
 	}
 
-	public void bind(String service, ServiceAopVo aopVo) {
+	public void bind(String service, ServiceAopVo serviceAopVo) {
 		if (null == serviceAopMap) {
 			serviceAopMap = new HashMap<String, ServiceAopVo>();
 		}
-		serviceAopMap.put(service, aopVo);
+		serviceAopMap.put(service, serviceAopVo);
 	}
 
-	public void setAopInfo(Map<String, Integer> execMap, List<AspectVo> beforeCheckList, List<AspectVo> beforeJoinList, List<AspectVo> afterJoinList,
-			List<AspectVo> beforeAloneList, List<AspectVo> afterAloneList) {
+	public void setAopInfo(Map<String, Integer> execMap, List<AopVo> beforeList, List<AopVo> afterExtendList, List<AopVo> afterList) {
 		this.execMap = execMap;
-		this.beforeCheckList = beforeCheckList;
-		this.beforeJoinList = beforeJoinList;
-		this.afterJoinList = afterJoinList;
-		this.beforeAloneList = beforeAloneList;
-		this.afterAloneList = afterAloneList;
+		this.beforeList = beforeList;
+		this.afterExtendList = afterExtendList;
+		this.afterList = afterList;
 		this.remoteServiceAopMap = new ConcurrentHashMap<String, ServiceAopVo>();
 	}
 
-	public void execBefore(AbstractServiceNode service, Object arg, PointCut pointCut) {
+	public void execBefore(AbstractServiceNode service, Object arg) throws Throwable {
 		if (null == serviceAopMap) {
 			return;
 		}
-		if (!service.checkAspect(pointCut)) {
+		if (!service.checkAspect(PointCut.BEFORE)) {
 			return;
 		}
-
-		// ServiceAopVo aopVo = serviceAopMap.get(service.getServiceKey());
-
 		ServiceAopVo aopVo = null;
 		if (TangYuanServiceType.PRCPROXY == service.getServiceType()) {
 			aopVo = remoteServiceAopMap.get(service.getServiceKey());
@@ -71,19 +64,22 @@ public class AopSupport {
 		if (null == aopVo) {
 			return;
 		}
-		aopVo.execBefore(service.getServiceKey(), arg, pointCut);
+		aopVo.execBefore(service.getServiceKey(), arg);
 	}
 
-	public void execAfter(AbstractServiceNode service, Object arg, Object result, Throwable ex, PointCut pointCut) {
+	public void execAfter(AbstractServiceNode service, Object arg, Object result, Throwable ex, boolean extend) {
 		if (null == serviceAopMap) {
 			return;
 		}
-		if (!service.checkAspect(pointCut)) {
-			return;
+		if (extend) {
+			if (!service.checkAspect(PointCut.AFTER_EXTEND)) {
+				return;
+			}
+		} else {
+			if (!service.checkAspect(PointCut.AFTER)) {
+				return;
+			}
 		}
-
-		// ServiceAopVo aopVo = serviceAopMap.get(service.getServiceKey());
-
 		ServiceAopVo aopVo = null;
 		if (TangYuanServiceType.PRCPROXY == service.getServiceType()) {
 			aopVo = remoteServiceAopMap.get(service.getServiceKey());
@@ -93,7 +89,7 @@ public class AopSupport {
 		if (null == aopVo) {
 			return;
 		}
-		aopVo.execAfter(service.getServiceKey(), arg, result, ex, pointCut);
+		aopVo.execAfter(service.getServiceKey(), arg, result, ex, extend);
 	}
 
 	/** 是否是拦截方 */
@@ -106,58 +102,38 @@ public class AopSupport {
 
 		String service = serviceURL;
 
-		List<AspectVo> tempBeforeCheckList = new ArrayList<AspectVo>();
-		List<AspectVo> tempBeforeJoinList = new ArrayList<AspectVo>();
-		List<AspectVo> tempAfterJoinList = new ArrayList<AspectVo>();
-		List<AspectVo> tempBeforeAloneList = new ArrayList<AspectVo>();
-		List<AspectVo> tempAfterAloneList = new ArrayList<AspectVo>();
+		List<AopVo> tempBeforeList = new ArrayList<AopVo>();
+		List<AopVo> tempAfterExtendList = new ArrayList<AopVo>();
+		List<AopVo> tempAfterList = new ArrayList<AopVo>();
 
 		int count = 0;
 
-		for (AspectVo aVo : this.beforeCheckList) {
+		for (AopVo aVo : this.beforeList) {
 			if (aVo.match(service)) {
-				tempBeforeCheckList.add(aVo);
+				tempBeforeList.add(aVo);
 			}
 		}
-		for (AspectVo aVo : this.beforeJoinList) {
+		for (AopVo aVo : this.afterExtendList) {
 			if (aVo.match(service)) {
-				tempBeforeJoinList.add(aVo);
+				tempAfterExtendList.add(aVo);
 			}
 		}
-		for (AspectVo aVo : this.afterJoinList) {
+		for (AopVo aVo : this.afterList) {
 			if (aVo.match(service)) {
-				tempAfterJoinList.add(aVo);
-			}
-		}
-		for (AspectVo aVo : this.beforeAloneList) {
-			if (aVo.match(service)) {
-				tempBeforeAloneList.add(aVo);
-			}
-		}
-		for (AspectVo aVo : this.afterAloneList) {
-			if (aVo.match(service)) {
-				tempAfterAloneList.add(aVo);
+				tempAfterList.add(aVo);
 			}
 		}
 
-		if (tempBeforeCheckList.size() > 0) {
-			serviceNode.setAspect(PointCut.BEFORE_CHECK);
+		if (tempBeforeList.size() > 0) {
+			serviceNode.setAspect(PointCut.BEFORE);
 			count++;
 		}
-		if (tempBeforeJoinList.size() > 0) {
-			serviceNode.setAspect(PointCut.BEFORE_JOIN);
+		if (tempAfterExtendList.size() > 0) {
+			serviceNode.setAspect(PointCut.AFTER_EXTEND);
 			count++;
 		}
-		if (tempAfterJoinList.size() > 0) {
-			serviceNode.setAspect(PointCut.AFTER_JOIN);
-			count++;
-		}
-		if (tempBeforeAloneList.size() > 0) {
-			serviceNode.setAspect(PointCut.BEFORE_ALONE);
-			count++;
-		}
-		if (tempAfterAloneList.size() > 0) {
-			serviceNode.setAspect(PointCut.AFTER_ALONE);
+		if (tempAfterList.size() > 0) {
+			serviceNode.setAspect(PointCut.AFTER);
 			count++;
 		}
 
@@ -165,9 +141,8 @@ public class AopSupport {
 			return;
 		}
 
-		ServiceAopVo aopVo = new ServiceAopVo(service, tempBeforeCheckList, tempBeforeJoinList, tempAfterJoinList, tempBeforeAloneList,
-				tempAfterAloneList);
+		ServiceAopVo serviceAopVo = new ServiceAopVo(service, tempBeforeList, tempAfterExtendList, tempAfterList);
 
-		remoteServiceAopMap.put(service, aopVo);
+		remoteServiceAopMap.put(service, serviceAopVo);
 	}
 }
