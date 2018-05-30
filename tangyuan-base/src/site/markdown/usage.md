@@ -1,5 +1,7 @@
 # 使用说明
 
+------
+
 ## 1. 使用示例
 
 ### 1.1. 配置示例
@@ -162,7 +164,7 @@ SQL服务组件中：component-sql.xml
 
 如果开发者希望在tangyuan框架启动或者关闭的时候，执行一些自定义的方法，可以通过`<system-aop>`标签进行配置。
 
-> <system-aop>标签属性说明
+> `<system-aop>`标签属性说明
 
 | 属性 | 用途 | 必填 | 取值 |
 | --- | --- | --- | --- |
@@ -279,7 +281,7 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 在tangyuan框架的使用过程中，很多组件、插件以及配置文件都是通过特定功能标签的`resource`属性载入的，之前的版本只是允许载入当前Classpath下的资源文件，而新的版本则支持载入远程的资源文件。
 
-> 本地资源资
+> 本地资源
 
 	<dataSource id="dbx" type="DBCP" resource="properties/db.x.properties" />
 
