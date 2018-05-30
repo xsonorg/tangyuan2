@@ -93,6 +93,7 @@ tangyuan-mongo组件中数据源配置分为两种，一种是普通数据源，
 | :-- | :--| :-- | :-- |
 | id | 此数据源的唯一标识，不可重复 |Y|用户定义，但是不能出现”.” |
 | isDefault | 是否是默认数据源，如果系统中配置多个数据源，则只能有一个为默认的 | N | boolean |
+| resource | 资源文件路径 | N | String |
 
 > property节点属性说明
 
@@ -149,6 +150,7 @@ tangyuan-mongo组件中数据源配置分为两种，一种是普通数据源，
 | isDefault | 是否是默认数据源，如果系统中配置多个数据源，则只能有一个为默认的 | N | boolean |
 | start | 开始索引，默认为0 | N | int |
 | end | 结束索引 | Y | int |
+| resource | 资源文件路径 | N | String |
 
 > property节点
 

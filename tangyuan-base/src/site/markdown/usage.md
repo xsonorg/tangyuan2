@@ -14,10 +14,13 @@
 		<app-placeholder resource="app-placeholder.properties"/>
 	
 		<!--应用程序属性配置文件-->
-		<app-property resource="app.inix"/>
+		<app-property resource="app-property.inix"/>
 
 		<!--系统变量配置-->
 		<config-property name="maxWaitTimeForShutDown" value="60"/>
+
+		<!--线程池配置-->
+		<thread-pool resource="thread-pool.properties"/>
 		
 		<!--启动、关闭时的AOP配置-->
 		<system-aop pointcut="startup-before" class="org.xson.tangyuan2.demo.ssaop.StartupBefore" />
@@ -45,7 +48,70 @@
 
 #### 1.2.1 占位变量配置
 
+> 引入占位变量配置文件
+
+	<app-placeholder resource="app-placeholder.properties"/>
+
+> 占位变量配置文件(app-placeholder.properties)
+
+	username=root
+	password=123456
+	db_url=127.0.0.1:3306
+	db_name=techpark_db
+
+> 使用占位变量
+
+SQL服务组件中：component-sql.xml
+
+	<dataSource id="dbx" type="DBCP" resource="properties/db.x.properties" />
+
+数据源配置文件：db.x.properties
+
+	username=%username%
+	password=%password%
+	url=jdbc:mysql://%db_url%/%db_name%?Unicode=true&amp;characterEncoding=utf8
+	driver=com.mysql.jdbc.Driver
+	maxActive=200
+	...
+
 #### 1.2.2 应用程序属性配置
+
+> 引入属性配置文件
+
+	<app-property resource="app-property.inix"/>
+
+> 属性配置文件：app-property.inix
+
+	sys_name	= sys01
+	i:sys_type	= 2
+		
+	[app]
+	host		= sys01.xson.org	
+	L:port		= 9910
+	socket		= /tmp/9910.sock
+	
+	SA:arg1		= a,b,c,c,d
+	SL:arg2		= a,b,c,c,d
+	IA:arg3		= 1,2,3,4
+
+> JAVA代码中使用
+
+	String sys_name = AppProperty.get("sys_name");
+	int sys_type = AppProperty.get("sys_type");
+	long port = AppProperty.get("app.port");
+
+	String[] arg1 = AppProperty.get("app.arg1");
+	List<String> arg2 = AppProperty.get("app.arg2");
+	int[] arg3 = AppProperty.get("app.arg3");
+	
+> XML中使用
+
+	 <sql-service id="ext01" dsKey="readtvr" txRef="tx_01">
+		<selectSet><![CDATA[
+			SELECT * FROM biz_test where sys_name = #{EXT:sys_name} AND sys_type = #{EXT:sys_type}
+		 ]]></selectSet>
+		 ...
+	 </sql-service> 
 
 #### 1.2.3 系统变量配置
 
@@ -69,6 +135,28 @@
 | allServiceReturnXCO | 服务返回对象是否统一为XCO类型 | boolean | false |
 
 #### 1.2.4 线程池配置
+
+> 引入线程池配置文件
+
+	<thread-pool resource="thread-pool.properties"/>
+
+> 线程池配置文件
+
+	# SingleThread
+	# type=SingleThread
+	
+	# FixedThreadPool
+	type=FixedThreadPool
+	corePoolSize=100
+	
+	# CachedThreadPool
+	# type=CachedThreadPool
+	
+	# custom
+	# type=custom
+	# corePoolSize=100
+	# maximumPoolSize=200
+	# keepAliveTime=60
 
 #### 1.2.5 系统AOP配置
 
@@ -186,3 +274,15 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 在tangyuan中，不同的组件支持不同类型的服务，而不同服务的返回结果也不尽相同，比如：在SQL服务组件中，通过`<selectSet>`标签定义的SQL服务，其返回结果为`List<XCO>`类型，通过`<selectOne>`标签定义的SQL服务，其返回结果为`XCO`类型。
 
 我们可以通过在`tangyuan.xml`中设置系统变量`<config-property name="allServiceReturnXCO" value="true"/>`，让tangyuan框架中的所有服务都统一返回一个XCO包装对象，然后再通过其`getData()`方法获取真实的返回对象。
+
+### 2.6. resource属性
+
+在tangyuan框架的使用过程中，很多组件、插件以及配置文件都是通过特定功能标签的`resource`属性载入的，之前的版本只是允许载入当前Classpath下的资源文件，而新的版本则支持载入远程的资源文件。
+
+> 本地资源资
+
+	<dataSource id="dbx" type="DBCP" resource="properties/db.x.properties" />
+
+> 远程资源
+	
+	<dataSource id="dbx" type="DBCP" resource="http://conf.xson.org/db.x.properties" />

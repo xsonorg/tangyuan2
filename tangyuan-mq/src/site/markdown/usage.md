@@ -156,6 +156,7 @@ component-mq组件本身的配置(component-mq.xml)：
 | id | 消息中间件ID，不能重复 | String |  | Y |
 | type | 消息中间件类型 | ActiveMQ<br />RabbitMQ | | Y |
 | isDefault | 是否是默认的消息中间件。注意：当前系统最多只能有一个默认的消息中间件。 | booolean | false | N |
+| resource | 资源文件路径 | N | String |
 
 > property属性说明
 

@@ -84,15 +84,19 @@ tangyuan-timer是tangyuan框架中的定时程序组件，基于quartz框架，�
 
 ## 5. 定时器
 
-定时器是通过`component-timer.xml`中的`timer`节点来配置的，`timer`节点的具体属性如下：
+### 5.1 标签说明
+
+定时器是通过`component-timer.xml`中的`<timer>`标签来配置的，`timer`标签的具体属性如下：
 
 | 属性 | 用途 | 必填 | 取值 | 默认值 |
 | :-- | :--| :-- | :-- | :-- |
 | scheduled | 执行计划 | Y | quartz的cron表达式，详见<http://www.quartz-scheduler.org/> | |
 | service | 服务名 | `custom`属性为空时此项必填 | 需要满足tangyuan服务名称规范 | |
-| sync | 是否同步访问;同步访问意味着不允许并发访问 | N | true和false | true |
+| sync | 是否同步访问;同步访问意味着不允许并发访问 | N | boolean | true |
 | custom | 自定义定时器全类名 | N | String | |
 | desc | 定时器用途描述 | N | String | |
+
+### 5.2 自定义定时器
 
 tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的，另一种是用户自定义的；上面在线送积分示例中使用的定时器就是组件自身的，无需开发人员编写任何代码；如果需要使用用户自定义的定时器，可通过下面步骤实现：
 
@@ -111,13 +115,30 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 	
 	}
 
-
 **注意** 自定义的定时器必须实现`org.xson.tangyuan.timer.CustomJob`
 
 > 2.配置自定义定时器(component-timer.xml)
 
 		<!-- 在线送积分 -->
 		<timer scheduled="0 0/5 * * * ?" desc="在线送积分" sync="true" custom="org.xson.demo.MyJob"/>
+
+### 5.3 自定义参数
+
+	<timer scheduled="0 0/5 * * * ?" service="demo/sendPointsOnline" desc="在线送积分" sync="true">
+		<property name="x1" value="1"/>				<!--int类型-->
+		<property name="x2" value="'abc中国'"/>		<!--String类型-->
+		<property name="x3" value="1l"/>			<!--long类型-->
+		<property name="x4" value="1L"/>			<!--long类型-->
+		<property name="x5" value="1f"/>			<!--float类型-->
+		<property name="x6" value="1F"/>			<!--float类型-->
+		<property name="x7" value="1d"/>			<!--double类型-->
+		<property name="x8" value="1D"/>			<!--double类型-->
+		<property name="x9" value="now()"/>			<!--当前时间：java.util.Date类型-->
+		<property name="x10" value="date()"/>		<!--当前时间：java.sql.Date类型-->
+		<property name="x11" value="time()"/>		<!--当前时间：java.sql.Time类型-->
+		<property name="x12" value="timestamp()"/>	<!--当前时间：java.sql.Timestamp类型-->
+		<property name="x13" value="hello, world"/>	<!--String类型-->
+	</timer>
 
 ## 6. 如何部署
 

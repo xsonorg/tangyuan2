@@ -90,8 +90,9 @@ tangyuan-es组件中ES源的配置是对Elasticsearch主机节点的描述和定
 
 | 属性名 | 用途及说明 | 必填 | 取值 |
 | :-- | :--| :-- | :-- |
-| id | ES源标识，需要唯一 | Y | 用户定义 |
-| host | ES主机地址 | Y | 用户定义 |
+| id | ES源标识，需要唯一 | Y | String |
+| host | ES主机地址 | Y | String |
+| resource | 资源文件路径 | N | String |
 
 ### 2.3 服务插件配置
 
