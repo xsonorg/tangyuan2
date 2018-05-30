@@ -26,7 +26,7 @@ TangYuan默认提供的10种基础功能支持均以组件化的方式存在，�
 
 > 1.多样化的组件
 
-Tangyuan默认提供10种基础功能组件，包括sql、java、mongo、mq、aop、rpc、cache、timer、validate和web，为开发者提供完备的基础功能支持；
+Tangyuan默认提供12种基础功能组件，包括sql、java、mongo、mq、hbase、elasticsearch、aop、rpc、cache、timer、validate和web，为开发者提供完备的基础功能支持；
 
 > 2.可定制型
 
