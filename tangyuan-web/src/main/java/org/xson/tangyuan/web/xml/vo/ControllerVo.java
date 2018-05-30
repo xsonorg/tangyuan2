@@ -1,4 +1,4 @@
-package org.xson.tangyuan.web.xml;
+package org.xson.tangyuan.web.xml.vo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -7,35 +7,39 @@ import org.xson.common.object.XCO;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.util.TangYuanUtil;
+import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
+import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
+import org.xson.tangyuan.web.ResponseHandler;
+import org.xson.tangyuan.web.util.ServletUtils;
 
 public class ControllerVo {
 
-	/** 数据转换方式 */
-	public enum DataConvertEnum {
-		// BODY, KV, RULE
-		KV_XCO, KV_RULE_XCO
-	}
+	protected String				url;
+	protected String				transfer;
+	protected String				validate;
+	protected MethodObject			execMethod;
+	protected List<MethodObject>	assemblyMethods;
+	protected List<MethodObject>	beforeMethods;
+	protected List<MethodObject>	afterMethods;
 
-	private String				url;
-	private String				transfer;
-	private String				validate;
-	private MethodObject		execMethod;
-	private List<MethodObject>	assemblyMethods;
-	private List<MethodObject>	beforeMethods;
-	private List<MethodObject>	afterMethods;
+	/** 权限设置: 用户可自行处理 */
+	protected String				permission;
+	protected CacheUseVo			cacheUse;
+	protected boolean				cacheInAop;
 
-	// 权限设置: 用户可自行处理
-	private String				permission;
-	private CacheUseVo			cacheUse;
-	private DataConvertEnum		convert;
-	// private boolean convertByRule;
-	private boolean				cacheInAop;
+	/** 数据转换器 */
+	protected DataConverter			dataConverter;
+	protected RequestTypeEnum		requestType;
 
-	public ControllerVo(String url, String transfer, String validate, MethodObject execMethod, List<MethodObject> assemblyMethods,
-			List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission, CacheUseVo cacheUse, DataConvertEnum convert,
-			boolean cacheInAop) {
+	/** 返回结果处理器 */
+	private ResponseHandler			responseHandler;
+
+	public ControllerVo(String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
+			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler) {
 		this.url = url;
+		this.requestType = requestType;
 		this.transfer = transfer;
 		this.validate = validate;
 		this.execMethod = execMethod;
@@ -45,26 +49,11 @@ public class ControllerVo {
 
 		this.permission = permission;
 		this.cacheUse = cacheUse;
-		this.convert = convert;
+		this.dataConverter = dataConverter;
 		this.cacheInAop = cacheInAop;
-	}
 
-	// public ControllerVo(String url, String transfer, String validate, MethodObject execMethod, List<MethodObject> assemblyMethods,
-	// List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission, CacheUseVo cacheUse, boolean convertByRule,
-	// boolean cacheInAop) {
-	// this.url = url;
-	// this.transfer = transfer;
-	// this.validate = validate;
-	// this.execMethod = execMethod;
-	// this.assemblyMethods = assemblyMethods;
-	// this.beforeMethods = beforeMethods;
-	// this.afterMethods = afterMethods;
-	//
-	// this.permission = permission;
-	// this.cacheUse = cacheUse;
-	// this.convertByRule = convertByRule;
-	// this.cacheInAop = cacheInAop;
-	// }
+		this.responseHandler = responseHandler;
+	}
 
 	public String getUrl() {
 		return url;
@@ -82,20 +71,36 @@ public class ControllerVo {
 		return permission;
 	}
 
-	public DataConvertEnum getConvert() {
-		return convert;
-	}
-
-	// public boolean isConvertByRule() {
-	// return convertByRule;
-	// }
-
 	public CacheUseVo getCacheUse() {
 		return cacheUse;
 	}
 
 	public boolean isCacheInAop() {
 		return cacheInAop;
+	}
+
+	// public boolean existDataConverter() {
+	// return null == this.dataConverter ? false : true;
+	// }
+
+	public RequestTypeEnum getRequestType() {
+		return requestType;
+	}
+
+	public ResponseHandler getResponseHandler() {
+		return responseHandler;
+	}
+
+	public void dataConvert(RequestContext context) throws Throwable {
+		if (null != this.dataConverter) {
+			this.dataConverter.convert(context, this);
+			return;
+		}
+
+		DataConverter tempConverter = ServletUtils.getDefaultDataConverter(this, context.getContextType());
+		if (null != tempConverter) {
+			tempConverter.convert(context, this);
+		}
 	}
 
 	public void assembly(RequestContext context) throws Throwable {
@@ -149,12 +154,6 @@ public class ControllerVo {
 					request = new XCO();
 				}
 				XCO result = null;
-				// if (WebComponent.getInstance().isRemoteServiceMode()) {
-				// result = RpcProxy.call(transfer, request);
-				// } else {
-				// Object retObj = ServiceActuator.execute(transfer, request);
-				// result = TangYuanUtil.retObjToXco(retObj);
-				// }
 				// 统一服务调用
 				Object retObj = ServiceActuator.execute(transfer, request);
 				result = TangYuanUtil.retObjToXco(retObj);
@@ -184,4 +183,5 @@ public class ControllerVo {
 			cacheUse.putObject(context.getArg(), context.getResult());
 		}
 	}
+
 }

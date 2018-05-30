@@ -10,8 +10,14 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.validate.RuleDataConverter;
 import org.xson.tangyuan.web.WebComponent;
-import org.xson.tangyuan.web.xml.modeimpl.AutoMapping;
+import org.xson.tangyuan.web.convert.JSONDataConverter;
+import org.xson.tangyuan.web.convert.NothingConverter;
+import org.xson.tangyuan.web.convert.XCODataConverter;
+import org.xson.tangyuan.web.convert.XCORESTURIBodyDataConverter;
+import org.xson.tangyuan.web.convert.XCORESTURIDataConverter;
+import org.xson.tangyuan.web.rest.RESTContainer;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
 import org.xson.tangyuan.xml.XmlParseException;
@@ -21,7 +27,7 @@ public class XMLConfigBuilder {
 	private Log				log		= LogFactory.getLog(getClass());
 	private XPathParser		parser	= null;
 	private XmlNodeWrapper	root	= null;
-	private BuilderContext	bc		= new BuilderContext();
+	private XMLWebContext	context	= new XMLWebContext();
 
 	public XMLConfigBuilder(InputStream inputStream) {
 		this.parser = new XPathParser(inputStream);
@@ -30,24 +36,50 @@ public class XMLConfigBuilder {
 
 	public void parseNode() throws Throwable {
 		buildConfigNodes(this.root.evalNodes("config-property"));
-		// 去除demain元素
-		// buildDomainNodes(this.root.evalNodes("domain"));
+		// 初始化DataConverter
+		initDataConverter();
+		// 处理自动映射模式
 		if (WebComponent.getInstance().isMappingServiceName()) {
-			new AutoMapping(this.bc).build();
+			new AutoMappingBuilder(this.context).build();
 		}
+
 		buildPluginNodes(this.root.evalNodes("plugin"));
-		WebComponent.getInstance().setControllerMap(this.bc.getControllerMap());
-		this.bc.clear();
+
+		if (WebComponent.getInstance().isRestMode()) {
+			RESTContainer restContainer = new RESTContainer();
+			restContainer.build(this.context);
+			WebComponent.getInstance().setRestContainer(restContainer);
+		}
+		// else {
+		// WebComponent.getInstance().setControllerMap(this.context.getControllerMap());
+		// }
+		WebComponent.getInstance().setControllerMap(this.context.getControllerMap());
+		this.context.clear();
 	}
 
-	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Exception {
+	private void initDataConverter() throws Throwable {
+
+		this.context.getConverterIdMap().put("@no", NothingConverter.instance);
+
+		this.context.getConverterIdMap().put("@xco", XCODataConverter.instance);
+		this.context.getConverterIdMap().put("@json", JSONDataConverter.instance);
+		this.context.getConverterIdMap().put("@rule", RuleDataConverter.instance);
+
+		this.context.getConverterIdMap().put("@xco_rest_uri", XCORESTURIDataConverter.instance);
+		this.context.getConverterIdMap().put("@xco_rest_uri_body", XCORESTURIBodyDataConverter.instance);
+
+		// this.context.getConverterIdMap().put("@json_rest_uri", JSONRESTURIDataConverter.instance);
+		// this.context.getConverterIdMap().put("@json_rest_uri_body", JSONRESTURIBodyDataConverter.instance);
+	}
+
+	private void buildConfigNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <config-property name="A" value="B" />
 		Map<String, String> configMap = new HashMap<String, String>();
 		for (XmlNodeWrapper context : contexts) {
 			String name = StringUtils.trim(context.getStringAttribute("name"));
 			String value = StringUtils.trim(context.getStringAttribute("value"));
 			if (null == name || null == value) {
-				throw new RuntimeException("<config-property> missing names or value");
+				throw new XmlParseException("<config-property> missing names or value");
 			}
 			configMap.put(name.toUpperCase(), value);
 		}
@@ -56,28 +88,11 @@ public class XMLConfigBuilder {
 		}
 	}
 
-	// 忽略web中的domain
-	// private void buildDomainNodes(List<XmlNodeWrapper> contexts) throws Exception {
-	// // <domain id="xxx" base="http://www.baidu.com" />
-	// for (XmlNodeWrapper context : contexts) {
-	// String id = StringUtils.trim(context.getStringAttribute("id"));
-	// String base = StringUtils.trim(context.getStringAttribute("base"));
-	// if (null == id || null == base) {
-	// throw new RuntimeException("<domain> missing id or base");
-	// }
-	// if (this.bc.getDomainMap().containsKey(id)) {
-	// throw new RuntimeException("Duplicate domain: " + id);
-	// }
-	// this.bc.getDomainMap().put(id, base);
-	// }
-	// }
-
 	private void buildPluginNodes(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <plugin resource="xxx.xml" />
 		if (0 == contexts.size()) {
 			return;
 		}
-
 		List<String> resourceList = new ArrayList<String>();
 		for (XmlNodeWrapper context : contexts) {
 			String resource = StringUtils.trim(context.getStringAttribute("resource"));
@@ -93,82 +108,25 @@ public class XMLConfigBuilder {
 			log.info("Start parsing(bean|intercept): " + resource);
 			//InputStream inputStream = Resources.getResourceAsStream(resource);
 			InputStream inputStream = ResourceManager.getInputStream(resource, false);
-			builders[i] = new XMLPluginBuilder(inputStream, this.bc);
-			// builders[i].parseBeanNode();
-			// builders[i].parseInterceptNode();
+			builders[i] = new XMLPluginBuilder(inputStream, this.context);
 			builders[i].parseRef();
 			i++;
 		}
+
+		i = 0;
+		for (String resource : resourceList) {
+			// log.info("Start parsing(controller): " + resource);
+			resource.length();
+			builders[i].parseRef2();
+			i++;
+		}
+
 		i = 0;
 		for (String resource : resourceList) {
 			log.info("Start parsing(controller): " + resource);
 			builders[i].parseControllerNode();
 			i++;
 		}
-		// WebComponent.getInstance().setControllerMap(this.bc.getControllerMap());
 	}
-
-	// /** 解析插件, 自动映射模式下 */
-	// private void buildPluginNodesWithAutoMappingMode(List<XmlNodeWrapper> contexts) throws Exception {
-	// List<String> resourceList = new ArrayList<String>();
-	// for (XmlNodeWrapper context : contexts) {
-	// String resource = StringUtils.trim(context.getStringAttribute("resource"));
-	// if (null != resource) {
-	// resourceList.add(resource);
-	// }
-	// }
-	//
-	// XMLPluginBuilder builder = null;
-	// for (String resource : resourceList) {
-	// log.info("Start parsing(bean|intercept): " + resource);
-	// InputStream inputStream = Resources.getResourceAsStream(resource);
-	// builder = new XMLPluginBuilder(inputStream, this.bc);
-	// builder.parseBeanNode();
-	// builder.parseInterceptNode();
-	// }
-	//
-	// if (null == builder) {
-	// builder = new XMLPluginBuilder(this.bc);
-	// }
-	//
-	// log.info("Start url auto mapping......");
-	// builder.parseControllerNodeAutoMapping();
-	//
-	// WebComponent.getInstance().setControllerMap(this.bc.getControllerMap());
-	// }
-	//
-	// /** 解析插件, 自动映射模式+混合模式 */
-	// private void buildPluginNodesWithMixMode(List<XmlNodeWrapper> contexts) throws Exception {
-	// List<String> resourceList = new ArrayList<String>();
-	// for (XmlNodeWrapper context : contexts) {
-	// String resource = StringUtils.trim(context.getStringAttribute("resource"));
-	// if (null != resource) {
-	// resourceList.add(resource);
-	// }
-	// }
-	//
-	// int i = -1;
-	// XMLPluginBuilder[] builders = new XMLPluginBuilder[resourceList.size()];
-	// for (String resource : resourceList) {
-	// log.info("Start parsing(bean|intercept): " + resource);
-	// i++;
-	// InputStream inputStream = Resources.getResourceAsStream(resource);
-	// builders[i] = new XMLPluginBuilder(inputStream, this.bc);
-	// builders[i].parseBeanNode();
-	// builders[i].parseInterceptNode();
-	// }
-	//
-	// XMLPluginBuilder builder = null;
-	// if (i > -1) {
-	// builder = builders[i];
-	// } else {
-	// builder = new XMLPluginBuilder(this.bc);
-	// }
-	//
-	// log.info("Start url auto mapping......");
-	// builder.parseControllerNodeAutoMapping();
-	//
-	// WebComponent.getInstance().setControllerMap(this.bc.getControllerMap());
-	// }
 
 }

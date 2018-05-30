@@ -1,30 +1,33 @@
 package org.xson.tangyuan.web.util;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
-import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
-import org.xson.tangyuan.validate.RuleDataConvert;
+import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
+import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
+import org.xson.tangyuan.web.RequestContext.ReturnDataType;
 import org.xson.tangyuan.web.WebComponent;
-import org.xson.tangyuan.web.RequestContext.DataFormatEnum;
-import org.xson.tangyuan.web.convert.KVDataConvert;
-import org.xson.tangyuan.web.xml.ControllerVo;
-import org.xson.tangyuan.web.xml.ControllerVo.DataConvertEnum;
-
-import com.alibaba.fastjson.JSON;
+import org.xson.tangyuan.web.convert.JSONDataConverter;
+import org.xson.tangyuan.web.convert.XCODataConverter;
+import org.xson.tangyuan.web.convert.XCORESTURIBodyDataConverter;
+import org.xson.tangyuan.web.convert.XCORESTURIDataConverter;
+import org.xson.tangyuan.web.rest.RestURIVo;
+import org.xson.tangyuan.web.xml.vo.ControllerVo;
 
 public class ServletUtils {
 
-	private static Log		log			= LogFactory.getLog(ServletUtils.class);
-
-	private static String	encoding	= "UTF-8";
+	private static Log log = LogFactory.getLog(ServletUtils.class);
 
 	public static String parseRequestURI(HttpServletRequest request) {
+		// TODO ''空测试
 		String uri = request.getRequestURI();
 		int pos = uri.lastIndexOf(".");
 		if (pos > -1) {
@@ -33,84 +36,82 @@ public class ServletUtils {
 		return uri;
 	}
 
-	public static boolean isAjax(HttpServletRequest request, DataFormatEnum dataFormat) {
-		String requestType = request.getHeader("X-Requested-With");
-		if (null != requestType && requestType.equalsIgnoreCase("XMLHttpRequest")) {
-			return true;
+	public static boolean isViewRequest(RequestContext context) {
+		String contextType = context.getContextType();
+		if (null != contextType) {
+			if (contextType.indexOf("xco") > -1 || contextType.indexOf("XCO") > -1) {
+				return false;
+			}
+			if (contextType.indexOf("json") > -1) {
+				return false;
+			}
 		}
-		if (DataFormatEnum.XCO == dataFormat) {
-			return true;
+		String ajaxHeader = context.getRequest().getHeader("X-Requested-With");
+		if (null != ajaxHeader && ajaxHeader.equalsIgnoreCase("XMLHttpRequest")) {
+			return false;
 		}
-		if (DataFormatEnum.JSON == dataFormat) {
-			return true;
-		}
-		return false;
+		return true;
 	}
 
-	public static DataFormatEnum parseDataFormat(String contextType) {
+	public static DataConverter getDefaultDataConverter(ControllerVo cVo, String contextType) {
 		if (null == contextType) {
-			return DataFormatEnum.KV;
+			return null;
 		}
-		if (contextType.indexOf("xco") > -1) {
-			return DataFormatEnum.XCO;
-		}
-		if (contextType.indexOf("json") > -1) {
-			return DataFormatEnum.JSON;
-		}
-		if (contextType.indexOf("multipart/form-data") > -1) {
-			return DataFormatEnum.FILE;
-		}
-		return DataFormatEnum.KV;
-	}
-
-	public static Object parseArgFromPostRequest(ControllerVo cVo, HttpServletRequest request, RequestContext context) throws Exception {
-		if (DataFormatEnum.XCO == context.getDataFormat()) {
-			byte[] buffer = IOUtils.toByteArray(request.getInputStream());
-			String xml = new String(buffer, encoding);
-			xml = java.net.URLDecoder.decode(xml, encoding);
-			return XCO.fromXML(xml);
-		} else if (DataFormatEnum.JSON == context.getDataFormat()) {
-			byte[] buffer = IOUtils.toByteArray(request.getInputStream());
-			return JSON.parse(new String(buffer, encoding));
-		} else if (DataFormatEnum.KV == context.getDataFormat()) {
-			// if (DataConvertEnum.KV == cVo.getConvert()) {
-			// return KVDataConvert.convert(request);
-			// } else if (DataConvertEnum.RULE == cVo.getConvert()) {
-			// return RuleDataConvert.convert(request, cVo.getValidate());
-			// }
-			if (DataConvertEnum.KV_RULE_XCO == cVo.getConvert()) {
-				return RuleDataConvert.convert(request, cVo.getValidate());
-			} else if (DataConvertEnum.KV_XCO == cVo.getConvert()) {
-				return KVDataConvert.convert(request);
-			} else if (WebComponent.getInstance().isKvAutoConvert()) {
-				if (null != cVo.getValidate()) {
-					return RuleDataConvert.convert(request, cVo.getValidate());
-				} else {
-					return KVDataConvert.convert(request);
+		if (WebComponent.getInstance().isRestMode()) {
+			RequestTypeEnum requestType = cVo.getRequestType();
+			if (contextType.indexOf("xco") > -1 || contextType.indexOf("XCO") > -1) {
+				if (RequestTypeEnum.GET == requestType) {
+					return XCORESTURIDataConverter.instance;
+				} else if (RequestTypeEnum.POST == requestType) {
+					return XCORESTURIBodyDataConverter.instance;
+				} else if (RequestTypeEnum.PUT == requestType) {
+					return XCORESTURIBodyDataConverter.instance;
+				} else if (RequestTypeEnum.DELETE == requestType) {
+					return XCORESTURIDataConverter.instance;
 				}
 			}
+			if (contextType.indexOf("json") > -1) {
+				// TODO
+			}
+		} else {
+			if (contextType.indexOf("xco") > -1 || contextType.indexOf("XCO") > -1) {
+				return XCODataConverter.instance;
+			}
+			if (contextType.indexOf("json") > -1) {
+				return JSONDataConverter.instance;
+			}
+			// TODO KV
 		}
 		return null;
 	}
 
-	public static Object parseArgFromGetRequest(ControllerVo cVo, HttpServletRequest request) throws Exception {
-		// if (DataConvertEnum.KV == cVo.getConvert()) {
-		// return KVDataConvert.convert(request);
-		// } else if (DataConvertEnum.RULE == cVo.getConvert()) {
-		// return RuleDataConvert.convert(request, cVo.getValidate());
-		// }
-		if (DataConvertEnum.KV_RULE_XCO == cVo.getConvert()) {
-			return RuleDataConvert.convert(request, cVo.getValidate());
-		} else if (DataConvertEnum.KV_XCO == cVo.getConvert()) {
-			return KVDataConvert.convert(request);
-		} else if (WebComponent.getInstance().isKvAutoConvert()) {
-			if (null != cVo.getValidate()) {
-				return RuleDataConvert.convert(request, cVo.getValidate());
-			} else {
-				return KVDataConvert.convert(request);
+	public static ReturnDataType parseReturnDataType(String contextType) {
+		if (null != contextType) {
+			if (contextType.indexOf("xco") > -1 || contextType.indexOf("XCO") > -1) {
+				return ReturnDataType.XCO;
+			}
+			if (contextType.indexOf("json") > -1) {
+				return ReturnDataType.JSON;
 			}
 		}
 		return null;
+	}
+
+	public static List<String> parseURIPathItem(String path) {
+		// 单独处理'/'
+		if (RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR.equals(path)) {
+			List<String> itemList = new ArrayList<String>();
+			itemList.add(RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR);
+			return itemList;
+		}
+		String rPath = path;
+		if (rPath.length() > 1 && rPath.startsWith(RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR)) {
+			rPath = rPath.substring(1);
+		}
+		if (rPath.endsWith(RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR)) {
+			rPath = rPath.substring(0, rPath.length() - 1);
+		}
+		return RestUtil.splitToStringList(rPath, RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,6 +122,57 @@ public class ServletUtils {
 			String value = request.getHeader(key);
 			log.debug(key + ":" + value);
 		}
+	}
+
+	public static Map<String, String> queryStringToMap(String query) {
+		Map<String, String> queryMap = new HashMap<String, String>();
+		if (null == query || 0 == query.length()) {
+			return queryMap;
+		}
+		List<String> itemList = RestUtil.splitToStringList(query, RestURIVo.URI_SYMBOL_AND);
+		if (null == itemList || 0 == itemList.size()) {
+			return queryMap;
+		}
+		int size = itemList.size();
+		for (int i = 0; i < size; i++) {
+			String item = itemList.get(i);
+			int pos = item.indexOf(RestURIVo.URI_SYMBOL_EQUAL);
+			if (pos < 0) {
+				log.warn("Invalid query string: " + query);
+				continue;
+			}
+			String name = item.substring(0, pos);
+			String value = item.substring(pos + 1);
+			queryMap.put(name, value);
+		}
+		return queryMap;
+	}
+
+	public static Map<String, String> queryStringToMap(String query, Map<String, String> queryVariables) {
+		Map<String, String> queryMap = new HashMap<String, String>();
+		if (null == query || 0 == query.length()) {
+			return queryMap;
+		}
+		List<String> itemList = RestUtil.splitToStringList(query, RestURIVo.URI_SYMBOL_AND);
+		if (null == itemList || 0 == itemList.size()) {
+			return queryMap;
+		}
+		int size = itemList.size();
+		for (int i = 0; i < size; i++) {
+			String item = itemList.get(i);
+			int pos = item.indexOf(RestURIVo.URI_SYMBOL_EQUAL);
+			if (pos < 0) {
+				log.warn("Invalid query string: " + query);
+				continue;
+			}
+			String name = item.substring(0, pos);
+			String value = item.substring(pos + 1);
+			if (null != queryVariables && queryVariables.containsKey(name)) {
+				name = queryVariables.get(name);
+			}
+			queryMap.put(name, value);
+		}
+		return queryMap;
 	}
 
 }

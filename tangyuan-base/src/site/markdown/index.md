@@ -2,13 +2,13 @@
 
 ------
 
-### 1. 项目介绍
+## 1. 项目介绍
 
-#### 什么是TangYuan
+### 什么是TangYuan
 
 TangYuan是一款以服务为核心，基于组件化和插件化的企业级的分布式开发框架。
 	
-#### Tangyuan的特点
+### Tangyuan的特点
 
 > 1.服务
 
@@ -22,7 +22,7 @@ TangYuan默认提供的10种基础功能支持均以组件化的方式存在，�
 
 插件化是针对服务管理和组织而言，多个独立或者相关的服务汇聚在一个插件中，通过配置文件，注册到服务容器中，以统一的访问方式，供其他系统访问。
 
-#### Tangyuan的优势
+### Tangyuan的优势
 
 > 1.多样化的组件
 
@@ -45,11 +45,11 @@ Tangyuan默认提供12种基础功能组件，包括sql、java、mongo、mq、hb
 由于组件化的设计模式，框架可以很方便的提供基础功能的扩展。比如增加Hive的支持，则只需要开发一套Hive组件，整合进Tangyuan如何即可。
 
 
-### 2. TangYuan组件
+## 2. TangYuan组件
 
-![架构图](images/01.png)
+![架构图](images/01_1.2.2.png)
 
-#### 组件说明
+### 组件说明
 
 > SQL组件
 
@@ -99,15 +99,15 @@ Tangyuan默认提供12种基础功能组件，包括sql、java、mongo、mq、hb
 
 提供定时程序的功能支持，详见<http://www.xson.org/project/timer/1.2.2/>
 
-### 3. 最新版本
+## 3. 最新版本
 
 当前最新版本：1.2.2
 
-### 4. 源码
+## 4. 源码
 
 <https://github.com/xsonorg/tangyuan2>
 
-### 5. 新版本功能
+## 5. 新版本功能
 
 + 新增Hbase组件，提供Hbase服务的支持；
 + 新增ElasticSearch组件，提供ElasticSearch服务的支持；

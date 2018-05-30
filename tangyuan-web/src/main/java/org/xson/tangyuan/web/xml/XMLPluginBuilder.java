@@ -9,107 +9,153 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.management.modelmbean.XMLParseException;
-
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.cache.CacheComponent;
 import org.xson.tangyuan.cache.TangYuanCache;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
+import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.util.TangYuanAssert;
+import org.xson.tangyuan.util.TangYuanUtil;
+import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
+import org.xson.tangyuan.web.ResponseHandler;
+import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
 import org.xson.tangyuan.web.WebComponent;
-import org.xson.tangyuan.web.xml.ControllerVo.DataConvertEnum;
-import org.xson.tangyuan.web.xml.InterceptVo.InterceptType;
+import org.xson.tangyuan.web.convert.MixedDataConverter;
+import org.xson.tangyuan.web.rest.RestURIParser;
+import org.xson.tangyuan.web.rest.RestURIVo;
+import org.xson.tangyuan.web.util.RestUtil;
+import org.xson.tangyuan.web.xml.vo.ControllerVo;
+import org.xson.tangyuan.web.xml.vo.InterceptVo;
+import org.xson.tangyuan.web.xml.vo.InterceptVo.InterceptType;
+import org.xson.tangyuan.web.xml.vo.MethodObject;
+import org.xson.tangyuan.web.xml.vo.RESTControllerVo;
+import org.xson.tangyuan.web.xml.vo.ResponseConvertVo;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
 import org.xson.tangyuan.xml.XmlParseException;
 
 public class XMLPluginBuilder extends ControllerBuilder {
 
-	private Log				log		= LogFactory.getLog(getClass());
-	private XPathParser		parser	= null;
-	private XmlNodeWrapper	root	= null;
+	private Log				log				= LogFactory.getLog(getClass());
+	private XPathParser		parser			= null;
+	private XmlNodeWrapper	root			= null;
+	private RestURIParser	restURIParser	= new RestURIParser();
 
-	// private BuilderContext bc = null;
-	// 引用标志
-	// private String refMark = "@";
-	// private String urlSeparator = "/";
-	// private String leftBrackets = "{";
-	// private String rightBrackets = "}";
-
-	// public XMLPluginBuilder(BuilderContext bc) {
-	// this.bc = bc;
-	// }
-
-	public XMLPluginBuilder(InputStream inputStream, BuilderContext bc) {
-		this.bc = bc;
+	public XMLPluginBuilder(InputStream inputStream, XMLWebContext context) {
+		this.context = context;
 		this.parser = new XPathParser(inputStream);
 		this.root = this.parser.evalNode("/web-controller");
 	}
 
-	// public void parseBeanNode() throws Throwable {
-	// buildBeanNode(this.root.evalNodes("bean"));
-	// }
-	// public void parseInterceptNode() throws Throwable {
-	// buildInterceptNode(this.root.evalNodes("assembly"), InterceptType.ASSEMBLY);
-	// buildInterceptNode(this.root.evalNodes("before"), InterceptType.BEFORE);
-	// buildInterceptNode(this.root.evalNodes("after"), InterceptType.AFTER);
-	// }
-	// public void parseControllerNodeAutoMapping() {
-	// try {
-	// buildControllerNodeAutoMapping();
-	// } catch (Exception e) {
-	// throw new RuntimeException(e);
-	// }
-	// }
-
 	public void parseRef() throws Throwable {
 		buildBeanNode(this.root.evalNodes("bean"));
+		buildConverterNode(this.root.evalNodes("converter"));
 		buildInterceptNode(this.root.evalNodes("assembly"), InterceptType.ASSEMBLY);
 		buildInterceptNode(this.root.evalNodes("before"), InterceptType.BEFORE);
 		buildInterceptNode(this.root.evalNodes("after"), InterceptType.AFTER);
+		// 增加响应转换器
+		buildResponseConvertNode(this.root.evalNodes("response"));
+	}
+
+	public void parseRef2() throws Throwable {
+		buildConverterGroupNode(this.root.evalNodes("converter-group"));
 	}
 
 	public void parseControllerNode() throws Throwable {
-		buildControllerNode(this.root.evalNodes("c"));
+		if (WebComponent.getInstance().isRestMode()) {
+			buildRestControllerNode(this.root.evalNodes("c"));// rest
+		} else {
+			buildControllerNode(this.root.evalNodes("c"));
+		}
 	}
 
-	private void buildBeanNode(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildBeanNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <bean id="" class="" />
 		for (XmlNodeWrapper context : contexts) {
 			String id = StringUtils.trim(context.getStringAttribute("id"));
 			String clazz = StringUtils.trim(context.getStringAttribute("class"));
-			if (this.bc.getBeanIdMap().containsKey(id)) {
+
+			TangYuanAssert.stringEmpty(id, "'id' attribute can not be null in node bean.");
+			TangYuanAssert.stringEmpty(clazz, "'class' attribute can not be null in node bean.");
+
+			if (this.context.getBeanIdMap().containsKey(id)) {
 				throw new XmlParseException("Duplicate Bean: " + id);
 			}
-			Object obj = this.bc.getBeanClassMap().get(clazz);
+			Object obj = this.context.getBeanClassMap().get(clazz);
 			if (null == obj) {
-				obj = Class.forName(clazz).newInstance();
-				this.bc.getBeanClassMap().put(clazz, obj);
+				obj = TangYuanUtil.newInstance(ClassUtils.forName(clazz));
+				this.context.getBeanClassMap().put(clazz, obj);
 			}
-			this.bc.getBeanIdMap().put(id, obj);
+			this.context.getBeanIdMap().put(id, obj);
 			log.info("Add <bean> :" + clazz);
 		}
 	}
 
-	private void buildInterceptNode(List<XmlNodeWrapper> contexts, InterceptType type) throws Exception {
+	private void buildConverterNode(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+			String id = StringUtils.trim(context.getStringAttribute("id"));
+			String clazz = StringUtils.trim(context.getStringAttribute("class"));
+
+			TangYuanAssert.stringEmpty(id, "'id' attribute can not be null in node converter.");
+			TangYuanAssert.stringEmpty(clazz, "'class' attribute can not be null in node converter.");
+
+			if (this.context.getConverterIdMap().containsKey(id)) {
+				throw new XmlParseException("Duplicate Converter: " + id);
+			}
+			DataConverter obj = this.context.getConverterClassMap().get(clazz);
+			if (null == obj) {
+				Class<?> converterClass = ClassUtils.forName(clazz);
+				if (!DataConverter.class.isAssignableFrom(converterClass)) {
+					throw new XmlParseException("Converter class not implement the DataConverter interface: " + clazz);
+				}
+				obj = (DataConverter) TangYuanUtil.newInstance(converterClass);
+				this.context.getConverterClassMap().put(clazz, obj);
+			}
+			this.context.getConverterIdMap().put(id, obj);
+			log.info("Add <converter> :" + clazz);
+		}
+	}
+
+	private void buildConverterGroupNode(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+			String id = StringUtils.trim(context.getStringAttribute("id"));
+			if (this.context.getConverterIdMap().containsKey(id)) {
+				throw new XmlParseException("Duplicate converter: " + id);
+			}
+			List<XmlNodeWrapper> converterRefList = context.evalNodes("converter");
+			TangYuanAssert.collectionEmpty(converterRefList, "Internal converter node can not be empty: " + id);
+			List<DataConverter> converters = new ArrayList<DataConverter>();
+			for (XmlNodeWrapper converterNode : converterRefList) {
+				String ref = StringUtils.trim(converterNode.getStringAttribute("ref"));
+				DataConverter converter = this.context.getConverterIdMap().get(ref);
+				TangYuanAssert.objectEmpty(converter, "The referenced converter does not exist: " + ref);
+				converters.add(converter);
+			}
+			this.context.getConverterIdMap().put(id, new MixedDataConverter(converters));
+			log.info("Add <converter-group> :" + id);
+		}
+	}
+
+	private void buildInterceptNode(List<XmlNodeWrapper> contexts, InterceptType type) throws Throwable {
 		for (XmlNodeWrapper context : contexts) {
 
 			String call = StringUtils.trim(context.getStringAttribute("call"));
 			String _order = StringUtils.trim(context.getStringAttribute("order"));
 
 			if (InterceptType.ASSEMBLY == type) {
-				if (this.bc.getBeforeMap().containsKey(call)) {
-					throw new RuntimeException("Duplicate Assembly: " + call);
+				if (this.context.getBeforeMap().containsKey(call)) {
+					throw new XmlParseException("Duplicate Assembly: " + call);
 				}
 			} else if (InterceptType.BEFORE == type) {
-				if (this.bc.getBeforeMap().containsKey(call)) {
-					throw new RuntimeException("Duplicate Before: " + call);
+				if (this.context.getBeforeMap().containsKey(call)) {
+					throw new XmlParseException("Duplicate Before: " + call);
 				}
 			} else {
-				if (this.bc.getAfterMap().containsKey(call)) {
-					throw new RuntimeException("Duplicate After: " + call);
+				if (this.context.getAfterMap().containsKey(call)) {
+					throw new XmlParseException("Duplicate After: " + call);
 				}
 			}
 
@@ -148,37 +194,187 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			}
 
 			if (null == includeList && null == excludeList) {
-				throw new RuntimeException("Intercept missing <include|exclude>: " + call);
+				throw new XmlParseException("Intercept missing <include|exclude>: " + call);
 			}
 
 			InterceptVo baVo = new InterceptVo(mo, order, includeList, excludeList);
 
 			if (InterceptType.ASSEMBLY == type) {
-				this.bc.getAssemblyList().add(baVo);
-				this.bc.getAssemblyMap().put(call, call);
+				this.context.getAssemblyList().add(baVo);
+				this.context.getAssemblyMap().put(call, call);
+				log.info("Add <assembly> :" + call);
 			} else if (InterceptType.BEFORE == type) {
-				this.bc.getBeforeList().add(baVo);
-				this.bc.getBeforeMap().put(call, call);
+				this.context.getBeforeList().add(baVo);
+				this.context.getBeforeMap().put(call, call);
+				log.info("Add <before> :" + call);
 			} else {
-				this.bc.getAfterList().add(baVo);
-				this.bc.getAfterMap().put(call, call);
+				this.context.getAfterList().add(baVo);
+				this.context.getAfterMap().put(call, call);
+				log.info("Add <after> :" + call);
 			}
-
 		}
 	}
 
-	private void buildControllerNode(List<XmlNodeWrapper> contexts) throws Exception {
+	private void buildResponseConvertNode(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+
+			String bean = StringUtils.trim(context.getStringAttribute("bean"));
+			TangYuanAssert.stringEmpty(bean, "'bean' attribute can not be null in <response>.");
+
+			Object beanInstance = this.context.getBeanIdMap().get(bean);
+			TangYuanAssert.objectEmpty(beanInstance, "reference bean does not exist: " + bean);
+
+			if (!(beanInstance instanceof ResponseHandler)) {
+				throw new XmlParseException("instances of use of the bean[" + bean + "] attribute must implement the 'ResponseHandler' interface.");
+			}
+			ResponseHandler handler = (ResponseHandler) beanInstance;
+
+			List<String> includeList = new ArrayList<String>();
+			List<String> excludeList = new ArrayList<String>();
+
+			// <include></include>
+			List<XmlNodeWrapper> includeNodes = context.evalNodes("include");
+			for (XmlNodeWrapper include : includeNodes) {
+				String body = StringUtils.trim(include.getStringBody());
+				if (null != body) {
+					includeList.add(body);
+				}
+			}
+			if (includeList.size() == 0) {
+				includeList = null;
+			}
+
+			// <exclude></exclude>
+			List<XmlNodeWrapper> excludeNodes = context.evalNodes("exclude");
+			for (XmlNodeWrapper exclude : excludeNodes) {
+				String body = StringUtils.trim(exclude.getStringBody());
+				if (null != body) {
+					excludeList.add(body);
+				}
+			}
+			if (excludeList.size() == 0) {
+				excludeList = null;
+			}
+
+			if (null == includeList && null == excludeList) {
+				throw new XmlParseException("<response> node missing <include|exclude>: " + bean);
+			}
+
+			ResponseConvertVo rcVo = new ResponseConvertVo(handler, includeList, excludeList);
+			this.context.addResponseConvert(rcVo);
+
+			// log
+			log.info("Add <response> :" + bean);
+		}
+	}
+
+	private void buildRestControllerNode(List<XmlNodeWrapper> contexts) throws Throwable {
+		for (XmlNodeWrapper context : contexts) {
+
+			String fullUrl = StringUtils.trim(context.getStringAttribute("url"));
+			String _requestType = StringUtils.trim(context.getStringAttribute("type"));
+			TangYuanAssert.stringEmpty(fullUrl, "In tag <c>, attribute 'url' can not be empty.");
+			TangYuanAssert.stringEmpty(_requestType, "Invalid attribute 'type' in controller " + fullUrl);
+			RequestTypeEnum requestType = getRestRequestType(_requestType, fullUrl);
+
+			// 解析URI
+			RestURIVo restURIVo = restURIParser.parseURI(fullUrl);
+			String url = restURIVo.getPath();
+
+			// 加上type进行URL判断
+			if (this.context.existRestURI(RestUtil.getRestKey(requestType, url))) {
+				throw new XmlParseException("Duplicate URL: " + url);
+			}
+
+			String transfer = StringUtils.trim(context.getStringAttribute("transfer"));
+			String validate = StringUtils.trim(context.getStringAttribute("validate"));
+			if (null != validate) {
+				validate = parseValidate(validate, url);// 这里如果出现变量{x},则是使用错误
+			}
+
+			String exec = StringUtils.trim(context.getStringAttribute("exec"));
+			MethodObject execMethod = null;
+			if (null != exec) {
+				execMethod = getMethodObject(exec);
+			}
+
+			if (null == transfer && null == execMethod) {
+				throw new XmlParseException("Attribute 'transfer' and attribute 'exec' can not be null at the same time in controller " + url);
+			}
+			if (null != transfer) {
+				transfer = parseTransfer(transfer, url);
+				transfer = urlToServiceName(transfer);
+			}
+
+			// 权限
+			String permission = StringUtils.trim(context.getStringAttribute("permission"));
+			// 缓存
+			String _cacheUse = StringUtils.trim(context.getStringAttribute("cacheUse"));
+			CacheUseVo cacheUse = null;
+			if (null != _cacheUse && _cacheUse.length() > 0) {
+				// cacheUse = parseCacheUse(_cacheUse, fullUrl);// 如果URI中包含变量需要注意, 不要出现'{}'
+				cacheUse = parseCacheUse(_cacheUse, parseRestCacheKey(fullUrl));// 现在可以了
+			}
+
+			// 数据转换
+			String _convert = StringUtils.trim(context.getStringAttribute("converter"));
+			DataConverter convert = getDataConverter(_convert);
+
+			boolean cacheInAop = WebComponent.getInstance().isCacheInAop();
+			String _cacheInAop = StringUtils.trim(context.getStringAttribute("cacheInAop"));
+			if (null != _cacheInAop) {
+				cacheInAop = Boolean.parseBoolean(_cacheInAop);
+			}
+
+			// 私有的assembly
+			List<InterceptVo> assemblyList = new ArrayList<InterceptVo>();
+			buildInnerInterceptNode(context.evalNodes("assembly"), assemblyList);
+
+			// 私有的before
+			List<InterceptVo> beforeList = new ArrayList<InterceptVo>();
+			buildInnerInterceptNode(context.evalNodes("before"), beforeList);
+
+			// 私有的after
+			List<InterceptVo> afterList = new ArrayList<InterceptVo>();
+			buildInnerInterceptNode(context.evalNodes("after"), afterList);
+
+			ResponseHandler responseHandler = getResponseHandler(url);
+
+			RESTControllerVo cVo = new RESTControllerVo(fullUrl, url, requestType, transfer, validate, execMethod,
+					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler, restURIVo);
+
+			this.context.addRestController(cVo);
+			// log.info("Add <c> :" + requestType + " " + fullUrl);
+			log.info("Add <c> :" + fullUrl + "\t" + requestType);
+		}
+	}
+
+	private void buildInnerInterceptNode(List<XmlNodeWrapper> nodes, List<InterceptVo> interceptlist) throws Throwable {
+		for (XmlNodeWrapper node : nodes) {
+			String call = StringUtils.trim(node.getStringAttribute("call"));
+			String _order = StringUtils.trim(node.getStringAttribute("order"));
+			MethodObject mo = getMethodObject(call);
+			int order = WebComponent.getInstance().getOrder();
+			if (null != _order) {
+				order = Integer.parseInt(_order);
+			}
+			InterceptVo baVo = new InterceptVo(mo, order);
+			interceptlist.add(baVo);
+		}
+	}
+
+	private void buildControllerNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		for (XmlNodeWrapper context : contexts) {
 			// 基于安全考虑, 不能支持*,
 			String url = StringUtils.trim(context.getStringAttribute("url"));
-			if (this.bc.getControllerMap().containsKey(url)) {
+			if (this.context.getControllerMap().containsKey(url)) {
 				throw new RuntimeException("Duplicate URL: " + url);
 			}
-			String transfer = StringUtils.trim(context.getStringAttribute("transfer"));
-			// if (null != transfer) {
-			// transfer = parseTransfer(transfer, url);
-			// }
+			String _requestType = StringUtils.trim(context.getStringAttribute("type"));
+			RequestTypeEnum requestType = getRequestType(_requestType, url);
 
+			String transfer = StringUtils.trim(context.getStringAttribute("transfer"));
 			String validate = StringUtils.trim(context.getStringAttribute("validate"));
 			if (null != validate) {
 				validate = parseValidate(validate, url);
@@ -191,7 +387,6 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			}
 
 			if (null == transfer && null == execMethod) {
-				// throw new XmlParseException("transfer and exec can not be empty, url: " + url);
 				transfer = url;
 			}
 			if (null != transfer) {
@@ -201,9 +396,7 @@ public class XMLPluginBuilder extends ControllerBuilder {
 
 			// 权限
 			String permission = StringUtils.trim(context.getStringAttribute("permission"));
-
 			// 缓存
-			// String _cacheUse = StringUtils.trim(context.getStringAttribute("cache"));
 			String _cacheUse = StringUtils.trim(context.getStringAttribute("cacheUse"));
 
 			CacheUseVo cacheUse = null;
@@ -211,32 +404,8 @@ public class XMLPluginBuilder extends ControllerBuilder {
 				cacheUse = parseCacheUse(_cacheUse, url);
 			}
 
-			// DataConvertEnum convert = DataConvertEnum.BODY;
-			// String _convert = StringUtils.trim(context.getStringAttribute("convert"));
-			// if (null != _convert) {
-			// convert = getDataConvert(_convert);
-			// }
-			// if (DataConvertEnum.RULE == convert && null == validate) {
-			// throw new XMLParseException("The controller is missing the validate ID.");
-			// }
-
-			DataConvertEnum convert = null;
-			String _convert = StringUtils.trim(context.getStringAttribute("convert"));
-			if (null != _convert) {
-				convert = getDataConvert(_convert);
-			}
-			if (DataConvertEnum.KV_RULE_XCO == convert && null == validate) {
-				throw new XMLParseException("Use data validation for data conversion, missing data validation ID. url: " + url);
-			}
-
-			// boolean convertByRule = false;
-			// String _convertByRule = StringUtils.trim(context.getStringAttribute("convertByRule"));
-			// if (null != _convertByRule) {
-			// convertByRule = Boolean.parseBoolean(_convertByRule);
-			// }
-			// if (convertByRule && null == validate) {
-			// throw new XMLParseException("Use data validation for data conversion, missing data validation ID. url: " + url);
-			// }
+			String _convert = StringUtils.trim(context.getStringAttribute("converter"));
+			DataConverter convert = getDataConverter(_convert);
 
 			boolean cacheInAop = WebComponent.getInstance().isCacheInAop();
 			String _cacheInAop = StringUtils.trim(context.getStringAttribute("cacheInAop"));
@@ -246,54 +415,23 @@ public class XMLPluginBuilder extends ControllerBuilder {
 
 			// 私有的assembly
 			List<InterceptVo> assemblyList = new ArrayList<InterceptVo>();
-			List<XmlNodeWrapper> assemblyNodes = context.evalNodes("assembly");
-			for (XmlNodeWrapper node : assemblyNodes) {
-				String call = StringUtils.trim(node.getStringAttribute("call"));
-				String _order = StringUtils.trim(node.getStringAttribute("order"));
-				MethodObject mo = getMethodObject(call);
-				int order = WebComponent.getInstance().getOrder();
-				if (null != _order) {
-					order = Integer.parseInt(_order);
-				}
-				InterceptVo baVo = new InterceptVo(mo, order);
-				assemblyList.add(baVo);
-			}
+			buildInnerInterceptNode(context.evalNodes("assembly"), assemblyList);
 
 			// 私有的before
 			List<InterceptVo> beforeList = new ArrayList<InterceptVo>();
-			List<XmlNodeWrapper> beforeNodes = context.evalNodes("before");
-			for (XmlNodeWrapper node : beforeNodes) {
-				String call = StringUtils.trim(node.getStringAttribute("call"));
-				String _order = StringUtils.trim(node.getStringAttribute("order"));
-				MethodObject mo = getMethodObject(call);
-				int order = WebComponent.getInstance().getOrder();
-				if (null != _order) {
-					order = Integer.parseInt(_order);
-				}
-				InterceptVo baVo = new InterceptVo(mo, order);
-				beforeList.add(baVo);
-			}
+			buildInnerInterceptNode(context.evalNodes("before"), beforeList);
 
 			// 私有的after
 			List<InterceptVo> afterList = new ArrayList<InterceptVo>();
-			List<XmlNodeWrapper> afterNodes = context.evalNodes("after");
-			for (XmlNodeWrapper node : afterNodes) {
-				String call = StringUtils.trim(node.getStringAttribute("call"));
-				String _order = StringUtils.trim(node.getStringAttribute("order"));
-				MethodObject mo = getMethodObject(call);
-				int order = WebComponent.getInstance().getOrder();
-				if (null != _order) {
-					order = Integer.parseInt(_order);
-				}
-				InterceptVo baVo = new InterceptVo(mo, order);
-				afterList.add(baVo);
-			}
+			buildInnerInterceptNode(context.evalNodes("after"), afterList);
 
-			ControllerVo cVo = new ControllerVo(url, transfer, validate, execMethod, getInterceptList(url, assemblyList, InterceptType.ASSEMBLY),
-					getInterceptList(url, beforeList, InterceptType.BEFORE), getInterceptList(url, afterList, InterceptType.AFTER), permission,
-					cacheUse, convert, cacheInAop);
+			ResponseHandler responseHandler = getResponseHandler(url);
 
-			this.bc.getControllerMap().put(cVo.getUrl(), cVo);
+			ControllerVo cVo = new ControllerVo(url, requestType, transfer, validate, execMethod,
+					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler);
+
+			this.context.getControllerMap().put(cVo.getUrl(), cVo);
 			log.info("Add <c> :" + cVo.getUrl());
 		}
 	}
@@ -301,31 +439,30 @@ public class XMLPluginBuilder extends ControllerBuilder {
 	private MethodObject getMethodObject(String str) throws Exception {
 		MethodObject mo = null;
 		// a.b
-		// if (str.startsWith(refMark)) {
 		if (str.startsWith(leftBrackets)) {
 			String[] array = str.split("\\.");
 			if (array.length != 2) {
-				throw new RuntimeException("Invalid bean reference: " + str);
+				throw new XmlParseException("Invalid bean reference: " + str);
 			}
 			// String beanId = array[0].substring(1);
 			String beanId = array[0].substring(1, array[0].length() - 1);
 			String methodName = array[1];
 
-			Object bean = this.bc.getBeanIdMap().get(beanId);
+			Object bean = this.context.getBeanIdMap().get(beanId);
 			if (null == bean) {
 				throw new XmlParseException("Reference bean does not exist: " + beanId);
 			}
 			String moKey = bean.getClass().getName() + "." + methodName;
-			mo = this.bc.getMoMap().get(moKey);
+			mo = this.context.getMoMap().get(moKey);
 			if (null == mo) {
 				Method method = bean.getClass().getMethod(methodName, RequestContext.class);
 				// 如果方法不存在或者参数类型不匹配，这里会抛出异常
 				method.setAccessible(true);
 				mo = new MethodObject(method, bean);
-				this.bc.getMoMap().put(moKey, mo);
+				this.context.getMoMap().put(moKey, mo);
 			}
 		} else {
-			mo = this.bc.getMoMap().get(str);
+			mo = this.context.getMoMap().get(str);
 			if (null != mo) {
 				return mo;
 			}
@@ -333,12 +470,12 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			String className = str.substring(1, pos);
 			String methodName = str.substring(pos + 1, str.length());
 
-			Object instance = this.bc.getBeanClassMap().get(className);
+			Object instance = this.context.getBeanClassMap().get(className);
 			Class<?> clazz = null;
 			if (null == instance) {
 				clazz = Class.forName(className);
 				instance = clazz.newInstance();
-				this.bc.getBeanClassMap().put(className, instance);
+				this.context.getBeanClassMap().put(className, instance);
 			} else {
 				clazz = instance.getClass();
 			}
@@ -346,7 +483,7 @@ public class XMLPluginBuilder extends ControllerBuilder {
 			// 如果方法不存在或者参数类型不匹配，这里会抛出异常
 			method.setAccessible(true);
 			mo = new MethodObject(method, instance);
-			this.bc.getMoMap().put(str, mo);
+			this.context.getMoMap().put(str, mo);
 		}
 		return mo;
 	}
@@ -435,44 +572,9 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		return validate;
 	}
 
-	// private List<MethodObject> getInterceptList(String url, List<InterceptVo> list, InterceptType type) {
-	// List<MethodObject> result = null;
-	// List<InterceptVo> matchList = new ArrayList<InterceptVo>();
-	// // 全局的
-	// List<InterceptVo> globalList = null;
-	//
-	// if (InterceptType.ASSEMBLY == type) {
-	// globalList = this.bc.getAssemblyList();
-	// } else if (InterceptType.BEFORE == type) {
-	// globalList = this.bc.getBeforeList();
-	// } else {
-	// globalList = this.bc.getAfterList();
-	// }
-	//
-	// for (InterceptVo baVo : globalList) {
-	// if (baVo.match(url)) {
-	// matchList.add(baVo);
-	// }
-	// }
-	// if (list.size() > 0) {
-	// matchList.addAll(list);
-	// }
-	//
-	// if (matchList.size() > 0) {
-	// Collections.sort(matchList);// sort
-	// result = new ArrayList<MethodObject>();
-	// for (InterceptVo baVo : matchList) {
-	// result.add(baVo.getMo());
-	// }
-	// }
-	//
-	// return result;
-	// }
-
 	/**
-	 * 解析: ID:xxx; key:xxx; time:1000; ignore:a,b<br />
+	 * 解析: ID:xxx; key:xxx; expiry:1000<br />
 	 * 最短cache="@"
-	 * 
 	 */
 	private CacheUseVo parseCacheUse(String cacheUse, String url) {
 		CacheUseVo cacheUseVo = null;
@@ -524,31 +626,77 @@ public class XMLPluginBuilder extends ControllerBuilder {
 		return url;
 	}
 
-	// private String serviceNameToUrl(String serviceName) {
-	// if (!serviceName.startsWith(urlSeparator)) {
-	// serviceName = urlSeparator + serviceName;
-	// }
-	// return serviceName.replaceAll("\\.", "/");
-	// }
-
-	// private DataConvertEnum getDataConvert(String type) {
-	// if ("BODY".equalsIgnoreCase(type)) {
-	// return DataConvertEnum.BODY;
-	// } else if ("KV".equalsIgnoreCase(type)) {
-	// return DataConvertEnum.KV;
-	// } else if ("RULE".equalsIgnoreCase(type)) {
-	// return DataConvertEnum.RULE;
-	// }
-	// return null;
-	// }
-
-	private DataConvertEnum getDataConvert(String type) {
-		if ("KV_XCO".equalsIgnoreCase(type)) {
-			return DataConvertEnum.KV_XCO;
-		} else if ("KV_RULE_XCO".equalsIgnoreCase(type)) {
-			return DataConvertEnum.KV_RULE_XCO;
+	private DataConverter getDataConverter(String converter) {
+		if (null == converter) {
+			return null;
 		}
-		return null;
+		return this.context.getConverterIdMap().get(converter);
 	}
 
+	private RequestTypeEnum getRequestType(String requestType, String url) {
+		if (null == requestType || 0 == requestType.length()) {
+			return null;
+		}
+		if (RequestTypeEnum.GET.toString().equalsIgnoreCase(requestType)) {
+			return RequestTypeEnum.GET;
+		}
+		if (RequestTypeEnum.POST.toString().equalsIgnoreCase(requestType)) {
+			return RequestTypeEnum.POST;
+		}
+		throw new XmlParseException("Unsupported type[" + requestType + "], in controller " + url);
+	}
+
+	private RequestTypeEnum getRestRequestType(String requestType, String url) {
+		if (RequestTypeEnum.GET.toString().equalsIgnoreCase(requestType)) {
+			return RequestTypeEnum.GET;
+		}
+		if (RequestTypeEnum.POST.toString().equalsIgnoreCase(requestType)) {
+			return RequestTypeEnum.POST;
+		}
+		if (RequestTypeEnum.PUT.toString().equalsIgnoreCase(requestType)) {
+			return RequestTypeEnum.PUT;
+		}
+		if (RequestTypeEnum.DELETE.toString().equalsIgnoreCase(requestType)) {
+			return RequestTypeEnum.DELETE;
+		}
+		// if (RequestTypeEnum.HEAD.toString().equalsIgnoreCase(requestType)) {
+		// return RequestTypeEnum.HEAD;
+		// }
+		// if (RequestTypeEnum.OPTIONS.toString().equalsIgnoreCase(requestType)) {
+		// return RequestTypeEnum.OPTIONS;
+		// }
+		throw new XmlParseException("Invalid attribute type[" + requestType + "], in controller " + url);
+	}
+
+	private String parseRestCacheKey(String uri) {
+		if (uri.indexOf("{}") > -1) {
+			String regex = "([\\?\\&])([^#=\\{]+)(=\\{\\})";
+			return uri.replaceAll(regex, "$1$2={$2}");
+		}
+		return uri;
+	}
+
+	private ResponseHandler getResponseHandler(String url) {
+		ResponseHandler handler = null;
+		List<ResponseConvertVo> responseConvertList = this.context.getResponseConvertList();
+		for (ResponseConvertVo rcVo : responseConvertList) {
+			if (rcVo.match(url)) {
+				if (null != handler) {
+					throw new XmlParseException("only one response converter can be bound to each controller: " + url);
+				}
+				handler = rcVo.getResponseHandler();
+			}
+		}
+		return handler;
+	}
+
+	public static void main(String[] args) {
+		// 正则需要转义字符：'$', '(', ')', '*', '+', '.', '[', ']', '?', '\\', '^', '{', '}', '|'
+		String str = "/aaa?axx={x}&bxx={}&cxx={ccc}";
+		// String regex = "[\\?\\&][^#=\\{]+=\\{\\}";
+		String regex = "([\\?\\&])([^#=\\{]+)(=\\{\\})";
+		// Pattern pattern = Pattern.compile(regex);
+		System.out.println(str.replaceAll(regex, "$1$2$3"));
+		System.out.println(str.replaceAll(regex, "$1$2={$2}"));
+	}
 }

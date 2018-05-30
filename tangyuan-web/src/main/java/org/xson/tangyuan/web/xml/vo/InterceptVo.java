@@ -1,4 +1,4 @@
-package org.xson.tangyuan.web.xml;
+package org.xson.tangyuan.web.xml.vo;
 
 import java.util.List;
 

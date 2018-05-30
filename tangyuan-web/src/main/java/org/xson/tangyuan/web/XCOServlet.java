@@ -14,20 +14,40 @@ import org.xson.logging.LogFactory;
 import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.validate.XCOValidate;
 import org.xson.tangyuan.validate.XCOValidateException;
-import org.xson.tangyuan.web.RequestContext.DataFormatEnum;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
+import org.xson.tangyuan.web.RequestContext.ReturnDataType;
 import org.xson.tangyuan.web.handler.DefaultJSONResponseHandler;
 import org.xson.tangyuan.web.handler.DefaultXCOResponseHandler;
 import org.xson.tangyuan.web.util.ServletUtils;
-import org.xson.tangyuan.web.xml.ControllerVo;
+import org.xson.tangyuan.web.xml.vo.ControllerVo;
 
 public class XCOServlet extends HttpServlet {
 
 	private static final long	serialVersionUID	= 1L;
+
 	private static Log			log					= LogFactory.getLog(XCOServlet.class);
 
 	private ResponseHandler		xcoResponseHandler	= new DefaultXCOResponseHandler();
 	private ResponseHandler		jsonResponseHandler	= new DefaultJSONResponseHandler();
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handler(req, resp, RequestTypeEnum.PUT);
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handler(req, resp, RequestTypeEnum.DELETE);
+	}
+
+	// @Override
+	// protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	// handler(req, resp, RequestTypeEnum.HEAD);
+	// }
+	// @Override
+	// protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	// handler(req, resp, RequestTypeEnum.OPTIONS);
+	// }
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -43,35 +63,38 @@ public class XCOServlet extends HttpServlet {
 		WebComponent container = WebComponent.getInstance();
 		if (container.isclosing()) {
 			try {
-				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The current system is shutting down");
+				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The current system is shutting down.");
 			} catch (IOException e) {
 			}
 			return;
 		}
-		
+
+		if (!container.isRestMode()) {
+			// 比对请求类型是否一致, 只有在非REST模式下才需要
+			if (RequestTypeEnum.POST != requestType && RequestTypeEnum.GET != requestType) {
+				throw new XCOWebException("Unsupported request type: " + requestType);
+			}
+		}
+
 		RequestContext context = pretreatmentContext(req, resp, requestType);
 
-		ControllerVo cVo = container.getControllerVo(context.getUrl());
+		// find controller
+		ControllerVo cVo = container.getControllerVo(requestType, context.getPath());
 		if (null == cVo) {
-			log.error("It does not match the URL: " + context.getUrl());
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			doResponseError(context, null, null);
+			doResponseError(context, null, null, "No matching controller.");
 			return;
 		}
 
 		// data convert
 		try {
-			if (RequestTypeEnum.POST == requestType) {
-				context.setArg(ServletUtils.parseArgFromPostRequest(cVo, req, context));
-			} else if (RequestTypeEnum.GET == requestType) {// GET
-				context.setArg(ServletUtils.parseArgFromGetRequest(cVo, req));
-			} else {
-				throw new XcoWebException("Unsupported request type: " + requestType);
+			cVo.dataConvert(context);
+			if (log.isInfoEnabled()) {
+				log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
 			}
-			log.info(context.getUrl() + " :" + context.getArg());
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			doResponseError(context, e, "data convert error");
+			doResponseError(context, cVo, e, "data convert error.");
 			return;
 		}
 
@@ -80,7 +103,7 @@ public class XCOServlet extends HttpServlet {
 			cVo.assembly(context);
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-			doResponseError(context, e, "assembly error");
+			doResponseError(context, cVo, e, "assembly error.");
 			return;
 		}
 
@@ -91,17 +114,17 @@ public class XCOServlet extends HttpServlet {
 				boolean checkResult = XCOValidate.validate(validateId, (XCO) context.getArg());
 				if (!checkResult) {
 					context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
-					doResponseError(context, null, "validate error");
+					doResponseError(context, cVo, null, "validate error.");
 					return;
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				if (e instanceof XCOValidateException) {
 					XCOValidateException xcoEx = (XCOValidateException) e;
 					context.setErrorInfo(xcoEx.getErrorCode(), xcoEx.getErrorMessage());
 				} else {
 					context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
 				}
-				doResponseError(context, e, "validate error");
+				doResponseError(context, cVo, e, "validate error.");
 				return;
 			}
 		}
@@ -109,9 +132,8 @@ public class XCOServlet extends HttpServlet {
 	}
 
 	private void exec(RequestContext context, ControllerVo cVo) {
-		Throwable ex = null;
+		// Throwable ex = null;
 		try {
-
 			if (cVo.isCacheInAop()) {
 				// 新的执行顺序
 				cVo.before(context);
@@ -130,24 +152,33 @@ public class XCOServlet extends HttpServlet {
 					cVo.cachePut(context);
 				}
 			}
-
-		} catch (Throwable e) {
-			ex = e;
-		} finally {
-			if (null == ex) {
-				doResponseSuccess(context);
+			// Response
+			doResponseSuccess(context, cVo);
+		} catch (Throwable ex) {
+			// ex = e;
+			if (ex instanceof ServiceException) {
+				ServiceException se = (ServiceException) ex;
+				context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
 			} else {
-				// context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-				// fix bug
-				if (ex instanceof ServiceException) {
-					ServiceException se = (ServiceException) ex;
-					context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
-				} else {
-					context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-				}
-				doResponseError(context, ex, "exec error");
+				context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
 			}
+			doResponseError(context, cVo, ex, "exec error.");
 		}
+		// finally {
+		// if (null == ex) {
+		// doResponseSuccess(context, cVo);
+		// } else {
+		// // context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+		// // fix bug
+		// if (ex instanceof ServiceException) {
+		// ServiceException se = (ServiceException) ex;
+		// context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
+		// } else {
+		// context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+		// }
+		// doResponseError(context, cVo, ex, "exec error.");
+		// }
+		// }
 	}
 
 	/**
@@ -156,25 +187,36 @@ public class XCOServlet extends HttpServlet {
 	private RequestContext pretreatmentContext(HttpServletRequest req, HttpServletResponse resp, RequestTypeEnum requestType) {
 		RequestContext context = WebComponent.getInstance().requestContextThreadLocal.get();
 		if (null == context) { // fix bug
-			context = new RequestContext(req, resp, false);
+			String path = ServletUtils.parseRequestURI((HttpServletRequest) req);
+			context = new RequestContext(req, resp, false, path);
 			context.setRequestType(requestType);
 		}
+		context.init();
 		return context;
 	}
 
-	private void doResponseError(RequestContext context, Throwable ex, String errorMessage) {
-		if (null != ex) {
-			log.error(errorMessage + ": " + context.getUrl(), ex);
-		}
+	private void doResponseError(RequestContext context, ControllerVo cVo, Throwable ex, String errorMessage) {
+		log.error(context.getPath() + ": " + errorMessage, ex);
 		try {
-			if (context.isAjax()) {
-				if (DataFormatEnum.JSON == context.getDataFormat()) {
+			ResponseHandler handler = null;
+			if (null != cVo) {
+				handler = cVo.getResponseHandler();
+			}
+			if (null != handler) {
+				handler.onError(context);
+				return;
+			}
+
+			if (context.isViewRequest()) {
+				context.getResponse().sendRedirect(WebComponent.getInstance().getErrorRedirectPage());
+			} else {
+				if (ReturnDataType.XCO == context.getReturnDataType()) {
+					xcoResponseHandler.onError(context);
+				} else if (ReturnDataType.JSON == context.getReturnDataType()) {
 					jsonResponseHandler.onError(context);
 				} else {
-					xcoResponseHandler.onError(context);
+					log.error("Unknown return type[" + context.getContextType() + "], uri: " + context.getPath());
 				}
-			} else {
-				context.getResponse().sendRedirect(WebComponent.getInstance().getErrorRedirectPage());
 			}
 		} catch (IOException e) {
 			log.error("doResponseError Error", e);
@@ -185,28 +227,40 @@ public class XCOServlet extends HttpServlet {
 		}
 	}
 
-	private void doResponseSuccess(RequestContext context) {
+	private void doResponseSuccess(RequestContext context, ControllerVo cVo) {
 		HttpServletResponse response = context.getResponse();
 		HttpServletRequest request = context.getRequest();
 		try {
-			if (context.isAjax()) {
-				if (DataFormatEnum.JSON == context.getDataFormat()) {
-					jsonResponseHandler.onSuccess(context);
-				} else {
-					xcoResponseHandler.onSuccess(context);
-				}
-			} else {
+
+			ResponseHandler handler = null;
+			if (null != cVo) {
+				handler = cVo.getResponseHandler();
+			}
+			if (null != handler) {
+				handler.onSuccess(context);
+				return;
+			}
+
+			if (context.isViewRequest()) {
 				String view = context.getView();
 				if (null != view) {
-					if (context.isForward()) {
+					if (context.isRedirect()) {
+						response.sendRedirect(view);
+					} else {
 						RequestDispatcher dispatcher = request.getRequestDispatcher(view);
 						dispatcher.forward(request, response);
-					} else {
-						response.sendRedirect(context.getView());
 					}
 				}
+			} else {
+				if (ReturnDataType.XCO == context.getReturnDataType()) {
+					xcoResponseHandler.onSuccess(context);
+				} else if (ReturnDataType.JSON == context.getReturnDataType()) {
+					jsonResponseHandler.onSuccess(context);
+				} else {
+					log.error("Unknown return type[" + context.getContextType() + "], uri: " + context.getPath());
+				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("doResponseSuccess Error", e);
 		} finally {
 			if (context.isInThread()) {

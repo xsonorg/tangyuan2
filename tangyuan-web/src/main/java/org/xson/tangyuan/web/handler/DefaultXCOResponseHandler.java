@@ -21,18 +21,16 @@ public class DefaultXCOResponseHandler implements ResponseHandler {
 		if (WebComponent.getInstance().isPrintResultLog()) {
 			Object result = context.getResult();
 			if (null == result) {
-				log.info("controller[" + context.getUrl() + "] result: null");
+				log.info("controller[" + context.getPath() + "] result: null");
 			} else {
-				log.info("controller[" + context.getUrl() + "] result: " + result.toString());
+				log.info("controller[" + context.getPath() + "] result: " + result.toString());
 			}
 		}
 	}
 
 	@Override
 	public void onSuccess(RequestContext context) throws IOException {
-		
 		printResult(context);
-		
 		XCO result = (XCO) context.getResult();
 		if (null != result) {
 			HttpServletResponse response = context.getResponse();
@@ -50,7 +48,6 @@ public class DefaultXCOResponseHandler implements ResponseHandler {
 		setXCOResult(errorResult, context.getCode(), context.getMessage());
 		context.setResult(errorResult);
 		onSuccess(context);
-
 	}
 
 	private void setXCOResult(XCO xco, int code, String message) {

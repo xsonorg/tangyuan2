@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.xson.tangyuan.web.xml.InterceptVo.InterceptType;
+import org.xson.tangyuan.web.xml.vo.InterceptVo;
+import org.xson.tangyuan.web.xml.vo.MethodObject;
+import org.xson.tangyuan.web.xml.vo.InterceptVo.InterceptType;
 
 public class ControllerBuilder {
 
-	protected BuilderContext	bc				= null;
+	protected XMLWebContext	context			= null;
 
 	// 引用标志
-	protected String			refMark			= "@";
-	protected String			urlSeparator	= "/";
-	protected String			leftBrackets	= "{";
-	protected String			rightBrackets	= "}";
+	protected String		refMark			= "@";
+	protected String		urlSeparator	= "/";
+	protected String		leftBrackets	= "{";
+	protected String		rightBrackets	= "}";
 
 	protected String serviceNameToUrl(String serviceName) {
 		if (!serviceName.startsWith(urlSeparator)) {
@@ -30,11 +32,11 @@ public class ControllerBuilder {
 		List<InterceptVo> globalList = null;
 
 		if (InterceptType.ASSEMBLY == type) {
-			globalList = this.bc.getAssemblyList();
+			globalList = this.context.getAssemblyList();
 		} else if (InterceptType.BEFORE == type) {
-			globalList = this.bc.getBeforeList();
+			globalList = this.context.getBeforeList();
 		} else {
-			globalList = this.bc.getAfterList();
+			globalList = this.context.getAfterList();
 		}
 
 		for (InterceptVo baVo : globalList) {

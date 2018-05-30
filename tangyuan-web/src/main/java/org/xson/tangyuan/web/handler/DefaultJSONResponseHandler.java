@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.web.RequestContext;
 import org.xson.tangyuan.web.ResponseHandler;
 import org.xson.tangyuan.web.WebComponent;
@@ -21,18 +22,16 @@ public class DefaultJSONResponseHandler implements ResponseHandler {
 		if (WebComponent.getInstance().isPrintResultLog()) {
 			Object result = context.getResult();
 			if (null == result) {
-				log.info("controller[" + context.getUrl() + "] result: null");
+				log.info("controller[" + context.getPath() + "] result: null");
 			} else {
-				log.info("controller[" + context.getUrl() + "] result: " + result.toString());
+				log.info("controller[" + context.getPath() + "] result: " + result.toString());
 			}
 		}
 	}
 
 	@Override
 	public void onSuccess(RequestContext context) throws IOException {
-
 		printResult(context);
-
 		Object result = context.getResult();
 		if (null != result) {
 			HttpServletResponse response = context.getResponse();
@@ -49,7 +48,11 @@ public class DefaultJSONResponseHandler implements ResponseHandler {
 
 	@Override
 	public void onError(RequestContext context) throws IOException {
-		// TODO
+		JSONObject errorResult = new JSONObject();
+		errorResult.put(TangYuanContainer.XCO_CODE_KEY, context.getCode());
+		errorResult.put(TangYuanContainer.XCO_MESSAGE_KEY, context.getMessage());
+		context.setResult(errorResult);
+		onSuccess(context);
 	}
 
 }

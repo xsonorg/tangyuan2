@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.web.util.ServletUtils;
 
 /**
@@ -19,69 +20,84 @@ public class RequestContext {
 		GET, POST, PUT, DELETE, HEAD, OPTIONS
 	}
 
-	public enum DataFormatEnum {
-		XCO, JSON, KV, FILE
+	/** 返回数据类型 */
+	public enum ReturnDataType {
+		XCO, JSON
 	}
 
-	private static Log			log		= LogFactory.getLog(RequestContext.class);
+	private static Log			log				= LogFactory.getLog(RequestContext.class);
 
-	HttpServletRequest			request;
+	private HttpServletRequest	request			= null;
+	private HttpServletResponse	response		= null;
 
-	HttpServletResponse			response;
+	/**
+	 * @see path
+	 */
+	@SuppressWarnings("unused")
+	@Deprecated
+	private String				url				= null;
+	private String				path			= null;
+	private String				queryString		= null;
+	private String				view			= null;
+	/** 视图请求 */
+	private boolean				viewRequest		= false;
+	/** 页面跳转 */
+	private boolean				redirect		= false;
+	private String				contextType		= null;
+	private RequestTypeEnum		requestType		= null;
+	private Object				result			= null;
+	private Object				arg				= null;
+	/** 是否存在上下文 */
+	private boolean				inThread		= false;
+	private Integer				code			= null;
+	private String				message			= null;
+	/** 附加对象 */
+	private Map<String, Object>	attach			= null;
+	/** 返回对象类型 */
+	private ReturnDataType		returnDataType	= null;
 
-	private String				url;
-
-	private String				view;
-
-	private boolean				forward;
-
-	private String				contextType;
-
-	private RequestTypeEnum		requestType;
-	// 是否是异步请求
-	private boolean				ajax;
-
-	private Object				result;
-
-	private Object				arg;
-
-	private DataFormatEnum		dataFormat;
-
-	// 是否存在上下文
-	private boolean				inThread;
-	private int					code	= 0;
-	private String				message;
-
-	// 附加对象
-	private Map<String, Object>	attach	= null;
-
-	public RequestContext(HttpServletRequest request, HttpServletResponse response) {
-		this(request, response, true);
+	public RequestContext(HttpServletRequest request, HttpServletResponse response, String path) {
+		this(request, response, true, path);
 	}
 
-	protected RequestContext(HttpServletRequest request, HttpServletResponse response, boolean inThread) {
+	protected RequestContext(HttpServletRequest request, HttpServletResponse response, boolean inThread, String path) {
 		this.request = request;
 		this.response = response;
 		this.inThread = inThread;
-		ServletUtils.printHttpHeader(request);
-		this.url = ServletUtils.parseRequestURI(request);
+		this.path = path;
+	}
+
+	public void init() {
 		this.contextType = request.getContentType();// may be is null
-		this.dataFormat = ServletUtils.parseDataFormat(this.contextType);
-		this.ajax = ServletUtils.isAjax(request, this.dataFormat);
+		this.queryString = StringUtils.trim(request.getQueryString());
+		this.viewRequest = ServletUtils.isViewRequest(this);
+		this.returnDataType = ServletUtils.parseReturnDataType(this.contextType);
 		log.info(toString());
+		if (log.isDebugEnabled()) {
+			ServletUtils.printHttpHeader(request);
+		}
+	}
+
+	public void forward(String view) {
+		if (null != this.view) {
+			throw new XCOWebException("The view already exists in the current context.");
+		}
+		this.view = view;
+		this.redirect = false;
+		this.viewRequest = true;
+	}
+
+	public void sendRedirect(String view) {
+		if (null != this.view) {
+			throw new XCOWebException("The view already exists in the current context.");
+		}
+		this.view = view;
+		this.redirect = true;
+		this.viewRequest = true;
 	}
 
 	public String getView() {
 		return view;
-	}
-
-	public void setView(String view) {
-		this.view = view;
-	}
-
-	public void setView(String view, boolean forward) {
-		this.view = view;
-		this.forward = forward;
 	}
 
 	public HttpServletRequest getRequest() {
@@ -92,8 +108,16 @@ public class RequestContext {
 		return response;
 	}
 
+	/**
+	 * @deprecated Use {@link #getPath()} instead.
+	 */
+	@Deprecated
 	public String getUrl() {
-		return url;
+		return this.path;
+	}
+
+	public String getPath() {
+		return this.path;
 	}
 
 	public String getContextType() {
@@ -102,10 +126,6 @@ public class RequestContext {
 
 	public RequestTypeEnum getRequestType() {
 		return requestType;
-	}
-
-	public boolean isAjax() {
-		return ajax;
 	}
 
 	protected void setRequestType(RequestTypeEnum requestType) {
@@ -124,32 +144,25 @@ public class RequestContext {
 		return arg;
 	}
 
-	public DataFormatEnum getDataFormat() {
-		return dataFormat;
-	}
-
 	public void setArg(Object arg) {
 		this.arg = arg;
 	}
 
-	public boolean isForward() {
-		return forward;
-	}
-
-	public void setForward(boolean forward) {
-		this.forward = forward;
-	}
-
 	public void setErrorInfo(int code, String message) {
-		if (this.code != code) {
-			this.code = code;
+		// if (this.code != code) {
+		// this.code = code;
+		// }
+		// if (null == this.message || !this.message.equals(message)) {
+		// this.message = message;
+		// }
+		if (null != this.code || null != this.message) {
+			log.warn("The current controller context has been set code and message. uri: " + this.path);
 		}
-		if (null == this.message || !this.message.equals(message)) {
-			this.message = message;
-		}
+		this.code = code;
+		this.message = message;
 	}
 
-	public int getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
@@ -161,6 +174,26 @@ public class RequestContext {
 		return inThread;
 	}
 
+	public boolean isRedirect() {
+		return redirect;
+	}
+
+	public boolean isViewRequest() {
+		return viewRequest;
+	}
+
+	public String getQueryString() {
+		return queryString;
+	}
+
+	public ReturnDataType getReturnDataType() {
+		return returnDataType;
+	}
+
+	public void setReturnDataType(ReturnDataType returnDataType) {
+		this.returnDataType = returnDataType;
+	}
+
 	public Map<String, Object> getAttach() {
 		if (null == attach) {
 			attach = new HashMap<String, Object>();
@@ -170,10 +203,7 @@ public class RequestContext {
 
 	@Override
 	public String toString() {
-		// return "url: " + url + ", view: " + view + ", contextType: " + contextType + ", ajax: " + ajax + ", dataFormat: " + dataFormat;
-		return "url: " + url + ", contextType: " + contextType + ", ajax: " + ajax + ", dataFormat: " + dataFormat;
+		return requestType + " " + this.path + ", contextType: " + this.contextType;
 	}
 
-	// forward
-	// sendRedirect
 }
