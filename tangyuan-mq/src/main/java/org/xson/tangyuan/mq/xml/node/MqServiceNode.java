@@ -24,22 +24,47 @@ public class MqServiceNode extends AbstractServiceNode {
 		this.sVo = sVo;
 	}
 
+	//	@Override
+	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
+	//		MqServiceContext mqServiceContext = (MqServiceContext) context.getServiceContext(TangYuanServiceType.MQ);
+	//		long startTime = System.currentTimeMillis();
+	//
+	//		String[] channels = sVo.getChannels();
+	//		for (int i = 0; i < channels.length; i++) {
+	//			ChannelVo qVo = MqContainer.getInstance().getChannel(channels[i]);
+	//			Sender sender = qVo.getSender();
+	//			sender.sendMessage(qVo, sVo.getRouting(channels[i]), arg, sVo.isUseTx(), mqServiceContext);
+	//		}
+	//
+	//		if (log.isInfoEnabled()) {
+	//			log.info("mq execution time: " + getSlowServiceLog(startTime));
+	//		}
+	//		return true;
+	//	}
+
 	@Override
 	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-		MqServiceContext mqServiceContext = (MqServiceContext) context.getServiceContext(TangYuanServiceType.MQ);
-		long startTime = System.currentTimeMillis();
+		context.addTrackingHeader(arg);
+		try {
+			MqServiceContext mqServiceContext = (MqServiceContext) context.getServiceContext(TangYuanServiceType.MQ);
+			long startTime = System.currentTimeMillis();
 
-		String[] channels = sVo.getChannels();
-		for (int i = 0; i < channels.length; i++) {
-			ChannelVo qVo = MqContainer.getInstance().getChannel(channels[i]);
-			Sender sender = qVo.getSender();
-			sender.sendMessage(qVo, sVo.getRouting(channels[i]), arg, sVo.isUseTx(), mqServiceContext);
-		}
+			String[] channels = sVo.getChannels();
+			for (int i = 0; i < channels.length; i++) {
+				ChannelVo qVo = MqContainer.getInstance().getChannel(channels[i]);
+				Sender sender = qVo.getSender();
+				sender.sendMessage(qVo, sVo.getRouting(channels[i]), arg, sVo.isUseTx(), mqServiceContext);
+			}
 
-		if (log.isInfoEnabled()) {
-			log.info("mq execution time: " + getSlowServiceLog(startTime));
+			if (log.isInfoEnabled()) {
+				log.info("mq execution time: " + getSlowServiceLog(startTime));
+			}
+			return true;
+		} catch (Throwable e) {
+			throw e;
+		} finally {
+			context.cleanTrackingHeader(arg);
 		}
-		return true;
 	}
 
 }

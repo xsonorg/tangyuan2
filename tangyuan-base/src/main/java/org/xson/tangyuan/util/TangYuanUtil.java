@@ -1,6 +1,8 @@
 package org.xson.tangyuan.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -176,6 +178,32 @@ public class TangYuanUtil {
 			str = str.replaceFirst("\\{\\}", String.valueOf(args[i]));
 		}
 		return str;
+	}
+
+	public static String getHostIp() {
+		InetAddress netAddress = null;
+		try {
+			netAddress = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		if (null == netAddress) {
+			return "unknown";
+		}
+		return netAddress.getHostAddress();
+	}
+
+	public static String getHostName() {
+		InetAddress netAddress = null;
+		try {
+			netAddress = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		if (null == netAddress) {
+			return "unknown";
+		}
+		return netAddress.getHostName();
 	}
 
 }

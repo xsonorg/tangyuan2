@@ -26,10 +26,24 @@ public class LicensesHelper {
 		return new String(buf).toCharArray();
 	}
 
-	public static boolean check() {
+	private static char[] getContext(InputStream in) throws Throwable {
+		byte[] buf = new byte[1024];
+		in.read(buf);
+		in.close();
+		return new String(buf).toCharArray();
+	}
+
+	public static boolean check(InputStream in) {
 		try {
 			// load Licenses
-			char[] a = load();
+			//			char[] a = load();
+			char[] a = null;
+			if (null == in) {
+				a = load();
+			} else {
+				a = getContext(in);
+			}
+
 			// load date
 			char[] d = { '1', '0', '2', '5', '3', '2', '0', '8' };
 			// { 3, 5, 7, 9, 13, 16, 17, 100 };

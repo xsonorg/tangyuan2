@@ -6,6 +6,8 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.aop.AopVo;
 import org.xson.tangyuan.executor.ServiceActuator;
+import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.trace.TrackingManager;
 import org.xson.tangyuan.xml.node.CallNode.CallMode;
 
 public class AfterAopVo extends AopVo {
@@ -29,8 +31,8 @@ public class AfterAopVo extends AopVo {
 	}
 
 	@Override
-	protected void execAfter(Object pkgArg, Throwable ex) {
-		
+	protected void execAfter(ServiceContext parent, Object pkgArg, Throwable ex) {
+
 		if (AopCondition.SUCCESS == condition && null != ex) {
 			return;
 		}
@@ -39,12 +41,20 @@ public class AfterAopVo extends AopVo {
 			return;
 		}
 
+		//		if (CallMode.EXTEND == mode) {
+		//			ServiceActuator.execute(exec, pkgArg);
+		//		} else if (CallMode.ALONE == mode) {
+		//			ServiceActuator.executeAlone(exec, pkgArg);
+		//		} else if (CallMode.ASYNC == mode) {
+		//			ServiceActuator.executeAsync(exec, pkgArg);
+		//		}
+
 		if (CallMode.EXTEND == mode) {
 			ServiceActuator.execute(exec, pkgArg);
 		} else if (CallMode.ALONE == mode) {
-			ServiceActuator.executeAlone(exec, pkgArg);
+			ServiceActuator.executeAlone(exec, pkgArg, parent, TrackingManager.EXECUTE_MODE_SYNC);
 		} else if (CallMode.ASYNC == mode) {
-			ServiceActuator.executeAsync(exec, pkgArg);
+			ServiceActuator.executeAsync(exec, pkgArg, parent);
 		}
 	}
 

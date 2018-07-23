@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.xson.common.object.XCO;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
+import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.trace.TrackingContext;
+import org.xson.tangyuan.trace.TrackingManager;
 import org.xson.tangyuan.validate.XCOValidate;
 import org.xson.tangyuan.validate.XCOValidateException;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
@@ -78,6 +81,9 @@ public class XCOServlet extends HttpServlet {
 
 		RequestContext context = pretreatmentContext(req, resp, requestType);
 
+		// 记录追踪信息
+		startTracking(context);
+
 		// find controller
 		ControllerVo cVo = container.getControllerVo(requestType, context.getPath());
 		if (null == cVo) {
@@ -92,6 +98,7 @@ public class XCOServlet extends HttpServlet {
 			if (log.isInfoEnabled()) {
 				log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
 			}
+			setTracking(context);
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
 			doResponseError(context, cVo, e, "data convert error.");
@@ -224,6 +231,7 @@ public class XCOServlet extends HttpServlet {
 			if (context.isInThread()) {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
+			endTracking(context, ex);
 		}
 	}
 
@@ -266,6 +274,53 @@ public class XCOServlet extends HttpServlet {
 			if (context.isInThread()) {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
+			endTracking(context, null);
+		}
+	}
+
+	private void startTracking(RequestContext context) {
+		TrackingManager trackingManager = TangYuanContainer.getInstance().getTrackingManager();
+		if (null != trackingManager) {
+			Object parent = trackingManager.initTracking(null);
+			String headers = ServletUtils.getHttpHeaderContext(context.getRequest());
+			Object current = trackingManager.startTracking(parent, context.getPath(), null, headers, TrackingManager.SERVICE_TYPE_NO,
+					TrackingManager.RECORD_TYPE_CONTROLLER, TrackingManager.EXECUTE_MODE_SYNC);
+			TrackingContext.setThreadLocalParent(current);
+		}
+	}
+
+	private void setTracking(RequestContext context) {
+		TrackingManager trackingManager = TangYuanContainer.getInstance().getTrackingManager();
+		if (null != trackingManager) {
+			Object current = context.getAttach().get(TrackingManager.XCO_TRACE_KEY);
+			if (null == current) {
+				return;
+			}
+			Object arg = context.getArg();
+			if (null != arg) {
+				trackingManager.setTracking(current, (XCO) arg);
+			}
+		}
+	}
+
+	private void endTracking(RequestContext context, Throwable ex) {
+		TrackingManager trackingManager = TangYuanContainer.getInstance().getTrackingManager();
+		if (null != trackingManager) {
+			Object current = context.getAttach().get(TrackingManager.XCO_TRACE_KEY);
+			if (null != current) {
+				Object result = context.getResult();
+				if (null == result) {
+					Integer code = context.getCode();
+					if (null != code) {
+						XCO xco = new XCO();
+						xco.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
+						xco.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, context.getMessage());
+						result = xco;
+					}
+				}
+				trackingManager.endTracking(current, result, ex);
+			}
+			TrackingContext.cleanThreadLocalParent();
 		}
 	}
 }

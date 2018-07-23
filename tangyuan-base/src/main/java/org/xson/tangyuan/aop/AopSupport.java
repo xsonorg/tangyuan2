@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.xson.tangyuan.aop.AopVo.PointCut;
+import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
@@ -67,7 +68,7 @@ public class AopSupport {
 		aopVo.execBefore(service.getServiceKey(), arg);
 	}
 
-	public void execAfter(AbstractServiceNode service, Object arg, Object result, Throwable ex, boolean extend) {
+	public void execAfter(ServiceContext parent, AbstractServiceNode service, Object arg, Object result, Throwable ex, boolean extend) {
 		if (null == serviceAopMap) {
 			return;
 		}
@@ -89,7 +90,7 @@ public class AopSupport {
 		if (null == aopVo) {
 			return;
 		}
-		aopVo.execAfter(service.getServiceKey(), arg, result, ex, extend);
+		aopVo.execAfter(parent, service.getServiceKey(), arg, result, ex, extend);
 	}
 
 	/** 是否是拦截方 */

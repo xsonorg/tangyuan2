@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.xson.common.object.XCO;
+import org.xson.logging.Log;
+import org.xson.logging.LogFactory;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.util.TangYuanUtil;
@@ -14,6 +16,8 @@ import org.xson.tangyuan.web.ResponseHandler;
 import org.xson.tangyuan.web.util.ServletUtils;
 
 public class ControllerVo {
+
+	private static Log				log	= LogFactory.getLog(ControllerVo.class);
 
 	protected String				url;
 	protected String				transfer;
@@ -167,9 +171,34 @@ public class ControllerVo {
 		}
 	}
 
-	public boolean cacheGet(RequestContext context) throws Throwable {
+	//	public boolean cacheGet(RequestContext context) throws Throwable {
+	//		// TODO 不能抛出异常
+	//		if (null != cacheUse) {
+	//			Object result = cacheUse.getObject(context.getArg());
+	//			if (null != result) {
+	//				context.setResult(result);
+	//				return true;
+	//			}
+	//		}
+	//		return false;
+	//	}
+	//
+	//	public void cachePut(RequestContext context) throws Throwable {
+	//		// TODO 不能抛出异常
+	//		if (null != cacheUse) {
+	//			cacheUse.putObject(context.getArg(), context.getResult());
+	//		}
+	//	}
+
+	public boolean cacheGet(RequestContext context) {
 		if (null != cacheUse) {
-			Object result = cacheUse.getObject(context.getArg());
+			//			Object result = cacheUse.getObject(context.getArg());
+			Object result = null;
+			try {
+				result = cacheUse.getObject(context.getArg());
+			} catch (Throwable e) {
+				log.error("cache get error.", e);
+			}
 			if (null != result) {
 				context.setResult(result);
 				return true;
@@ -178,9 +207,13 @@ public class ControllerVo {
 		return false;
 	}
 
-	public void cachePut(RequestContext context) throws Throwable {
+	public void cachePut(RequestContext context) {
 		if (null != cacheUse) {
-			cacheUse.putObject(context.getArg(), context.getResult());
+			try {
+				cacheUse.putObject(context.getArg(), context.getResult());
+			} catch (Throwable e) {
+				log.error("cache put error.", e);
+			}
 		}
 	}
 

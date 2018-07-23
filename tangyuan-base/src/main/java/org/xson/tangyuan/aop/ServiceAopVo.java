@@ -7,6 +7,7 @@ import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.util.TangYuanUtil;
 
@@ -121,7 +122,7 @@ public class ServiceAopVo {
 		}
 	}
 
-	public void execAfter(String service, Object arg, Object result, Throwable ex, boolean extend) {
+	public void execAfter(ServiceContext parent, String service, Object arg, Object result, Throwable ex, boolean extend) {
 
 		List<AopVo> tempAfterList = null;
 		if (extend) {
@@ -140,7 +141,8 @@ public class ServiceAopVo {
 			for (AopVo aVo : tempAfterList) {
 				exec = aVo.getExec();
 				log.info(TangYuanUtil.format("execute aop after: {}, service: {}", exec, service));
-				aVo.execAfter(pkgArg, ex);
+				//				aVo.execAfter(pkgArg, ex);
+				aVo.execAfter(parent, pkgArg, ex);
 			}
 		} catch (Throwable e) {
 			//			log.error("service[" + service + "] execute aop after error. due to:" + exec);

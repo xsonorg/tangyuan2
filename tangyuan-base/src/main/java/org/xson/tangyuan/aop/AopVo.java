@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.xson.logging.Log;
 import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.util.PatternMatchUtils;
 import org.xson.tangyuan.xml.node.CallNode.CallMode;
 
@@ -74,7 +75,7 @@ public abstract class AopVo implements Comparable<AopVo> {
 		throw new TangYuanException("Subclasses must override this method");
 	}
 
-	protected void execAfter(Object pkgArg, Throwable ex) {
+	protected void execAfter(ServiceContext parent, Object pkgArg, Throwable ex) {
 		throw new TangYuanException("Subclasses must override this method");
 	}
 

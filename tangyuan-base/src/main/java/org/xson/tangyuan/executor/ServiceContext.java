@@ -5,8 +5,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.xson.logging.Log;
 import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
-import org.xson.tangyuan.monitor.ServiceDeadlockInfo;
+import org.xson.tangyuan.trace.TrackingContext;
+import org.xson.tangyuan.trace.TrackingManager;
 import org.xson.tangyuan.util.TangYuanUtil;
+import org.xson.tangyuan.xml.node.AbstractServiceNode;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class ServiceContext {
@@ -34,32 +36,104 @@ public class ServiceContext {
 	/** 服务执行过程中的异常辅助信息 */
 	private IServiceExceptionInfo	exceptionInfo		= null;
 
-	/** 监控信息 */
-	private ServiceDeadlockInfo		contextInfo			= null;
+	/** 服务追踪信息 */
+	private Object					parentTrackingVo	= null;
 
-	public ServiceContext() {
-		if (TangYuanContainer.getInstance().isOpenDeadlockMonitor()) {
-			this.contextInfo = new ServiceDeadlockInfo(this.hashCode());// TODO
-			this.contextInfo.joinMonitor();
+	private TrackingManager			trackingManager		= null;
+
+	public ServiceContext(ServiceContext parent) {
+		if (null != parent) {
+			this.parentTrackingVo = parent.parentTrackingVo;
 		}
+		this.trackingManager = TangYuanContainer.getInstance().getTrackingManager();
 		globleCounter.getAndIncrement();
 	}
 
-	/**
-	 * 更新监控信息
-	 */
-	public void updateMonitor(String service) {
-		if (null != contextInfo) {
-			contextInfo.update(service);
+	private int getTrackingServiceType(AbstractServiceNode service) {
+		if (null == service) {
+			return TrackingManager.SERVICE_TYPE_NO;
+		}
+		TangYuanServiceType type = service.getServiceType();
+		if (TangYuanServiceType.SQL == type) {
+			return TrackingManager.SERVICE_TYPE_SQL;
+		} else if (TangYuanServiceType.MONGO == type) {
+			return TrackingManager.SERVICE_TYPE_MONGO;
+		} else if (TangYuanServiceType.JAVA == type) {
+			return TrackingManager.SERVICE_TYPE_JAVA;
+		} else if (TangYuanServiceType.HIVE == type) {
+			return TrackingManager.SERVICE_TYPE_HIVE;
+		} else if (TangYuanServiceType.HBASE == type) {
+			return TrackingManager.SERVICE_TYPE_HBASE;
+		} else if (TangYuanServiceType.MQ == type) {
+			return TrackingManager.SERVICE_TYPE_MQ;
+		} else if (TangYuanServiceType.ES == type) {
+			return TrackingManager.SERVICE_TYPE_ES;
+		}
+		return TrackingManager.SERVICE_TYPE_NO;
+	}
+
+	public TrackingContext startTracking(String serviceURI, Object arg, Integer executeMode, long now, AbstractServiceNode service) {
+		if (null == this.trackingManager) {
+			return null;
+		}
+		if (null == this.parentTrackingVo) {
+			this.parentTrackingVo = this.trackingManager.initTracking(arg, now);
+		}
+		if (null != service) {
+			if (TangYuanServiceType.PRCPROXY == service.getServiceType() || TangYuanServiceType.MQ == service.getServiceType()) {
+				return null;
+			}
+		}
+		try {
+			int serviceType = getTrackingServiceType(service);
+			//			Object currentVo = this.trackingManager.startTracking(this.parentTrackingVo, serviceURI, arg, serviceType,
+			//					TrackingManager.RECORD_TYPE_SERVICE, executeMode, now);
+			Object currentVo = this.trackingManager.startTracking(this.parentTrackingVo, serviceURI, arg, null, serviceType,
+					TrackingManager.RECORD_TYPE_SERVICE, executeMode, now);
+
+			TrackingContext trackingContext = new TrackingContext(this.parentTrackingVo, currentVo);
+			this.parentTrackingVo = currentVo;
+			return trackingContext;
+		} catch (Throwable e) {
+			log.error("start tracking error.", e);
+			return null;
 		}
 	}
 
-	/**
-	 * 停止监控信息
-	 */
-	public void stopMonitor() {
-		if (null != contextInfo) {
-			contextInfo.stop();
+	public void endTracking(TrackingContext trackingContext, Object result, Throwable ex) {
+		if (null == this.trackingManager) {
+			return;
+		}
+		if (null == trackingContext) {
+			return;
+		}
+		try {
+			this.trackingManager.endTracking(trackingContext.getCurrent(), result, ex);
+			this.parentTrackingVo = trackingContext.getParent();
+		} catch (Throwable e) {
+			log.error("end tracking error.", e);
+		}
+	}
+
+	public void addTrackingHeader(Object arg) {
+		if (null == this.trackingManager) {
+			return;
+		}
+		try {
+			this.trackingManager.addTrackingHeader(this.parentTrackingVo, arg);
+		} catch (Throwable e) {
+			log.error("add tracking header error.", e);
+		}
+	}
+
+	public void cleanTrackingHeader(Object arg) {
+		if (null == this.trackingManager) {
+			return;
+		}
+		try {
+			this.trackingManager.cleanTrackingHeader(arg);
+		} catch (Throwable e) {
+			log.error("clean tracking header error.", e);
 		}
 	}
 
@@ -216,4 +290,37 @@ public class ServiceContext {
 		}
 	}
 
+	//	public TrackingContext startTracking0(String serviceURI, Object arg, Integer executeMode) {
+	//		if (null == this.trackingManager) {
+	//			return null;
+	//		}
+	//		if (null == this.parentTrackingVo) {
+	//			this.parentTrackingVo = this.trackingManager.initTracking(arg);
+	//		}
+	//		try {
+	//			Object currentVo = this.trackingManager.startTracking(this.parentTrackingVo, serviceURI, arg, null, TrackingManager.RECORD_TYPE_SERVICE,
+	//					executeMode);
+	//			TrackingContext trackingContext = new TrackingContext(this.parentTrackingVo, currentVo);
+	//			this.parentTrackingVo = currentVo;
+	//			return trackingContext;
+	//		} catch (Throwable e) {
+	//			log.error("start tracking error.", e);
+	//			return null;
+	//		}
+	//	}
+
+	//	public TrackingContext checkIgnoreTracking(TrackingContext trackingContext, AbstractServiceNode service) {
+	//		if (null == this.trackingManager) {
+	//			return null;
+	//		}
+	//		if (null == trackingContext) {
+	//			return null;
+	//		}
+	//		if (TangYuanServiceType.PRCPROXY == service.getServiceType() || TangYuanServiceType.MQ == service.getServiceType()) {
+	//			this.parentTrackingVo = trackingContext.getParent();
+	//			return null;
+	//		}
+	//		this.trackingManager.setTracking(trackingContext.getCurrent(), service);
+	//		return trackingContext;
+	//	}
 }

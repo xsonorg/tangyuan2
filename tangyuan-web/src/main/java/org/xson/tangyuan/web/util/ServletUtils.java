@@ -124,6 +124,19 @@ public class ServletUtils {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static String getHttpHeaderContext(HttpServletRequest request) {
+		Enumeration<String> headerNames = request.getHeaderNames();
+		StringBuilder sb = new StringBuilder();
+		while (headerNames.hasMoreElements()) {
+			String key = (String) headerNames.nextElement();
+			String value = request.getHeader(key);
+			sb.append(key + ":" + value);
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
 	public static Map<String, String> queryStringToMap(String query) {
 		Map<String, String> queryMap = new HashMap<String, String>();
 		if (null == query || 0 == query.length()) {

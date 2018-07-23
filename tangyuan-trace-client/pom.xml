@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.xson</groupId>
+		<artifactId>tangyuan-parent</artifactId>
+		<!-- <version>${tangyuan.version}</version> -->
+		<version>1.2.2</version>
+	</parent>
+
+	<artifactId>tangyuan-trace-client</artifactId>
+	<packaging>jar</packaging>
+
+	<name>tangyuan-trace-client</name>
+	<url>http://xson.org/tangyuan</url>
+	<description>tangyuan-trace-client.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-base</artifactId>
+			<version>${tangyuan.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>xson-httpclient</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>
