@@ -23,6 +23,9 @@
 
 		<!--线程池配置-->
 		<thread-pool resource="thread-pool.properties"/>
+
+		<!--服务追踪配置-->
+		<trace-config resource="trace-config.properties"/>
 		
 		<!--启动、关闭时的AOP配置-->
 		<system-aop pointcut="startup-before" class="org.xson.tangyuan2.demo.ssaop.StartupBefore" />
@@ -71,7 +74,7 @@ SQL服务组件中：component-sql.xml
 
 	username=%username%
 	password=%password%
-	url=jdbc:mysql://%db_url%/%db_name%?Unicode=true&amp;characterEncoding=utf8
+	url=jdbc:mysql://%db_url%/%db_name%?Unicode=true&characterEncoding=utf8
 	driver=com.mysql.jdbc.Driver
 	maxActive=200
 	...
@@ -135,6 +138,7 @@ SQL服务组件中：component-sql.xml
 | jdkProxy | 创建类实例的时候，是否使用JDK反射方式创建 | boolean | false |
 | maxWaitTimeForShutDown | 容器关闭时等待现有服务执行完毕的最大等待时间(单位：秒) | long | 10 |
 | allServiceReturnXCO | 服务返回对象是否统一为XCO类型 | boolean | false |
+| appName | 应用名 | String |  |
 
 #### 1.2.4 线程池配置
 
@@ -160,7 +164,12 @@ SQL服务组件中：component-sql.xml
 	# maximumPoolSize=200
 	# keepAliveTime=60
 
-#### 1.2.5 系统AOP配置
+
+#### 1.2.5 服务追踪配置
+
+暂略
+
+#### 1.2.6 系统AOP配置
 
 如果开发者希望在tangyuan框架启动或者关闭的时候，执行一些自定义的方法，可以通过`<system-aop>`标签进行配置。
 
@@ -180,7 +189,7 @@ SQL服务组件中：component-sql.xml
 | shutdown-before | 在tangyuan各组件关闭之前 |
 | shutdown-after | 在tangyuan各组件关闭之后 |
 
-#### 1.2.6 组件配置
+#### 1.2.7 组件配置
 
 tangyuan框架中，各种组件是通过`<component>`标签进行配置的。注意：同一种用途的组件，最多只能配置一项。
 
@@ -218,7 +227,7 @@ tangyuan框架中，各种组件是通过`<component>`标签进行配置的。�
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/service.xsd"
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/1.2.2/service.xsd"
 		ns="role">
 	
 		<selectSet id="getRoleList" dsKey="readDB" txRef="tx_01">
