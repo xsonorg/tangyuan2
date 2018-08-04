@@ -72,7 +72,9 @@ public class PlaceholderResourceSupport {
 				result.replace(startIndex, endIndex + placeholderLength, propVal);
 				startIndex = result.indexOf(PLACEHOLDER_SYMBOL, startIndex + propVal.length());
 			} else {
-				startIndex = endIndex + 1;
+				// startIndex = endIndex + 1;
+				//fix bug
+				startIndex = result.indexOf(PLACEHOLDER_SYMBOL, endIndex + 1);
 			}
 		}
 		return result.toString();
