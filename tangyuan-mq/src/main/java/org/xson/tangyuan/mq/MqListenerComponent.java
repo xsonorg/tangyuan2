@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanComponent;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.datasource.MqSourceVo.MqSourceType;
 import org.xson.tangyuan.mq.executor.Receiver;
 import org.xson.tangyuan.mq.executor.activemq.ActiveMqReceiver;

@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mongo.MongoComponent;
 import org.xson.tangyuan.mongo.datasource.AbstractMongoDataSource;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceGroupVo;

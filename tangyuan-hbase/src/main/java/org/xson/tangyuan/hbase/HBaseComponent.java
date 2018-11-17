@@ -2,14 +2,14 @@ package org.xson.tangyuan.hbase;
 
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSourceManager;
 import org.xson.tangyuan.hbase.executor.HBaseServiceContextFactory;
 import org.xson.tangyuan.hbase.xml.XmlConfigBuilder;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class HBaseComponent implements TangYuanComponent {

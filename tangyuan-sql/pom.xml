@@ -19,12 +19,6 @@
 
 		<dependency>
 			<groupId>org.xson</groupId>
-			<artifactId>common-object</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-base</artifactId>
 			<version>${tangyuan.version}</version>
 		</dependency>

@@ -3,12 +3,12 @@ package org.xson.tangyuan.aop;
 import java.util.List;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.TangYuanUtil;
 
 /**

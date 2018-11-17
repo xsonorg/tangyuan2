@@ -2,13 +2,13 @@ package org.xson.tangyuan.rpc;
 
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.executor.DefaultServiceContext;
 import org.xson.tangyuan.executor.IServiceContext;
 import org.xson.tangyuan.executor.ServiceContextFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class RpcContainer {

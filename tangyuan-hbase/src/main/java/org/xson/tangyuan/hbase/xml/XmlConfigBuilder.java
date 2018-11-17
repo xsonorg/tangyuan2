@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.hbase.HBaseComponent;
 import org.xson.tangyuan.hbase.datasource.DataSourceVo;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSource;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSourceManager;
 import org.xson.tangyuan.hbase.xml.node.XMLHBaseNodeBuilder;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;

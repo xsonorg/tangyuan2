@@ -3,12 +3,12 @@ package org.xson.tangyuan.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.cache.xml.XMLCacheBuilder;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 
 public class CacheComponent implements TangYuanComponent {
 

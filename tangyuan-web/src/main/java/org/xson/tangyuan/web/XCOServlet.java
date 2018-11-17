@@ -9,10 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.trace.TrackingContext;
 import org.xson.tangyuan.trace.TrackingManager;
 import org.xson.tangyuan.validate.XCOValidate;
@@ -95,9 +96,14 @@ public class XCOServlet extends HttpServlet {
 		// data convert
 		try {
 			cVo.dataConvert(context);
+
+			// 添加上下文记录, 之前日志中可能会丢丢失, 但不影响
+			RuntimeContext.beginFromArg(context.getArg(), "WEB");
+
 			if (log.isInfoEnabled()) {
 				log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
 			}
+
 			setTracking(context);
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
@@ -232,6 +238,9 @@ public class XCOServlet extends HttpServlet {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
 			endTracking(context, ex);
+
+			// 清理上下文记录
+			RuntimeContext.clean();
 		}
 	}
 
@@ -275,6 +284,9 @@ public class XCOServlet extends HttpServlet {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
 			endTracking(context, null);
+
+			// 清理上下文记录
+			RuntimeContext.clean();
 		}
 	}
 

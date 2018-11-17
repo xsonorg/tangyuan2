@@ -2,6 +2,7 @@ package org.xson.tangyuan.rpc;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
 /**
@@ -16,9 +17,11 @@ public class RpcServiceNode extends AbstractServiceNode {
 
 	@Override
 	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-		//		Object result = RpcProxy.call(serviceKey, (XCO) arg);
-		//		context.setResult(result);
-		//		return true;
+		// Object result = RpcProxy.call(serviceKey, (XCO) arg);
+		// context.setResult(result);
+		// return true;
+
+		boolean sr = RuntimeContext.setHeader(arg);
 
 		context.addTrackingHeader(arg);
 		try {
@@ -28,6 +31,11 @@ public class RpcServiceNode extends AbstractServiceNode {
 		} catch (Throwable e) {
 			throw e;
 		} finally {
+
+			if (sr) {
+				RuntimeContext.cleanHeader();
+			}
+
 			context.cleanTrackingHeader(arg);
 		}
 	}

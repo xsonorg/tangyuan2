@@ -2,10 +2,10 @@ package org.xson.tangyuan.aop.vo;
 
 import java.util.List;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.aop.AopVo;
 import org.xson.tangyuan.executor.ServiceActuator;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.xml.node.CallNode.CallMode;
 
 public class BeforeAopVo extends AopVo {

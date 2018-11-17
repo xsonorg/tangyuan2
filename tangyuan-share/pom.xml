@@ -26,13 +26,16 @@
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>logging</artifactId>
+			<version>${xson.logging}</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>

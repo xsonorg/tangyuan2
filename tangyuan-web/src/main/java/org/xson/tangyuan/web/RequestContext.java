@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.web.util.ServletUtils;
 

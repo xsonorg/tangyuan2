@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.ognl.FieldVo;
 import org.xson.tangyuan.ognl.FieldVoWrapper;

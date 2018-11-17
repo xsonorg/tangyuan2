@@ -2,14 +2,15 @@ package org.xson.tangyuan.es;
 
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.es.datasource.EsSourceManager;
 import org.xson.tangyuan.es.executor.EsServiceContextFactory;
 import org.xson.tangyuan.es.xml.XmlConfigBuilder;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 

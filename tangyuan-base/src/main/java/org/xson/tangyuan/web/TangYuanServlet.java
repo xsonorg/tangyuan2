@@ -8,12 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.executor.ServiceURI;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.util.ServletUtil;
 import org.xson.tangyuan.util.TangYuanUtil;
 
@@ -36,18 +37,37 @@ public class TangYuanServlet extends HttpServlet {
 
 		XCO result = null;
 		try {
+			// log.info("request from [" + req.getRequestURL() + "], client ip[" + ServletUtil.getIpAddress(req) + "]");
+			// ServiceURI tyURI = ServiceURI.parseUrlPath(req.getRequestURI());
+			// XCO arg = ServletUtil.getXCOArg(req);
+			// log.info("request arg: " + arg);
+
+			XCO arg = ServletUtil.getXCOArg(req);
+			// 添加上下文记录
+			RuntimeContext.beginFromArg(arg);
+
 			log.info("request from [" + req.getRequestURL() + "], client ip[" + ServletUtil.getIpAddress(req) + "]");
 			ServiceURI tyURI = ServiceURI.parseUrlPath(req.getRequestURI());
-			XCO arg = ServletUtil.getXCOArg(req);
 			log.info("request arg: " + arg);
+
 			Object retObj = doXcoRpcRquest(tyURI, arg);
 			result = TangYuanUtil.retObjToXco(retObj);
 		} catch (Throwable e) {
 			log.error("request error: " + req.getRequestURL(), e);
 			result = TangYuanUtil.getExceptionResult(e);
+		} finally {
+
+			log.info("reponse result: " + result);
+
+			try {
+				ServletUtil.reponse(resp, result);
+			} catch (Throwable e) {
+
+			}
+
+			// 清理上下文记录
+			RuntimeContext.clean();
 		}
-		log.info("reponse result: " + result);
-		ServletUtil.reponse(resp, result);
 	}
 
 	private Object doXcoRpcRquest(ServiceURI sURI, final XCO arg) throws Throwable {

@@ -16,11 +16,11 @@
 
 	<dependencies>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>common-object</artifactId>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.xson</groupId>

@@ -44,11 +44,11 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<dependency>
+<!-- 			<dependency>
 				<groupId>org.xson</groupId>
 				<artifactId>logging</artifactId>
 				<version>${xson.logging}</version>
-			</dependency>
+			</dependency> -->
 	
 			<dependency>
 				<groupId>org.xson</groupId>

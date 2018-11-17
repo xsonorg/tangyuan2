@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.cache.CacheComponent;
 import org.xson.tangyuan.cache.TangYuanCache;
@@ -17,6 +15,8 @@ import org.xson.tangyuan.es.ResultConverter;
 import org.xson.tangyuan.es.converters.JSONConverter;
 import org.xson.tangyuan.es.datasource.EsSourceManager;
 import org.xson.tangyuan.es.xml.XmlEsContext;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.ognl.vars.parser.LogicalExprParser;
 import org.xson.tangyuan.ognl.vars.parser.NormalParser;
 import org.xson.tangyuan.util.StringUtils;

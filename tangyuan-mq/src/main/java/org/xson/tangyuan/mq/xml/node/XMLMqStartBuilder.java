@@ -2,8 +2,8 @@ package org.xson.tangyuan.mq.xml.node;
 
 import java.util.List;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.MqContainer;
 import org.xson.tangyuan.mq.vo.ServiceVo;
 import org.xson.tangyuan.xml.XmlContext;

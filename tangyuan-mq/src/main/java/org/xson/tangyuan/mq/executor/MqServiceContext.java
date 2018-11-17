@@ -3,9 +3,9 @@ package org.xson.tangyuan.mq.executor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.executor.DefaultServiceContext;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.executor.MqTransactionObject.State;
 
 public class MqServiceContext extends DefaultServiceContext {

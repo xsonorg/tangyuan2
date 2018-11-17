@@ -12,8 +12,8 @@ import javax.jms.Topic;
 import javax.management.modelmbean.XMLParseException;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.MqContainer;
 import org.xson.tangyuan.mq.datasource.activemq.ActiveMqSource;
 import org.xson.tangyuan.mq.executor.Receiver;

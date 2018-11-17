@@ -1,8 +1,6 @@
 package org.xson.tangyuan.es.xml.node;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.es.ResultConverter;
 import org.xson.tangyuan.es.datasource.EsSourceManager;
@@ -10,6 +8,8 @@ import org.xson.tangyuan.es.datasource.EsSourceVo;
 import org.xson.tangyuan.es.executor.EsServiceContext;
 import org.xson.tangyuan.es.util.ESUtil;
 import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.xml.node.TangYuanNode;
 

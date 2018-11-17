@@ -2,11 +2,11 @@ package org.xson.tangyuan.sql;
 
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.sharding.ShardingDefManager;
 import org.xson.tangyuan.sql.datasource.DataSourceManager;
 import org.xson.tangyuan.sql.executor.SqlServiceContextFactory;

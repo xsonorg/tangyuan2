@@ -3,9 +3,9 @@ package org.xson.tangyuan.sql.executor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogException;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.type.DatabaseDialect;
 import org.xson.tangyuan.type.TypeHandler;
 import org.xson.tangyuan.type.TypeHandlerRegistry;
@@ -93,7 +93,7 @@ public class SqlLog {
 
 		if (count > 0) {
 			if (count > argSize) {
-				throw new LogException("所需SQL变量数和入参数不符");
+				throw new TangYuanException("所需SQL变量数和入参数不符");
 			}
 			return list;
 		}

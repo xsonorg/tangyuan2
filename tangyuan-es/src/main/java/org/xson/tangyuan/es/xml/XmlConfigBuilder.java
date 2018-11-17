@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.es.EsComponent;
 import org.xson.tangyuan.es.ResultConverter;
 import org.xson.tangyuan.es.converters.HitsConverter;
@@ -16,6 +14,8 @@ import org.xson.tangyuan.es.converters.XCOConverter;
 import org.xson.tangyuan.es.datasource.EsSourceManager;
 import org.xson.tangyuan.es.datasource.EsSourceVo;
 import org.xson.tangyuan.es.xml.node.XMLEsNodeBuilder;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;

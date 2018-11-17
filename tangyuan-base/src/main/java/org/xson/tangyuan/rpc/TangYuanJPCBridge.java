@@ -3,12 +3,13 @@ package org.xson.tangyuan.rpc;
 import java.net.URI;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.executor.ServiceURI;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.zongzi.JPCBridge;
 
@@ -34,9 +35,15 @@ public class TangYuanJPCBridge implements JPCBridge {
 
 	@Override
 	public Object call(String path, Object arg) {
+
+		// 添加上下文记录
+		RuntimeContext.beginFromArg(arg);
+
 		log.info("client request to: " + path);
 		log.info("client request args: " + arg);
+
 		XCO result = null;
+
 		try {
 			ServiceURI sURI = ServiceURI.parseUrlPath(path);
 			Object retObj = doXcoRpcRquest(sURI, arg);
@@ -45,6 +52,10 @@ public class TangYuanJPCBridge implements JPCBridge {
 			// log.error("call service exception: " + path, e);
 			result = TangYuanUtil.getExceptionResult(e);
 		}
+
+		// 清理上下文记录
+		RuntimeContext.clean();
+
 		return result;
 	}
 

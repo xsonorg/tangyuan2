@@ -8,9 +8,9 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.MqContainer;
 import org.xson.tangyuan.mq.datasource.activemq.ActiveMqSource;
 import org.xson.tangyuan.mq.executor.MqServiceContext;

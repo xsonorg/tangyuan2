@@ -3,11 +3,11 @@ package org.xson.tangyuan.java.xml.node;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.cache.apply.CacheCleanVo;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
 /**

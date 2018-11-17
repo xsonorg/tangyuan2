@@ -8,8 +8,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;

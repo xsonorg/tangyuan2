@@ -23,10 +23,10 @@
 			<version>${tangyuan.version}</version>
 		</dependency>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>common-object</artifactId>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.xson</groupId>

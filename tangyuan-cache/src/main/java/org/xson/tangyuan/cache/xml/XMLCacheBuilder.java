@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.cache.AbstractCache;
 import org.xson.tangyuan.cache.CacheComponent;
@@ -17,6 +15,8 @@ import org.xson.tangyuan.cache.CacheRefVo;
 import org.xson.tangyuan.cache.CacheSerializer;
 import org.xson.tangyuan.cache.CacheVo;
 import org.xson.tangyuan.cache.CacheVo.CacheType;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;

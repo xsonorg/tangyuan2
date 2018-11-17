@@ -2,8 +2,8 @@ package org.xson.tangyuan.mq.executor.rabbitmq;
 
 import java.io.IOException;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.datasource.rabbitmq.RabbitMqSource;
 import org.xson.tangyuan.mq.executor.MqTransactionObject;
 

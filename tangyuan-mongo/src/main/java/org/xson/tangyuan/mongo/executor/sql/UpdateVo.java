@@ -2,8 +2,8 @@ package org.xson.tangyuan.mongo.executor.sql;
 
 import java.util.List;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mongo.executor.sql.ValueVo.ValueType;
 
 import com.mongodb.BasicDBObject;

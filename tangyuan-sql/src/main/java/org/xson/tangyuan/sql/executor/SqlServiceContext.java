@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.executor.IServiceContext;
 import org.xson.tangyuan.executor.IServiceExceptionInfo;
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.ognl.vars.Variable;
 import org.xson.tangyuan.sql.SqlComponent;

@@ -21,8 +21,6 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.hbase.HBaseComponent;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSource;
 import org.xson.tangyuan.hbase.datasource.HBaseDataSourceManager;
@@ -31,6 +29,8 @@ import org.xson.tangyuan.hbase.executor.hbase.GetVo;
 import org.xson.tangyuan.hbase.executor.hbase.PutVo;
 import org.xson.tangyuan.hbase.executor.hbase.ScanVo;
 import org.xson.tangyuan.hbase.xml.node.AbstractHBaseNode.ResultStruct;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 
 public class HBaseActuator {
 

@@ -35,18 +35,13 @@ public class LicensesHelper {
 
 	public static boolean check(InputStream in) {
 		try {
-			// load Licenses
-			//			char[] a = load();
 			char[] a = null;
 			if (null == in) {
 				a = load();
 			} else {
 				a = getContext(in);
 			}
-
-			// load date
 			char[] d = { '1', '0', '2', '5', '3', '2', '0', '8' };
-			// { 3, 5, 7, 9, 13, 16, 17, 100 };
 			d[0] = a[3 * 8 - 1];
 			d[1] = a[5 * 8 - 1];
 			d[2] = a[7 * 8 - 1];
@@ -55,10 +50,7 @@ public class LicensesHelper {
 			d[5] = a[16 * 8 - 1];
 			d[6] = a[17 * 8 - 1];
 			d[7] = a[100 * 8 - 1];
-			// check
-			// System.out.println(new String(d));
 			String t = new SimpleDateFormat("yyyyMMdd").format(new Date());
-			// System.out.println(t);
 			return Integer.parseInt(new String(d)) > Integer.parseInt(t);
 		} catch (Throwable e) {
 		}

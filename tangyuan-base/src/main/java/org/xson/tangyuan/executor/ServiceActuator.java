@@ -2,14 +2,15 @@ package org.xson.tangyuan.executor;
 
 import java.util.List;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.aop.AopSupport;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mr.MapReduceHander;
 import org.xson.tangyuan.ognl.convert.ParameterConverter;
 import org.xson.tangyuan.rpc.RpcProxy;
 import org.xson.tangyuan.rpc.RpcServiceNode;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.trace.TrackingContext;
 import org.xson.tangyuan.trace.TrackingManager;
 import org.xson.tangyuan.util.TangYuanUtil;
@@ -102,13 +103,13 @@ public class ServiceActuator {
 					} catch (Throwable e) {
 						context.finishOnException();
 						log.error("tangyuan service commit exception", e);
-						ex = e;	// fix bug: 这里的异常需要上抛
+						ex = e; // fix bug: 这里的异常需要上抛
 					}
 				} else {
 					context.finishOnException();
 				}
 				log.debug("close a context. hashCode[" + context.hashCode() + "]");
-				//				context.stopMonitor();// stop monitor
+				// context.stopMonitor();// stop monitor
 				if (threadContext.recycle()) {
 					contextThreadLocal.remove();
 				}
@@ -128,11 +129,11 @@ public class ServiceActuator {
 		// 如果当前可以处理,当前处理; 如果当前不能处理,上抛,不做日志输出
 		ThreadServiceContext threadContext = contextThreadLocal.get();
 		ServiceContext context = threadContext.get();
-		if (--context.counter < 1) {	//最后一层
+		if (--context.counter < 1) { // 最后一层
 			context.finishOnException();
 			log.error("execute service exception: " + serviceURI, throwable);
 			log.debug("close a context. hashCode[" + context.hashCode() + "] on exception");
-			//			context.stopMonitor();
+			// context.stopMonitor();
 			if (threadContext.recycle()) {
 				contextThreadLocal.remove();
 			}
@@ -141,7 +142,7 @@ public class ServiceActuator {
 				// 最后一层抛出的异常
 				throw TangYuanUtil.getServiceException(throwable);
 			}
-		} else {						//不是最后一层
+		} else { // 不是最后一层
 			if (null != service) {
 				try {
 					context.onException(service.getServiceType(), throwable, "execute service exception: " + serviceURI);
@@ -271,6 +272,7 @@ public class ServiceActuator {
 		// 3. 设置埋点
 		// TrackingContext trackingContext = context.startTracking(serviceURI, arg, TrackingManager.EXECUTE_MODE_SYNC);
 
+		Object rcObject = null;
 		TrackingContext trackingContext = null;
 		AbstractServiceNode service = null;
 		Object result = null;
@@ -279,6 +281,8 @@ public class ServiceActuator {
 		try {
 			service = findService(serviceURI);
 
+			rcObject = RuntimeContext.beginExecution(service);
+
 			// trackingContext = context.startTracking(serviceURI, arg, TrackingManager.EXECUTE_MODE_SYNC);
 			trackingContext = context.startTracking(serviceURI, arg, TrackingManager.EXECUTE_MODE_SYNC, now, service);
 
@@ -286,8 +290,8 @@ public class ServiceActuator {
 				throw new ServiceException("service does not exist: " + serviceURI);// 上抛异常
 			}
 
-			//			// 对于RPC服务跟踪需要忽略
-			//			context.checkIgnoreTracking(trackingContext, service);
+			// // 对于RPC服务跟踪需要忽略
+			// context.checkIgnoreTracking(trackingContext, service);
 
 			if (null != aop) {
 				aop.execBefore(service, arg);// 前置切面
@@ -296,7 +300,7 @@ public class ServiceActuator {
 			// TODO 如果是XCO 需要考虑入参的只读特性,:::不需要
 			Object data = converter.parameterConvert(arg, service.getResultType()); // TODO 有可能发生异常
 			service.execute(context, data);
-			result = service.getResult(context);									// TODO 类型转换时可能发生异常
+			result = service.getResult(context); // TODO 类型转换时可能发生异常
 
 			// fix bug: 结果需要预先处理, AOP, Tracking保持一致
 			result = getResult(result, ignoreWrapper);
@@ -333,11 +337,13 @@ public class ServiceActuator {
 
 			context.endTracking(trackingContext, result, ex);
 
+			RuntimeContext.endExecution(rcObject);
+
 			if (null != throwEx) {
 				throw throwEx;
 			}
 		}
-		//return (T) getResult(result, ignoreWrapper);
+		// return (T) getResult(result, ignoreWrapper);
 		return (T) result;
 	}
 
@@ -365,8 +371,9 @@ public class ServiceActuator {
 		long now = System.currentTimeMillis();
 
 		ServiceContext context = begin(true, parent);
-		//		TrackingContext trackingContext = context.startTracking(serviceURI, arg, executeMode);
+		// TrackingContext trackingContext = context.startTracking(serviceURI, arg, executeMode);
 
+		Object rcObject = null;
 		TrackingContext trackingContext = null;
 		AbstractServiceNode service = null;
 		Object result = null;
@@ -375,14 +382,16 @@ public class ServiceActuator {
 
 			service = findService(serviceURI);
 
+			rcObject = RuntimeContext.beginExecution(service);
+
 			trackingContext = context.startTracking(serviceURI, arg, executeMode, now, service);
 
 			if (null == service) {
 				throw new ServiceException("service does not exist: " + serviceURI);
 			}
 
-			//			// 对于RPC服务跟踪需要忽略
-			//			context.checkIgnoreTracking(trackingContext, service);
+			// // 对于RPC服务跟踪需要忽略
+			// context.checkIgnoreTracking(trackingContext, service);
 
 			if (null != aop) {
 				aop.execBefore(service, arg);// 前置切面
@@ -429,6 +438,8 @@ public class ServiceActuator {
 
 			context.endTracking(trackingContext, result, ex);
 
+			RuntimeContext.endExecution(rcObject);
+
 			if (null != throwEx) {
 				if (throwException) {
 					throw throwEx;
@@ -439,7 +450,7 @@ public class ServiceActuator {
 			}
 		}
 
-		//		return (T) getResult(result, ignoreWrapper);
+		// return (T) getResult(result, ignoreWrapper);
 		return (T) result;
 	}
 
@@ -449,10 +460,19 @@ public class ServiceActuator {
 	public static void executeAsync(final String serviceURI, final Object arg, final ServiceContext parent) {
 		check();
 		log.info("execute async service: " + serviceURI);
+
+		final RuntimeContext rc = RuntimeContext.get();
+
 		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
 			@Override
 			public void run() {
+				// 添加上下文记录
+				RuntimeContext.beginFromContext(rc);
+
 				executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
+
+				// 清理上下文记录
+				RuntimeContext.clean();
 			}
 		});
 	}
@@ -463,11 +483,22 @@ public class ServiceActuator {
 	public static void executeAsync(final String serviceURI, final Object arg) {
 		check();
 		log.info("execute async service: " + serviceURI);
+
 		final ServiceContext parent = getServiceContext();
+
+		final RuntimeContext rc = RuntimeContext.get();
+
 		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
 			@Override
 			public void run() {
+
+				// 添加上下文记录
+				RuntimeContext.beginFromContext(rc);
+
 				executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
+
+				// 清理上下文记录
+				RuntimeContext.clean();
 			}
 		});
 	}
@@ -489,12 +520,11 @@ public class ServiceActuator {
 		check();
 		Object result = null;
 		ServiceContext parent = getServiceContext();
+		RuntimeContext rc = RuntimeContext.get();
 		try {
-			//			result = MapReduce.execute(mapReduceContext, serviceURI, args, handler, timeout, parent);
-
 			int size = args.size();
 			for (int i = 0; i < size; i++) {
-				executeMapReduce0(mapReduceContext, serviceURI, args.get(i), handler, parent);
+				executeMapReduce0(mapReduceContext, serviceURI, args.get(i), handler, parent, rc);
 			}
 			result = handler.getResult(mapReduceContext, timeout);
 
@@ -519,15 +549,13 @@ public class ServiceActuator {
 		check();
 		Object result = null;
 		ServiceContext parent = getServiceContext();
+		RuntimeContext rc = RuntimeContext.get();
 		try {
-			//			result = MapReduce.execute(mapReduceContext, services, args, handler, timeout, parent);
-
 			int size = services.size();
 			for (int i = 0; i < size; i++) {
-				executeMapReduce0(mapReduceContext, services.get(i), args.get(i), handler, parent);
+				executeMapReduce0(mapReduceContext, services.get(i), args.get(i), handler, parent, rc);
 			}
 			result = handler.getResult(mapReduceContext, timeout);
-
 		} catch (Throwable e) {
 			result = getExceptionResult(e);// 防止异常处理后的返回
 		}
@@ -537,12 +565,23 @@ public class ServiceActuator {
 	///////////////////////////////
 
 	private static void executeMapReduce0(final Object context, final String service, final Object arg, final MapReduceHander handler,
-			final ServiceContext parent) {
+			final ServiceContext parent, final RuntimeContext rc) {
 		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
 			@Override
 			public void run() {
-				Object result = ServiceActuator.executeAlone(service, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
-				handler.merge(context, service, result);
+
+				// 添加上下文记录
+				RuntimeContext.beginFromContext(rc);
+
+				try {
+					Object result = ServiceActuator.executeAlone(service, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
+					handler.merge(context, service, result);
+				} catch (Throwable e) {
+					log.error(e);
+				}
+
+				// 清理上下文记录
+				RuntimeContext.clean();
 			}
 		});
 	}

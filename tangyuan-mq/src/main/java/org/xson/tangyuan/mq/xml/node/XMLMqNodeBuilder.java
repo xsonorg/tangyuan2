@@ -7,10 +7,10 @@ import java.util.Map;
 
 import javax.management.modelmbean.XMLParseException;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mq.datasource.MqSourceVo.MqSourceType;
 import org.xson.tangyuan.mq.vo.BindingPattern;
 import org.xson.tangyuan.mq.vo.BindingVo;

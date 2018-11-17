@@ -1,8 +1,8 @@
 package org.xson.tangyuan.timer;
 
 import org.quartz.DisallowConcurrentExecution;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 
 @DisallowConcurrentExecution
 public class NonConcurrentJob extends TimerJob {

@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.xson.common.object.XCO;
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 
 public class RuleGroupItem {
 

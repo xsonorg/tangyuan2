@@ -1,7 +1,7 @@
 package org.xson.tangyuan.timer;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 
 public class ConcurrentJob extends TimerJob {
 

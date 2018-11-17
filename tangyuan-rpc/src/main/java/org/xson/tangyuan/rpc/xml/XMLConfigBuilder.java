@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.logging.Log;
-import org.xson.logging.LogFactory;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.rpc.RpcClientComponent;
 import org.xson.tangyuan.rpc.RpcContainer;
 import org.xson.tangyuan.rpc.RpcProxy;
