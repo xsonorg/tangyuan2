@@ -28,9 +28,14 @@ public class ResourceManager {
 		} else {
 			in = Resources.getResourceAsStream(resource);
 		}
-		if (null == placeholderMap || 0 == placeholderMap.size()) {
+//		if (null == placeholderMap || 0 == placeholderMap.size()) {
+//			in = PlaceholderResourceSupport.processInputStream(in, placeholderMap);
+//		}
+		
+		if (null != placeholderMap && 0 != placeholderMap.size()) {
 			in = PlaceholderResourceSupport.processInputStream(in, placeholderMap);
 		}
+		
 		return in;
 	}
 

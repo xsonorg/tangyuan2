@@ -96,6 +96,7 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		XCO data = null;
 		if (null == this.appInfo) {
 			data = systemInfo;
+			this.appInfo = new XCO();// fix bug
 		} else {
 			this.appInfo.append(systemInfo);
 			data = this.appInfo;

@@ -41,6 +41,13 @@ public abstract class TimerJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		
+		boolean available = TimerComponent.getInstance().isAvailable();
+		if(!available){
+			getLogger().info("The current project is in a high availability alternative state.");
+			return;
+		}
+		
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		TimerConfig config = (TimerConfig) dataMap.get("CONFIG");
 		getLogger().info(config.getDesc() + ":" + config.getService() + " start");
