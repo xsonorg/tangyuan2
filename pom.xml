@@ -13,8 +13,8 @@
 	<properties>
 		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tangyuan.version>1.2.2</tangyuan.version>
-		<xco.version>1.0.3</xco.version>
+		<tangyuan.version>1.2.3</tangyuan.version>
+		<xco.version>1.0.4</xco.version>
 		<xson.redis>1.0.2</xson.redis>
 		<xson.logging>1.0.0</xson.logging>
 		<zongzi.version>1.0.0</zongzi.version>
@@ -71,7 +71,7 @@
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
-				<version>1.1.41</version>
+				<version>1.2.51</version>
 			</dependency>
 
 			<dependency>
@@ -170,7 +170,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.3</version>
+				<version>4.5.6</version>
 			</dependency>
 
 		</dependencies>
