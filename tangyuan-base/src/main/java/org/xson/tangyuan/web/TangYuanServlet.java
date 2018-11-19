@@ -43,6 +43,7 @@ public class TangYuanServlet extends HttpServlet {
 			// log.info("request arg: " + arg);
 
 			XCO arg = ServletUtil.getXCOArg(req);
+
 			// 添加上下文记录
 			RuntimeContext.beginFromArg(arg);
 

@@ -27,7 +27,7 @@ public abstract class TimerJob implements Job {
 		}
 
 		// 添加上下文记录
-		RuntimeContext.beginFromArg(null);
+		RuntimeContext.beginFromArg(null, "TIMER");
 
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		TimerConfig config = (TimerConfig) dataMap.get("CONFIG");

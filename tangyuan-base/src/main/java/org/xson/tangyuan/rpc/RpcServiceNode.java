@@ -33,7 +33,7 @@ public class RpcServiceNode extends AbstractServiceNode {
 		} finally {
 
 			if (sr) {
-				RuntimeContext.cleanHeader();
+				RuntimeContext.cleanHeader(arg);
 			}
 
 			context.cleanTrackingHeader(arg);

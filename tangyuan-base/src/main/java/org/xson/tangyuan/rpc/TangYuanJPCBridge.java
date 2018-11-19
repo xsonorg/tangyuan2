@@ -50,6 +50,7 @@ public class TangYuanJPCBridge implements JPCBridge {
 			result = TangYuanUtil.retObjToXco(retObj);
 		} catch (Throwable e) {
 			// log.error("call service exception: " + path, e);
+			// TODO
 			result = TangYuanUtil.getExceptionResult(e);
 		}
 

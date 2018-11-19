@@ -1,7 +1,11 @@
 package org.xson.tangyuan.runtime;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
+
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 运行时上下文
@@ -69,43 +73,75 @@ public class RuntimeContext {
 	/**
 	 * 开启一个上下文, 容器入口调用
 	 */
-	// public static void begin() {
-	// beginWithHeader(null);
-	// }
-
-	/**
-	 * 开启一个上下文, 容器入口调用
-	 */
 	public static void beginFromArg(Object arg) {
 		beginFromArg(arg, null);
 	}
 
 	public static void beginFromArg(Object arg, Object info) {
-		// beginWithHeader(header);
-		// TODO
-	}
-
-	// TODO XCO arg
-	private static void beginWithHeader(XCO header) {
 		RuntimeContext rc = get();
 		if (null == rc) {
 			String traceId = null;
 			String logType = null;
-			if (null == header) {
+			if (null == arg) {
 				// 全新的上下文
 				traceId = createTraceId();
 				logType = "unknown";
-			} else {
+			} else if (arg instanceof XCO) {
 				// 通过参数传递的
-				traceId = header.getStringValue(HEADER_KEY_TRACE_ID);
-				logType = header.getStringValue(HEADER_KEY_LOG_TYPE);
-				traceId = (null == traceId) ? createTraceId() : traceId;
-				logType = (null == logType) ? "unknown" : logType;
+				XCO header = ((XCO) arg).getXCOValue(TangYuanContainer.XCO_HEADER_KEY);
+				if (null != header) {
+					traceId = header.getStringValue(HEADER_KEY_TRACE_ID);
+					logType = header.getStringValue(HEADER_KEY_LOG_TYPE);
+					traceId = (null == traceId) ? createTraceId() : traceId;
+					logType = (null == logType) ? "unknown" : logType;
+				}
+			} else if (arg instanceof JSONObject) {
+				// 通过参数传递的
+				try {
+					JSONObject header = ((JSONObject) arg).getJSONObject(TangYuanContainer.XCO_HEADER_KEY);
+					if (null != header) {
+						traceId = header.getString(HEADER_KEY_TRACE_ID);
+						logType = header.getString(HEADER_KEY_LOG_TYPE);
+						traceId = (null == traceId) ? createTraceId() : traceId;
+						logType = (null == logType) ? "unknown" : logType;
+					}
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			}
 			rc = new RuntimeContext(traceId, logType);
+
+			// 直接放入组件名称
+			if (null != info) {
+				rc.setComponent(info.toString());
+			}
 			contextThreadLocal.set(rc);
+		} else {
+			throw new TangYuanException("previously left uncleaned context: " + arg);
 		}
 	}
+
+	// // XCO arg
+	// private static void beginWithHeader(XCO header) {
+	// RuntimeContext rc = get();
+	// if (null == rc) {
+	// String traceId = null;
+	// String logType = null;
+	// if (null == header) {
+	// // 全新的上下文
+	// traceId = createTraceId();
+	// logType = "unknown";
+	// } else {
+	// // 通过参数传递的
+	// traceId = header.getStringValue(HEADER_KEY_TRACE_ID);
+	// logType = header.getStringValue(HEADER_KEY_LOG_TYPE);
+	// traceId = (null == traceId) ? createTraceId() : traceId;
+	// logType = (null == logType) ? "unknown" : logType;
+	// }
+	// rc = new RuntimeContext(traceId, logType);
+	// contextThreadLocal.set(rc);
+	// }
+	// }
 
 	/**
 	 * 开启一个上下文(线程开始时调用)
@@ -115,10 +151,6 @@ public class RuntimeContext {
 			RuntimeContext newRc = new RuntimeContext(rc);
 			contextThreadLocal.set(newRc);
 		}
-	}
-
-	public static void updateHeader(Object arg) {
-		// TODO 需要判断类型, 并且是否包含$$HEADER
 	}
 
 	/**
@@ -150,12 +182,43 @@ public class RuntimeContext {
 	}
 
 	public static boolean setHeader(Object arg) {
-		// TODO 向参数中设置上下文信息
+		if (null == arg) {
+			return false;
+		}
+
+		RuntimeContext rc = get();
+		if (null == rc) {
+			return false;
+		}
+
+		if (arg instanceof XCO) {
+			XCO header = ((XCO) arg).getXCOValue(TangYuanContainer.XCO_HEADER_KEY);
+			if (null == header) {
+				header = new XCO();
+				((XCO) arg).setXCOValue(TangYuanContainer.XCO_HEADER_KEY, header);
+			}
+
+			header.setStringValue(HEADER_KEY_TRACE_ID, rc.getTraceId());
+			header.setStringValue(HEADER_KEY_LOG_TYPE, rc.getLogType());
+			return true;
+		} else if (arg instanceof JSONObject) {
+			throw new TangYuanException("Not supported yet");
+		}
+
 		return false;
 	}
 
-	public static void cleanHeader() {
-		// TODO 清除向参数中设置上下文信息
+	public static void cleanHeader(Object arg) {
+		if (null == arg) {
+			return;
+		}
+		if (arg instanceof XCO) {
+			XCO header = ((XCO) arg).getXCOValue(TangYuanContainer.XCO_HEADER_KEY);
+			header.remove(HEADER_KEY_TRACE_ID);
+			header.remove(HEADER_KEY_LOG_TYPE);
+		} else if (arg instanceof JSONObject) {
+			throw new TangYuanException("Not supported yet");
+		}
 	}
 
 	/**
