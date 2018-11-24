@@ -12,11 +12,6 @@ public class Log4jProxy extends AbstractLog {
 
 	private Logger log = null;
 
-	// public Log4jProxy(String clazz, boolean enableContextLog) {
-	// this.log = Logger.getLogger(clazz);
-	// this.enableContextLog = enableContextLog;
-	// }
-
 	public Log4jProxy(String clazz) {
 		this.log = Logger.getLogger(clazz);
 	}

@@ -12,18 +12,6 @@ public abstract class AbstractLog implements Log {
 		this.enableContextLog = enableContextLog;
 	}
 
-	// protected void setContextLog() {
-	// if (enableContextLog) {
-	// MDC.clear();
-	// RuntimeContext rc = RuntimeContext.get();
-	// if (null != rc) {
-	// MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-	// MDC.put(RuntimeContext.HEADER_KEY_LOG_TYPE, rc.getLogType());
-	// MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
-	// }
-	// }
-	// }
-
 	protected String format(String str, Object... args) {
 		if (null == args || 0 == args.length) {
 			return str;

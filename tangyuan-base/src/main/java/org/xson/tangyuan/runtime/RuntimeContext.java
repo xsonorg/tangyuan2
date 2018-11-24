@@ -121,28 +121,6 @@ public class RuntimeContext {
 		}
 	}
 
-	// // XCO arg
-	// private static void beginWithHeader(XCO header) {
-	// RuntimeContext rc = get();
-	// if (null == rc) {
-	// String traceId = null;
-	// String logType = null;
-	// if (null == header) {
-	// // 全新的上下文
-	// traceId = createTraceId();
-	// logType = "unknown";
-	// } else {
-	// // 通过参数传递的
-	// traceId = header.getStringValue(HEADER_KEY_TRACE_ID);
-	// logType = header.getStringValue(HEADER_KEY_LOG_TYPE);
-	// traceId = (null == traceId) ? createTraceId() : traceId;
-	// logType = (null == logType) ? "unknown" : logType;
-	// }
-	// rc = new RuntimeContext(traceId, logType);
-	// contextThreadLocal.set(rc);
-	// }
-	// }
-
 	/**
 	 * 开启一个上下文(线程开始时调用)
 	 */
