@@ -14,8 +14,7 @@ import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.runtime.RuntimeContext;
-import org.xson.tangyuan.trace.TrackingContext;
-import org.xson.tangyuan.trace.TrackingManager;
+import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.validate.XCOValidate;
 import org.xson.tangyuan.validate.XCOValidateException;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
@@ -73,8 +72,8 @@ public class XCOServlet extends HttpServlet {
 			return;
 		}
 
+		// 比对请求类型是否一致, 只有在非REST模式下才需要
 		if (!container.isRestMode()) {
-			// 比对请求类型是否一致, 只有在非REST模式下才需要
 			if (RequestTypeEnum.POST != requestType && RequestTypeEnum.GET != requestType) {
 				throw new XCOWebException("Unsupported request type: " + requestType);
 			}
@@ -82,8 +81,7 @@ public class XCOServlet extends HttpServlet {
 
 		RequestContext context = pretreatmentContext(req, resp, requestType);
 
-		// 记录追踪信息
-		startTracking(context);
+		boolean tracking = RuntimeContext.isTracking();
 
 		// find controller
 		ControllerVo cVo = container.getControllerVo(requestType, context.getPath());
@@ -99,12 +97,16 @@ public class XCOServlet extends HttpServlet {
 
 			// 添加上下文记录, 之前日志中可能会丢丢失, 但不影响
 			RuntimeContext.beginFromArg(context.getArg(), "WEB");
+			// 记录追踪信息
+			if (tracking) {
+				startTracking(context);
+			}
 
 			if (log.isInfoEnabled()) {
 				log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
 			}
 
-			setTracking(context);
+			// setTracking(context);
 		} catch (Throwable e) {
 			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
 			doResponseError(context, cVo, e, "data convert error.");
@@ -177,21 +179,6 @@ public class XCOServlet extends HttpServlet {
 			}
 			doResponseError(context, cVo, ex, "exec error.");
 		}
-		// finally {
-		// if (null == ex) {
-		// doResponseSuccess(context, cVo);
-		// } else {
-		// // context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-		// // fix bug
-		// if (ex instanceof ServiceException) {
-		// ServiceException se = (ServiceException) ex;
-		// context.setErrorInfo(se.getErrorCode(), se.getErrorMessage());
-		// } else {
-		// context.setErrorInfo(WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-		// }
-		// doResponseError(context, cVo, ex, "exec error.");
-		// }
-		// }
 	}
 
 	/**
@@ -237,8 +224,8 @@ public class XCOServlet extends HttpServlet {
 			if (context.isInThread()) {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
+			// 追踪结束
 			endTracking(context, ex);
-
 			// 清理上下文记录
 			RuntimeContext.clean();
 		}
@@ -283,6 +270,8 @@ public class XCOServlet extends HttpServlet {
 			if (context.isInThread()) {
 				WebComponent.getInstance().requestContextThreadLocal.remove();
 			}
+
+			// 追踪结束
 			endTracking(context, null);
 
 			// 清理上下文记录
@@ -291,48 +280,32 @@ public class XCOServlet extends HttpServlet {
 	}
 
 	private void startTracking(RequestContext context) {
-		TrackingManager trackingManager = TangYuanContainer.getInstance().getTrackingManager();
-		if (null != trackingManager) {
-			Object parent = trackingManager.initTracking(null);
-			String headers = ServletUtils.getHttpHeaderContext(context.getRequest());
-			Object current = trackingManager.startTracking(parent, context.getPath(), null, headers, TrackingManager.SERVICE_TYPE_NO,
-					TrackingManager.RECORD_TYPE_CONTROLLER, TrackingManager.EXECUTE_MODE_SYNC);
-			TrackingContext.setThreadLocalParent(current);
-		}
-	}
-
-	private void setTracking(RequestContext context) {
-		TrackingManager trackingManager = TangYuanContainer.getInstance().getTrackingManager();
-		if (null != trackingManager) {
-			Object current = context.getAttach().get(TrackingManager.XCO_TRACE_KEY);
-			if (null == current) {
-				return;
-			}
-			Object arg = context.getArg();
-			if (null != arg) {
-				trackingManager.setTracking(current, (XCO) arg);
-			}
-		}
+		Object current = RuntimeContext.startTracking(null, context.getPath(), context.getArg(), TrackingManager.SERVICE_TYPE_NO,
+				TrackingManager.RECORD_TYPE_CONTROLLER, TrackingManager.EXECUTE_MODE_SYNC, null);
+		context.getAttach().put(TrackingManager.XCO_TRACE_KEY, current);
 	}
 
 	private void endTracking(RequestContext context, Throwable ex) {
-		TrackingManager trackingManager = TangYuanContainer.getInstance().getTrackingManager();
-		if (null != trackingManager) {
-			Object current = context.getAttach().get(TrackingManager.XCO_TRACE_KEY);
-			if (null != current) {
-				Object result = context.getResult();
-				if (null == result) {
-					Integer code = context.getCode();
-					if (null != code) {
-						XCO xco = new XCO();
-						xco.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
-						xco.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, context.getMessage());
-						result = xco;
-					}
-				}
-				trackingManager.endTracking(current, result, ex);
-			}
-			TrackingContext.cleanThreadLocalParent();
+		if (!RuntimeContext.isTracking()) {
+			return;
 		}
+		Object current = context.getAttach().get(TrackingManager.XCO_TRACE_KEY);
+		if (null == current) {
+			return;
+		}
+
+		Object result = context.getResult();
+		if (null == result) {
+			Integer code = context.getCode();
+			if (null != code) {
+				XCO xco = new XCO();
+				xco.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
+				xco.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, context.getMessage());
+				result = xco;
+			}
+		}
+
+		RuntimeContext.endTracking(current, result, ex);
 	}
+
 }

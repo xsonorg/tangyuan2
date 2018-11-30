@@ -7,6 +7,7 @@ import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.tools.xml.XmlConfigBuilder;
 
 public class ToolsComponent implements TangYuanComponent {
 
@@ -33,22 +34,15 @@ public class ToolsComponent implements TangYuanComponent {
 	public void start(String resource) throws Throwable {
 		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		log.info("tools component starting, version: " + Version.getVersion());
-		// log.info("Start parsing: " + resource);
-		// XmlConfigBuilder xmlConfigBuilder = new XmlConfigBuilder();
-		// xmlConfigBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
+		XmlConfigBuilder xmlConfigBuilder = new XmlConfigBuilder();
+		xmlConfigBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
 		log.info("tools component successfully.");
 	}
 
 	@Override
 	public void stop(boolean wait) {
 		log.info("tools component stopping...");
-		// try {
-		// if (null != dataSourceManager) {
-		// dataSourceManager.close();
-		// }
-		// } catch (Throwable e) {
-		// log.error(null, e);
-		// }
+		// HttpClientManager.shutdown();
 		log.info("tools component stop successfully.");
 	}
 

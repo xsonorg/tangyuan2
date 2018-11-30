@@ -17,13 +17,7 @@ public class RpcServiceNode extends AbstractServiceNode {
 
 	@Override
 	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-		// Object result = RpcProxy.call(serviceKey, (XCO) arg);
-		// context.setResult(result);
-		// return true;
-
 		boolean sr = RuntimeContext.setHeader(arg);
-
-		context.addTrackingHeader(arg);
 		try {
 			Object result = RpcProxy.call(serviceKey, (XCO) arg);
 			context.setResult(result);
@@ -31,12 +25,9 @@ public class RpcServiceNode extends AbstractServiceNode {
 		} catch (Throwable e) {
 			throw e;
 		} finally {
-
 			if (sr) {
 				RuntimeContext.cleanHeader(arg);
 			}
-
-			context.cleanTrackingHeader(arg);
 		}
 	}
 

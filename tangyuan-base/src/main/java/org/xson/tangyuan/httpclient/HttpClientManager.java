@@ -1,4 +1,4 @@
-package org.xson.tangyuan.tools.httpclient;
+package org.xson.tangyuan.httpclient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,21 +6,40 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.client.HttpClient;
+import org.xson.tangyuan.TangYuanException;
 
 public class HttpClientManager {
 
-	private static Map<String, HttpClientFactory>	factoryMap	= null;
+	private static Map<String, HttpClientFactory>	factoryMap			= null;
 
-	private static HttpClientFactory				factory		= null;
+	private static HttpClientFactory				factory				= null;
+
+	private static String							defaultFactoryId	= null;
 
 	public static void init(List<HttpClientVo> voList) {
 		if (1 == voList.size()) {
 			factory = new HttpClientFactory(voList.get(0));
+			defaultFactoryId = voList.get(0).getKey();
 			return;
 		}
-		factoryMap = new HashMap<String, HttpClientFactory>();
-		for (HttpClientVo vo : voList) {
-			factoryMap.put(vo.getKey(), new HttpClientFactory(vo));
+		if (voList.size() > 1) {
+			factoryMap = new HashMap<String, HttpClientFactory>();
+			for (HttpClientVo vo : voList) {
+				factoryMap.put(vo.getKey(), new HttpClientFactory(vo));
+			}
+		}
+	}
+
+	public static void checkKey(String key) {
+		boolean r = false;
+		if (null != factoryMap) {
+			r = factoryMap.containsKey(key);
+		}
+		if (null != defaultFactoryId) {
+			r = defaultFactoryId.equals(key);
+		}
+		if (!r) {
+			throw new TangYuanException("HttpClient does not exist: " + key);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package org.xson.tangyuan.trace;
+package org.xson.tangyuan.runtime.trace;
 
 import java.util.Properties;
 
@@ -7,9 +7,10 @@ import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
 
-public class DefaultTrackingBuilder implements TrackingBuilder {
+public class TrackingBuilder {
 
 	public TrackingManager parse(String resource) throws Throwable {
+
 		Properties p = ResourceManager.getProperties(resource, true);
 		// 检查是否开启
 		String enable = StringUtils.trim(p.getProperty("enable"));
@@ -17,17 +18,17 @@ public class DefaultTrackingBuilder implements TrackingBuilder {
 			return null;
 		}
 
-		TrackingConfig config = new TrackingConfig(p);
-		config.init();
+		TrackingConfig config = new TrackingConfig();
+		config.init(p);
 
-		String reporterName = StringUtils.trim(p.getProperty("reporter"));
+		TrackingReporter reporter = null;
+		String reporterName = config.getReporter();
 		if (null == reporterName) {
-			reporterName = "org.xson.tangyuan.trace.HttpTrackingReporter";
+			reporter = new HttpTrackingReporter();
+		} else {
+			Class<?> reporterClass = ClassUtils.forName(reporterName);
+			reporter = (TrackingReporter) TangYuanUtil.newInstance(reporterClass);
 		}
-		Class<?> reporterClass = ClassUtils.forName(reporterName);
-		TrackingReporter reporter = (TrackingReporter) TangYuanUtil.newInstance(reporterClass);
-
-		//		TrackingReporter reporter = new HttpTrackingReporter();
 
 		return new DefaultTrackingManager(config, reporter);
 	}

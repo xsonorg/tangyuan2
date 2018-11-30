@@ -1,4 +1,4 @@
-package org.xson.tangyuan.tools.httpclient;
+package org.xson.tangyuan.httpclient;
 
 import java.io.IOException;
 

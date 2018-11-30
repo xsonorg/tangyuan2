@@ -1,4 +1,4 @@
-package org.xson.tangyuan.trace;
+package org.xson.tangyuan.runtime.trace;
 
 public interface TrackingReporter {
 

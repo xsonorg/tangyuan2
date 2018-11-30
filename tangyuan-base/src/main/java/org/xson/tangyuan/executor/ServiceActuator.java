@@ -11,8 +11,7 @@ import org.xson.tangyuan.ognl.convert.ParameterConverter;
 import org.xson.tangyuan.rpc.RpcProxy;
 import org.xson.tangyuan.rpc.RpcServiceNode;
 import org.xson.tangyuan.runtime.RuntimeContext;
-import org.xson.tangyuan.trace.TrackingContext;
-import org.xson.tangyuan.trace.TrackingManager;
+import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
@@ -269,11 +268,7 @@ public class ServiceActuator {
 		// 2. 获取上下文
 		ServiceContext context = begin(false, parent);
 
-		// 3. 设置埋点
-		// TrackingContext trackingContext = context.startTracking(serviceURI, arg, TrackingManager.EXECUTE_MODE_SYNC);
-
-		Object rcObject = null;
-		TrackingContext trackingContext = null;
+		Object tempObject = null;
 		AbstractServiceNode service = null;
 		Object result = null;
 		Throwable ex = null;
@@ -281,17 +276,11 @@ public class ServiceActuator {
 		try {
 			service = findService(serviceURI);
 
-			rcObject = RuntimeContext.beginExecution(service);
-
-			// trackingContext = context.startTracking(serviceURI, arg, TrackingManager.EXECUTE_MODE_SYNC);
-			trackingContext = context.startTracking(serviceURI, arg, TrackingManager.EXECUTE_MODE_SYNC, now, service);
+			tempObject = RuntimeContext.beginExecution(service, arg, TrackingManager.EXECUTE_MODE_SYNC, now);
 
 			if (null == service) {
 				throw new ServiceException("service does not exist: " + serviceURI);// 上抛异常
 			}
-
-			// // 对于RPC服务跟踪需要忽略
-			// context.checkIgnoreTracking(trackingContext, service);
 
 			if (null != aop) {
 				aop.execBefore(service, arg);// 前置切面
@@ -335,9 +324,7 @@ public class ServiceActuator {
 				aop.execAfter(context, service, arg, result, ex, false);
 			}
 
-			context.endTracking(trackingContext, result, ex);
-
-			RuntimeContext.endExecution(rcObject);
+			RuntimeContext.endExecution(tempObject, result, ex);
 
 			if (null != throwEx) {
 				throw throwEx;
@@ -358,40 +345,36 @@ public class ServiceActuator {
 		return executeAlone(serviceURI, arg, false, ignoreWrapper, null, null);
 	}
 
-	public static <T> T executeAlone(String serviceURI, Object arg, ServiceContext parent, Integer executeMode) throws ServiceException {
+	private static <T> T executeAlone(String serviceURI, Object arg, ServiceContext parent, Integer executeMode) throws ServiceException {
 		return executeAlone(serviceURI, arg, false, false, parent, executeMode);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <T> T executeAlone(String serviceURI, Object arg, boolean throwException, boolean ignoreWrapper, ServiceContext parent,
 			Integer executeMode) throws ServiceException {
+
 		check();// 检查系统是否已经正在关闭中了
+
 		log.info("execute alone service: " + serviceURI);
 
 		long now = System.currentTimeMillis();
 
 		ServiceContext context = begin(true, parent);
-		// TrackingContext trackingContext = context.startTracking(serviceURI, arg, executeMode);
 
-		Object rcObject = null;
-		TrackingContext trackingContext = null;
+		Object tempObject = null;
 		AbstractServiceNode service = null;
 		Object result = null;
 		Throwable ex = null;
+
 		try {
 
 			service = findService(serviceURI);
 
-			rcObject = RuntimeContext.beginExecution(service);
-
-			trackingContext = context.startTracking(serviceURI, arg, executeMode, now, service);
+			tempObject = RuntimeContext.beginExecution(service, arg, executeMode, now);
 
 			if (null == service) {
 				throw new ServiceException("service does not exist: " + serviceURI);
 			}
-
-			// // 对于RPC服务跟踪需要忽略
-			// context.checkIgnoreTracking(trackingContext, service);
 
 			if (null != aop) {
 				aop.execBefore(service, arg);// 前置切面
@@ -436,15 +419,13 @@ public class ServiceActuator {
 				aop.execAfter(context, service, arg, result, ex, false);
 			}
 
-			context.endTracking(trackingContext, result, ex);
-
-			RuntimeContext.endExecution(rcObject);
+			RuntimeContext.endExecution(tempObject, result, ex);
 
 			if (null != throwEx) {
 				if (throwException) {
 					throw throwEx;
 				} else {
-					// 这里有坑能打印重复(commit异常)
+					// 这里有可能打印重复(commit异常)
 					log.error("execute service exception: " + serviceURI, throwEx);
 				}
 			}
@@ -458,6 +439,7 @@ public class ServiceActuator {
 	 * 单独环境, 异步执行
 	 */
 	public static void executeAsync(final String serviceURI, final Object arg, final ServiceContext parent) {
+
 		check();
 		log.info("execute async service: " + serviceURI);
 
@@ -468,9 +450,8 @@ public class ServiceActuator {
 			public void run() {
 				// 添加上下文记录
 				RuntimeContext.beginFromContext(rc);
-
+				// execute
 				executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
-
 				// 清理上下文记录
 				RuntimeContext.clean();
 			}
@@ -481,6 +462,7 @@ public class ServiceActuator {
 	 * 单独环境, 异步执行
 	 */
 	public static void executeAsync(final String serviceURI, final Object arg) {
+
 		check();
 		log.info("execute async service: " + serviceURI);
 
@@ -491,12 +473,10 @@ public class ServiceActuator {
 		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
 			@Override
 			public void run() {
-
 				// 添加上下文记录
 				RuntimeContext.beginFromContext(rc);
-
+				// execute
 				executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
-
 				// 清理上下文记录
 				RuntimeContext.clean();
 			}

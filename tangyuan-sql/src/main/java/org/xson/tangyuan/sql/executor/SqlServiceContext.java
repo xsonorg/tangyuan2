@@ -15,6 +15,8 @@ import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.ognl.vars.Variable;
+import org.xson.tangyuan.runtime.RuntimeContext;
+import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.sql.SqlComponent;
 import org.xson.tangyuan.sql.transaction.MultipleTransactionManager;
 import org.xson.tangyuan.sql.transaction.TransactionException;
@@ -124,6 +126,8 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		// RuntimeContext.appendTracking(TrackingManager.SERVICE_TYPE_SQL, this.realSql);
+		appendTracking();
 		return result;
 	}
 
@@ -137,6 +141,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -150,6 +155,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -163,6 +169,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -176,6 +183,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -189,6 +197,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -202,6 +211,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -215,6 +225,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -228,6 +239,7 @@ public class SqlServiceContext implements IServiceContext {
 		if (log.isInfoEnabled()) {
 			log.info(this.realSql);
 		}
+		appendTracking();
 		return result;
 	}
 
@@ -278,10 +290,10 @@ public class SqlServiceContext implements IServiceContext {
 
 	@Override
 	public boolean onException(IServiceExceptionInfo exceptionInfo) throws ServiceException {
-		//		if (null == exceptionInfo) {
-		//			throw new ServiceException("exceptionInfo is null");
-		//		}
-		if (null == exceptionInfo) {	//  fix:info为空, sql上下文将不能准确的处理异常, 认为是系统未考虑到的特殊异常
+		// if (null == exceptionInfo) {
+		// throw new ServiceException("exceptionInfo is null");
+		// }
+		if (null == exceptionInfo) { // fix:info为空, sql上下文将不能准确的处理异常, 认为是系统未考虑到的特殊异常
 			log.error("exceptionInfo is null.");
 			return false;
 		}
@@ -300,4 +312,7 @@ public class SqlServiceContext implements IServiceContext {
 		return false;
 	}
 
+	private void appendTracking() {
+		RuntimeContext.appendTracking(TrackingManager.SERVICE_TYPE_SQL, this.realSql);
+	}
 }

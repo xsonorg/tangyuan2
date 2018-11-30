@@ -1,4 +1,4 @@
-package org.xson.tangyuan.tools.httpclient;
+package org.xson.tangyuan.httpclient;
 
 import java.util.Properties;
 
@@ -131,44 +131,4 @@ public class HttpClientFactory {
 		}
 	}
 
-	// private static Map<String, XPoolingHttpClient> poolingMap = new HashMap<String, XPoolingHttpClient>();
-	// private static volatile int sharedCount = 0;
-	// private boolean shared = false;
-
-	// public HttpClientFactory(boolean shared) {
-	// this(null, shared);
-	// }
-	// public HttpClientFactory(HttpClientVo vo, boolean shared) {
-	// if (null != vo) {
-	// this.vo = vo;
-	// } else {
-	// this.vo = new HttpClientVo();
-	// }
-	// this.shared = shared;
-	// if (this.shared) {
-	// sharedCount++;
-	// }
-	// }
-	// private XHttpClient getSharedPoolingHttpClient() {
-	// synchronized (poolingMap) {
-	// if (poolingMap.containsKey(vo.getKey())) {
-	// return poolingMap.get(vo.getKey());
-	// }
-	// XPoolingHttpClient poolingHttpClient = (XPoolingHttpClient) getPoolingHttpClient0();
-	// poolingMap.put(this.vo.getKey(), poolingHttpClient);
-	// return poolingHttpClient;
-	// }
-	// }
-
-	// private XHttpClient getSingletonPoolingHttpClient() {
-	// if (null != singleton) {
-	// return singleton;
-	// }
-	// synchronized (this) {
-	// if (null == singleton) {
-	// singleton = (XPoolingHttpClient) getPoolingHttpClient0();
-	// }
-	// return singleton;
-	// }
-	// }
 }

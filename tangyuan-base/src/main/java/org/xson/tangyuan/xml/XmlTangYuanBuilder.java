@@ -15,8 +15,9 @@ import org.xson.tangyuan.app.AppProperty;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.trace.TrackingBuilder;
-import org.xson.tangyuan.trace.TrackingManager;
+import org.xson.tangyuan.runtime.RuntimeContext;
+import org.xson.tangyuan.runtime.trace.TrackingBuilder;
+import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.INIXLoader;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
@@ -47,13 +48,13 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
 	private void configurationElement(XmlNodeWrapper context) throws Throwable {
 		buildSystemInfo();
-		buildPlaceholderNode(context.evalNodes("app-placeholder"));		// 解析占位属性
-		buildAppPropertyNode(context.evalNodes("app-property"));		// 解析App配置文件
-		buildConfigNodes(context.evalNodes("config-property"));			// 解析配置项
+		buildPlaceholderNode(context.evalNodes("app-placeholder")); // 解析占位属性
+		buildAppPropertyNode(context.evalNodes("app-property")); // 解析App配置文件
+		buildConfigNodes(context.evalNodes("config-property")); // 解析配置项
 		setSystemAndAppInfo();
-		buildThreadPoolNode(context.evalNodes("thread-pool"));			// 配置线程池
-		buildTraceNode(context.evalNodes("trace-config"));				// 服务追踪配置
-		buildSystemAopNodes(context.evalNodes("system-aop"));			// 配置系统拦截器
+		buildThreadPoolNode(context.evalNodes("thread-pool")); // 配置线程池
+		buildTraceNode(context.evalNodes("trace-config")); // 服务追踪配置
+		buildSystemAopNodes(context.evalNodes("system-aop")); // 配置系统拦截器
 
 		executeSSAop(startingBeforeList, false);
 		buildComponentNodes(context.evalNodes("component"));
@@ -157,13 +158,13 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 		TangYuanAssert.stringEmpty(resource, "in the <app-property> tag, the 'resource' property can not be empty.");
 
-		//		InputStream in = ResourceManager.getInputStream(resource, true);
-		//		XCO data = new INIXLoader().load(in);
-		//		in.close();
-		//		AppProperty.init(data);
+		// InputStream in = ResourceManager.getInputStream(resource, true);
+		// XCO data = new INIXLoader().load(in);
+		// in.close();
+		// AppProperty.init(data);
 		//
-		//		// 添加外部参数使用前缀
-		//		TangYuanContainer.getInstance().getExtArg().addExtArg("EXT:", data);
+		// // 添加外部参数使用前缀
+		// TangYuanContainer.getInstance().getExtArg().addExtArg("EXT:", data);
 
 		InputStream in = ResourceManager.getInputStream(resource, true);
 		this.appInfo = new INIXLoader().load(in);
@@ -210,11 +211,10 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 		String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 		TangYuanAssert.stringEmpty(resource, "in the <trace-config> tag, the 'resource' property can not be empty.");
 
-		Class<?> clazz = ClassUtils.forName("org.xson.tangyuan.trace.DefaultTrackingBuilder");
-		TrackingBuilder trackingBuilder = (TrackingBuilder) TangYuanUtil.newInstance(clazz);
-		TrackingManager trackingManager = trackingBuilder.parse(resource);
-		//		TrackingManager trackingManager = new TrackingBuilder().parse(resource);
-		TangYuanContainer.getInstance().startTracking(trackingManager);
+		// TangYuanContainer.getInstance().startTracking(trackingManager);
+
+		TrackingManager trackingManager = new TrackingBuilder().parse(resource);
+		RuntimeContext.setTrackingManager(trackingManager);
 
 		log.info("add trace-config resource: " + resource);
 	}
@@ -231,7 +231,7 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			configMap.put(name.toUpperCase(), value);
 		}
 		if (configMap.size() > 0) {
-			//			PlaceholderResourceSupport.processMap(configMap, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+			// PlaceholderResourceSupport.processMap(configMap, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 			PlaceholderResourceSupport.processMap(configMap);
 			TangYuanContainer.getInstance().config(configMap);
 		}
@@ -330,7 +330,14 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 
 		// int serviceComponent = 0;// TangYuan服务组件
 
-		String type = "validate".toUpperCase();
+		String type = null;
+
+		type = "tools".toUpperCase();
+		if (typeResourceMap.containsKey(type)) {
+			TangYuanContainer.getInstance().getComponent("tools").start(typeResourceMap.get(type));
+		}
+
+		type = "validate".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
 		}

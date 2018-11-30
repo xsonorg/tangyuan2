@@ -17,17 +17,11 @@
 
 	<dependencies>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.xson</groupId>
-			<artifactId>common-object</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.xson</groupId>
-			<artifactId>tangyuan-base</artifactId>
+			<artifactId>tangyuan-tools</artifactId>
 			<version>${tangyuan.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.xson</groupId>
@@ -36,22 +30,9 @@
 			<scope>provided</scope>
 		</dependency>
 
-<!-- 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<scope>provided</scope>
-		</dependency> -->
-		
-		<dependency>
-			<groupId>org.xson</groupId>
-			<artifactId>xson-httpclient</artifactId>
-			<scope>provided</scope>
-		</dependency>		
-
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

@@ -45,7 +45,10 @@ public class InternalSelectOneNode extends AbstractSqlNode {
 		context.resetExecEnv();
 
 		sqlNode.execute(serviceContext, arg); // 获取sql
-		if (log.isInfoEnabled()) {
+		// if (log.isInfoEnabled()) {
+		// context.parseSqlLog();
+		// }
+		if (log.isInfoEnabled() || isTraceCommand()) {
 			context.parseSqlLog();
 		}
 

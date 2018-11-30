@@ -8,6 +8,7 @@ import org.xson.tangyuan.mq.executor.MqServiceContext;
 import org.xson.tangyuan.mq.executor.Sender;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ServiceVo;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
 public class MqServiceNode extends AbstractServiceNode {
@@ -45,9 +46,8 @@ public class MqServiceNode extends AbstractServiceNode {
 	@Override
 	public boolean execute(ServiceContext context, Object arg) throws Throwable {
 
-//		boolean sr = RuntimeContext.setHeader(arg);
+		boolean sr = RuntimeContext.setHeader(arg);
 
-		context.addTrackingHeader(arg);
 		try {
 			MqServiceContext mqServiceContext = (MqServiceContext) context.getServiceContext(TangYuanServiceType.MQ);
 			long startTime = System.currentTimeMillis();
@@ -66,12 +66,9 @@ public class MqServiceNode extends AbstractServiceNode {
 		} catch (Throwable e) {
 			throw e;
 		} finally {
-
-//			if (sr) {
-//				RuntimeContext.cleanHeader(arg);
-//			}
-
-			context.cleanTrackingHeader(arg);
+			if (sr) {
+				RuntimeContext.cleanHeader(arg);
+			}
 		}
 	}
 

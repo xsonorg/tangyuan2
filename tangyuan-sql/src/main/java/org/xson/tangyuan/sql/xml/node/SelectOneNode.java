@@ -63,7 +63,10 @@ public class SelectOneNode extends AbstractSqlNode {
 		try {
 			// 2. 解析SQL
 			sqlNode.execute(serviceContext, arg); // 获取sql
-			if (log.isInfoEnabled()) {
+			// if (log.isInfoEnabled()) {
+			// sqlContext.parseSqlLog();
+			// }
+			if (log.isInfoEnabled() || isTraceCommand()) {
 				sqlContext.parseSqlLog();
 			}
 

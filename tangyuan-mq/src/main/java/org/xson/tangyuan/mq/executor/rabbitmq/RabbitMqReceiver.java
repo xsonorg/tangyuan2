@@ -14,6 +14,7 @@ import org.xson.tangyuan.mq.vo.BindingPattern;
 import org.xson.tangyuan.mq.vo.BindingVo;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.mq.vo.RabbitMqChannelVo;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -133,6 +134,10 @@ public class RabbitMqReceiver extends Receiver {
 				public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
 					try {
 						XCO xcoMessage = getMessage(body);
+
+						// 添加上下文记录
+						RuntimeContext.beginFromArg(xcoMessage, "MQ");
+
 						log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 						boolean result = exec(service, xcoMessage, binding);
 						if (!autoAck && result) {
@@ -141,6 +146,9 @@ public class RabbitMqReceiver extends Receiver {
 					} catch (Throwable e) {
 						log.error("listen to the [" + queue.getName() + "] error.", e);
 						// TODO 可能会出现断链的问题
+					} finally {
+						// 清理上下文记录
+						RuntimeContext.clean();
 					}
 				}
 			};
@@ -161,6 +169,10 @@ public class RabbitMqReceiver extends Receiver {
 					try {
 						QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 						XCO xcoMessage = getMessage(delivery.getBody());
+
+						// 添加上下文记录
+						RuntimeContext.beginFromArg(xcoMessage, "MQ");
+
 						log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 						boolean result = exec(service, xcoMessage, binding);
 						if (!autoAck && result) {
@@ -172,6 +184,8 @@ public class RabbitMqReceiver extends Receiver {
 					} catch (Throwable e) {
 						log.error("listen to the [" + queue.getName() + "] error.", e);
 					}
+					// 清理上下文记录
+					RuntimeContext.clean();
 				}
 				closed = true;
 			}

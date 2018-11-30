@@ -37,13 +37,7 @@ public class TangYuanServlet extends HttpServlet {
 
 		XCO result = null;
 		try {
-			// log.info("request from [" + req.getRequestURL() + "], client ip[" + ServletUtil.getIpAddress(req) + "]");
-			// ServiceURI tyURI = ServiceURI.parseUrlPath(req.getRequestURI());
-			// XCO arg = ServletUtil.getXCOArg(req);
-			// log.info("request arg: " + arg);
-
 			XCO arg = ServletUtil.getXCOArg(req);
-
 			// 添加上下文记录
 			RuntimeContext.beginFromArg(arg);
 
@@ -57,15 +51,13 @@ public class TangYuanServlet extends HttpServlet {
 			log.error("request error: " + req.getRequestURL(), e);
 			result = TangYuanUtil.getExceptionResult(e);
 		} finally {
-
 			log.info("reponse result: " + result);
-
 			try {
 				ServletUtil.reponse(resp, result);
 			} catch (Throwable e) {
+				log.error("reponse error: " + req.getRequestURL(), e);
 
 			}
-
 			// 清理上下文记录
 			RuntimeContext.clean();
 		}

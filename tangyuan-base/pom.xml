@@ -16,10 +16,8 @@
 
 	<dependencies>
 
-<!-- 		<dependency>
-			<groupId>org.xson</groupId>
-			<artifactId>logging</artifactId>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.xson</groupId> <artifactId>logging</artifactId> 
+			</dependency> -->
 
 		<dependency>
 			<groupId>org.xson</groupId>
@@ -66,11 +64,16 @@
 			<scope>provided</scope>
 		</dependency>
 
-<!-- 		<dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-		</dependency> -->
-		
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>

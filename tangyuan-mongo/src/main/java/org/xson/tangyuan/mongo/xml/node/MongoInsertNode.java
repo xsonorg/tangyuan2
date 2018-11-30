@@ -13,23 +13,6 @@ public class MongoInsertNode extends AbstractMongoNode {
 
 	private CacheCleanVo	cacheClean;
 
-	// public MongoInsertNode(String id, String ns, String serviceKey, Class<?> resultType, String dsKey, TangYuanNode sqlNode,
-	// CacheCleanVo cacheClean) {
-	//
-	// this.id = id;
-	// this.ns = ns;
-	// this.serviceKey = serviceKey;
-	//
-	// this.resultType = resultType;
-	//
-	// this.dsKey = dsKey;
-	// this.sqlNode = sqlNode;
-	//
-	// this.simple = true;
-	//
-	// this.cacheClean = cacheClean;
-	// }
-
 	public MongoInsertNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheCleanVo cacheClean) {
 
 		this.id = id;

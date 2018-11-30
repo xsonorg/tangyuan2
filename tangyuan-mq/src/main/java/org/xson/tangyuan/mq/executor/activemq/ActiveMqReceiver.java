@@ -21,6 +21,7 @@ import org.xson.tangyuan.mq.vo.ActiveMqChannelVo;
 import org.xson.tangyuan.mq.vo.BindingVo;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
+import org.xson.tangyuan.runtime.RuntimeContext;
 
 // TODO 考虑异常重启的问题
 public class ActiveMqReceiver extends Receiver {
@@ -114,6 +115,9 @@ public class ActiveMqReceiver extends Receiver {
 						processMessage(message);
 					} catch (Throwable e) {
 						log.error("listen to the [" + queue.getName() + "] error.", e);
+					} finally {
+						// 清理上下文记录
+						RuntimeContext.clean();
 					}
 				}
 			});
@@ -137,6 +141,9 @@ public class ActiveMqReceiver extends Receiver {
 						// 如果是关闭的时候，可能会报InterruptedException
 						log.error("listen to the [" + queue.getName() + "] error.", e);
 					}
+
+					// 清理上下文记录
+					RuntimeContext.clean();
 				}
 				closed = true;
 			}
@@ -158,6 +165,9 @@ public class ActiveMqReceiver extends Receiver {
 			} else {
 				// TODO
 			}
+
+			// 添加上下文记录
+			RuntimeContext.beginFromArg(xcoMessage, "MQ");
 
 			log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 

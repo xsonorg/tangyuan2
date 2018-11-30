@@ -60,6 +60,9 @@ public class HBaseScanNode extends AbstractHBaseNode {
 			log.info("hbase execution time: " + getSlowServiceLog(startTime));
 		}
 
+		// 命令追踪
+		appendTracking(sql);
+		
 		if (null != cacheUse) {
 			cacheUse.putObject(arg, result);
 		}

@@ -1,5 +1,7 @@
 package org.xson.tangyuan.hbase.xml.node;
 
+import org.xson.tangyuan.runtime.RuntimeContext;
+import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 import org.xson.tangyuan.xml.node.TangYuanNode;
 
@@ -24,5 +26,9 @@ public abstract class AbstractHBaseNode extends AbstractServiceNode {
 
 	public boolean isSimple() {
 		return simple;
+	}
+
+	protected void appendTracking(Object command) {
+		RuntimeContext.appendTracking(TrackingManager.SERVICE_TYPE_HBASE, command);
 	}
 }

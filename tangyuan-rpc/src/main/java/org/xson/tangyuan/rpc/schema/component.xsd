@@ -34,6 +34,7 @@
 			</xs:attribute>
 			<xs:attribute name="schema" type="xs:string" use="optional"/>
 			<xs:attribute name="resource" type="xs:string" use="optional"/>
+			<xs:attribute name="usi" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="remote-node">

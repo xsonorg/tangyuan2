@@ -1,5 +1,7 @@
 package org.xson.tangyuan.es.datasource;
 
+import org.xson.tangyuan.httpclient.HttpClientManager;
+
 public class EsSourceVo {
 
 	private String			id;
@@ -7,25 +9,27 @@ public class EsSourceVo {
 
 	private EsHttpClient	client;
 
-	public EsSourceVo(String id, String host) {
+	/**
+	 * 共享客户端ID
+	 */
+	private String			usi;
+
+	public EsSourceVo(String id, String host, String usi) {
 		this.id = id;
 		this.host = host;
+		this.usi = usi;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getHost() {
 		return host;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
+	public String getUsi() {
+		return usi;
 	}
 
 	public EsHttpClient getClient() {
@@ -33,6 +37,7 @@ public class EsSourceVo {
 	}
 
 	public void start() throws Throwable {
+		HttpClientManager.checkKey(this.usi);
 		this.client = new EsHttpClient(this);
 		this.client.init();
 	}

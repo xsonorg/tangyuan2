@@ -22,4 +22,8 @@ public abstract class AbstractMongoNode extends AbstractServiceNode {
 	public boolean isSimple() {
 		return simple;
 	}
+
+	// protected boolean isTraceCommand() {
+	// return RuntimeContext.isTraceCommand(TrackingManager.SERVICE_TYPE_MONGO);
+	// }
 }

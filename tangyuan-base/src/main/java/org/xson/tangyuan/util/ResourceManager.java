@@ -29,6 +29,8 @@ public class ResourceManager {
 			InputStream in = null;
 			if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
 				in = Resources.getUrlAsStream(resource);// TODO 这个要考虑加密
+			} else if (resource.toLowerCase().startsWith("file://")) {
+				in = Resources.getResourceAsStreamFromFile(resource);
 			} else {
 				in = Resources.getResourceAsStream(resource);
 			}
@@ -40,18 +42,5 @@ public class ResourceManager {
 			throw new XmlParseException("get inputStream exception: " + resource, e);
 		}
 	}
-
-	//		Properties props = null;
-	//		if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
-	//			// TODO 这个要考虑加密
-	//			props = Resources.getUrlAsProperties(resource);
-	//		} else {
-	//			props = Resources.getResourceAsProperties(resource);
-	//		}
-	//		if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
-	//			props = Resources.getUrlAsProperties(resource);
-	//		} else {
-	//			props = Resources.getResourceAsProperties(resource);
-	//		}
 
 }

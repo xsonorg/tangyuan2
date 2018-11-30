@@ -1,5 +1,7 @@
 package org.xson.tangyuan.sql.xml.node;
 
+import org.xson.tangyuan.runtime.RuntimeContext;
+import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.sql.transaction.XTransactionDefinition;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 import org.xson.tangyuan.xml.node.TangYuanNode;
@@ -36,4 +38,7 @@ public abstract class AbstractSqlNode extends AbstractServiceNode {
 	// return result;
 	// }
 
+	protected boolean isTraceCommand() {
+		return RuntimeContext.isTraceCommand(TrackingManager.SERVICE_TYPE_SQL);
+	}
 }

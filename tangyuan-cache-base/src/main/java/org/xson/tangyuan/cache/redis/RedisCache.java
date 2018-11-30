@@ -30,14 +30,14 @@ public class RedisCache extends AbstractCache {
 		try {
 			// client = JedisClient.getInstance();
 			client = new JedisClient();
-			//			Properties properties = new Properties();
-			//			InputStream inputStream = Resources.getResourceAsStream(resource);
-			//			properties.load(inputStream);
+			// Properties properties = new Properties();
+			// InputStream inputStream = Resources.getResourceAsStream(resource);
+			// properties.load(inputStream);
 			//
-			//			PlaceholderResourceSupport.processProperties(properties, cacheVo.getPlaceholderMap());
+			// PlaceholderResourceSupport.processProperties(properties, cacheVo.getPlaceholderMap());
 
 			InputStream inputStream = ResourceManager.getInputStream(resource, cacheVo.getPlaceholderMap());
-			//			inputStream = PlaceholderResourceSupport.processInputStream(inputStream, cacheVo.getPlaceholderMap());
+			// inputStream = PlaceholderResourceSupport.processInputStream(inputStream, cacheVo.getPlaceholderMap());
 
 			Properties properties = new Properties();
 			properties.load(inputStream);
@@ -79,6 +79,10 @@ public class RedisCache extends AbstractCache {
 
 	@Override
 	public void put(Object key, Object value, Long expiry) {
+		if (null == value) {
+			remove(key);
+			return;
+		}
 		Long expiryTime = getExpiry(expiry, defaultExpiry);
 		CacheSerializer cs = getSerializer();
 

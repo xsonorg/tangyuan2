@@ -1,10 +1,13 @@
 package org.xson.tangyuan.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -36,6 +39,11 @@ public class Resources {
 		if (url == null)
 			throw new IOException("Could not find resource " + resource);
 		return url;
+	}
+
+	public static InputStream getResourceAsStreamFromFile(String uri) throws IOException, URISyntaxException {
+		InputStream in = new FileInputStream(new File(new URI(uri)));
+		return in;
 	}
 
 	public static InputStream getResourceAsStream(String resource) throws IOException {

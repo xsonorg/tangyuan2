@@ -42,6 +42,9 @@ public class HBasePutBatchNode extends AbstractHBaseNode {
 
 		context.setResult(result);
 
+		// 命令追踪
+		appendTracking(xContext.getSql());
+
 		if (log.isInfoEnabled()) {
 			log.info("hbase execution time: " + getSlowServiceLog(startTime));
 		}

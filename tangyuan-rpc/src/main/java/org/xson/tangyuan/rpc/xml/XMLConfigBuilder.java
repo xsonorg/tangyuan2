@@ -17,6 +17,7 @@ import org.xson.tangyuan.rpc.client.MixedRpcClient;
 import org.xson.tangyuan.rpc.xml.RpcClientVo.ClientUseType;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.util.TangYuanAssert;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
 import org.xson.tangyuan.xml.XmlExtendBuilder;
@@ -41,17 +42,10 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		//		InputStream inputStream = Resources.getResourceAsStream(resource);
-		//
-		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
-
 		InputStream inputStream = ResourceManager.getInputStream(resource, true);
-
 		this.xPathParser = new XPathParser(inputStream);
 		root = xPathParser.evalNode("/rpc-component");
 		parseNode();
-
 		inputStream.close();
 	}
 
@@ -135,6 +129,7 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			String _use = StringUtils.trim(context.getStringAttribute("use"));
 			String schema = StringUtils.trim(context.getStringAttribute("schema"));
 			String resource = StringUtils.trim(context.getStringAttribute("resource"));
+			String usi = StringUtils.trim(context.getStringAttribute("usi"));
 
 			if (clientIdMap.containsKey(id)) {
 				throw new XmlParseException("Duplicate client: " + id);
@@ -147,7 +142,12 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 			if ((ClientUseType.HTTP_CLIENT == use) && (null == schema || "".equals(schema))) {
 				schema = "http";
 			}
-			RpcClientVo vo = new RpcClientVo(id, use, schema, resource);
+
+			if (ClientUseType.HTTP_CLIENT == use) {
+				TangYuanAssert.stringEmpty(usi, "the 'usi' attribute cannot be empty.");
+			}
+
+			RpcClientVo vo = new RpcClientVo(id, use, schema, resource, usi);
 			list.add(vo);
 		}
 		return list;

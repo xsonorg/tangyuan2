@@ -13,11 +13,12 @@ import org.xson.tangyuan.aop.sys.SystemAopVo;
 import org.xson.tangyuan.app.ExtArg;
 import org.xson.tangyuan.executor.ServiceActuator;
 import org.xson.tangyuan.executor.ServiceContextFactory;
+import org.xson.tangyuan.httpclient.HttpClientManager;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.pool.ThreadPool;
+import org.xson.tangyuan.runtime.RuntimeContext;
 import org.xson.tangyuan.task.AsyncTask;
-import org.xson.tangyuan.trace.TrackingManager;
 import org.xson.tangyuan.util.LicensesHelper;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.xml.XmlGlobalContext;
@@ -41,12 +42,12 @@ public class TangYuanContainer implements TangYuanComponent {
 	private Log										log						= LogFactory.getLog(getClass());
 	private volatile boolean						closing					= false;
 	private String									systemName				= "tangyuan";
-	private String									appName					= null;
+	private String									appName					= "tangyuan-app";
 	private XmlGlobalContext						xmlGlobalContext		= null;
 
 	private final Map<String, AbstractServiceNode>	tangyuanServices		= new HashMap<String, AbstractServiceNode>();
 	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices	= new ConcurrentHashMap<String, AbstractServiceNode>();
-	//	private AsyncTaskThread							asyncTaskThread					= null;
+	// private AsyncTaskThread asyncTaskThread = null;
 	private ThreadPool								threadPool				= null;
 	private Map<String, ServiceContextFactory>		scFactoryMap			= new HashMap<String, ServiceContextFactory>();
 
@@ -58,28 +59,19 @@ public class TangYuanContainer implements TangYuanComponent {
 
 	private Class<?>								defaultResultType		= XCO.class;
 	private boolean									licenses				= false;
-
 	/** true:jdk, false:cglib */
 	private boolean									jdkProxy				= false;
-
-	// 错误信息编码
+	/** 错误信息编码 */
 	private int										errorCode				= -1;
 	private String									errorMessage			= "服务异常";
 	private String									nsSeparator				= "/";
-
 	private String									licenseResource			= null;
-
-	// 最大关闭等待时间(秒)
+	/** 最大关闭等待时间(秒) */
 	private long									maxWaitTimeForShutDown	= 10L;
-
-	// 所有服务统一返回XCO
+	/** 所有服务统一返回XCO */
 	private boolean									allServiceReturnXCO		= false;
-
-	// 外部扩展参数
+	/** 外部扩展参数 */
 	private ExtArg									extArg					= new ExtArg();
-
-	// 服务信息监控器
-	private TrackingManager							trackingManager			= null;
 
 	private TangYuanContainer() {
 	}
@@ -102,6 +94,7 @@ public class TangYuanContainer implements TangYuanComponent {
 		// if (properties.containsKey("nsSeparator".toUpperCase())) {
 		// nsSeparator = properties.get("nsSeparator".toUpperCase());
 		// }
+
 		if (properties.containsKey("systemName".toUpperCase())) {
 			systemName = properties.get("systemName".toUpperCase());
 		}
@@ -136,13 +129,6 @@ public class TangYuanContainer implements TangYuanComponent {
 		}
 	}
 
-	public void startTracking(TrackingManager trackingManager) throws Throwable {
-		this.trackingManager = trackingManager;
-		if (null != this.trackingManager) {
-			this.trackingManager.start();
-		}
-	}
-
 	@Override
 	public void start(String resource) throws Throwable {
 		log.info("tangyuan framework starting, version: " + Version.getVersion());
@@ -159,19 +145,19 @@ public class TangYuanContainer implements TangYuanComponent {
 		}
 
 		// 异步队列
-		//		asyncTaskThread = new AsyncTaskThread();
-		//		asyncTaskThread.start();
+		// asyncTaskThread = new AsyncTaskThread();
+		// asyncTaskThread.start();
 
 		// 死锁服务监控
-		//		if (openDeadlockMonitor) {
-		//			DeadlockMonitorWriter writer = null;
-		//			if (null != deadlockMonitorWriterClassName) {
-		//				Class<?> clazz = ClassUtils.forName(deadlockMonitorWriterClassName);
-		//				writer = (DeadlockMonitorWriter) TangYuanUtil.newInstance(clazz);
-		//			}
-		//			deadlockMonitor = new ServiceDeadlockMonitor(writer);
-		//			deadlockMonitor.start();
-		//		}
+		// if (openDeadlockMonitor) {
+		// DeadlockMonitorWriter writer = null;
+		// if (null != deadlockMonitorWriterClassName) {
+		// Class<?> clazz = ClassUtils.forName(deadlockMonitorWriterClassName);
+		// writer = (DeadlockMonitorWriter) TangYuanUtil.newInstance(clazz);
+		// }
+		// deadlockMonitor = new ServiceDeadlockMonitor(writer);
+		// deadlockMonitor.start();
+		// }
 
 		xmlGlobalContext = new XmlGlobalContext();
 
@@ -269,23 +255,31 @@ public class TangYuanContainer implements TangYuanComponent {
 			componentMap.get(type).getComponent().stop(wait);
 		}
 
-		//		if (null != asyncTaskThread) {
-		//			asyncTaskThread.stop();
-		//		}
+		type = "tools".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(wait);
+		}
+
+		RuntimeContext.shutdown();
+
+		// if (null != asyncTaskThread) {
+		// asyncTaskThread.stop();
+		// }
 
 		if (null != threadPool) {
 			threadPool.stop();
 		}
 
-		//		if (null != deadlockMonitor) {
-		//			deadlockMonitor.stop();
-		//		}
-
-		if (null != trackingManager) {
-			trackingManager.stop();
-		}
+		// if (null != deadlockMonitor) {
+		// deadlockMonitor.stop();
+		// }
+		// if (null != trackingManager) {
+		// trackingManager.stop();
+		// }
 
 		executeSSAop(this.closingAfterList);
+
+		HttpClientManager.shutdown();
 
 		log.info("tangyuan framework stop successfully.");
 	}
@@ -406,10 +400,6 @@ public class TangYuanContainer implements TangYuanComponent {
 		return threadPool;
 	}
 
-	public TrackingManager getTrackingManager() {
-		return trackingManager;
-	}
-
 	public String getAppName() {
 		return appName;
 	}
@@ -418,39 +408,39 @@ public class TangYuanContainer implements TangYuanComponent {
 	// private Map<String, TangYuanComponent> componentMap = new HashMap<String, TangYuanComponent>();
 
 	// 默认扩展参数前缀
-	//	public final static String						DEFAULT_EXT_ARG_PREFIX			= "EXT:";
+	// public final static String DEFAULT_EXT_ARG_PREFIX = "EXT:";
 
 	// 服务死锁监控
-	//	private boolean									openDeadlockMonitor			= false;
-	//	private ServiceDeadlockMonitor					deadlockMonitor				= null;
-	//	private String									deadlockMonitorWriterClassName	= null;
-	//	private long									deadlockMonitorSleepTime	= 2L;
-	//	private long									deadlockIntervalTime		= 10L;
+	// private boolean openDeadlockMonitor = false;
+	// private ServiceDeadlockMonitor deadlockMonitor = null;
+	// private String deadlockMonitorWriterClassName = null;
+	// private long deadlockMonitorSleepTime = 2L;
+	// private long deadlockIntervalTime = 10L;
 
 	// deadlock
-	//		if (properties.containsKey("openDeadlockMonitor".toUpperCase())) {
-	//			openDeadlockMonitor = Boolean.parseBoolean(properties.get("openDeadlockMonitor".toUpperCase()));
-	//		}
-	//		if (properties.containsKey("deadlockMonitorWriter".toUpperCase())) {
-	//			deadlockMonitorWriterClassName = properties.get("deadlockMonitorWriter".toUpperCase());
-	//		}
-	//		if (properties.containsKey("deadlockMonitorSleepTime".toUpperCase())) {
-	//			deadlockMonitorSleepTime = Long.parseLong(properties.get("deadlockMonitorSleepTime".toUpperCase()));
-	//		}
-	//		if (properties.containsKey("deadlockIntervalTime".toUpperCase())) {
-	//			deadlockIntervalTime = Long.parseLong(properties.get("deadlockIntervalTime".toUpperCase()));
-	//		}
+	// if (properties.containsKey("openDeadlockMonitor".toUpperCase())) {
+	// openDeadlockMonitor = Boolean.parseBoolean(properties.get("openDeadlockMonitor".toUpperCase()));
+	// }
+	// if (properties.containsKey("deadlockMonitorWriter".toUpperCase())) {
+	// deadlockMonitorWriterClassName = properties.get("deadlockMonitorWriter".toUpperCase());
+	// }
+	// if (properties.containsKey("deadlockMonitorSleepTime".toUpperCase())) {
+	// deadlockMonitorSleepTime = Long.parseLong(properties.get("deadlockMonitorSleepTime".toUpperCase()));
+	// }
+	// if (properties.containsKey("deadlockIntervalTime".toUpperCase())) {
+	// deadlockIntervalTime = Long.parseLong(properties.get("deadlockIntervalTime".toUpperCase()));
+	// }
 
-	//	public boolean isOpenDeadlockMonitor() {
-	//		return openDeadlockMonitor;
-	//	}
-	//	public long getDeadlockMonitorSleepTime() {
-	//		return deadlockMonitorSleepTime * 1000L;
-	//	}
-	//	public long getDeadlockIntervalTime() {
-	//		return deadlockIntervalTime * 1000L;
-	//	}
-	//	public ServiceDeadlockMonitor getDeadlockMonitor() {
-	//		return deadlockMonitor;
-	//	}
+	// public boolean isOpenDeadlockMonitor() {
+	// return openDeadlockMonitor;
+	// }
+	// public long getDeadlockMonitorSleepTime() {
+	// return deadlockMonitorSleepTime * 1000L;
+	// }
+	// public long getDeadlockIntervalTime() {
+	// return deadlockIntervalTime * 1000L;
+	// }
+	// public ServiceDeadlockMonitor getDeadlockMonitor() {
+	// return deadlockMonitor;
+	// }
 }

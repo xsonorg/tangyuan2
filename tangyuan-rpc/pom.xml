@@ -17,17 +17,17 @@
 
 	<dependencies>
 
+<!-- 		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-tools</artifactId>
+			<version>${tangyuan.version}</version>
+		</dependency> -->
+		
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-base</artifactId>
 			<version>${tangyuan.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.xson</groupId>
-			<artifactId>xson-httpclient</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		</dependency>		
 
 	</dependencies>
 

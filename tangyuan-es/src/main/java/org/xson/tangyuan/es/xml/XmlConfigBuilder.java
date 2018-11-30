@@ -19,6 +19,7 @@ import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.util.TangYuanAssert;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
@@ -37,9 +38,6 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
 		log.info("*** Start parsing: " + resource);
-		//		InputStream inputStream = Resources.getResourceAsStream(resource);
-		//		inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-		//				TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 
 		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 
@@ -81,14 +79,17 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 		for (XmlNodeWrapper context : contexts) {
 			String id = StringUtils.trim(context.getStringAttribute("id"));
 			String host = StringUtils.trim(context.getStringAttribute("host"));
+			String usi = StringUtils.trim(context.getStringAttribute("usi"));
 			testStringEmpty(id, "the id attribute in <esSource> node is not empty.");
 			testStringEmpty(host, "the host attribute in <resSource> node is not empty.");
+
+			TangYuanAssert.stringEmpty(usi, "the 'usi' attribute cannot be empty.");
 
 			if (host.endsWith("/")) {
 				host = host.substring(0, host.length() - 1);
 			}
 
-			EsSourceVo essVo = new EsSourceVo(id, host);
+			EsSourceVo essVo = new EsSourceVo(id, host, usi);
 			defaultVo = essVo;
 			esSourceMap.put(id, essVo);
 		}
@@ -139,7 +140,7 @@ public class XmlConfigBuilder implements XmlExtendBuilder {
 			}
 
 			// log.info("*** Start parsing(ref): " + resource);
-			//InputStream inputStream = Resources.getResourceAsStream(resource);
+			// InputStream inputStream = Resources.getResourceAsStream(resource);
 			InputStream inputStream = ResourceManager.getInputStream(resource, false);
 			XPathParser parser = new XPathParser(inputStream);
 			XmlNodeBuilder nodeBuilder = getXmlNodeBuilder(parser);

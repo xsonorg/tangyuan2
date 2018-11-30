@@ -56,6 +56,9 @@ public class HBaseGetNode extends AbstractHBaseNode {
 		result = xContext.getActuator().get(this.dsKey, StringUtils.trim(sql), this.struct);
 		context.setResult(result);
 
+		// 命令追踪
+		appendTracking(sql);
+
 		if (log.isInfoEnabled()) {
 			log.info("hbase execution time: " + getSlowServiceLog(startTime));
 		}
