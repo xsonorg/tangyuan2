@@ -73,7 +73,7 @@ public class LogConfig {
 
 		String enable_context_log = getEmpty(p.getProperty("enable_context_log"));
 		if (null != enable_context_log) {
-			enableContextLog = !Boolean.parseBoolean(enable_context_log);
+			enableContextLog = Boolean.parseBoolean(enable_context_log);
 		}
 
 		String exclude_component = getEmpty(p.getProperty("exclude_component"));

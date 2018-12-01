@@ -81,7 +81,7 @@ public class RuntimeContext {
 	}
 
 	public String getComponent() {
-		return component;
+		return (null == component) ? "" : component;
 	}
 
 	private void setComponent(String component) {
@@ -280,7 +280,7 @@ public class RuntimeContext {
 	 * 清理当前线程的上下文
 	 */
 	public static void clean() {
-		RuntimeContext rc = get();
+		RuntimeContext rc = contextThreadLocal.get();
 		if (null != rc) {
 			rc.clean0();
 			rc = null;

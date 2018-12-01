@@ -337,6 +337,9 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			TangYuanContainer.getInstance().getComponent("tools").start(typeResourceMap.get(type));
 		}
 
+		// 启动上下文相关的一些线程
+		RuntimeContext.start(0);
+
 		type = "validate".toUpperCase();
 		if (typeResourceMap.containsKey(type)) {
 			TangYuanContainer.getInstance().getComponent(type).start(typeResourceMap.get(type));
@@ -466,7 +469,13 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 				Class.forName("org.xson.tangyuan.validate.ValidateComponent");
 			} else if ("aop".equalsIgnoreCase(type)) {
 				Class.forName("org.xson.tangyuan.aop.AopComponent");
-			} else {
+			}
+
+			else if ("tools".equalsIgnoreCase(type)) {
+				Class.forName("org.xson.tangyuan.tools.ToolsComponent");
+			}
+
+			else {
 				throw new XmlParseException("Unsupported component type: " + type);
 			}
 		} catch (ClassNotFoundException e) {

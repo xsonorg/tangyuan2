@@ -18,12 +18,16 @@ public class Log4jProxy extends AbstractLog {
 
 	private void setContextLog() {
 		if (enableContextLog) {
-			MDC.clear();
-			RuntimeContext rc = RuntimeContext.get();
-			if (null != rc) {
-				MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-				MDC.put(RuntimeContext.HEADER_KEY_LOG_TYPE, rc.getLogType());
-				MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+			try {
+				MDC.clear();
+				RuntimeContext rc = RuntimeContext.get();
+				if (null != rc) {
+					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
+					MDC.put(RuntimeContext.HEADER_KEY_LOG_TYPE, rc.getLogType());
+					MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 	}

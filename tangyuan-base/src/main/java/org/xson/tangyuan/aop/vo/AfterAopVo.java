@@ -54,7 +54,8 @@ public class AfterAopVo extends AopVo {
 			// ServiceActuator.executeAlone(exec, pkgArg, parent, TrackingManager.EXECUTE_MODE_SYNC);
 			ServiceActuator.executeAlone(exec, pkgArg);
 		} else if (CallMode.ASYNC == mode) {
-			ServiceActuator.executeAsync(exec, pkgArg, parent);
+			// ServiceActuator.executeAsync(exec, pkgArg, parent);
+			ServiceActuator.executeAsync(exec, pkgArg);
 		}
 	}
 

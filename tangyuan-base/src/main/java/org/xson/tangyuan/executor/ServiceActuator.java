@@ -266,6 +266,9 @@ public class ServiceActuator {
 		long now = System.currentTimeMillis();
 
 		// 2. 获取上下文
+		if (null == parent) {
+			parent = getServiceContext();
+		}
 		ServiceContext context = begin(false, parent);
 
 		Object tempObject = null;
@@ -359,6 +362,9 @@ public class ServiceActuator {
 
 		long now = System.currentTimeMillis();
 
+		if (null == parent) {
+			parent = getServiceContext();
+		}
 		ServiceContext context = begin(true, parent);
 
 		Object tempObject = null;
@@ -438,36 +444,36 @@ public class ServiceActuator {
 	/**
 	 * 单独环境, 异步执行
 	 */
-	public static void executeAsync(final String serviceURI, final Object arg, final ServiceContext parent) {
-
-		check();
-		log.info("execute async service: " + serviceURI);
-
-		final RuntimeContext rc = RuntimeContext.get();
-
-		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
-			@Override
-			public void run() {
-				// 添加上下文记录
-				RuntimeContext.beginFromContext(rc);
-				// execute
-				executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
-				// 清理上下文记录
-				RuntimeContext.clean();
-			}
-		});
-	}
-
-	/**
-	 * 单独环境, 异步执行
-	 */
 	public static void executeAsync(final String serviceURI, final Object arg) {
 
+		// check();
+		// log.info("execute async service: " + serviceURI);
+		//
+		// final ServiceContext parent = getServiceContext();
+		//
+		// final RuntimeContext rc = RuntimeContext.get();
+		//
+		// TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
+		// @Override
+		// public void run() {
+		// // 添加上下文记录
+		// RuntimeContext.beginFromContext(rc);
+		// // execute
+		// executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
+		// // 清理上下文记录
+		// RuntimeContext.clean();
+		// }
+		// });
+
+		executeAsync(serviceURI, arg, null);
+	}
+
+	private static void executeAsync(final String serviceURI, final Object arg, final ServiceContext parent) {
+
 		check();
 		log.info("execute async service: " + serviceURI);
 
-		final ServiceContext parent = getServiceContext();
-
+		final ServiceContext parentContext = (null == parent) ? getServiceContext() : parent;
 		final RuntimeContext rc = RuntimeContext.get();
 
 		TangYuanContainer.getInstance().getThreadPool().execute(new Runnable() {
@@ -476,7 +482,7 @@ public class ServiceActuator {
 				// 添加上下文记录
 				RuntimeContext.beginFromContext(rc);
 				// execute
-				executeAlone(serviceURI, arg, parent, TrackingManager.EXECUTE_MODE_ASYN);
+				executeAlone(serviceURI, arg, parentContext, TrackingManager.EXECUTE_MODE_ASYN);
 				// 清理上下文记录
 				RuntimeContext.clean();
 			}
