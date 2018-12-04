@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tools-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/tools/component.xsd">
-
-	<httpclient id="client1" resource="http.client.properties"/>
-	<httpclient id="client2" resource="http.client.properties"/>
-	
-</tools-component>

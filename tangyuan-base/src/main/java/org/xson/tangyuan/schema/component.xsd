@@ -45,6 +45,7 @@
 						<xs:enumeration value="cache"/>
 						<xs:enumeration value="validate"/>
 						<xs:enumeration value="aop"/>
+						<xs:enumeration value="tools"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>

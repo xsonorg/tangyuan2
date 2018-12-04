@@ -196,9 +196,12 @@ public class DefaultTrackingManager implements TrackingManager {
 		}
 
 		trackingVo.setIntegerValue("service_code", service_code);
-		trackingVo.setStringValue("service_result", service_result);
 		trackingVo.setStringValue("service_message", service_message);
 		trackingVo.setStringValue("exception_info", exception_info);
+		if (!this.config.isEnableResultTracking()) {
+			service_result = "";
+		}
+		trackingVo.setStringValue("service_result", service_result);
 
 		long start_time = trackingVo.getLongValue("start_time0");
 		long end_time = System.currentTimeMillis();

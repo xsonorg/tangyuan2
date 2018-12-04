@@ -8,23 +8,24 @@ import org.xson.tangyuan.util.TangYuanAssert;
 
 public class TrackingConfig {
 
-	private String	reporter			= null;
+	private String	reporter				= null;
 
 	/** 上报地址 */
-	private String	host				= null;
+	private String	host					= null;
 	/** 批量上报 */
-	private int		reporterBatch		= 1;
+	private int		reporterBatch			= 1;
 	/** 上报间隔(秒) */
-	private long	reporterInterval	= 1L * 1000L;
+	private long	reporterInterval		= 1L * 1000L;
 	/** 最后等待时间(秒) */
-	private long	lastWaitTime		= 10L * 1000L;
+	private long	lastWaitTime			= 10L * 1000L;
 
-	private String	clientId			= null;
+	private String	clientId				= null;
 
-	private boolean	enableSqlTracking	= false;
-	private boolean	enableMongoTracking	= false;
-	private boolean	enableHbaseTracking	= false;
-	private boolean	enableEsTracking	= false;
+	private boolean	enableSqlTracking		= false;
+	private boolean	enableMongoTracking		= false;
+	private boolean	enableHbaseTracking		= false;
+	private boolean	enableEsTracking		= false;
+	private boolean	enableResultTracking	= true;
 
 	public TrackingConfig() {
 	}
@@ -48,6 +49,9 @@ public class TrackingConfig {
 		}
 		if (p.containsKey("enable.es.tracking")) {
 			this.enableEsTracking = Boolean.parseBoolean(p.getProperty("enable.es.tracking"));
+		}
+		if (p.containsKey("enable.result.tracking")) {
+			this.enableResultTracking = Boolean.parseBoolean(p.getProperty("enable.result.tracking"));
 		}
 
 		// report control
@@ -103,6 +107,10 @@ public class TrackingConfig {
 
 	public boolean isEnableEsTracking() {
 		return enableEsTracking;
+	}
+
+	public boolean isEnableResultTracking() {
+		return enableResultTracking;
 	}
 
 }
