@@ -1,14 +1,17 @@
 package org.xson.tangyuan.runtime;
 
+import java.util.UUID;
+
 public class RuntimeContextUtils {
 
 	public static String createTraceId() {
-		return "T_" + System.currentTimeMillis();
+		// return "T_" + System.currentTimeMillis();
+		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
 	public static String createSpanId() {
-		// return UUID.randomUUID().toString();
-		return "S_" + System.currentTimeMillis();
+		// return "S_" + System.currentTimeMillis();
+		return createTraceId();
 	}
 
 }
