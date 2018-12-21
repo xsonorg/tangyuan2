@@ -101,11 +101,11 @@ public class INIXLoader {
 			} else if ("S".equalsIgnoreCase(type)) {
 				value = val;
 			} else if ("A".equalsIgnoreCase(type)) {
-				value = XCOUtil.parseDateTime(val);	// A: date
+				value = XCOUtil.parseDateTime(val); // A: date
 			} else if ("E".equalsIgnoreCase(type)) {
-				value = XCOUtil.parseDate(val);		// E: sql.date
+				value = XCOUtil.parseDate(val); // E: sql.date
 			} else if ("G".equalsIgnoreCase(type)) {
-				value = XCOUtil.parseTime(val);		// G: sql.time
+				value = XCOUtil.parseTime(val); // G: sql.time
 			} else if ("J".equalsIgnoreCase(type)) {
 				value = XCOUtil.parseTimestamp(val);// J: sql.timestamp
 			} else if ("K".equalsIgnoreCase(type)) {
@@ -141,7 +141,8 @@ public class INIXLoader {
 
 	private List<String> getContent(InputStream in) throws IOException {
 		List<String> list = new ArrayList<String>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		// BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 		String line = null;
 		while (null != (line = reader.readLine())) {
 			line = line.trim();
