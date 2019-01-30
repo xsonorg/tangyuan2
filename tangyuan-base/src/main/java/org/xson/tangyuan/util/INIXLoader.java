@@ -118,7 +118,10 @@ public class INIXLoader {
 				value = val.split(separator);
 			} else if ("IA".equalsIgnoreCase(type)) {
 				value = val.split(separator);
-				value = toNumberArray((String[]) value, int.class);
+				value = toIntArray((String[]) value);
+			} else if ("LA".equalsIgnoreCase(type)) {
+				value = val.split(separator);
+				value = toLongArray((String[]) value);
 			}
 
 			else if ("SL".equalsIgnoreCase(type)) {
@@ -154,18 +157,26 @@ public class INIXLoader {
 		return list;
 	}
 
-	private Object toNumberArray(String[] arr, Class<?> type) {
-		if (int.class == type) {
-			if (null == arr || 0 == arr.length) {
-				return new int[0];
-			}
-			int[] result = new int[arr.length];
-			for (int i = 0; i < arr.length; i++) {
-				result[i] = Integer.parseInt(arr[i]);
-			}
-			return result;
+	private int[] toIntArray(String[] arr) {
+		if (null == arr || 0 == arr.length) {
+			return new int[0];
 		}
-		return null;
+		int[] result = new int[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			result[i] = Integer.parseInt(arr[i]);
+		}
+		return result;
+	}
+
+	private long[] toLongArray(String[] arr) {
+		if (null == arr || 0 == arr.length) {
+			return new long[0];
+		}
+		long[] result = new long[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			result[i] = Long.parseLong(arr[i]);
+		}
+		return result;
 	}
 
 }

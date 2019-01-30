@@ -69,7 +69,7 @@ public class TangYuanContainer implements TangYuanComponent {
 	/** 最大关闭等待时间(秒) */
 	private long									maxWaitTimeForShutDown	= 10L;
 	/** 所有服务统一返回XCO */
-	private boolean									allServiceReturnXCO		= false;
+	private boolean									allServiceReturnXCO		= true;
 	/** 外部扩展参数 */
 	private ExtArg									extArg					= new ExtArg();
 

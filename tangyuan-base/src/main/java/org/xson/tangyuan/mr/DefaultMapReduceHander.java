@@ -16,7 +16,8 @@ public class DefaultMapReduceHander implements MapReduceHander {
 
 	private int				total;
 
-	private List<XCO>		resultList;
+	// private List<XCO> resultList;
+	private List<Object>	resultList;
 
 	public DefaultMapReduceHander(int total) {
 		this(total, 10L);
@@ -25,7 +26,8 @@ public class DefaultMapReduceHander implements MapReduceHander {
 	public DefaultMapReduceHander(int total, long sleepTime) {
 		this.total = total;
 		this.sleepTime = sleepTime;
-		this.resultList = new ArrayList<XCO>();
+		// this.resultList = new ArrayList<XCO>();
+		this.resultList = new ArrayList<Object>();
 	}
 
 	@Override
