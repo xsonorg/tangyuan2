@@ -23,12 +23,12 @@ public class ThreadPool {
 	private volatile boolean	running		= false;
 	private ExecutorService		pool		= null;
 	private long				maxWaitTime	= 10L;
-	//	private AsyncTaskThread		taskThread	= null;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void start(Properties p, long maxWaitTimeForShutDown) throws Throwable {
 		if (!running) {
-			running = true;
+
+			// running = true;
 
 			// type:custom/SingleThread/FixedThreadPool/CachedThreadPool
 			String type = p.getProperty("type");
@@ -54,6 +54,8 @@ public class ThreadPool {
 			}
 
 			this.maxWaitTime = PropertyUtils.getLongValue((Map) p, "maxWaitTimeForShutDown", maxWaitTimeForShutDown);
+
+			running = true;
 
 			log.info("thread pool start successfully.");
 		}
@@ -97,7 +99,7 @@ public class ThreadPool {
 	}
 
 	public void execute(Runnable runnable) {
-		if (null != pool) {
+		if (null != pool && running) {
 			pool.execute(runnable);
 		}
 	}

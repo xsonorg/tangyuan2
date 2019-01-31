@@ -122,6 +122,12 @@ public class INIXLoader {
 			} else if ("LA".equalsIgnoreCase(type)) {
 				value = val.split(separator);
 				value = toLongArray((String[]) value);
+			} else if ("FA".equalsIgnoreCase(type)) {
+				value = val.split(separator);
+				value = toFloatArray((String[]) value);
+			} else if ("DA".equalsIgnoreCase(type)) {
+				value = val.split(separator);
+				value = toDoubleArray((String[]) value);
 			}
 
 			else if ("SL".equalsIgnoreCase(type)) {
@@ -175,6 +181,28 @@ public class INIXLoader {
 		long[] result = new long[arr.length];
 		for (int i = 0; i < arr.length; i++) {
 			result[i] = Long.parseLong(arr[i]);
+		}
+		return result;
+	}
+
+	private float[] toFloatArray(String[] arr) {
+		if (null == arr || 0 == arr.length) {
+			return new float[0];
+		}
+		float[] result = new float[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			result[i] = Float.parseFloat(arr[i]);
+		}
+		return result;
+	}
+
+	private double[] toDoubleArray(String[] arr) {
+		if (null == arr || 0 == arr.length) {
+			return new double[0];
+		}
+		double[] result = new double[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			result[i] = Double.parseDouble(arr[i]);
 		}
 		return result;
 	}
