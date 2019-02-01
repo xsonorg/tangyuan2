@@ -167,7 +167,8 @@ public class ActiveMqReceiver extends Receiver {
 			}
 
 			// 添加上下文记录
-			RuntimeContext.beginFromArg(xcoMessage, "MQ");
+			// RuntimeContext.beginFromArg(xcoMessage, "MQ");
+			RuntimeContext.beginFromArg(xcoMessage, RuntimeContext.CONTEXT_ORIGIN_MQ);
 
 			log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 

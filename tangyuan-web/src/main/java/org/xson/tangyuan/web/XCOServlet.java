@@ -96,7 +96,9 @@ public class XCOServlet extends HttpServlet {
 			cVo.dataConvert(context);
 
 			// 添加上下文记录, 之前日志中可能会丢丢失, 但不影响
-			RuntimeContext.beginFromArg(context.getArg(), "WEB");
+			// RuntimeContext.beginFromArg(context.getArg(), "WEB");
+			RuntimeContext.beginFromArg(context.getArg(), RuntimeContext.CONTEXT_ORIGIN_WEB);
+
 			// 记录追踪信息
 			if (tracking) {
 				startTracking(context);

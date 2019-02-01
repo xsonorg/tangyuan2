@@ -96,7 +96,7 @@ public class LogConfig {
 			}
 		}
 
-		String exclude_type = getEmpty(p.getProperty("exclude_type"));
+		String exclude_type = getEmpty(p.getProperty("exclude_origin"));
 		if (null != exclude_type) {
 			if ("*".equals(exclude_type)) {
 				excludeTypeAll = true;
@@ -106,7 +106,7 @@ public class LogConfig {
 			}
 		}
 
-		String include_type = getEmpty(p.getProperty("include_type"));
+		String include_type = getEmpty(p.getProperty("include_origin"));
 		if (null != include_type) {
 			if ("*".equals(include_type)) {
 				includeTypeAll = true;
@@ -114,6 +114,11 @@ public class LogConfig {
 				includeTypeMap = new HashMap<String, Integer>();
 				fillToMap(include_type.split(","), includeTypeMap);
 			}
+		}
+
+		// optimize
+		if (null == exclude_component && null == include_component && null == exclude_type && null == include_type) {
+			disableFilterLog = true;
 		}
 
 		String redirect_local_path = getEmpty(p.getProperty("log_redirect_path"));

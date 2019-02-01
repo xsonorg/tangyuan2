@@ -30,26 +30,25 @@ public class RpcProxy {
 		RpcProxy.placeHolderHandler = placeHolderHandler;
 	}
 
-	public static XCO call(String url) throws Throwable {
-		return call(url, new XCO());
+	public static XCO call(String serviceURI) throws Throwable {
+		return call(serviceURI, new XCO());
 	}
 
-	public static XCO call(String url, XCO request) throws Throwable {
+	public static XCO call(String serviceURI, XCO request) throws Throwable {
 		if (null == rpc) {
-			//
-			// throw new TangYuanException("missing rpc component, when calling " + url);
-			throw new TangYuanException("missing rpc component or requested service does not exist. serviceURI: " + url);
+			// throw new TangYuanException("missing rpc component or requested service does not exist. serviceURI: " + url);
+			throw new TangYuanException("missing rpc component when calling service: " + serviceURI);
 		}
 		// 日志的打印,放在服务所在的系统
 		if (null == jpc) {
-			return rpc.call(url, request);
+			return rpc.call(serviceURI, request);
+		}
+
+		URI uri = jpc.inJvm(serviceURI);
+		if (null != uri) {
+			return (XCO) jpc.inJvmCall(uri, request);
 		} else {
-			URI uri = jpc.inJvm(url);
-			if (null != uri) {
-				return (XCO) jpc.inJvmCall(uri, request);
-			} else {
-				return rpc.call(url, request);
-			}
+			return rpc.call(serviceURI, request);
 		}
 	}
 

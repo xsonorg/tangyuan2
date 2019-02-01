@@ -18,8 +18,16 @@ import com.alibaba.fastjson.JSONObject;
 public class RuntimeContext {
 
 	public static final String					HEADER_KEY_TRACE_ID		= "trace_id";
-	public static final String					HEADER_KEY_LOG_TYPE		= "log_type";
+	public static final String					HEADER_KEY_ORIGIN		= "origin";
 	public static final String					HEADER_KEY_COMPONENT	= "component";
+
+	// log type
+	public static final String					CONTEXT_ORIGIN__SYS		= "SYS";
+	public static final String					CONTEXT_ORIGIN_TEST		= "TEST";
+	public static final String					CONTEXT_ORIGIN_UNKNOWN	= "UNKNOWN";
+	public static final String					CONTEXT_ORIGIN_TIMER	= "TIMER";
+	public static final String					CONTEXT_ORIGIN_MQ		= "MQ";
+	public static final String					CONTEXT_ORIGIN_WEB		= "WEB";
 
 	private static Log							log						= LogFactory.getLog(RuntimeContext.class);
 
@@ -31,9 +39,9 @@ public class RuntimeContext {
 	private static TrackingManager				trackingManager			= null;
 
 	/**
-	 * 初始的日志类型(一旦确定，不在改变)
+	 * 上下文的起源
 	 */
-	private String								logType					= null;
+	private String								origin					= null;
 
 	/**
 	 * 全局业务ID
@@ -48,14 +56,14 @@ public class RuntimeContext {
 	private XCO									trackingParent			= null;
 	private XCO									header					= null;
 
-	private RuntimeContext(String traceId, String logType) {
+	private RuntimeContext(String traceId, String origin) {
 		this.traceId = traceId;
-		this.logType = logType;
+		this.origin = origin;
 	}
 
 	private RuntimeContext(RuntimeContext rc) {
 		this.traceId = rc.getTraceId();
-		this.logType = rc.getLogType();
+		this.origin = rc.getOrigin();
 		this.trackingParent = rc.getTrackingParent();
 		this.header = rc.getHeader();
 	}
@@ -76,8 +84,8 @@ public class RuntimeContext {
 		return traceId;
 	}
 
-	public String getLogType() {
-		return logType;
+	public String getOrigin() {
+		return origin;
 	}
 
 	public String getComponent() {
@@ -100,43 +108,44 @@ public class RuntimeContext {
 		beginFromArg(arg, null);
 	}
 
-	public static void beginFromArg(Object arg, Object info) {
+	public static void beginFromArg(Object arg, String _origin) {
 		RuntimeContext rc = get();
 		if (null != rc) {
 			throw new TangYuanException("previously left uncleaned context: " + arg);
 		}
 		XCO header = null;
 		String traceId = null;
-		String logType = null;
+		String origin = null;
 
 		// 通过参数传递的
 		if (null != arg && arg instanceof XCO) {
 			header = ((XCO) arg).getXCOValue(TangYuanContainer.XCO_HEADER_KEY);
 			if (null != header) {
-				((XCO) arg).remove(TangYuanContainer.XCO_HEADER_KEY); // 清理头部Header
+				// 清理头部Header
+				((XCO) arg).remove(TangYuanContainer.XCO_HEADER_KEY);
 			}
 		} else if (null != arg && arg instanceof JSONObject) {
 			JSONObject _header = ((JSONObject) arg).getJSONObject(TangYuanContainer.XCO_HEADER_KEY);
 			if (null != _header) {
-				((JSONObject) arg).remove(TangYuanContainer.XCO_HEADER_KEY); // 清理头部Header
-				// 需要吧JSON格式的Header转换成XCO格式
+				// 清理头部Header
+				((JSONObject) arg).remove(TangYuanContainer.XCO_HEADER_KEY);
+				// 需要把JSON格式的Header转换成XCO格式
 				header = FastJsonUtil.toXCO(_header);
 			}
 		}
 
 		if (null == header) {
 			header = new XCO();
+			traceId = RuntimeContextUtils.createTraceId();
+			origin = _origin;
+		} else {
+			traceId = header.getStringValue(HEADER_KEY_TRACE_ID);
+			origin = header.getStringValue(HEADER_KEY_ORIGIN);
 		}
-		traceId = header.getStringValue(HEADER_KEY_TRACE_ID);
-		logType = header.getStringValue(HEADER_KEY_LOG_TYPE);
 		traceId = (null == traceId) ? RuntimeContextUtils.createTraceId() : traceId;
-		logType = (null == logType) ? "unknown" : logType;
-		rc = new RuntimeContext(traceId, logType);
+		origin = (null == origin) ? CONTEXT_ORIGIN_UNKNOWN : origin;
 
-		// 直接放入组件名称
-		if (null != info) {
-			rc.setComponent(info.toString());
-		}
+		rc = new RuntimeContext(traceId, origin);
 
 		// 将Header保存到上下文中
 		rc.header = header;
@@ -237,7 +246,7 @@ public class RuntimeContext {
 			}
 			// set header: runtime
 			header.setStringValue(HEADER_KEY_TRACE_ID, rc.getTraceId());
-			header.setStringValue(HEADER_KEY_LOG_TYPE, rc.getLogType());
+			header.setStringValue(CONTEXT_ORIGIN_UNKNOWN, rc.getOrigin());
 
 			// set header: trace
 			if (null != trackingManager) {

@@ -206,4 +206,29 @@ public class TangYuanUtil {
 		return netAddress.getHostName();
 	}
 
+	/**
+	 * 是否是本地服务(a/b)
+	 */
+	public static boolean isLocalService(String serviceURI) {
+		int len = serviceURI.length();
+		int separator = 0;
+		int brackets = 0;
+		char chr = '0';
+		for (int i = 0; i < len; i++) {
+			chr = serviceURI.charAt(i);
+			if ('/' == chr) {
+				separator++;
+			} else if ('{' == chr || '}' == chr) {
+				brackets++;
+			}
+		}
+		if (separator > 1) {
+			return false;
+		}
+		if (brackets > 0) {
+			return false;
+		}
+		return true;
+	}
+
 }

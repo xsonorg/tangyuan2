@@ -28,8 +28,11 @@ public abstract class AbstractLog implements Log {
 			String component = null;
 			RuntimeContext rc = RuntimeContext.get();
 			if (null != rc) {
-				type = rc.getLogType();
+				type = rc.getOrigin();
 				component = rc.getComponent();
+				if (0 == component.length()) { // optimize
+					component = null;
+				}
 			}
 			return conf.isExclude(type, component);
 		}

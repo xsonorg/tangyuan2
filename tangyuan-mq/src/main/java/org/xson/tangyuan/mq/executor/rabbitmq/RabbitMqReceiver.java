@@ -136,7 +136,8 @@ public class RabbitMqReceiver extends Receiver {
 						XCO xcoMessage = getMessage(body);
 
 						// 添加上下文记录
-						RuntimeContext.beginFromArg(xcoMessage, "MQ");
+						// RuntimeContext.beginFromArg(xcoMessage, "MQ");
+						RuntimeContext.beginFromArg(xcoMessage, RuntimeContext.CONTEXT_ORIGIN_MQ);
 
 						log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 						boolean result = exec(service, xcoMessage, binding);
@@ -171,7 +172,8 @@ public class RabbitMqReceiver extends Receiver {
 						XCO xcoMessage = getMessage(delivery.getBody());
 
 						// 添加上下文记录
-						RuntimeContext.beginFromArg(xcoMessage, "MQ");
+						// RuntimeContext.beginFromArg(xcoMessage, "MQ");
+						RuntimeContext.beginFromArg(xcoMessage, RuntimeContext.CONTEXT_ORIGIN_MQ);
 
 						log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 						boolean result = exec(service, xcoMessage, binding);

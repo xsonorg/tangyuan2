@@ -180,68 +180,73 @@ public class ServiceActuator {
 	 * 获取服务<br />
 	 * a/b|www.xx.com/a/b|{xxx}/a/b
 	 */
-	private static AbstractServiceNode findService(String serviceURL) {
+	private static AbstractServiceNode findService(String serviceURI) {
 		try {
 			if (onlyProxy) {
-				return findProxyService(serviceURL);
+				return findProxyService(serviceURI);
 			}
 
 			// 查询本地服务
-			AbstractServiceNode service = TangYuanContainer.getInstance().getService(serviceURL);
+			AbstractServiceNode service = TangYuanContainer.getInstance().getService(serviceURI);
 			if (null != service) {
 				return service;
 			}
 
 			// 查询远程服务
-			service = TangYuanContainer.getInstance().getDynamicService(serviceURL);
+			service = TangYuanContainer.getInstance().getDynamicService(serviceURI);
 			if (null != service) {
 				return service;
 			}
 
 			// 处理本地占位URL
 			if (null != RpcProxy.getPlaceHolderHandler()) {
-				String newServiceURL = RpcProxy.getPlaceHolderHandler().parse(serviceURL);
+				String newServiceURL = RpcProxy.getPlaceHolderHandler().parse(serviceURI);
 				if (null != newServiceURL) {
 					return TangYuanContainer.getInstance().getService(newServiceURL);
 				}
 			}
 
 			// 创建新的远程服务
-			return createDynamicService(serviceURL);
+			return createDynamicService(serviceURI);
 		} catch (Throwable e) {
-			log.error("Invalid service url: " + serviceURL, e);
+			log.error("Invalid serviceURI: " + serviceURI, e);
 		}
 		return null;
 	}
 
-	private static AbstractServiceNode findProxyService(String serviceURL) {
-		AbstractServiceNode service = TangYuanContainer.getInstance().getDynamicService(serviceURL);
+	private static AbstractServiceNode findProxyService(String serviceURI) {
+		AbstractServiceNode service = TangYuanContainer.getInstance().getDynamicService(serviceURI);
 		if (null != service) {
 			return service;
 		}
-		return createDynamicService(serviceURL);
+		return createDynamicService(serviceURI);
 	}
 
-	private static AbstractServiceNode createDynamicService(String serviceURL) {
+	private static AbstractServiceNode createDynamicService(String serviceURI) {
+
+		// 是否是本地服务 optimize
+		if (TangYuanUtil.isLocalService(serviceURI)) {
+			return null;
+		}
 
 		AbstractServiceNode service = null;
 
 		if (null == aop) {
-			service = new RpcServiceNode(serviceURL);
+			service = new RpcServiceNode(serviceURI);
 			TangYuanContainer.getInstance().addDynamicService(service);
 			return service;
 		}
 
 		// 是否是拦截方
-		if (aop.isInterceptor(serviceURL)) {
-			service = new RpcServiceNode(serviceURL);
+		if (aop.isInterceptor(serviceURI)) {
+			service = new RpcServiceNode(serviceURI);
 			TangYuanContainer.getInstance().addDynamicService(service);
 			return service;
 		}
 
-		service = new RpcServiceNode(serviceURL);
+		service = new RpcServiceNode(serviceURI);
 		// 检查并设置被拦截方
-		aop.checkAndsetIntercepted(serviceURL, service);
+		aop.checkAndsetIntercepted(serviceURI, service);
 		TangYuanContainer.getInstance().addDynamicService(service);
 		return service;
 	}
