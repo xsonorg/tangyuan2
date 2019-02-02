@@ -44,12 +44,9 @@
 	<dependencyManagement>
 		<dependencies>
 
-<!-- 			<dependency>
-				<groupId>org.xson</groupId>
-				<artifactId>logging</artifactId>
-				<version>${xson.logging}</version>
-			</dependency> -->
-	
+			<!-- <dependency> <groupId>org.xson</groupId> <artifactId>logging</artifactId> 
+				<version>${xson.logging}</version> </dependency> -->
+
 			<dependency>
 				<groupId>org.xson</groupId>
 				<artifactId>common-object</artifactId>
@@ -116,7 +113,7 @@
 				<version>2.2.2</version>
 			</dependency>
 
-			<!--cache-->
+			<!--cache -->
 			<dependency>
 				<groupId>org.xson</groupId>
 				<artifactId>xson-redis</artifactId>
@@ -135,7 +132,7 @@
 				<version>3.0.2</version>
 			</dependency>
 
-			<!--数据源驱动-->
+			<!--数据源驱动 -->
 
 			<dependency>
 				<groupId>commons-dbcp</groupId>
@@ -199,7 +196,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.6</version>
+				<!-- <version>3.6</version> -->
+				<version>3.7</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.doxia</groupId>
+						<artifactId>doxia-site-renderer</artifactId>
+						<version>1.8</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
