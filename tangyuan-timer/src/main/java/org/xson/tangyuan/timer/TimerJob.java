@@ -18,6 +18,13 @@ public abstract class TimerJob implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
+		// 检查系统是否关闭中
+		if (!TimerComponent.getInstance().isRunning()) {
+			getLogger().info("The current system processing is not running.");
+			return;
+		}
+
+		// 是否是高可用
 		boolean available = TimerComponent.getInstance().isAvailable();
 		if (!available) {
 			getLogger().info("The current project is in a high availability alternative state.");

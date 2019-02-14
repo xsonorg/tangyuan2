@@ -56,6 +56,7 @@ public class TimerComponent implements TangYuanComponent {
 	private List<TimerConfig>	timerList			= null;
 	private TimerHAController	haController		= null;
 	private Map<String, Object>	haProperties		= null;
+	private volatile boolean	running				= false;
 
 	private void parse(String resource) throws Throwable {
 		// InputStream inputStream = Resources.getResourceAsStream(resource);
@@ -235,6 +236,7 @@ public class TimerComponent implements TangYuanComponent {
 		scheduler = schedulerfactory.getScheduler();
 		register();
 		scheduler.start();
+		running = true;
 		log.info("timer client component successfully.");
 	}
 
@@ -242,8 +244,13 @@ public class TimerComponent implements TangYuanComponent {
 	public void stop(boolean wait) {
 		try {
 			log.info("timer client component stopping...");
+			running = false;
 			if (null != scheduler) {
-				scheduler.shutdown();
+				try {
+					scheduler.shutdown();
+				} catch (Throwable e) {
+					log.error(e);
+				}
 				// scheduler.shutdown(wait);
 			}
 			if (null != haController) {
@@ -260,5 +267,9 @@ public class TimerComponent implements TangYuanComponent {
 			return true;
 		}
 		return this.haController.isAvailable();
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 }
