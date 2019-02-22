@@ -72,6 +72,8 @@ public class TangYuanContainer implements TangYuanComponent {
 	private boolean									allServiceReturnXCO		= true;
 	/** 外部扩展参数 */
 	private ExtArg									extArg					= new ExtArg();
+	/** 关闭的是否启动一个新的线程 */
+	private boolean									shutdownInNewThread		= false;
 
 	private TangYuanContainer() {
 	}
@@ -91,6 +93,7 @@ public class TangYuanContainer implements TangYuanComponent {
 		if (properties.containsKey("jdkProxy".toUpperCase())) {
 			jdkProxy = Boolean.parseBoolean(properties.get("jdkProxy".toUpperCase()));
 		}
+
 		// if (properties.containsKey("nsSeparator".toUpperCase())) {
 		// nsSeparator = properties.get("nsSeparator".toUpperCase());
 		// }
@@ -112,6 +115,10 @@ public class TangYuanContainer implements TangYuanComponent {
 		if (properties.containsKey("allServiceReturnXCO".toUpperCase())) {
 			allServiceReturnXCO = Boolean.parseBoolean(properties.get("allServiceReturnXCO".toUpperCase()));
 			log.info("open the unified return object mode.");
+		}
+
+		if (properties.containsKey("shutdownInNewThread".toUpperCase())) {
+			shutdownInNewThread = Boolean.parseBoolean(properties.get("shutdownInNewThread".toUpperCase()));
 		}
 
 		log.info("config setting success...");
@@ -177,8 +184,131 @@ public class TangYuanContainer implements TangYuanComponent {
 		// }
 
 		closing = true;
-		wait = true;
+		// wait = true;
+		final boolean _wait = true;
 
+		if (shutdownInNewThread) {
+			Thread shutdownThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					stop0(_wait);
+				}
+			});
+			shutdownThread.setDaemon(false);
+			shutdownThread.start();
+		} else {
+			stop0(_wait);
+		}
+
+		// executeSSAop(this.closingBeforeList);
+		//
+		// String type = "web".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// // 如果是RPC服务,先停止服务
+		// type = "rpc".toUpperCase();
+		// if (componentMap.containsKey("rpc-server")) {
+		// componentMap.get("rpc-server").getComponent().stop(wait);
+		// }
+		//
+		// type = "timer".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "mq".toUpperCase();
+		// if (componentMap.containsKey("mq-listener".toUpperCase())) {
+		// componentMap.get("mq-listener".toUpperCase()).getComponent().stop(wait);
+		// }
+		//
+		// // 停止服务
+		// ServiceActuator.shutdown();
+		//
+		// type = "sql".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "java".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "mongo".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "hbase".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "hive".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "es".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "mq".toUpperCase();
+		// if (componentMap.containsKey("mq-service".toUpperCase())) {
+		// componentMap.get("mq-service".toUpperCase()).getComponent().stop(wait);
+		// }
+		//
+		// type = "rpc".toUpperCase();
+		// if (componentMap.containsKey("rpc-client")) {
+		// componentMap.get("rpc-client").getComponent().stop(wait);
+		// }
+		//
+		// type = "cache".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "validate".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// type = "tools".toUpperCase();
+		// if (componentMap.containsKey(type)) {
+		// componentMap.get(type).getComponent().stop(wait);
+		// }
+		//
+		// RuntimeContext.shutdown();
+		//
+		// // if (null != asyncTaskThread) {
+		// // asyncTaskThread.stop();
+		// // }
+		//
+		// if (null != threadPool) {
+		// threadPool.stop();
+		// }
+		//
+		// // if (null != deadlockMonitor) {
+		// // deadlockMonitor.stop();
+		// // }
+		// // if (null != trackingManager) {
+		// // trackingManager.stop();
+		// // }
+		//
+		// executeSSAop(this.closingAfterList);
+		//
+		// HttpClientManager.shutdown();
+		//
+		// log.info("tangyuan framework stop successfully.");
+	}
+
+	private void stop0(boolean wait) {
+
+		log.info("tangyuan framework stopping...:xxx");
+		
 		executeSSAop(this.closingBeforeList);
 
 		String type = "web".toUpperCase();
