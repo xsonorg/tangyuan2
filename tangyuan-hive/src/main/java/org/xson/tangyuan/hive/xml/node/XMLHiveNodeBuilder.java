@@ -1,4 +1,4 @@
-package org.xson.tangyuan.sql.xml.node;
+package org.xson.tangyuan.hive.xml.node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,15 +13,15 @@ import org.xson.tangyuan.cache.CacheComponent;
 import org.xson.tangyuan.cache.TangYuanCache;
 import org.xson.tangyuan.cache.apply.CacheCleanVo;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
+import org.xson.tangyuan.hive.HiveComponent;
+import org.xson.tangyuan.hive.transaction.XTransactionDefinition;
+import org.xson.tangyuan.hive.xml.XmlSqlContext;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.ognl.vars.parser.LogicalExprParser;
 import org.xson.tangyuan.ognl.vars.parser.NormalParser;
 import org.xson.tangyuan.ognl.vars.warper.GAParserWarper;
-import org.xson.tangyuan.sql.SqlComponent;
-import org.xson.tangyuan.sql.transaction.XTransactionDefinition;
-import org.xson.tangyuan.sql.xml.XmlSqlContext;
 import org.xson.tangyuan.util.ClassUtils;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
@@ -43,7 +43,7 @@ import org.xson.tangyuan.xml.node.SetVarNode;
 import org.xson.tangyuan.xml.node.TangYuanNode;
 import org.xson.tangyuan.xml.node.vo.PropertyItem;
 
-public class XMLSqlNodeBuilder extends XmlNodeBuilder {
+public class XMLHiveNodeBuilder extends XmlNodeBuilder {
 
 	private Log				log					= LogFactory.getLog(getClass());
 
@@ -100,12 +100,12 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 
 	private String checkDsKey(String dsKey, String service) {
 		if (null == dsKey) {
-			dsKey = SqlComponent.getInstance().getDataSourceManager().getDefaultDsKey();
+			dsKey = HiveComponent.getInstance().getDataSourceManager().getDefaultDsKey();
 			if (null == dsKey) {
 				throw new XmlParseException("service[" + service + "] uses an invalid dsKey: " + dsKey);
 			}
 		} else {
-			if (!SqlComponent.getInstance().getDataSourceManager().isValidDsKey(dsKey)) {
+			if (!HiveComponent.getInstance().getDataSourceManager().isValidDsKey(dsKey)) {
 				throw new XmlParseException("service[" + service + "] uses an invalid dsKey: " + dsKey);
 			}
 		}
@@ -113,7 +113,7 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 	}
 
 	private void checkInnerDsKey(String dsKey, String method) {
-		if (!SqlComponent.getInstance().getDataSourceManager().isValidDsKey(dsKey)) {
+		if (!HiveComponent.getInstance().getDataSourceManager().isValidDsKey(dsKey)) {
 			throw new XmlParseException("service[" + method + "] uses an invalid dsKey: " + dsKey);
 		}
 	}
@@ -216,18 +216,14 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 		List<AbstractServiceNode> selectSetList = buildSelectSetNodes(context.evalNodes("selectSet"));
 		List<AbstractServiceNode> selectOneList = buildSelectOneNodes(context.evalNodes("selectOne"));
 		List<AbstractServiceNode> selectVarList = buildSelectVarNodes(context.evalNodes("selectVar"));
-		List<AbstractServiceNode> insertList = buildInsertNodes(context.evalNodes("insert"));
-		List<AbstractServiceNode> updateList = buildUpdateNodes(context.evalNodes("update"));
-		List<AbstractServiceNode> deleteList = buildDeleteNodes(context.evalNodes("delete"));
-		List<AbstractServiceNode> sqlServiceList = buildSqlServiceNodes(context.evalNodes("sql-service"));
+		List<AbstractServiceNode> hqlList = buildHqlNodes(context.evalNodes("hql"));
+		List<AbstractServiceNode> sqlServiceList = buildSqlServiceNodes(context.evalNodes("hive-service"));
 
 		registerService(selectSetList, "selectSet");
 		registerService(selectOneList, "selectOne");
 		registerService(selectVarList, "selectVar");
-		registerService(insertList, "insert");
-		registerService(updateList, "update");
-		registerService(deleteList, "delete");
-		registerService(sqlServiceList, "sql-service");
+		registerService(hqlList, "hql");
+		registerService(sqlServiceList, "hive-service");
 	}
 
 	private TangYuanNode parseNode(XmlNodeWrapper context, boolean internal) {
@@ -336,11 +332,12 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
 				dsKey = checkDsKey(dsKey, id);
 
-				String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-				XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-				if (null == txDef) {
-					throw new XmlParseException("service txRef is invalid: " + id);
-				}
+				// String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
+				// XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
+				// if (null == txDef) {
+				// throw new XmlParseException("service txRef is invalid: " + id);
+				// }
+				XTransactionDefinition txDef = null;
 
 				String _cacheUse = StringUtils.trim(context.getStringAttribute("cacheUse"));
 				CacheUseVo cacheUse = null;
@@ -371,11 +368,12 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
 				dsKey = checkDsKey(dsKey, id);
 
-				String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-				XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-				if (null == txDef) {
-					throw new XmlParseException("service txRef is invalid: " + id);
-				}
+				// String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
+				// XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
+				// if (null == txDef) {
+				// throw new XmlParseException("service txRef is invalid: " + id);
+				// }
+				XTransactionDefinition txDef = null;
 
 				String _cacheUse = StringUtils.trim(context.getStringAttribute("cacheUse"));
 				CacheUseVo cacheUse = null;
@@ -402,11 +400,12 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
 				dsKey = checkDsKey(dsKey, id);
 
-				String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-				XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-				if (null == txDef) {
-					throw new XmlParseException("service txRef is invalid: " + id);
-				}
+				// String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
+				// XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
+				// if (null == txDef) {
+				// throw new XmlParseException("service txRef is invalid: " + id);
+				// }
+				XTransactionDefinition txDef = null;
 
 				String _cacheUse = StringUtils.trim(context.getStringAttribute("cacheUse"));
 				CacheUseVo cacheUse = null;
@@ -421,43 +420,7 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 		return list;
 	}
 
-	private List<AbstractServiceNode> buildInsertNodes(List<XmlNodeWrapper> contexts) {
-		List<AbstractServiceNode> list = new ArrayList<AbstractServiceNode>();
-		for (XmlNodeWrapper context : contexts) {
-			TangYuanNode sqlNode = parseNode(context, false);
-			if (null != sqlNode) {
-				String id = StringUtils.trim(context.getStringAttribute("id")); // xml v
-				existingService(id);
-
-				String _resultType = StringUtils.trim(context.getStringAttribute("resultType"));// 仅作标示作用
-				Class<?> resultType = null;
-				if (null != _resultType) {
-					resultType = Object.class;
-				}
-
-				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
-				dsKey = checkDsKey(dsKey, id);
-
-				String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-				XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-				if (null == txDef) {
-					throw new XmlParseException("service txRef is invalid: " + id);
-				}
-
-				String _cacheClean = StringUtils.trim(context.getStringAttribute("cacheClean"));
-				CacheCleanVo cacheClean = null;
-				if (null != _cacheClean && _cacheClean.length() > 0) {
-					cacheClean = parseCacheClean(_cacheClean, getFullId(id));
-				}
-
-				InsertNode insertNode = new InsertNode(id, ns, getFullId(id), resultType, dsKey, txDef, sqlNode, cacheClean);
-				list.add(insertNode);
-			}
-		}
-		return list;
-	}
-
-	private List<AbstractServiceNode> buildUpdateNodes(List<XmlNodeWrapper> contexts) {
+	private List<AbstractServiceNode> buildHqlNodes(List<XmlNodeWrapper> contexts) {
 		List<AbstractServiceNode> list = new ArrayList<AbstractServiceNode>();
 		for (XmlNodeWrapper context : contexts) {
 			TangYuanNode sqlNode = parseNode(context, false);
@@ -468,11 +431,12 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
 				dsKey = checkDsKey(dsKey, id);
 
-				String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-				XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-				if (null == txDef) {
-					throw new XmlParseException("service txRef is invalid: " + id);
-				}
+				// String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
+				// XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
+				// if (null == txDef) {
+				// throw new XmlParseException("service txRef is invalid: " + id);
+				// }
+				XTransactionDefinition txDef = null;
 
 				String _cacheClean = StringUtils.trim(context.getStringAttribute("cacheClean"));
 				CacheCleanVo cacheClean = null;
@@ -480,38 +444,10 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 					cacheClean = parseCacheClean(_cacheClean, getFullId(id));
 				}
 
-				UpdateNode updateNode = new UpdateNode(id, ns, getFullId(id), dsKey, txDef, sqlNode, cacheClean);
-				list.add(updateNode);
-			}
-		}
-		return list;
-	}
+				boolean asyncHql = getBooleanValueFromXmlNode(context, "asyncHql", true, false, "");
 
-	private List<AbstractServiceNode> buildDeleteNodes(List<XmlNodeWrapper> contexts) {
-		List<AbstractServiceNode> list = new ArrayList<AbstractServiceNode>();
-		for (XmlNodeWrapper context : contexts) {
-			TangYuanNode sqlNode = parseNode(context, false);
-			if (null != sqlNode) {
-				String id = StringUtils.trim(context.getStringAttribute("id")); // xml v
-				existingService(id);
-
-				String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
-				dsKey = checkDsKey(dsKey, id);
-
-				String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-				XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-				if (null == txDef) {
-					throw new XmlParseException("service txRef is invalid: " + id);
-				}
-
-				String _cacheClean = StringUtils.trim(context.getStringAttribute("cacheClean"));
-				CacheCleanVo cacheClean = null;
-				if (null != _cacheClean && _cacheClean.length() > 0) {
-					cacheClean = parseCacheClean(_cacheClean, getFullId(id));
-				}
-
-				DeleteNode deleteNode = new DeleteNode(id, ns, getFullId(id), dsKey, txDef, sqlNode, cacheClean);
-				list.add(deleteNode);
+				HqlNode hqlNode = new HqlNode(id, ns, getFullId(id), dsKey, txDef, sqlNode, cacheClean, asyncHql);
+				list.add(hqlNode);
 			}
 		}
 		return list;
@@ -524,13 +460,14 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 			existingService(id);
 
 			String txRef = StringUtils.trim(context.getStringAttribute("txRef"));
-			XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
-			if (null == txDef) {
-				throw new XmlParseException("service txRef is invalid: " + id);
-			}
+			// XTransactionDefinition txDef = this.sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, id, "selectSet");
+			// if (null == txDef) {
+			// throw new XmlParseException("service txRef is invalid: " + id);
+			// }
+			XTransactionDefinition txDef = null;
 
 			String dsKey = StringUtils.trim(context.getStringAttribute("dsKey"));
-			if (null != dsKey && !SqlComponent.getInstance().getDataSourceManager().isValidDsKey(dsKey)) {
+			if (null != dsKey && !HiveComponent.getInstance().getDataSourceManager().isValidDsKey(dsKey)) {
 				throw new XmlParseException("service[" + id + "] uses an invalid dsKey: " + dsKey);
 			}
 
@@ -744,7 +681,7 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 			int indexMode = ForEachNode.getAndCheckIndexMode(start, end, pLen);
 
 			// ForEachNode forEachNode = new SqlForEachNode(sqlNode, new NormalParser().parse(collection), index, open, close, separator);
-			ForEachNode forEachNode = new SqlForEachNode(sqlNode, new NormalParser().parse(collection), index, open, close, separator, start, end,
+			ForEachNode forEachNode = new HiveForEachNode(sqlNode, new NormalParser().parse(collection), index, open, close, separator, start, end,
 					pLen, ignoreIOOB, indexMode);
 			targetContents.add(forEachNode);
 		}
@@ -938,7 +875,7 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 		}
 	}
 
-	private class DeleteHandler implements NodeHandler {
+	private class HqlHandler implements NodeHandler {
 		public void handleNode(XmlNodeWrapper nodeToHandle, List<TangYuanNode> targetContents) {
 			TangYuanNode sqlNode = parseNode(nodeToHandle, true);
 			if (null != sqlNode) {
@@ -946,12 +883,12 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 				if (null == dsKey) {
 					dsKey = dsKeyWithSqlService;
 				} else {
-					checkInnerDsKey(dsKey, "Delete");
+					checkInnerDsKey(dsKey, "hql");
 				}
-				String resultKey = StringUtils.trim(nodeToHandle.getStringAttribute("rowCount"));
+				String resultKey = StringUtils.trim(nodeToHandle.getStringAttribute("resultKey"));
 				if (null != resultKey) {
 					if (!checkVar(resultKey)) {
-						throw new XmlParseException("<delete> rowCount is not legal, should be {xxx}.");
+						throw new XmlParseException("<hql> resultKey is not legal, should be {xxx}.");
 					}
 					resultKey = getRealVal(resultKey);
 				}
@@ -962,94 +899,10 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 					cacheClean = parseCacheClean(_cacheClean, "");
 				}
 
-				InternalDeleteNode deleteNode = new InternalDeleteNode(dsKey, resultKey, sqlNode, cacheClean);
-				targetContents.add(deleteNode);
-			}
-		}
-	}
+				boolean asyncHql = getBooleanValueFromXmlNode(nodeToHandle, "asyncHql", true, false, "");
 
-	private class UpdateHandler implements NodeHandler {
-		public void handleNode(XmlNodeWrapper nodeToHandle, List<TangYuanNode> targetContents) {
-			TangYuanNode sqlNode = parseNode(nodeToHandle, true);
-			if (null != sqlNode) {
-				String dsKey = StringUtils.trim(nodeToHandle.getStringAttribute("dsKey"));
-				if (null == dsKey) {
-					dsKey = dsKeyWithSqlService;
-				} else {
-					checkInnerDsKey(dsKey, "update");
-				}
-				String resultKey = StringUtils.trim(nodeToHandle.getStringAttribute("rowCount"));
-				if (null != resultKey) {
-					if (!checkVar(resultKey)) {
-						throw new XmlParseException("<update> rowCount is not legal, should be {xxx}.");
-					}
-					resultKey = getRealVal(resultKey);
-				}
-
-				String _cacheClean = StringUtils.trim(nodeToHandle.getStringAttribute("cacheClean"));
-				CacheCleanVo cacheClean = null;
-				if (null != _cacheClean && _cacheClean.length() > 0) {
-					cacheClean = parseCacheClean(_cacheClean, "");
-				}
-
-				InternalUpdateNode updateNode = new InternalUpdateNode(dsKey, resultKey, sqlNode, cacheClean);
-				targetContents.add(updateNode);
-			}
-		}
-	}
-
-	private class InsertHandler implements NodeHandler {
-		public void handleNode(XmlNodeWrapper nodeToHandle, List<TangYuanNode> targetContents) {
-			TangYuanNode sqlNode = parseNode(nodeToHandle, true);
-			if (null != sqlNode) {
-				String dsKey = StringUtils.trim(nodeToHandle.getStringAttribute("dsKey"));
-				if (null == dsKey) {
-					dsKey = dsKeyWithSqlService;
-				} else {
-					checkInnerDsKey(dsKey, "insert");
-				}
-				String resultKey = StringUtils.trim(nodeToHandle.getStringAttribute("rowCount"));
-				if (null != resultKey) {
-					if (!checkVar(resultKey)) {
-						throw new XmlParseException("<insert> rowCount is not legal, should be {xxx}.");
-					}
-					resultKey = getRealVal(resultKey);
-				}
-
-				String incrementKey = StringUtils.trim(nodeToHandle.getStringAttribute("incrementKey"));
-				if (null != incrementKey) {
-					if (!checkVar(incrementKey)) {
-						throw new XmlParseException("<insert> incrementKey is not legal, should be {xxx}.");
-					}
-					incrementKey = getRealVal(incrementKey);
-				}
-
-				String _cacheClean = StringUtils.trim(nodeToHandle.getStringAttribute("cacheClean"));
-				CacheCleanVo cacheClean = null;
-				if (null != _cacheClean && _cacheClean.length() > 0) {
-					cacheClean = parseCacheClean(_cacheClean, "");
-				}
-
-				InternalInsertNode insertNode = new InternalInsertNode(dsKey, resultKey, incrementKey, sqlNode, cacheClean);
-				targetContents.add(insertNode);
-			}
-		}
-	}
-
-	private class TransGroupHandler implements NodeHandler {
-		public void handleNode(XmlNodeWrapper nodeToHandle, List<TangYuanNode> targetContents) {
-			String txRef = StringUtils.trim(nodeToHandle.getStringAttribute("txRef"));
-			XTransactionDefinition txDef = sqlContext.getTransactionMatcher().getTransactionDefinition(txRef, null, null);
-			if (null == txDef) {
-				throw new XmlParseException("txRef is invalid:" + txRef);
-			}
-			if (!txDef.isNewTranscation()) {
-				throw new XmlParseException("TransGroup中的事务定义必须为[REQUIRES_NEW|NOT_SUPPORTED]");
-			}
-			TangYuanNode sqlNode = parseNode(nodeToHandle, true);
-			if (null != sqlNode) {
-				TransGroupNode transGroupNode = new TransGroupNode(txDef, sqlNode);
-				targetContents.add(transGroupNode);
+				InternalHqlNode hqlNode = new InternalHqlNode(dsKey, resultKey, sqlNode, cacheClean, asyncHql);
+				targetContents.add(hqlNode);
 			}
 		}
 	}
@@ -1070,11 +923,7 @@ public class XMLSqlNodeBuilder extends XmlNodeBuilder {
 			put("selectSet", new SelectSetHandler());
 			put("selectOne", new SelectOneHandler());
 			put("selectVar", new SelectVarHandler());
-			put("update", new UpdateHandler());
-			put("delete", new DeleteHandler());
-			put("insert", new InsertHandler());
-			// put("procedure", new ProcedureHandler());
-			put("transGroup", new TransGroupHandler());
+			put("hql", new HqlHandler());
 			put("call", new CallHandler());
 		}
 	};

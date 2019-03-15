@@ -219,4 +219,22 @@ public abstract class XmlNodeBuilder {
 		}
 		return resultList;
 	}
+
+	protected Boolean getBooleanValueFromXmlNode(XmlNodeWrapper node, String attribute, boolean allowEmpty, Boolean defaultVal, String msgPrefix) {
+		if (null == msgPrefix) {
+			msgPrefix = "";
+		}
+		String val = StringUtils.trim(node.getStringAttribute(attribute));
+		if (null == val) {
+			if (!allowEmpty) {
+				throw new XmlParseException(msgPrefix + "the attribute '" + attribute + "' cannot be empty.");
+			}
+			return defaultVal;
+		}
+		try {
+			return Boolean.parseBoolean(val);
+		} catch (Throwable e) {
+			throw new XmlParseException(msgPrefix + "the attribute '" + attribute + "' is parsed abnormally: " + e.getMessage());
+		}
+	}
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/hive/component" targetNamespace="http://xson.org/schema/tangyuan/hive/component" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="config-property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dataSource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="type" use="optional" default="DBCP">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="DBCP"/>
+						<xs:enumeration value="C3P0"/>
+						<xs:enumeration value="PROXOOL"/>
+						<xs:enumeration value="DRUID"/>
+						<xs:enumeration value="JNDI"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="sharedUse" type="xs:string" use="optional"/>
+			<xs:attribute name="isDefault" type="xs:boolean" default="false"/>
+			<xs:attribute name="resource" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dataSourceGroup">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="groupId" type="xs:string" use="required"/>
+			<xs:attribute name="type" use="optional" default="DBCP">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="DBCP"/>
+						<xs:enumeration value="C3P0"/>
+						<xs:enumeration value="PROXOOL"/>
+						<xs:enumeration value="DRUID"/>
+						<xs:enumeration value="JNDI"/>
+						<xs:enumeration value="SHARE"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="start" type="xs:int" use="optional" default="0"/>
+			<xs:attribute name="end" type="xs:int" use="required"/>
+			<xs:attribute name="isDefault" type="xs:boolean" default="false"/>
+			<xs:attribute name="resource" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mapper">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sharding">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="plugin">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hive-component">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="config-property"/>
+					<xs:element ref="dataSource"/>
+					<xs:element ref="dataSourceGroup"/>
+					<xs:element ref="mapper"/>
+					<xs:element ref="sharding"/>
+					<xs:element ref="plugin"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

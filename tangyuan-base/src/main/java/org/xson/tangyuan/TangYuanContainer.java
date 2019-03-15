@@ -72,7 +72,7 @@ public class TangYuanContainer implements TangYuanComponent {
 	private boolean									allServiceReturnXCO		= true;
 	/** 外部扩展参数 */
 	private ExtArg									extArg					= new ExtArg();
-	/** 关闭的是否启动一个新的线程 */
+	/** 关闭的时候是否启动一个新的线程 */
 	private boolean									shutdownInNewThread		= false;
 
 	private TangYuanContainer() {
@@ -307,8 +307,8 @@ public class TangYuanContainer implements TangYuanComponent {
 
 	private void stop0(boolean wait) {
 
-		log.info("tangyuan framework stopping...:xxx");
-		
+		// log.info("tangyuan framework stopping...:xxx");
+
 		executeSSAop(this.closingBeforeList);
 
 		String type = "web".toUpperCase();

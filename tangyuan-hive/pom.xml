@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.xson</groupId>
+		<artifactId>tangyuan-parent</artifactId>
+		<version>${tangyuan.version}</version>
+	</parent>
+
+	<artifactId>tangyuan-hive</artifactId>
+	<packaging>jar</packaging>
+
+	<name>tangyuan-hive</name>
+	<url>http://xson.org/tangyuan</url>
+	<description>tangyuan-sql is the tangyuan framework in the SQL service components, providing SQL statements that function support services.</description>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-base</artifactId>
+			<version>${tangyuan.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-sql-datasource</artifactId>
+			<version>${tangyuan.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-cache</artifactId>
+			<version>${tangyuan.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-jdbc</artifactId>
+			<version>2.3.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>

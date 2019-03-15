@@ -444,7 +444,7 @@ public class XmlTangYuanBuilder implements XmlExtendBuilder {
 			else if ("hbase".equalsIgnoreCase(type)) {
 				Class.forName("org.xson.tangyuan.hbase.HBaseComponent");
 			} else if ("hive".equalsIgnoreCase(type)) {
-				// Class.forName("org.xson.tangyuan.mongo.MongoComponent");
+				Class.forName("org.xson.tangyuan.hive.HiveComponent");
 			}
 
 			else if ("es".equalsIgnoreCase(type)) {
