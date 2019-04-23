@@ -51,6 +51,7 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 
 	public void parseNode() throws Throwable {
 		buildConfigNodes(this.root.evalNodes("config-property"));
+		buildBalanceNodes(this.root.evalNodes("balance"));
 
 		List<RpcClientVo> clientVoList = buildClientNodes(this.root.evalNodes("client"));
 		List<RemoteNodeVo> remoteVoList = buildRemoteNodes(this.root.evalNodes("remote-node"));
@@ -120,6 +121,24 @@ public class XMLConfigBuilder implements XmlExtendBuilder {
 		if (configMap.size() > 0) {
 			RpcContainer.getInstance().config(configMap);
 		}
+	}
+
+	private void buildBalanceNodes(List<XmlNodeWrapper> contexts) throws Throwable {
+		int size = contexts.size();
+		if (size == 0) {
+			return;
+		}
+		if (size > 1) {
+			throw new XmlParseException("<balance> tag can only be configured at most one.");
+		}
+
+		XmlNodeWrapper context = contexts.get(0);
+		String resource = StringUtils.trim(context.getStringAttribute("resource"));
+		TangYuanAssert.stringEmpty(resource, "in tag <balance>, missing attribute 'resource'");
+		InputStream inputStream = ResourceManager.getInputStream(resource, true);
+
+		XmlBalanceBuilder balanceBuilder = new XmlBalanceBuilder(inputStream);
+		balanceBuilder.parse(null);
 	}
 
 	private List<RpcClientVo> buildClientNodes(List<XmlNodeWrapper> contexts) {
