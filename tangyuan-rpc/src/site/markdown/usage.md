@@ -10,14 +10,7 @@
 	<dependency>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-rpc</artifactId>
-		<version>1.2.2</version>
-	</dependency>
-	
-	<!--可选-->
-	<dependency>
-		<groupId>org.xson</groupId>
-		<artifactId>xson-httpclient</artifactId>
-		<version>1.0.0</version>
+		<version>1.2.3</version>
 	</dependency>
 
 > b. 添加组件
@@ -26,8 +19,8 @@
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<tangyuan-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.2/component.xsd">
-	
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/1.2.3/component.xsd">
+		
 		<component resource="component-sql.xml" type="sql" />
 		<!--添加RPC组件-->
 		<component resource="component-rpc.xml" type="rpc" />
@@ -41,11 +34,14 @@ tangyuan-rpc组件本身的配置(component-rpc.xml)：
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<rpc-component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/rpc/1.2.2/component.xsd">
-			
-		 <client id="c1" use="HTTP_CLIENT" schema="http"/>
+		xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/rpc/1.2.3/component.xsd">
+
+		<!--添加RPC负载支持-->
+		<balance resource="properties/domain-balance.xml" />
+
+		<client id="c1" use="HTTP_CLIENT" schema="http"/>
 		 
-		 <remote-node id="demo" domain="demo.xson.service" client="c1"/>
+		<remote-node id="demo" domain="demo.xson.service" client="c1"/>
 		 
 	</rpc-component>
 
@@ -55,7 +51,7 @@ component-rpc.xml文件配置：
 
 > Schema文件
 
-<http://xson.org/schema/tangyuan/rpc/1.2.2/component.xsd>
+<http://xson.org/schema/tangyuan/rpc/1.2.3/component.xsd>
 
 > client节点
 
@@ -66,7 +62,8 @@ component-rpc.xml文件配置：
 | id | 客户端传输器标识 | Y | String |
 | use | 客户端传输器类型 | Y | PIGEON<br />HTTP_CLIENT<br /> |
 | schema | 服务URI中的schema部分 | Y | String |
-| resource | 该传输器的外部配置文件 | N | String |
+| resource | 该传输器的外部配置文件（已弃用） | N | String |
+| usi | 共享客户端ID | N | String |
 
 > remote-node节点
 

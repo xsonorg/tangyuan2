@@ -33,14 +33,14 @@ tangyuan-rpc是tangyuan框架中的RPC组件，提供RPC Client和RPC Server的�
 
 ## 4. 版本和引用
 
-当前版本：1.2.2
+当前版本：1.2.3
 
 Maven使用：
 
 	<dependency>
 	  <groupId>org.xson</groupId>
 	  <artifactId>tangyuan-rpc</artifactId>
-	  <version>1.2.2</version>
+	  <version>1.2.3</version>
 	</dependency>
 	
 ## 5. 源码
