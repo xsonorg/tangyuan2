@@ -5,7 +5,8 @@
 	<groupId>org.xson</groupId>
 	<artifactId>tangyuan-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>${tangyuan.version}</version>
+	<!-- <version>${tangyuan.version}</version> -->
+	<version>1.2.3</version>
 
 	<name>${project.artifactId}</name>
 	<url>http://xson.org/tangyuan</url>
@@ -230,20 +231,45 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<!-- local
 			<distributionManagement>
 				<repository>
 					<id>haorizi.releases.http</id>
 					<name>Nexus Release Repository</name>
-					<!-- <url>http://192.168.0.251:8888/nexus/content/repositories/releases/</url> -->
 					<url>http://127.0.0.1:8888/nexus/content/repositories/releases/</url>
 				</repository>
 				<snapshotRepository>
 					<id>haorizi.snapshots.http</id>
 					<name>Nexus Snapshot Repository</name>
-					<!-- <url>http://192.168.0.251:8888/nexus/content/repositories/snapshots/</url> -->
 					<url>http://127.0.0.1:8888/nexus/content/repositories/snapshots/</url>
 				</snapshotRepository>
-			</distributionManagement>
+			</distributionManagement> -->
+			<!-- hrz
+			<distributionManagement>
+				<repository>
+					<id>haorizi.releases.http</id>
+					<name>Nexus Release Repository</name>
+					<url>http://192.168.0.251:8888/nexus/content/repositories/releases/</url>
+				</repository>
+				<snapshotRepository>
+					<id>haorizi.snapshots.http</id>
+					<name>Nexus Snapshot Repository</name>
+					<url>http://192.168.0.251:8888/nexus/content/repositories/snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement> -->
+			<!-- aix -->
+			<distributionManagement>
+				<repository>
+					<id>aix.releases.http</id>
+					<name>Nexus Release Repository</name>
+					<url>http://192.168.50.238:8081/repository/maven-releases/</url>
+				</repository>
+				<snapshotRepository>
+					<id>aix.snapshots.http</id>
+					<name>Nexus Snapshot Repository</name>
+					<url>http://192.168.50.238:8081/repository/maven-snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement>			
 		</profile>
 		<profile>
 			<id>public</id>

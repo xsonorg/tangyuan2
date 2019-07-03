@@ -5,7 +5,8 @@
 	<parent>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-parent</artifactId>
-		<version>${tangyuan.version}</version>
+		<!-- <version>${tangyuan.version}</version> -->
+		<version>1.2.3</version>
 	</parent>
 
 	<artifactId>tangyuan-cache-base</artifactId>

@@ -149,7 +149,11 @@ public class ControllerVo {
 		try {
 			if (null != this.execMethod) {
 				Object retObj = this.execMethod.getMethod().invoke(this.execMethod.getInstance(), context);
-				if (null == context.getResult() && null != retObj) {
+				// if (null == context.getResult() && null != retObj) {
+				// context.setResult(TangYuanUtil.retObjToXco(retObj));
+				// }
+				// fix bug 这里已经做转换了，后面需要注意 TODO
+				if (null == context.getResult()) {
 					context.setResult(TangYuanUtil.retObjToXco(retObj));
 				}
 			} else {
@@ -171,28 +175,28 @@ public class ControllerVo {
 		}
 	}
 
-	//	public boolean cacheGet(RequestContext context) throws Throwable {
-	//		// TODO 不能抛出异常
-	//		if (null != cacheUse) {
-	//			Object result = cacheUse.getObject(context.getArg());
-	//			if (null != result) {
-	//				context.setResult(result);
-	//				return true;
-	//			}
-	//		}
-	//		return false;
-	//	}
+	// public boolean cacheGet(RequestContext context) throws Throwable {
+	// // TODO 不能抛出异常
+	// if (null != cacheUse) {
+	// Object result = cacheUse.getObject(context.getArg());
+	// if (null != result) {
+	// context.setResult(result);
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 	//
-	//	public void cachePut(RequestContext context) throws Throwable {
-	//		// TODO 不能抛出异常
-	//		if (null != cacheUse) {
-	//			cacheUse.putObject(context.getArg(), context.getResult());
-	//		}
-	//	}
+	// public void cachePut(RequestContext context) throws Throwable {
+	// // TODO 不能抛出异常
+	// if (null != cacheUse) {
+	// cacheUse.putObject(context.getArg(), context.getResult());
+	// }
+	// }
 
 	public boolean cacheGet(RequestContext context) {
 		if (null != cacheUse) {
-			//			Object result = cacheUse.getObject(context.getArg());
+			// Object result = cacheUse.getObject(context.getArg());
 			Object result = null;
 			try {
 				result = cacheUse.getObject(context.getArg());
