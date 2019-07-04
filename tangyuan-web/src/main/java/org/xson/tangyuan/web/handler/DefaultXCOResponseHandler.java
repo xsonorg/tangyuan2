@@ -7,8 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.web.RequestContext;
 import org.xson.tangyuan.web.ResponseHandler;
 import org.xson.tangyuan.web.WebComponent;
@@ -42,10 +44,28 @@ public class DefaultXCOResponseHandler implements ResponseHandler {
 		}
 	}
 
+	// @Override
+	// public void onError(RequestContext context) throws IOException {
+	// XCO errorResult = new XCO();
+	// setXCOResult(errorResult, context.getCode(), context.getMessage());
+	// context.setResult(errorResult);
+	// onSuccess(context);
+	// }
+
 	@Override
-	public void onError(RequestContext context) throws IOException {
-		XCO errorResult = new XCO();
-		setXCOResult(errorResult, context.getCode(), context.getMessage());
+	public void onError(RequestContext context, Throwable ex) throws IOException {
+		XCO errorResult = null;
+
+		if (null != context.getCode()) {
+			errorResult = new XCO();
+			setXCOResult(errorResult, context.getCode(), context.getMessage());
+		} else if (ex instanceof ServiceException) {
+			errorResult = TangYuanUtil.getExceptionResult(ex);
+		} else {
+			errorResult = new XCO();
+			setXCOResult(errorResult, WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
+		}
+
 		context.setResult(errorResult);
 		onSuccess(context);
 	}

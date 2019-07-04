@@ -205,7 +205,8 @@ public class XCOServlet extends HttpServlet {
 				handler = cVo.getResponseHandler();
 			}
 			if (null != handler) {
-				handler.onError(context);
+				// handler.onError(context);
+				handler.onError(context, ex);
 				return;
 			}
 
@@ -213,9 +214,11 @@ public class XCOServlet extends HttpServlet {
 				context.getResponse().sendRedirect(WebComponent.getInstance().getErrorRedirectPage());
 			} else {
 				if (ReturnDataType.XCO == context.getReturnDataType()) {
-					xcoResponseHandler.onError(context);
+					// xcoResponseHandler.onError(context);
+					xcoResponseHandler.onError(context, ex);
 				} else if (ReturnDataType.JSON == context.getReturnDataType()) {
-					jsonResponseHandler.onError(context);
+					// jsonResponseHandler.onError(context);
+					jsonResponseHandler.onError(context, ex);
 				} else {
 					log.error("Unknown return type[" + context.getContextType() + "], uri: " + context.getPath());
 				}
