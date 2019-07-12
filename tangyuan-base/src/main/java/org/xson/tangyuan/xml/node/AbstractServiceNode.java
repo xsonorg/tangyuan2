@@ -7,7 +7,7 @@ public abstract class AbstractServiceNode implements TangYuanNode {
 
 	/** 服务类型 */
 	public enum TangYuanServiceType {
-		SQL, MONGO, HIVE, HBASE, JAVA, MQ, PRCPROXY, ES
+		NO, SQL, MONGO, HIVE, HBASE, JAVA, MQ, PRCPROXY, ES
 	}
 
 	/** 服务ID */
@@ -61,21 +61,21 @@ public abstract class AbstractServiceNode implements TangYuanNode {
 	}
 
 	protected String getSlowServiceLog(long startTime) {
-		//		long intervals = System.currentTimeMillis() - startTime;
-		//		String slowLogInfo = "(";
-		//		if (intervals >= 1000L) {
-		//			slowLogInfo = slowLogInfo + "5level slow sql service ";
-		//		} else if (intervals >= 500L) {
-		//			slowLogInfo = slowLogInfo + "4level slow sql service ";
-		//		} else if (intervals >= 300L) {
-		//			slowLogInfo = slowLogInfo + "3level slow sql service ";
-		//		} else if (intervals >= 200L) {
-		//			slowLogInfo = slowLogInfo + "2level slow sql service ";
-		//		} else if (intervals >= 100L) {
-		//			slowLogInfo = slowLogInfo + "1level slow sql service ";
-		//		}
-		//		slowLogInfo = slowLogInfo + intervals + "ms)";
-		//		return slowLogInfo;
+		// long intervals = System.currentTimeMillis() - startTime;
+		// String slowLogInfo = "(";
+		// if (intervals >= 1000L) {
+		// slowLogInfo = slowLogInfo + "5level slow sql service ";
+		// } else if (intervals >= 500L) {
+		// slowLogInfo = slowLogInfo + "4level slow sql service ";
+		// } else if (intervals >= 300L) {
+		// slowLogInfo = slowLogInfo + "3level slow sql service ";
+		// } else if (intervals >= 200L) {
+		// slowLogInfo = slowLogInfo + "2level slow sql service ";
+		// } else if (intervals >= 100L) {
+		// slowLogInfo = slowLogInfo + "1level slow sql service ";
+		// }
+		// slowLogInfo = slowLogInfo + intervals + "ms)";
+		// return slowLogInfo;
 
 		long intervals = System.currentTimeMillis() - startTime;
 		String slowLogInfo = "(";

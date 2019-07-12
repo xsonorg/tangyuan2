@@ -9,6 +9,7 @@ import org.xson.tangyuan.runtime.trace.TrackingManager;
 import org.xson.tangyuan.util.FastJsonUtil;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
+import org.xson.tangyuan.xml.node.EmptyServiceNode;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -175,6 +176,11 @@ public class RuntimeContext {
 		if (null == rc) {
 			clean();
 			return null;
+		}
+
+		// fix bug
+		if (null == service) {
+			service = EmptyServiceNode.instance;
 		}
 
 		TempContext tempContext = new TempContext();
