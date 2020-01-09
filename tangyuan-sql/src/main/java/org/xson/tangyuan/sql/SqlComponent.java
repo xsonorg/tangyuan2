@@ -23,6 +23,8 @@ public class SqlComponent implements TangYuanComponent {
 	private ShardingDefManager	shardingDefManager	= new ShardingDefManager();
 	private TypeHandlerRegistry	typeHandlerRegistry	= null;
 	private int					defaultFetchSize	= 100;
+	/** 打印错误SQL日志 */
+	private boolean				printErrorSqlLog	= false;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.SQL, new SqlServiceContextFactory());
@@ -61,6 +63,10 @@ public class SqlComponent implements TangYuanComponent {
 		return shardingDefManager;
 	}
 
+	public boolean getPrintErrorSqlLog() {
+		return printErrorSqlLog;
+	}
+
 	/** 设置配置文件 */
 	public void config(Map<String, String> properties) {
 		// if (properties.containsKey("errorCode".toUpperCase())) {
@@ -72,6 +78,9 @@ public class SqlComponent implements TangYuanComponent {
 		// if (properties.containsKey("nsSeparator".toUpperCase())) {
 		// nsSeparator = properties.get("nsSeparator".toUpperCase());
 		// }
+		if (properties.containsKey("printErrorSqlLog".toUpperCase())) {
+			this.printErrorSqlLog = Boolean.parseBoolean(properties.get("printErrorSqlLog".toUpperCase()));
+		}
 		log.info("config setting success...");
 	}
 
