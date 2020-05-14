@@ -24,9 +24,9 @@ import org.xson.tangyuan.type.TypeHandlerRegistry;
 
 public class SqlActuator {
 
-	// private static Log log = LogFactory.getLog(SqlActuator.class);
+	private TypeHandlerRegistry	typeHandlerRegistry;
 
-	private TypeHandlerRegistry typeHandlerRegistry;
+	private static SqlErrorLog	sqlErrorLog;
 
 	public SqlActuator(TypeHandlerRegistry typeHandlerRegistry) {
 		this.typeHandlerRegistry = typeHandlerRegistry;
@@ -44,7 +44,7 @@ public class SqlActuator {
 			ResultSet rs = ps.executeQuery();
 			return getResults(rs, resultMap);
 		} catch (SQLException e) {
-			printErrorSql(sql);
+			printErrorSql(sql, args);
 			throw e;
 		} finally {
 			if (null != ps) {
@@ -84,7 +84,7 @@ public class SqlActuator {
 			ResultSet rs = ps.executeQuery();
 			return getXCOResults(rs, resultMap);
 		} catch (SQLException e) {
-			printErrorSql(sql);
+			printErrorSql(sql, args);
 			throw e;
 		} finally {
 			if (null != ps) {
@@ -145,7 +145,7 @@ public class SqlActuator {
 			ResultSet rs = ps.executeQuery();
 			return getResults(rs, null);
 		} catch (SQLException e) {
-			printErrorSql(sql);
+			printErrorSql(sql, args);
 			throw e;
 		} finally {
 			if (null != ps) {
@@ -349,7 +349,7 @@ public class SqlActuator {
 			insertReturn = new InsertReturn(rowCount, columns);
 			return insertReturn;
 		} catch (SQLException e) {
-			printErrorSql(sql);
+			printErrorSql(sql, args);
 			throw e;
 		} finally {
 			if (null != ps) {
@@ -381,7 +381,7 @@ public class SqlActuator {
 			setParameters(ps, args);
 			return ps.executeUpdate();
 		} catch (SQLException e) {
-			printErrorSql(sql);
+			printErrorSql(sql, args);
 			throw e;
 		} finally {
 			if (null != ps) {
@@ -414,7 +414,7 @@ public class SqlActuator {
 		try {
 			stmt.execute(sql);
 		} catch (SQLException e) {
-			printErrorSql(sql);
+			printErrorSql(sql, null);
 			throw e;
 		} finally {
 			try {
@@ -566,10 +566,23 @@ public class SqlActuator {
 		}
 	}
 
-	private void printErrorSql(String sql) {
+	private void printErrorSql(String sql, List<Object> args) {
 		if (SqlComponent.getInstance().getPrintErrorSqlLog()) {
+			System.err.print("相关异常SQL:");
 			System.err.print("\n\n\n");
-			System.err.print(sql);
+			if (null == args || 0 == args.size()) {
+				System.err.print(sql);
+			} else {
+				if (null == sqlErrorLog) {
+					sqlErrorLog = new SqlErrorLog(this.typeHandlerRegistry);
+				}
+				StringBuilder errorBuilder = new StringBuilder();
+				System.err.print(sqlErrorLog.getSqlLog(sql, args, errorBuilder));
+				if (errorBuilder.length() > 0) {
+					System.err.print("\n\n\n");
+					System.err.print(errorBuilder.toString());
+				}
+			}
 			System.err.print("\n\n\n");
 		}
 	}
