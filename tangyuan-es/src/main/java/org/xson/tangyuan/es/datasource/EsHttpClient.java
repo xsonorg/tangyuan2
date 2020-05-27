@@ -99,7 +99,8 @@ public class EsHttpClient {
 			httpost.setEntity(entity);
 			CloseableHttpResponse response = (CloseableHttpResponse) httpclient.execute(httpost);
 			try {
-				return getResponseString(response);
+				// return getResponseString(response);
+				return getResponseString201(response);
 			} finally {
 				response.close();
 			}
@@ -111,6 +112,16 @@ public class EsHttpClient {
 	private String getResponseString(CloseableHttpResponse response) throws Throwable {
 		int status = response.getStatusLine().getStatusCode();
 		if (status != 200) {
+			printResponseError(response);
+			throw new ServiceException("Unexpected response status: " + status);
+		}
+		HttpEntity entity = response.getEntity();
+		return EntityUtils.toString(entity, "UTF-8");
+	}
+
+	private String getResponseString201(CloseableHttpResponse response) throws Throwable {
+		int status = response.getStatusLine().getStatusCode();
+		if (!(status == 200 || status == 201)) {
 			printResponseError(response);
 			throw new ServiceException("Unexpected response status: " + status);
 		}
@@ -131,12 +142,12 @@ public class EsHttpClient {
 		HttpClientVo vo = null;
 		String resource = EsComponent.getInstance().getHttpClientResource();
 		if (null != resource) {
-			//			Properties properties = new Properties();
-			//			InputStream inputStream = Resources.getResourceAsStream(resource);
-			//			inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
-			//					TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
-			//			properties.load(inputStream);
-			//			inputStream.close();
+			// Properties properties = new Properties();
+			// InputStream inputStream = Resources.getResourceAsStream(resource);
+			// inputStream = PlaceholderResourceSupport.processInputStream(inputStream,
+			// TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+			// properties.load(inputStream);
+			// inputStream.close();
 			Properties properties = PlaceholderResourceSupport.getProperties(resource);
 			vo = new HttpClientVo(properties, resource);
 		}
