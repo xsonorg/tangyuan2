@@ -108,10 +108,17 @@ public class ControllerVo {
 	}
 
 	public void assembly(RequestContext context) throws Throwable {
-		if (null != this.assemblyMethods) {
-			for (MethodObject mo : this.assemblyMethods) {
-				mo.getMethod().invoke(mo.getInstance(), context);
+		try {
+			if (null != this.assemblyMethods) {
+				for (MethodObject mo : this.assemblyMethods) {
+					mo.getMethod().invoke(mo.getInstance(), context);
+				}
 			}
+		} catch (Throwable e) {
+			if (e instanceof InvocationTargetException) {
+				throw ((InvocationTargetException) e).getTargetException();
+			}
+			throw e;
 		}
 	}
 
