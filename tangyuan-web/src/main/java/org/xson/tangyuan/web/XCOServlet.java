@@ -110,7 +110,13 @@ public class XCOServlet extends HttpServlet {
 
 			// setTracking(context);
 		} catch (Throwable e) {
-			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
+			// context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
+			if (e instanceof ServiceException) {
+				ServiceException xcoEx = (ServiceException) e;
+				context.setErrorInfo(xcoEx.getErrorCode(), xcoEx.getErrorMessage());
+			} else {
+				context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
+			}
 			doResponseError(context, cVo, e, "data convert error.");
 			return;
 		}
@@ -119,7 +125,13 @@ public class XCOServlet extends HttpServlet {
 		try {
 			cVo.assembly(context);
 		} catch (Throwable e) {
-			context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
+			// context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
+			if (e instanceof ServiceException) {
+				ServiceException xcoEx = (ServiceException) e;
+				context.setErrorInfo(xcoEx.getErrorCode(), xcoEx.getErrorMessage());
+			} else {
+				context.setErrorInfo(container.getErrorCode(), container.getErrorMessage());
+			}
 			doResponseError(context, cVo, e, "assembly error.");
 			return;
 		}
