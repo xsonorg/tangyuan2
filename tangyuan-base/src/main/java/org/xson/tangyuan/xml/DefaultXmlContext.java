@@ -15,8 +15,4 @@ public class DefaultXmlContext implements XmlContext {
 		return null;
 	}
 
-	//	@Override
-	//	public TangYuanManager getTangYuanManager() {
-	//		return null;
-	//	}
 }

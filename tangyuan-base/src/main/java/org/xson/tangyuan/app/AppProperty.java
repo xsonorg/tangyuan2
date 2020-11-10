@@ -5,7 +5,6 @@ import java.io.InputStream;
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.log.TangYuanLang;
 import org.xson.tangyuan.manager.conf.DefaultResourceReloader;
 import org.xson.tangyuan.util.INIXLoader;
 
@@ -14,9 +13,9 @@ import org.xson.tangyuan.util.INIXLoader;
  */
 public class AppProperty extends DefaultResourceReloader {
 
-	private Log                log      = LogFactory.getLog(getClass());
+	private Log					log			= LogFactory.getLog(getClass());
 
-	private static AppProperty instance = null;
+	private static AppProperty	instance	= null;
 
 	public static AppProperty getInstance(XCO data) {
 		if (null == instance) {
@@ -55,39 +54,9 @@ public class AppProperty extends DefaultResourceReloader {
 			XCO newData = new INIXLoader().load(in, null);
 			in.close();
 			update(newData);
-			log.info(TangYuanLang.get("resource.reload"), resource);
+			// log.info(TangYuanLang.get("resource.reload"), resource);
+			log.infoLang("resource.reload", resource);
 		}
 	}
-
-	//	@Override
-	//	public void reload(String resource, String context) throws Throwable {
-	//		InputStream in = getInputStreamForReload(resource, context, true, true);
-	//		if (null != in) {
-	//			XCO newData = new INIXLoader().load(in, null);
-	//			in.close();
-	//			update(newData);
-	//		}
-	//		log.info(TangYuanLang.get("resource.reload"), resource);
-	//	}
-
-	//	@Override
-	//	public void reload(String resource, String context) throws Throwable {
-	//		final XCO data    = this.data;
-	//		XCO       newData = null;
-	//		if (null != data) {
-	//			newData = data.clone();
-	//		}
-	//		boolean     reloadFlag = false;
-	//		InputStream in         = getInputStreamForReload(resource, context, true, true);
-	//		if (null != in) {
-	//			newData = new INIXLoader().load(in, newData);
-	//			in.close();
-	//			reloadFlag = true;
-	//		}
-	//		if (reloadFlag) {
-	//			this.data = newData;
-	//			log.info(TangYuanLang.get("resource.reload"), resource);
-	//		}
-	//	}
 
 }

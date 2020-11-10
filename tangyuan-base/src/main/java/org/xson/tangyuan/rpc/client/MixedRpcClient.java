@@ -16,15 +16,15 @@ import org.xson.tangyuan.rpc.xml.vo.RemoteNodeVo;
 public class MixedRpcClient extends AbstractRpcClient {
 
 	// domain-->Client
-	private Map<String, AbstractRpcClient> rpcClientMap;
+	private Map<String, AbstractRpcClient>	rpcClientMap;
 	// id-->remote-node
-	private Map<String, RemoteNodeVo>      remoteNodeMap;
+	private Map<String, RemoteNodeVo>		remoteNodeMap;
 
-	private AbstractRpcClient              defaultClientRpc;
+	private AbstractRpcClient				defaultClientRpc;
 
-	private AbstractRpcClient              onlyClientRpc;
+	private AbstractRpcClient				onlyClientRpc;
 
-	private String                         separator = "/";
+	private String							separator	= "/";
 
 	public MixedRpcClient(Map<String, AbstractRpcClient> rpcClientMap, Map<String, RemoteNodeVo> remoteNodeMap, AbstractRpcClient defaultClientRpc) {
 		this.rpcClientMap = rpcClientMap;
@@ -59,7 +59,7 @@ public class MixedRpcClient extends AbstractRpcClient {
 		// support 1,2,3,4
 
 		boolean noSchema = true;
-		String  domain   = null;
+		String domain = null;
 		if (url.indexOf("://") > -1) {
 			URI uri = new URI(url);
 			domain = uri.getHost();
@@ -68,8 +68,8 @@ public class MixedRpcClient extends AbstractRpcClient {
 			int beginIndex = url.indexOf(separator);
 			if (url.startsWith("{")) {// {}
 				// {aaaaaaaaaaa}/xxx/yyy
-				int          endIndex     = url.indexOf("}");
-				String       remoteId     = url.substring(1, endIndex);
+				int endIndex = url.indexOf("}");
+				String remoteId = url.substring(1, endIndex);
 				RemoteNodeVo remoteNodeVo = remoteNodeMap.get(remoteId);
 				if (null == remoteNodeVo) {
 					throw new TangYuanException(TangYuanLang.get("remote-node.id.invalid", remoteId, url));
@@ -103,96 +103,4 @@ public class MixedRpcClient extends AbstractRpcClient {
 		return this.onlyClientRpc.call(url, arg, attachment);
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////
-	//	public MixedRpcClient(AbstractRpcClient defaultClientRpc) {
-	//		this.defaultClientRpc = defaultClientRpc;
-	//	}
-	//	@Override
-	//	public Object call(String url, Object arg, Object attachment) throws Throwable {
-	//		if (null != defaultClientRpc) {
-	//			return call0(url, arg, attachment);
-	//		}
-	//
-	//		// support 1,2,3,4
-	//
-	//		boolean noSchema = true;
-	//		String  domain   = null;
-	//		if (url.indexOf("://") > -1) {
-	//			URI uri = new URI(url);
-	//			domain = uri.getHost();
-	//			noSchema = false;
-	//		} else {
-	//			int beginIndex = url.indexOf(separator);
-	//			if (url.startsWith("{")) {// {}
-	//				int          endIndex     = url.indexOf("}");
-	//				String       remoteId     = url.substring(1, endIndex);
-	//				RemoteNodeVo remoteNodeVo = remoteNodeMap.get(remoteId);
-	//				if (null == remoteNodeVo) {
-	//					throw new RpcException("Illegal service URI: " + url);
-	//				}
-	//				domain = remoteNodeVo.getDomain();
-	//				// 重新构建URL fixbug
-	//				url = domain + url.substring(endIndex + 1);
-	//			} else {
-	//				domain = url.substring(0, beginIndex);
-	//			}
-	//		}
-	//		AbstractRpcClient rpc = rpcClientMap.get(domain);
-	//		if (null == rpc) {
-	//			throw new RpcException("Illegal service URI: " + url);
-	//		}
-	//		if (noSchema) {
-	//			url = rpc.getSchema() + "://" + url;
-	//		}
-	//		return rpc.call(url, arg, attachment);
-	//	}
-
-	//	private Object call0(String url, Object arg, Object attachment) throws Throwable {
-	//		// support 1,2,3
-	//		if (url.indexOf("://") < 0) {
-	//			url = defaultClientRpc.getSchema() + "://" + url;
-	//		}
-	//		return defaultClientRpc.call(url, arg, attachment);
-	//	}
-
-	//	@Override
-	//	public XCO call(String url, XCO request) throws Throwable {
-	//
-	//		if (null != defaultClientRpc) {
-	//			return call0(url, request);
-	//		}
-	//
-	//		// support 1,2,3,4
-	//
-	//		boolean noSchema = true;
-	//		String  domain   = null;
-	//		if (url.indexOf("://") > -1) {
-	//			URI uri = new URI(url);
-	//			domain = uri.getHost();
-	//			noSchema = false;
-	//		} else {
-	//			int beginIndex = url.indexOf(separator);
-	//			if (url.startsWith("{")) {// {}
-	//				int          endIndex     = url.indexOf("}");
-	//				String       remoteId     = url.substring(1, endIndex);
-	//				RemoteNodeVo remoteNodeVo = remoteNodeMap.get(remoteId);
-	//				if (null == remoteNodeVo) {
-	//					throw new RpcException("Illegal service URI: " + url);
-	//				}
-	//				domain = remoteNodeVo.getDomain();
-	//				// 重新构建URL fixbug
-	//				url = domain + url.substring(endIndex + 1);
-	//			} else {
-	//				domain = url.substring(0, beginIndex);
-	//			}
-	//		}
-	//		AbstractRpcClient rpc = rpcClientMap.get(domain);
-	//		if (null == rpc) {
-	//			throw new RpcException("Illegal service URI: " + url);
-	//		}
-	//		if (noSchema) {
-	//			url = rpc.getSchema() + "://" + url;
-	//		}
-	//		return rpc.call(url, request);
-	//	}
 }

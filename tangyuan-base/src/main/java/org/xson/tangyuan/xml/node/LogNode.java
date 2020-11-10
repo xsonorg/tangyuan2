@@ -12,27 +12,26 @@ import org.xson.tangyuan.service.ActuatorContext;
 
 public class LogNode implements TangYuanNode {
 
-	private static Log   log          = LogFactory.getLog(LogNode.class);
+	private static Log		log				= LogFactory.getLog(LogNode.class);
 
 	/**
 	 * 5:ERROR, 4:WARN, 3:INFO, 2:DEBUG, 1:TRACE
 	 */
-	private int          level;
+	private int				level;
 
 	/**
 	 * 这是{a}一条{b}日志
 	 */
-	private String       originalText = null;
+	private String			originalText	= null;
 
 	/**
 	 * 里边包含字符串和动态变量
 	 */
-	private List<Object> logUnits     = null;
+	private List<Object>	logUnits		= null;
 
 	public LogNode(int level, String text) {
 		this.level = level;
 		this.originalText = text;
-		//		this.logUnits = new TokenParserUtil().parseLog(text, "{", "}");
 		this.logUnits = parseLog(text, "{", "}");
 	}
 
@@ -42,22 +41,12 @@ public class LogNode implements TangYuanNode {
 		if (null != logUnits) {
 			StringBuilder builder = new StringBuilder();
 			for (Object obj : logUnits) {
-				// if (String.class == obj.getClass()) {
-				// builder.append(obj);
-				// } else {
-				// Object value = ((VariableVo) obj).getValue(arg);
-				// builder.append((null != value) ? value.toString() : "null");
-				// }
 				// 增加特殊日志打印
 				if (String.class == obj.getClass()) {
 					builder.append(obj);
 				} else {
 					Variable varVo = (Variable) obj;
-					Object   value = varVo.getValue(temp);
-					// if (null == value && LOG_SPECIAL_MARK.equalsIgnoreCase(varVo.getOriginal())) {
-					//					if (null == value && ArgSelfVo.AEG_SELF_MARK.equalsIgnoreCase(varVo.getOriginal())) {
-					//						value = temp.toString();
-					//					}
+					Object value = varVo.getValue(temp);
 					if (null == value && ArgSelfVo.AEG_SELF_MARK.equalsIgnoreCase(varVo.getOriginal())) {
 						value = arg.toString();
 					}
@@ -82,13 +71,13 @@ public class LogNode implements TangYuanNode {
 	}
 
 	public List<Object> parseLog(String text, String openToken, String closeToken) {
-		boolean       hasToken = false;
-		StringBuilder builder  = new StringBuilder();
-		List<Object>  unitlist = new ArrayList<>();
+		boolean hasToken = false;
+		StringBuilder builder = new StringBuilder();
+		List<Object> unitlist = new ArrayList<>();
 		if (text != null && text.length() > 0) {
-			char[] src    = text.toCharArray();
-			int    offset = 0;
-			int    start  = text.indexOf(openToken, offset);
+			char[] src = text.toCharArray();
+			int offset = 0;
+			int start = text.indexOf(openToken, offset);
 			while (start > -1) {
 				if (start > 0 && src[start - 1] == '\\') {
 					// the variable is escaped. remove the backslash.
@@ -106,8 +95,6 @@ public class LogNode implements TangYuanNode {
 
 						offset = start + openToken.length();
 						String content = new String(src, offset, end - offset);
-						// builder.append(handler.handleToken(content));
-						// unitlist.add(VariableParser.parse(content, false));
 						unitlist.add(new GAParserWarper().parse(content));
 
 						offset = end + closeToken.length();

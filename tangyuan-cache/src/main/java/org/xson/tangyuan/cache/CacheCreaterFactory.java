@@ -18,12 +18,7 @@ public class CacheCreaterFactory {
 		} else if (CacheType.REDIS == type) {
 			return new RedisCreater();
 		}
-		//		else if (CacheType.SHARE == type) {
-		//			return new ShareCacheCreater();
-		//		} 
-		else {
-			return null;
-		}
+		return null;
 	}
 
 }

@@ -29,13 +29,6 @@ public class WeightBalanceHandler implements BalanceHandler {
 		}
 	}
 
-	// @Override
-	// public String select(BalanceVo balanceVo) {
-	// List<BalanceHostVo> hostList = balanceVo.getHostList();
-	// int index = getCount() % indexArray.length;
-	// return hostList.get(index).getDomain();
-	// }
-
 	@Override
 	public BalanceHostVo select(BalanceVo balanceVo) {
 		List<BalanceHostVo> hostList = balanceVo.getHostList();

@@ -22,7 +22,7 @@ public class BlobTypeHandler extends BaseTypeHandler<byte[]> {
 
 	@Override
 	public byte[] getNullableResult(ResultSet rs, String columnName) throws SQLException {
-		Blob   blob        = rs.getBlob(columnName);
+		Blob blob = rs.getBlob(columnName);
 		byte[] returnValue = null;
 		if (null != blob) {
 			returnValue = blob.getBytes(1, (int) blob.length());
@@ -32,7 +32,7 @@ public class BlobTypeHandler extends BaseTypeHandler<byte[]> {
 
 	@Override
 	public byte[] getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-		Blob   blob        = rs.getBlob(columnIndex);
+		Blob blob = rs.getBlob(columnIndex);
 		byte[] returnValue = null;
 		if (null != blob) {
 			returnValue = blob.getBytes(1, (int) blob.length());
@@ -42,7 +42,7 @@ public class BlobTypeHandler extends BaseTypeHandler<byte[]> {
 
 	@Override
 	public byte[] getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-		Blob   blob        = cs.getBlob(columnIndex);
+		Blob blob = cs.getBlob(columnIndex);
 		byte[] returnValue = null;
 		if (null != blob) {
 			returnValue = blob.getBytes(1, (int) blob.length());
@@ -57,17 +57,6 @@ public class BlobTypeHandler extends BaseTypeHandler<byte[]> {
 		// }
 		builder.append(parameter);
 	}
-
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		Blob blob = rs.getBlob(columnName);
-	//		if (blob != null && !rs.wasNull()) {
-	//			byte[] v = blob.getBytes(1, (int) blob.length());
-	//			if (null != v) {
-	//				xco.setByteArrayValue(property, v);
-	//			}
-	//		}
-	//	}
 
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {

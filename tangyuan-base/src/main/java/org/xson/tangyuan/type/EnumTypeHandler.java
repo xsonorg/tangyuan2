@@ -56,7 +56,6 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 		// }
 		if (parameter instanceof Null) {
 			builder.append("null");
-			// builder.append(null);
 		} else {
 			builder.append('\'');
 			builder.append((null != parameter) ? parameter.name() : null);

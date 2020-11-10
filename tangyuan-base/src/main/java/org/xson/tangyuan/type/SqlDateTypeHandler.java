@@ -46,14 +46,6 @@ public class SqlDateTypeHandler extends BaseTypeHandler<Date> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		java.sql.Date v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setDateValue(property, v);
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.sql.Date v = getResult(rs, columnName);

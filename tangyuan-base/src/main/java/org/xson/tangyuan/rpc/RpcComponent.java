@@ -21,16 +21,16 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
  */
 public class RpcComponent implements TangYuanComponent {
 
-	private static RpcComponent     instance     = new RpcComponent();
+	private static RpcComponent		instance		= new RpcComponent();
 
-	private Log                     log          = LogFactory.getLog(getClass());
+	private Log						log				= LogFactory.getLog(getClass());
 
-	private int                     errorCode    = -1;
-	private String                  errorMessage = "RPC调用异常";
+	private int						errorCode		= -1;
+	private String					errorMessage	= "RPC调用异常";
 
-	private AbstractRpcClient       rpcClient    = null;
+	private AbstractRpcClient		rpcClient		= null;
 
-	private volatile ComponentState state        = ComponentState.UNINITIALIZED;
+	private volatile ComponentState	state			= ComponentState.UNINITIALIZED;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.PRCPROXY, new DefaultServiceContextFactory());
@@ -71,21 +71,12 @@ public class RpcComponent implements TangYuanComponent {
 		return rpcClient;
 	}
 
-	//	public void setRpcPlaceHolderHandler(RpcPlaceHolderHandler rpcPlaceHolderHandler) {
-	//		this.rpcPlaceHolderHandler = rpcPlaceHolderHandler;
-	//	}
-	//	public RpcPlaceHolderHandler getRpcPlaceHolderHandler() {
-	//		return rpcPlaceHolderHandler;
-	//	}
-
 	public boolean isRunning() {
 		return ComponentState.RUNNING == this.state;
 	}
 
 	@Override
 	public void start(String resource) throws Throwable {
-		//		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		//		log.info(TangYuanLang.get("component.starting"), "rpc", Version.getVersion());
 
 		log.info(TangYuanLang.get("component.dividing.line"));
 		log.info(TangYuanLang.get("component.starting"), "rpc", Version.getVersion());
@@ -111,9 +102,4 @@ public class RpcComponent implements TangYuanComponent {
 		log.info(TangYuanLang.get("component.stopping.successfully"), "rpc");
 	}
 
-	//	private RpcPlaceHolderHandler   rpcPlaceHolderHandler = null;
-	//	private AbstractRpcClient rpcClient = null;
-	//	public void setRpcClient(AbstractRpcClient rpcClient) {
-	//		this.rpcClient = rpcClient;
-	//	}
 }

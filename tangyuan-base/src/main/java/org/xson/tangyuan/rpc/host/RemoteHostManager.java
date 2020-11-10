@@ -15,24 +15,24 @@ import org.xson.tangyuan.util.CollectionUtils;
  */
 public class RemoteHostManager extends DefaultResourceReloader {
 
-	private Log                 log     = LogFactory.getLog(getClass());
+	private Log					log		= LogFactory.getLog(getClass());
 
-	private Map<String, String> hostMap = null;
+	private Map<String, String>	hostMap	= null;
 
 	/**
 	 * 解析URL<br />
 	 * 
-	 * http://xxx.xson.org:8080/a/b	<br />
-	 * http://xxx.xson.org:88/a/b	<br />
-	 * http://xxx.xson.org:80/a/b	<br />
+	 * http://xxx.xson.org:8080/a/b <br />
+	 * http://xxx.xson.org:88/a/b <br />
+	 * http://xxx.xson.org:80/a/b <br />
 	 */
 	public Object parse(String url, String type) throws Throwable {
 		if (CollectionUtils.isEmpty(hostMap)) {
 			return url;
 		}
 		// 后期可以支持TCP
-		URI    uri       = new URI(url);
-		String domain    = uri.getHost();
+		URI uri = new URI(url);
+		String domain = uri.getHost();
 		String newDomain = this.hostMap.get(domain);
 		if (null == newDomain) {
 			return url;
@@ -72,31 +72,4 @@ public class RemoteHostManager extends DefaultResourceReloader {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////
-	//		Properties p = null;
-	//		try {
-	//			p = getPropertiesForReload(resource, null, true, true);
-	//		} catch (Throwable e) {
-	//		}
-	//		if (null != p) {
-	//			update((Map) p);
-	//		}
-	//	private RemoteHostVo vo = null;
-	//	public String parse(String url, URI uri) throws Throwable {
-	//		if (null == this.hostMap) {
-	//			return url;
-	//		}
-	//		if (null == uri) {
-	//			uri = new URI(url);
-	//		}
-	//		String domain    = uri.getHost();
-	//		String newDomain = this.hostMap.get(domain);
-	//		if (null == newDomain) {
-	//			return url;
-	//		}
-	//
-	//		int pos = url.indexOf(domain);
-	//		url = url.substring(0, pos) + newDomain + url.substring(pos + domain.length());
-	//		return url;
-	//	}
 }

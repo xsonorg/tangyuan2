@@ -134,6 +134,4 @@ public class TangYuanLog extends AbstractLog {
 		proxy.warn(s, args);
 	}
 
-	////////////////////////////lang////////////////////////////
-
 }

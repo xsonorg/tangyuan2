@@ -44,14 +44,6 @@ public class StringTypeHandler extends BaseTypeHandler<String> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		String v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setStringValue(property, v);
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		String v = getResult(rs, columnName);

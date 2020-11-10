@@ -12,8 +12,8 @@ import net.sf.ehcache.Element;
 
 public class EhCacheCache extends AbstractCache {
 
-	private CacheManager cacheManager = null;
-	private Cache        cache        = null;
+	private CacheManager	cacheManager	= null;
+	private Cache			cache			= null;
 
 	public EhCacheCache(String cacheId) {
 		this.cacheId = cacheId;
@@ -26,16 +26,13 @@ public class EhCacheCache extends AbstractCache {
 		}
 		this.defaultExpiry = cacheVo.getExpiry();
 		this.serializer = cacheVo.getSerializer();
-		// init 
-		String      resource = cacheVo.getResource();
-		//InputStream in       = MixedResourceManager.getInputStream(resource, true);
-		InputStream in       = MixedResourceManager.getInputStream(resource, true, true);
+		// init
+		String resource = cacheVo.getResource();
+		// InputStream in = MixedResourceManager.getInputStream(resource, true);
+		InputStream in = MixedResourceManager.getInputStream(resource, true, true);
 		this.cacheManager = CacheManager.create(in);
 		this.cache = cacheManager.getCache(cacheManager.getCacheNames()[0]);
 		in.close();
-
-		// register reloader
-		// XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, this));
 	}
 
 	@Override
@@ -67,8 +64,8 @@ public class EhCacheCache extends AbstractCache {
 
 	@Override
 	public void put(Object key, Object value, Long expiry) {
-		Element element    = null;
-		Long    expiryTime = getExpiry(expiry, defaultExpiry);
+		Element element = null;
+		Long expiryTime = getExpiry(expiry, defaultExpiry);
 		if (null == expiryTime) {
 			element = new Element(key, value);
 		} else {
@@ -110,20 +107,4 @@ public class EhCacheCache extends AbstractCache {
 	// cache.getStatistics().getCacheHits()
 	// //得到缓存读取的错失次数
 	// cache.getStatistics().getCacheMisses()
-
-	//	@Override
-	//	public void reload(String resource, String context) throws Throwable {
-	//		InputStream  in              = getInputStreamForReload(resource, context, true, false);
-	//		CacheManager newCacheManager = CacheManager.create(in);
-	//		Cache        newCache        = newCacheManager.getCache(newCacheManager.getCacheNames()[0]);
-	//		if (null != in) {
-	//			in.close();
-	//		}
-	//		CacheManager oldCacheManager = this.cacheManager;
-	//		this.cache = newCache;
-	//		this.cacheManager = newCacheManager;
-	//		if (null != oldCacheManager) {
-	//			oldCacheManager.shutdown();
-	//		}
-	//	}
 }

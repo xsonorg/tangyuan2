@@ -22,6 +22,4 @@ public interface TypeHandler<T> {
 
 	void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException;
 
-	// void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException;
-
 }

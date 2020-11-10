@@ -19,7 +19,8 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 				ps.setNull(i, jdbcType.TYPE_CODE);
 			} catch (SQLException e) {
 				throw new TypeException("Error setting null for parameter #" + i + " with JdbcType " + jdbcType + " . "
-						+ "Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. " + "Cause: " + e, e);
+						+ "Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. " + "Cause: "
+						+ e, e);
 			}
 		} else {
 			setNonNullParameter(ps, i, parameter, jdbcType);
@@ -74,8 +75,4 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 		throw new SQLException("Sub class needs to be implemented");
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		throw new SQLException("Sub class needs to be implemented");
-	//	}
 }

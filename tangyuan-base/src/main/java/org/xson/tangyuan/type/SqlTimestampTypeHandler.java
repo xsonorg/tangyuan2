@@ -46,20 +46,9 @@ public class SqlTimestampTypeHandler extends BaseTypeHandler<Timestamp> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		java.sql.Timestamp v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setTimestampValue(property, v);
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.sql.Timestamp v = getResult(rs, columnName);
-		//		if (null != valueHandler && null != v) {
-		//			v = (java.sql.Timestamp) valueHandler.process(columnName, v);
-		//		}
 
 		if (null != valueHandler && null != v) {
 			Object nv = valueHandler.process(columnName, v);
@@ -67,6 +56,8 @@ public class SqlTimestampTypeHandler extends BaseTypeHandler<Timestamp> {
 				xco.setObjectValue(property, nv);
 				return;
 			}
+
+			v = (java.sql.Timestamp) nv;
 		}
 
 		if (null != v) {

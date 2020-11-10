@@ -8,7 +8,8 @@ public interface ServiceContext {
 	/**
 	 * 提交服务
 	 * 
-	 * @param confirm 是否是确定提交, 有具体实现判断
+	 * @param confirm
+	 *            是否是确定提交, 有具体实现判断
 	 */
 	public void commit(boolean confirm) throws Throwable;
 
@@ -19,13 +20,9 @@ public interface ServiceContext {
 
 	/**
 	 * 发生异常是设置异常信息
+	 * 
 	 * @param info
 	 */
 	public void onException(Object info);
-
-	//	/**
-	//	 * 异常处理(上下文模式中调用), 如果不影响外部服务，可以内部处理，否则返回false
-	//	 */
-	//	public boolean onException(ServiceExceptionInfo exceptionInfo) throws ServiceException;
 
 }

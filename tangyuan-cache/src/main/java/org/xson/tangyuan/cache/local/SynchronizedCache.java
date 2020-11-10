@@ -8,18 +8,13 @@ import org.xson.tangyuan.cache.xml.vo.CacheVo;
 
 public class SynchronizedCache extends AbstractCache {
 
-	private AbstractCache delegate;
-	private ReadWriteLock lock;
+	private AbstractCache	delegate;
+	private ReadWriteLock	lock;
 
 	public SynchronizedCache(AbstractCache delegate) {
 		this.delegate = delegate;
 		this.lock = new ReentrantReadWriteLock();
 	}
-
-	// @Override
-	// public void start(String resource, Map<String, String> properties) {
-	// this.cache.start(resource, properties);
-	// }
 
 	@Override
 	public void start(CacheVo cacheVo) throws Throwable {

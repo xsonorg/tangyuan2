@@ -13,13 +13,6 @@ public abstract class AbstractLog implements Log {
 	}
 
 	protected String format(String str, Object... args) {
-		//		if (null == args || 0 == args.length) {
-		//			return str;
-		//		}
-		//		for (int i = 0; i < args.length; i++) {
-		//			str = str.replaceFirst("\\{\\}", String.valueOf(args[i]));
-		//		}
-		//		return str;
 		return MessageFormatter.formatArgs(str, args);
 	}
 
@@ -35,8 +28,6 @@ public abstract class AbstractLog implements Log {
 		}
 		return false;
 	}
-
-	////////////////////////////////////////////////////////
 
 	@Override
 	public void errorLang(Throwable e, String s, Object... args) {
@@ -88,34 +79,4 @@ public abstract class AbstractLog implements Log {
 		warn(TangYuanLang.get(s, args));
 	}
 
-	//	protected boolean isExclude() {
-	//		final LogExpandVo conf = expandVo;
-	//		if (null != conf) {
-	//			String         type      = null;
-	//			String         component = null;
-	//			RuntimeContext rc        = RuntimeContext.get();
-	//			if (null != rc) {
-	//				type = rc.getOrigin();
-	//				component = rc.getComponent();
-	//				if (0 == component.length()) { // optimize
-	//					component = null;
-	//				}
-	//			}
-	//			return conf.isExclude(type, component);
-	//		}
-	//		return false;
-	//	}
-	//	protected static boolean   enableContextLog = false;
-	//	private static LogExpandVo expandVo         = null;
-	//	public static void setExpandVo(LogExpandVo newExpandVo) {
-	//		expandVo = newExpandVo;
-	//		enableContextLog = newExpandVo.isEnableContextLog();
-	//	}
-	//	protected LogConfig	conf				= null;
-	//	protected void setEnableContextLog(boolean enableContextLog) {
-	//		this.enableContextLog = enableContextLog;
-	//	}
-	//	protected LogExpandVo getExpandVo() {
-	//	return expandVo;
-	//}
 }

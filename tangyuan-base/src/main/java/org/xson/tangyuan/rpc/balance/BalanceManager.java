@@ -23,8 +23,8 @@ public class BalanceManager {
 
 		// 后期可以支持TCP
 
-		URI       uri       = new URI(url);
-		String    domain    = uri.getHost();
+		URI uri = new URI(url);
+		String domain = uri.getHost();
 		BalanceVo balanceVo = this.balanceMap.get(domain);
 		if (null == balanceVo) {
 			return url;
@@ -49,41 +49,5 @@ public class BalanceManager {
 		url = url.substring(0, pos) + newDomain + url.substring(pos + domain.length());
 		return url;
 	}
-
-	//	public BalanceHostVo select(String url) throws URISyntaxException {
-	//		if (null == this.balanceMap) {
-	//			return null;
-	//		}
-	//		URI       uri       = new URI(url);
-	//		String    domain    = uri.getHost();
-	//		BalanceVo balanceVo = this.balanceMap.get(domain);
-	//		if (null == balanceVo) {
-	//			return null;
-	//		}
-	//		return balanceVo.select();
-	//	}
-
-	//	public BalanceHostVo select(String url) throws URISyntaxException {
-	//		if (null == balanceMap) {
-	//			return null;
-	//		}
-	//		URI       uri       = new URI(url);
-	//		String    domain    = uri.getHost();
-	//		BalanceVo balanceVo = balanceMap.get(domain);
-	//		if (null == balanceVo) {
-	//			return null;
-	//		}
-	//		return balanceVo.select();
-	//	}
-
-	//	private static BalanceManager instance = new BalanceManager();
-	//	public static BalanceManager getInstance() {
-	//		return instance;
-	//	}
-	//	private boolean					balance		= false;
-	//	public void setBalanceMap(Map<String, BalanceVo> balanceMap) {
-	//		this.balanceMap = balanceMap;
-	//		this.balance = true;
-	//	}
 
 }

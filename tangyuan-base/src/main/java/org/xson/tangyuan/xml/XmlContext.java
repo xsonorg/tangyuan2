@@ -8,7 +8,5 @@ public interface XmlContext {
 
 	void clean();
 
-	//	TangYuanManager getTangYuanManager();
-
 	Map<String, MappingVo> getMappingVoMap();
 }

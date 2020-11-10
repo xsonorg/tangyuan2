@@ -1,14 +1,13 @@
 package org.xson.tangyuan.cache;
 
 import org.xson.tangyuan.cache.xml.vo.CacheVo;
-import org.xson.tangyuan.log.TangYuanLang;
 
 public abstract class AbstractCache implements TangYuanCache {
 
-	protected String          keyEncode     = "UTF-8";
-	protected String          cacheId       = null;
-	protected Long            defaultExpiry = null;
-	protected CacheSerializer serializer    = null;
+	protected String			keyEncode		= "UTF-8";
+	protected String			cacheId			= null;
+	protected Long				defaultExpiry	= null;
+	protected CacheSerializer	serializer		= null;
 
 	public void start(CacheVo cacheVo) throws Throwable {
 	}
@@ -34,7 +33,7 @@ public abstract class AbstractCache implements TangYuanCache {
 
 	protected String parseKey(Object key) {
 		if (null == key) {
-			throw new CacheException(TangYuanLang.get("parameter.empty", "key"));
+			throw CacheException.createLang("parameter.empty", key);
 		}
 		if (key instanceof String) {
 			return (String) key;

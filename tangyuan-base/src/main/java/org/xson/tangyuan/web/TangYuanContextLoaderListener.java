@@ -35,11 +35,4 @@ public class TangYuanContextLoaderListener implements ServletContextListener {
 		}
 	}
 
-	//			if (null != tangyuanResource) {
-	//				TangYuanContainer.getInstance().start(tangyuanResource);
-	//			}
-	//	private Log log = LogFactory.getLog(getClass());
-	//	static {
-	//	}
-
 }

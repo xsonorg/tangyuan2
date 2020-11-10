@@ -20,11 +20,4 @@ public class MixedNode implements TangYuanNode {
 		return true;
 	}
 
-	//	@Override
-	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-	//		for (TangYuanNode sqlNode : contents) {
-	//			sqlNode.execute(context, arg);
-	//		}
-	//		return true;
-	//	}
 }

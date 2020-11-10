@@ -10,7 +10,8 @@ import org.xson.tangyuan.xml.node.CallNode.CallMode;
 
 public class BeforeAopVo extends AopVo {
 
-	public BeforeAopVo(String exec, ServiceBeforeAopHandler beforeHandler, int order, CallMode mode, List<String> includeList, List<String> excludeList) {
+	public BeforeAopVo(String exec, ServiceBeforeAopHandler beforeHandler, int order, CallMode mode, List<String> includeList,
+			List<String> excludeList) {
 		this.exec = exec;
 		this.beforeHandler = beforeHandler;
 		this.order = order;
@@ -50,23 +51,4 @@ public class BeforeAopVo extends AopVo {
 		}
 	}
 
-	/////////////////////////////////////////////////////////////////
-
-	//	public BeforeAopVo(String exec, int order, CallMode mode, List<String> includeList, List<String> excludeList) {
-	//		this.exec = exec;
-	//		this.order = order;
-	//		this.mode = mode;
-	//		this.includeList = includeList;
-	//		this.excludeList = excludeList;
-	//	}
-	//	@Override
-	//	protected void execBefore(Object pkgArg) {
-	//		if (CallMode.SYNC == mode) {
-	//			actuator.execute(exec, pkgArg);
-	//		} else if (CallMode.SYNC == mode) {
-	//			actuator.execute(exec, pkgArg);
-	//		} else if (CallMode.ASYNC == mode) {
-	//			actuator.executeAsync(exec, pkgArg);
-	//		}
-	//	}
 }

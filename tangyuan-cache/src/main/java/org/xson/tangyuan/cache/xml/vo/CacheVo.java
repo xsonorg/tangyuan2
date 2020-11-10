@@ -9,26 +9,26 @@ import org.xson.tangyuan.cache.CacheSerializer;
 public class CacheVo {
 
 	public enum CacheType {
-		//		LOCAL, EHCACHE, MEMCACHE, REDIS, SHARE
 		LOCAL, EHCACHE, MEMCACHE, REDIS
 	}
 
-	protected String            id;
-	protected boolean           group;
-	protected AbstractCache     cache;
-	private CacheType           type;
-	private String              resource;
-	private Map<String, String> properties;
+	protected String			id;
+	protected boolean			group;
+	protected AbstractCache		cache;
+	private CacheType			type;
+	private String				resource;
+	private Map<String, String>	properties;
 	/** 节点默认过期时间 */
-	private Long                expiry;
+	private Long				expiry;
 	/** 节点默认序列化处理器 */
-	private CacheSerializer     serializer;
+	private CacheSerializer		serializer;
 
 	public CacheVo(String id) {
 		this.id = id;
 	}
 
-	public CacheVo(String id, CacheType type, AbstractCache cache, String resource, Map<String, String> properties, Long expiry, CacheSerializer serializer) {
+	public CacheVo(String id, CacheType type, AbstractCache cache, String resource, Map<String, String> properties, Long expiry,
+			CacheSerializer serializer) {
 		this.id = id;
 		this.type = type;
 		this.cache = cache;
@@ -79,54 +79,4 @@ public class CacheVo {
 		}
 	}
 
-	//	public Map<String, String> getProperties() {
-	//		return properties;
-	//	}
-	//	public String getSharedUse() {
-	//		return sharedUse;
-	//	}
-	//
-	//	public String getCreator() {
-	//		return creator;
-	//	}
-	//	protected String            sharedUse;
-	//	protected String            creator;
-	//	public CacheVo(String id, String creator) {
-	//		this.id = id;
-	//		this.creator = creator;
-	//	}
-	// public enum CacheStrategyType {
-	// LRU, FIFO, SOFT, WEAK, TIME
-	// }
-	//	placeholderMap = null;
-	//	public Map<String, String> getPlaceholderMap() {
-	//		return placeholderMap;
-	//	}
-	//	private Map<String, String>	placeholderMap;
-
-	// public CacheVo(String id, CacheType type, AbstractCache cache, String resource, Map<String, String> properties, String sharedUse,
-	// String creator) {
-	// this.id = id;
-	// this.type = type;
-	// this.cache = cache;
-	// this.resource = resource;
-	// this.properties = properties;
-	// this.sharedUse = sharedUse;
-	// this.creator = creator;
-	// }
-
-	//	public CacheVo(String id, CacheType type, AbstractCache cache, String resource, Map<String, String> properties, String sharedUse, String creator,
-	//			Long expiry, CacheSerializer serializer, Map<String, String> placeholderMap) {
-	//		this.id = id;
-	//		this.type = type;
-	//		this.cache = cache;
-	//		this.resource = resource;
-	//		this.properties = properties;
-	//		this.sharedUse = sharedUse;
-	//		this.creator = creator;
-	//
-	//		this.expiry = expiry;
-	//		this.serializer = serializer;
-	//		this.placeholderMap = placeholderMap;
-	//	}
 }

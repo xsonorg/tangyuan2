@@ -51,7 +51,7 @@ public abstract class AbstractShardingHandler implements ShardingHandler {
 
 	protected long getLongValue(Object value) {
 		if (null == value) {
-			//			throw new ShardingException("分库分表对象值为空");
+			// throw new ShardingException("分库分表对象值为空");
 			throw new ShardingException(TangYuanLang.get("sharding.value.empty"));
 		}
 		Class<?> type = value.getClass();
@@ -79,22 +79,13 @@ public abstract class AbstractShardingHandler implements ShardingHandler {
 	}
 
 	protected ShardingResult selectByModulusAlgorithm(ShardingDefVo defVo, ShardingArgVo argVo, long value) {
-		int  allTable   = defVo.getDbCount() * defVo.getTableCount();
+		int allTable = defVo.getDbCount() * defVo.getTableCount();
 		long tableIndex = value % allTable;
-		long dbIndex    = tableIndex / defVo.getTableCount();
+		long dbIndex = tableIndex / defVo.getTableCount();
 		if (!defVo.isTableNameIndexIncrement()) {
 			tableIndex = tableIndex - (dbIndex * defVo.getTableCount());
 		}
 		return getResult(tableIndex, dbIndex, defVo, argVo);
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-
-	//		Variable[] keywords = argVo.getKeywords();
-	//		if (null == keywords) {
-	//			keywords = defVo.getKeywords();
-	//		}
-	//		Object shardingValue = keywords[0].getValue(arg);
-	//		int    hashCode      = getHashCode(shardingValue);
 
 }

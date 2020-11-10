@@ -20,7 +20,4 @@ public class AopPkgUtil {
 		return pkgObj.getObjectValue(ServiceAopVo.aopResultKey);
 	}
 
-	//	public static Object getException(XCO pkgObj) {
-	//		return pkgObj.getAttachObject();
-	//	}
 }

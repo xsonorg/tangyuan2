@@ -15,17 +15,17 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode;
  */
 public class JavaServiceNode extends AbstractServiceNode {
 
-	private static Log   log            = LogFactory.getLog(JavaServiceNode.class);
+	private static Log		log				= LogFactory.getLog(JavaServiceNode.class);
 
-	private Object       instance       = null;
-	private Method       method         = null;
-	private CacheUseVo   cacheUse       = null;
-	private CacheCleanVo cacheClean     = null;
+	private Object			instance		= null;
+	private Method			method			= null;
+	private CacheUseVo		cacheUse		= null;
+	private CacheCleanVo	cacheClean		= null;
 
-	private boolean      forcedCloneArg = false;
+	private boolean			forcedCloneArg	= false;
 
-	public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method, CacheUseVo cacheUse, CacheCleanVo cacheClean, boolean forcedCloneArg,
-			String desc, String[] groups) {
+	public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method, CacheUseVo cacheUse, CacheCleanVo cacheClean,
+			boolean forcedCloneArg, String desc, String[] groups) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
@@ -45,9 +45,9 @@ public class JavaServiceNode extends AbstractServiceNode {
 	@Override
 	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
 
-		long   startTime = System.currentTimeMillis();
-		String cacheKey  = null;
-		Object result    = null;
+		long startTime = System.currentTimeMillis();
+		String cacheKey = null;
+		Object result = null;
 
 		// 1. cache使用
 		if (null != this.cacheUse && null == cacheKey) {
@@ -73,8 +73,6 @@ public class JavaServiceNode extends AbstractServiceNode {
 		}
 
 		try {
-			//			result = method.invoke(instance, temp);
-			//			result = method.invoke(instance, cloneArg(arg));
 			result = method.invoke(instance, arg);
 			ac.setResult(result);
 		} catch (Throwable e) {

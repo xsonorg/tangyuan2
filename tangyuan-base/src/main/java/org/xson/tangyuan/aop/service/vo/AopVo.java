@@ -26,7 +26,7 @@ public abstract class AopVo implements Comparable<AopVo> {
 
 	public enum PointCut {
 
-		//		BEFORE(1), AFTER_EXTEND(2), AFTER(4);
+		// BEFORE(1), AFTER_EXTEND(2), AFTER(4);
 		BEFORE(1), AFTER(2);
 
 		private int value = 0;
@@ -40,14 +40,14 @@ public abstract class AopVo implements Comparable<AopVo> {
 		}
 	}
 
-	protected String                  exec;
-	protected ServiceBeforeAopHandler beforeHandler;
-	protected ServiceAfterAopHandler  afterHandler;
+	protected String					exec;
+	protected ServiceBeforeAopHandler	beforeHandler;
+	protected ServiceAfterAopHandler	afterHandler;
 
-	protected int                     order;
-	protected CallMode                mode;
-	protected List<String>            includeList;
-	protected List<String>            excludeList;
+	protected int						order;
+	protected CallMode					mode;
+	protected List<String>				includeList;
+	protected List<String>				excludeList;
 
 	public boolean match(AbstractServiceNode serviceNode) {
 
@@ -102,44 +102,5 @@ public abstract class AopVo implements Comparable<AopVo> {
 			return 0;
 		}
 	}
-
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	//	protected ActuatorImpl            actuator;
-	//	public boolean match1(String url) {
-	//		// 排除递归
-	//		if (exec.equalsIgnoreCase(url)) {
-	//			return false;
-	//		}
-	//		if (null != excludeList) {
-	//			for (String pattern : excludeList) {
-	//				if (PatternMatchUtils.simpleMatch(pattern, url)) {
-	//					return false;
-	//				}
-	//			}
-	//		}
-	//		if (null != includeList) {
-	//			for (String pattern : includeList) {
-	//				if (PatternMatchUtils.simpleMatch(pattern, url)) {
-	//					return true;
-	//				}
-	//			}
-	//			return false;
-	//		}
-	//		return true;
-	//	}
-
-	//	/**
-	//	 * 之前前置方法
-	//	 * 
-	//	 * @param service 仅作日志标识使用
-	//	 * @param pkgArg 封装后的对象
-	//	 */
-	//	protected void execBefore(Object pkgArg) {
-	//		throw new TangYuanException(TangYuanLang.get("method.need.override"));
-	//	}
-	//	protected void execAfter(ActuatorContext parent, Object pkgArg, Throwable ex) {
-	//		throw new TangYuanException(TangYuanLang.get("method.need.override"));
-	//	}
 
 }

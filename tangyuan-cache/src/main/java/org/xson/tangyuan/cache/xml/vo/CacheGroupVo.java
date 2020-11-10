@@ -24,9 +24,4 @@ public class CacheGroupVo extends CacheVo {
 		this.cache = new MixedCache(id, cacheList);
 	}
 
-	//	public CacheGroupVo(String id, List<CacheRefVo> cacheRefList, String creator) {
-	//		super(id, creator);
-	//		this.cacheRefList = cacheRefList;
-	//		this.group = true;
-	//	}
 }

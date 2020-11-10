@@ -53,7 +53,6 @@ public class DefaultMapReduceHander implements MapReduceHander {
 			}
 			Thread.sleep(this.sleepTime);
 		}
-		// TODO 是不是返回XCO???
 		return this.resultList;
 	}
 }

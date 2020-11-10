@@ -8,22 +8,6 @@ import java.util.Date;
 
 public class DateUtils {
 
-	// public static final String DATE_TIME_FORMAT_SHORT = "yyyyMMddHHmmss";
-	// public static final String DATE_TIME_FORMAT_YMD = "yyyy/MM/dd HH:mm:ss";
-	// public static final String DATE_TIME_FORMAT_NORMAL = "yyyy-MM-dd HH:mm:ss";
-	// public static final String DATE_TIME_FORMAT_ENGLISH = "MM/dd/yyyy HH:mm:ss";
-	// public static final String DATE_TIME_FORMAT_MINUTE = "yyyyMMddHHmm";
-	//
-	// public static final String TIME_FORMAT_SHORT_NORMAL = "HH:mm:ss";
-	// public static final String TIME_FORMAT_SHORT_SHORT = "HHmmss";
-	//
-	// public static final String DATE_FORMAT_SHORT = "yyyyMMdd";
-	// public static final String DATE_FORMAT_NORMAL = "yyyy-MM-dd";
-	// public static final String DATE_FORMAT_ENGLISH = "MM/dd/yyyy";
-	// public static final String DATE_FORMAT_MONTH = "yyyyMM";
-	// public static final String DATE_FORMAT_YEAR_MONTH = "yyyy-MM";
-	// public static final String DATE_FORMAT_MONTH_DAY_FORMAT = "MM-dd";
-
 	public static final String	TIME_FORMAT_SHORT				= "yyyyMMddHHmmss";
 	public static final String	TIME_FORMAT_YMD					= "yyyy/MM/dd HH:mm:ss";
 	public static final String	TIME_FORMAT_NORMAL				= "yyyy-MM-dd HH:mm:ss";

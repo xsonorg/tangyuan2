@@ -14,11 +14,11 @@ import org.xson.tangyuan.util.ResourceManager;
  */
 public class TangYuanLang {
 
-	private static TangYuanLang instance = new TangYuanLang();
+	private static TangYuanLang	instance	= new TangYuanLang();
 
-	private String              lang     = "en";
+	private String				lang		= "en";
 
-	private Map<String, String> context  = new HashMap<String, String>();
+	private Map<String, String>	context		= new HashMap<String, String>();
 
 	public void init(String lang) {
 		if (null != lang) {
@@ -63,31 +63,7 @@ public class TangYuanLang {
 
 	public static String get(String template, Object... args) {
 		String content = instance.get0(template);
-		//		content = TangYuanUtil.format(content, args);
 		content = MessageFormatter.formatArgs(content, args);
 		return content;
 	}
-
-	/////////////////////////////////////////////////////////////////////////////
-	//	private String get0(String prefix, String template) {
-	//		String templateKey = template;
-	//		if (null != prefix) {
-	//			templateKey = prefix + "@" + template;
-	//		}
-	//		String val = this.context.get(templateKey);
-	//		if (null == val) {
-	//			val = template;
-	//		}
-	//		return val;
-	//	}
-	//	public static String get(Class<?> clazz, String template) {
-	//		String prefix = null;
-	//		if (null != clazz) {
-	//			prefix = clazz.getName();
-	//		}
-	//		return instance.get0(prefix, template);
-	//	}
-	//	public static String get(String template) {
-	//		return get(null, template);
-	//	}
 }

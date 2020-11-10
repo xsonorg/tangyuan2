@@ -40,14 +40,6 @@ public class ByteTypeHandler extends BaseTypeHandler<Byte> {
 		builder.append(parameter);
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		Byte v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setByteValue(property, v.byteValue());
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Byte v = getResult(rs, columnName);

@@ -9,13 +9,13 @@ import org.xson.tangyuan.xml.XmlParseException;
 
 public class IfNode implements TangYuanNode {
 
-	private LogicalVariable test;
+	private LogicalVariable	test;
 
-	private TangYuanNode    sqlNode;
+	private TangYuanNode	sqlNode;
 
-	private List<IfNode>    elseIfList;
+	private List<IfNode>	elseIfList;
 
-	private boolean         hasElseNode = false;
+	private boolean			hasElseNode	= false;
 
 	public IfNode(TangYuanNode sqlNode, LogicalVariable test) {
 		this.sqlNode = sqlNode;
@@ -56,7 +56,6 @@ public class IfNode implements TangYuanNode {
 		} else if (null != elseIfList) {
 			for (IfNode ifNode : elseIfList) {
 				if (ifNode.execute(ac, arg, temp)) {
-					// break;// TODO 是否return true也可
 					return true;
 				}
 			}
@@ -64,23 +63,4 @@ public class IfNode implements TangYuanNode {
 		return false;
 	}
 
-	//	/**
-	//	 * true: 代表执行了(表达式通过), false: 代表不能执行(表达式不通过)
-	//	 */
-	//	@Override
-	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-	//		// 这里可以认为全部是IF, 表达式通过:true, 否则:false
-	//		if (null == test || test.getResult(arg)) {
-	//			sqlNode.execute(context, arg);
-	//			return true;
-	//		} else if (null != elseIfList) {
-	//			for (IfNode ifNode : elseIfList) {
-	//				if (ifNode.execute(context, arg)) {
-	//					// break;// TODO 是否return true也可
-	//					return true;
-	//				}
-	//			}
-	//		}
-	//		return false;
-	//	}
 }

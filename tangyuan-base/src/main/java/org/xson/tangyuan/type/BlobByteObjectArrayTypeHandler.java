@@ -54,17 +54,6 @@ public class BlobByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 		builder.append(parameter);
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		Blob blob = rs.getBlob(columnName);
-	//		if (blob != null && !rs.wasNull()) {
-	//			byte[] v = blob.getBytes(1, (int) blob.length());
-	//			if (null != v) {
-	//				xco.setByteArrayValue(property, v);
-	//			}
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Blob blob = rs.getBlob(columnName);

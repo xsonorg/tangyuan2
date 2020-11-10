@@ -22,7 +22,7 @@ public class Actuator {
 		}
 	}
 
-	//=================================== execute ==========================================
+	// =================================== execute ==========================================
 
 	@SuppressWarnings("unchecked")
 	public static <T> T execute(String serviceURI, Object arg) {
@@ -43,27 +43,21 @@ public class Actuator {
 		return result;
 	}
 
-	//=================================== executeAlone ===================================== 
+	// =================================== executeAlone =====================================
 
 	@Deprecated
 	public static <T> T executeAlone(String serviceURI, Object arg) {
-		//		try {
-		//			impl.checkContainerState();
-		//		} catch (ServiceException e) {
-		//			return (T) TangYuanUtil.getExceptionResult(e);
-		//		}
-		//		return impl.execute(serviceURI, arg);
 		return execute(serviceURI, arg);
 	}
 
-	//=================================== executeAsync ====================================== 
+	// =================================== executeAsync ======================================
 
 	public static void executeAsync(final String serviceURI, final Object arg) {
 		impl.checkContainerState();
 		impl.executeAsync(serviceURI, arg);
 	}
 
-	//=================================== executeMapReduce ==================================
+	// =================================== executeMapReduce ==================================
 
 	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
 		return executeMapReduce(null, serviceURI, args, handler, timeout);
@@ -83,5 +77,5 @@ public class Actuator {
 		return impl.executeMapReduce(mapReduceContext, services, args, handler, timeout);
 	}
 
-	//=================================== Pipeline ==================================
+	// =================================== Pipeline ==================================
 }

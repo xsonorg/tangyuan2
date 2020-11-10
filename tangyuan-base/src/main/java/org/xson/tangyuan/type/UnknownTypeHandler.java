@@ -117,13 +117,6 @@ public class UnknownTypeHandler extends BaseTypeHandler<Object> {
 
 	@Override
 	public void appendLog(StringBuilder builder, Object parameter, DatabaseDialect dialect) {
-		// if (DatabaseDialect.MYSQL == dialect) {
-		// // builder.append('\'');
-		// builder.append(parameter);
-		// // builder.append('\'');
-		// }
-		// builder.append('\'');
 		builder.append(parameter);
-		// builder.append('\'');
 	}
 }

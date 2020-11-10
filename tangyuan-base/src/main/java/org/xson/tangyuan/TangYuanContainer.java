@@ -27,49 +27,49 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class TangYuanContainer implements TangYuanComponent {
 
-	private static TangYuanContainer               instance                = new TangYuanContainer();
+	private static TangYuanContainer				instance				= new TangYuanContainer();
 
-	public final static String                     XCO_DATA_KEY            = "$$DATA";
-	public final static String                     XCO_CODE_KEY            = "$$CODE";
-	public final static String                     XCO_MESSAGE_KEY         = "$$MESSAGE";
+	public final static String						XCO_DATA_KEY			= "$$DATA";
+	public final static String						XCO_CODE_KEY			= "$$CODE";
+	public final static String						XCO_MESSAGE_KEY			= "$$MESSAGE";
 	/** XCO返回对象包装标识 */
-	public final static String                     XCO_PACKAGE_KEY         = "$$PACKAGE";
-	public final static String                     XCO_HEADER_KEY          = "$$HEADER";
-	public final static int                        SUCCESS_CODE            = 0;
+	public final static String						XCO_PACKAGE_KEY			= "$$PACKAGE";
+	public final static String						XCO_HEADER_KEY			= "$$HEADER";
+	public final static int							SUCCESS_CODE			= 0;
 
-	private Log                                    log                     = null;
-	private XmlGlobalContext                       xmlGlobalContext        = null;
-	private volatile ComponentState                state                   = ComponentState.UNINITIALIZED;
+	private Log										log						= null;
+	private XmlGlobalContext						xmlGlobalContext		= null;
+	private volatile ComponentState					state					= ComponentState.UNINITIALIZED;
 
-	private final Map<String, AbstractServiceNode> tangyuanServices        = new HashMap<String, AbstractServiceNode>();
-	private final Map<String, AbstractServiceNode> tangyuanDynamicServices = new ConcurrentHashMap<String, AbstractServiceNode>();
+	private final Map<String, AbstractServiceNode>	tangyuanServices		= new HashMap<String, AbstractServiceNode>();
+	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices	= new ConcurrentHashMap<String, AbstractServiceNode>();
 
-	private ThreadPool                             threadPool              = null;
+	private ThreadPool								threadPool				= null;
 
-	private Map<String, ServiceContextFactory>     scFactoryMap            = new HashMap<String, ServiceContextFactory>();
-	private Map<String, ComponentVo>               componentMap            = new HashMap<String, ComponentVo>();
+	private Map<String, ServiceContextFactory>		scFactoryMap			= new HashMap<String, ServiceContextFactory>();
+	private Map<String, ComponentVo>				componentMap			= new HashMap<String, ComponentVo>();
 
 	/** system AOP */
-	private List<SystemAopVo>                      closingBeforeList       = null;
-	private List<SystemAopVo>                      closingAfterList        = null;
-	private Class<?>                               defaultResultType       = XCO.class;
+	private List<SystemAopVo>						closingBeforeList		= null;
+	private List<SystemAopVo>						closingAfterList		= null;
+	private Class<?>								defaultResultType		= XCO.class;
 	/** true:jdk, false:cglib */
-	private boolean                                jdkProxy                = false;
+	private boolean									jdkProxy				= false;
 	/** 错误信息编码 */
-	private int                                    errorCode               = -1;
-	private String                                 errorMessage            = "服务异常";
-	private String                                 nsSeparator             = "/";
+	private int										errorCode				= -1;
+	private String									errorMessage			= "服务异常";
+	private String									nsSeparator				= "/";
 
 	/** 最大关闭等待时间(秒) */
-	private long                                   maxWaitTimeForShutDown  = 10L;
+	private long									maxWaitTimeForShutDown	= 10L;
 	/** 所有服务统一返回XCO */
-	private boolean                                allServiceReturnXCO     = true;
+	private boolean									allServiceReturnXCO		= true;
 	/** 关闭的时候是否启动一个新的线程 */
-	private boolean                                shutdownInNewThread     = false;
+	private boolean									shutdownInNewThread		= false;
 	/** 克隆服务参数 */
-	private boolean                                cloneServiceArg         = false;
+	private boolean									cloneServiceArg			= false;
 	/** 后缀参数, 通过配置文件后缀传入 */
-	private Map<String, String>                    suffixArgs              = new HashMap<>();
+	private Map<String, String>						suffixArgs				= new HashMap<>();
 
 	private TangYuanContainer() {
 	}
@@ -413,87 +413,5 @@ public class TangYuanContainer implements TangYuanComponent {
 
 		log.info(TangYuanLang.get("tangyuan.stopping.successfully"));
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////
-
-	//	private volatile boolean                       closing                 = false;
-
-	// log.info(TangYuanLang.get(this.getClass(), "tangyuan framework stopping."));
-	//		this.closing = true;
-
-	//	public boolean isClosing() {
-	//		return closing;
-	//	}
-
-	//	/** 外部扩展参数 */
-	//	private ExtArg                                 extArg                  = new ExtArg();
-	//	public long getMaxWaitTimeForShutDown() {
-	//		return maxWaitTimeForShutDown * 1000L;
-	//	}
-	//	public ExtArg getExtArg() {
-	//		return extArg;
-	//	}
-
-	//private Map<String, ComponentServiceContextFactory> scFactoryMap            = new HashMap<String, ComponentServiceContextFactory>();
-	//	private boolean                                licenses                = false;
-	//	private String                                 licenseResource         = null;
-	// private Log                                    log                     = LogFactory.getLog(getClass());
-
-	//	public boolean hasLicenses() {
-	//		return licenses;
-	//	}
-	// log.info("tangyuan framework stop successfully.");
-	// log.info(TangYuanLang.get(this.getClass(), "tangyuan framework stop successfully."));
-	//	public ComponentServiceContextFactory getContextFactory(TangYuanServiceType type) {
-	//		return this.scFactoryMap.get(type.name());
-	//	}
-	//	public void registerContextFactory(TangYuanServiceType type, ComponentServiceContextFactory factory) {
-	//		this.scFactoryMap.put(type.name(), factory);
-	//	}
-	//	public String getSystemName() {
-	//		return systemName;
-	//	}
-	//	public String getAppName() {
-	//		return appName;
-	//	}
-	// 默认扩展参数前缀
-	// public final static String DEFAULT_EXT_ARG_PREFIX = "EXT:";
-	//	private String                                 systemName              = "tangyuan";
-	//	private String                                 appName                 = "tangyuan-app";
-
-	//		if (properties.containsKey("systemName".toUpperCase())) {
-	//			this.systemName = properties.get("systemName".toUpperCase());
-	//		}
-	//		if (properties.containsKey("appName".toUpperCase())) {
-	//			this.appName = properties.get("appName".toUpperCase());
-	//		}
-	//		if (properties.containsKey("licenseResource".toUpperCase())) {
-	//			this.licenseResource = properties.get("licenseResource".toUpperCase());
-	//		}
-	//		if (properties.containsKey("allServiceReturnXCO".toUpperCase())) {
-	//			this.allServiceReturnXCO = Boolean.parseBoolean(properties.get("allServiceReturnXCO".toUpperCase()));
-	//			log.info("open the unified return object mode.");
-	//		}
-	//	private void parseExternalLicense(String resource) {
-	//		try {
-	//			InputStream licenseInputStream = null;
-	//			if (null != this.licenseResource) {
-	//				// fix bug
-	//				licenseInputStream = ResourceManager.getInputStream(this.licenseResource);
-	//			}
-	//			this.licenses = LicensesHelper.check(licenseInputStream);
-	//			if (this.licenses) {
-	//				log.info("tangyuan licenses verification is successful.");
-	//			}
-	//		} catch (Throwable e) {
-	//		}
-	//	}
-	//	private void startManagerLauncher() {
-	//		try {
-	//			new ManagerLauncher().start(null);
-	//		} catch (Throwable e) {
-	//			e.printStackTrace();
-	//		}
-	//	}
 
 }

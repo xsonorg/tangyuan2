@@ -25,14 +25,11 @@ public class RedisCache extends AbstractCache {
 		}
 		this.defaultExpiry = cacheVo.getExpiry();
 		this.serializer = cacheVo.getSerializer();
-		// init 
-		String     resource = cacheVo.getResource();
-		Properties p        = MixedResourceManager.getProperties(resource, true, true);
+		// init
+		String resource = cacheVo.getResource();
+		Properties p = MixedResourceManager.getProperties(resource, true, true);
 		client = new JedisClient();
 		client.start(p);
-
-		// register reloader
-		// XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, this));
 	}
 
 	@Override
@@ -62,9 +59,9 @@ public class RedisCache extends AbstractCache {
 			remove(key);
 			return;
 		}
-		Long              expiryTime = getExpiry(expiry, defaultExpiry);
-		CacheSerializer   cs         = getSerializer();
-		final JedisClient client     = this.client;
+		Long expiryTime = getExpiry(expiry, defaultExpiry);
+		CacheSerializer cs = getSerializer();
+		final JedisClient client = this.client;
 		try {
 			if (null == expiryTime) {
 				client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value));
@@ -75,11 +72,11 @@ public class RedisCache extends AbstractCache {
 				// millisecond 效果等同于 PSETEX key millisecond value 。
 				// NX ：只在键不存在时，才对键进行设置操作。 SET key value NX 效果等同于 SETNX key value
 				// XX ：只在键已经存在时，才对键进行设置操作。
-				String result = client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value), "nx".getBytes(keyEncode), "ex".getBytes(keyEncode),
-						expiryTime.longValue());
-				// System.out.println(result);
+				String result = client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value), "nx".getBytes(keyEncode),
+						"ex".getBytes(keyEncode), expiryTime.longValue());
 				if (!"OK".equalsIgnoreCase(result)) {
-					client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value), "xx".getBytes(keyEncode), "ex".getBytes(keyEncode), expiryTime.longValue());
+					client.set(parseKey(key).getBytes(keyEncode), (byte[]) cs.serialize(value), "xx".getBytes(keyEncode), "ex".getBytes(keyEncode),
+							expiryTime.longValue());
 				}
 			}
 		} catch (Throwable e) {
@@ -107,57 +104,4 @@ public class RedisCache extends AbstractCache {
 		return JDKSerializer.instance;
 	}
 
-	//	private Log         log    = LogFactory.getLog(getClass());
-	//		if (this.creator != creator || !this.creator.equals(creator)) {
-	//			return;
-	//		}
-	//			InputStream inputStream = ResourceManager.getInputStream(resource, cacheVo.getPlaceholderMap());
-	//			Properties  properties  = new Properties();
-	//			properties.load(inputStream);
-	//			inputStream.close();
-	//		try {
-	//			String resource = cacheVo.getResource();
-	//			client = new JedisClient();
-	//			Properties p = MixedResourceManager.getProperties(resource, true);
-	//			client.start(p);
-	//		} catch (Throwable e) {
-	//			throw new CacheException(e);
-	//		}
-
-	//	private void update(JedisClient client) {
-	//		this.client = client;
-	//	}
-
-	//	@Override
-	//	public void reload(String resource, String context) throws Throwable {
-	//		Properties  p         = getPropertiesForReload(resource, context, true, true);
-	//		JedisClient newClient = new JedisClient();
-	//		newClient.start(p);
-	//		JedisClient oldClient = this.client;
-	//		update(newClient);
-	//		log.info(TangYuanLang.get("resource.reload"), resource);
-	//
-	//		// reload的时候就不考虑多线程并发的问题，有一定几率的错误情况
-	//		// 如果要避免此问题，需要所有相关方法操作为同步，并且关闭的时候需要时间等待，但也是有几率出现错误的
-	//
-	//		//		new Thread(() -> {
-	//		//			try {
-	//		//				wait(reloadWaitTime);
-	//		//			} catch (InterruptedException e) {
-	//		//				log.error(e);
-	//		//			}
-	//		//			oldClient.stop();
-	//		//		}).start();
-	//
-	//		Thread ct = new Thread(() -> {
-	//			try {
-	//				wait(reloadWaitTime);
-	//			} catch (InterruptedException e) {
-	//				log.error(e);
-	//			}
-	//			oldClient.stop();
-	//		});
-	//		ct.setDaemon(true);
-	//		ct.start();
-	//	}
 }

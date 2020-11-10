@@ -13,7 +13,8 @@ public class AfterAopVo extends AopVo {
 
 	protected AopCondition condition;
 
-	public AfterAopVo(String exec, ServiceAfterAopHandler afterHandler, int order, CallMode mode, AopCondition condition, List<String> includeList, List<String> excludeList) {
+	public AfterAopVo(String exec, ServiceAfterAopHandler afterHandler, int order, CallMode mode, AopCondition condition, List<String> includeList,
+			List<String> excludeList) {
 		this.exec = exec;
 		this.afterHandler = afterHandler;
 
@@ -33,9 +34,9 @@ public class AfterAopVo extends AopVo {
 		// result处理
 		if (null == result) {
 			// 理论上不会进入此处
-			XCO     resultXCO = new XCO();
-			Integer code      = null;
-			String  message   = null;
+			XCO resultXCO = new XCO();
+			Integer code = null;
+			String message = null;
 			if (null != ex) {
 				if (ex instanceof ServiceException) {
 					ServiceException e = (ServiceException) ex;
@@ -90,70 +91,5 @@ public class AfterAopVo extends AopVo {
 			}
 		}
 	}
-
-	//	/** 组装AOP参数:after */
-	//	private Object assembleAopArg(String service, Object arg, Object result, Throwable ex) {
-	//		XCO     pkgArg  = new XCO();
-	//		Integer code    = null;
-	//		String  message = null;
-	//
-	//		pkgArg.setStringValue(ServiceAopVo.aopServiceKey, service);
-	//		pkgArg.setXCOValue(ServiceAopVo.aopArgKey, (XCO) arg);
-	//		if (null != result) {
-	//			pkgArg.setObjectValue(ServiceAopVo.aopResultKey, result);
-	//			if (result instanceof XCO) {
-	//				XCO resultXCO = (XCO) result;
-	//				code = resultXCO.getCode();
-	//				message = resultXCO.getMessage();
-	//			}
-	//		}
-	//		if (null != ex) {
-	//			if (ex instanceof ServiceException) {
-	//				ServiceException e = (ServiceException) ex;
-	//				code = e.getErrorCode();
-	//				message = e.getErrorMessage();
-	//			} else {
-	//				code = TangYuanContainer.getInstance().getErrorCode();
-	//				message = ex.getMessage();
-	//			}
-	//		}
-	//
-	//		if (null == code) {
-	//			code = TangYuanContainer.SUCCESS_CODE;
-	//		}
-	//		pkgArg.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
-	//		if (null != message) {
-	//			pkgArg.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, message);
-	//		}
-	//		return pkgArg;
-	//	}
-
-	//	@Override
-	//	protected void execAfter(ActuatorContext parent, Object pkgArg, Throwable ex) {
-	//		if (AopCondition.SUCCESS == condition && null != ex) {
-	//			return;
-	//		}
-	//		if (AopCondition.EXCEPTION == condition && null == ex) {
-	//			return;
-	//		}
-	//		if (CallMode.SYNC == mode) {
-	//			actuator.execute(exec, pkgArg);
-	//		} else if (CallMode.SYNC == mode) {
-	//			// ServiceActuator.executeAlone(exec, pkgArg, parent, TrackingManager.EXECUTE_MODE_SYNC);
-	//			actuator.execute(exec, pkgArg);
-	//		} else if (CallMode.ASYNC == mode) {
-	//			// ServiceActuator.executeAsync(exec, pkgArg, parent);
-	//			actuator.executeAsync(exec, pkgArg);
-	//		}
-	//	}
-
-	//	public AfterAopVo(String exec, int order, CallMode mode, AopCondition condition, List<String> includeList, List<String> excludeList) {
-	//		this.exec = exec;
-	//		this.order = order;
-	//		this.mode = mode;
-	//		this.condition = condition;
-	//		this.includeList = includeList;
-	//		this.excludeList = excludeList;
-	//	}
 
 }

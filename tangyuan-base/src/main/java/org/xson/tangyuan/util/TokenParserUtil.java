@@ -53,9 +53,4 @@ public class TokenParserUtil {
 		return null;
 	}
 
-//	public static void main(String[] args) {
-//		String log = "这是{a}一条{b}日志";
-//		List<Object> unitlist = new TokenParserUtil().parseLog(log, "{", "}");
-//		System.out.println(JSON.toJSONString(unitlist));
-//	}
 }

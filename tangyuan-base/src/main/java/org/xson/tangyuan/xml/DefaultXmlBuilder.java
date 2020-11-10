@@ -20,13 +20,13 @@ import org.xson.tangyuan.util.TangYuanUtil;
 
 public class DefaultXmlBuilder {
 
-	protected Log              log           = LogFactory.getLog(getClass());
+	protected Log				log				= LogFactory.getLog(getClass());
 
-	protected XmlGlobalContext globalContext = null;
+	protected XmlGlobalContext	globalContext	= null;
 
-	protected XPathParser      xPathParser   = null;
-	protected XmlNodeWrapper   root          = null;
-	protected String           resource      = null;
+	protected XPathParser		xPathParser		= null;
+	protected XmlNodeWrapper	root			= null;
+	protected String			resource		= null;
 
 	protected void clean() {
 		this.xPathParser = null;
@@ -36,14 +36,6 @@ public class DefaultXmlBuilder {
 	}
 
 	protected void init(String resource, String rootName, boolean placeholder) throws Throwable {
-		//		// info("*** Start parsing: {}", resource);
-		//		this.resource = resource;
-		//		//		InputStream inputStream = ResourceManager.getInputStream(resource, placeholder);
-		//		//		InputStream inputStream = MixedResourceManager.getInputStream(resource, placeholder, false);
-		//		InputStream inputStream = getInputStream(resource, placeholder, false);
-		//		this.xPathParser = new XPathParser(inputStream);
-		//		this.root = this.xPathParser.evalNode("/" + rootName);
-		//		inputStream.close();// TODO
 		init(resource, rootName, placeholder, false);
 	}
 
@@ -55,8 +47,6 @@ public class DefaultXmlBuilder {
 		inputStream.close();
 	}
 
-	//////////////////////////
-
 	protected InputStream getInputStream(String resource, boolean placeholder, boolean useLocalStorage) throws Throwable {
 		return MixedResourceManager.getInputStream(resource, placeholder, useLocalStorage);
 	}
@@ -65,17 +55,15 @@ public class DefaultXmlBuilder {
 		return MixedResourceManager.getProperties(resource, placeholder, useLocalStorage);
 	}
 
-	// log lang/////////////////////////////////////////////////////////////////////////////////////////
-
 	protected String lang(String template) {
 		return lang(template, (Object[]) null);
 	}
 
 	protected String lang(String template, Object... args) {
 		String content = TangYuanLang.get(template);
-		//		if (null == content) {
-		//			content = template;
-		//		}
+		// if (null == content) {
+		// content = template;
+		// }
 		content = TangYuanUtil.format(content, args);
 		return content;
 	}
@@ -263,20 +251,12 @@ public class DefaultXmlBuilder {
 
 	// /////////////////////////////////////////////////////////////////////////////////////////
 
-	//	protected XmlNodeWrapper getMostOneNode(String expression) {
-	//		return getMostOneNode(null, expression, null);
-	//	}
-	//
-	//	protected XmlNodeWrapper getMostOneNode(XmlNodeWrapper root, String expression) {
-	//		return getMostOneNode(root, expression, null);
-	//	}
-
 	protected XmlNodeWrapper getMostOneNode(XmlNodeWrapper root, String expression, String errorMsg) {
 		if (null == root) {
 			root = this.root;
 		}
 		List<XmlNodeWrapper> nodes = root.evalNodes(expression);
-		int                  size  = nodes.size();
+		int size = nodes.size();
 		if (0 == size) {
 			return null;
 		}
@@ -285,130 +265,6 @@ public class DefaultXmlBuilder {
 		}
 		return nodes.get(0);
 	}
-
-	//	protected void isTrue(boolean expr, String errorMessage) {
-	//		if (expr) {
-	//			String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//			throw new XmlParseException(i18nMessage);
-	//		}
-	//	}
-	//
-	//	protected void isTrue(boolean expr, String errorMessage, Object... args) {
-	//		// if (expr) {
-	//		// String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//		// throw new XmlParseException(i18nMessage);
-	//		// }
-	//
-	//		// TODO
-	//	}
-
-	//	protected void isVar(String expr, String errorMessage) {
-	//		// TODO
-	//	}
-
-	//	protected void isVar(String expr, String errorMessage, Object... args) {
-	//		// TODO
-	//	}
-
-	//	public void isNull(Object object, String errorMessage) {
-	//		if (null == object) {
-	//			String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//			throw new XmlParseException(i18nMessage);
-	//		}
-	//	}
-	//
-	//	public void isNull(Object object, String errorMessage, Object... args) {
-	//		if (null == object) {
-	//			String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//			throw new XmlParseException(i18nMessage);
-	//		}
-	//	}
-	//
-	//	public void isEmpty(String str, String errorMessage) {
-	//		if (StringUtils.isEmpty(str)) {
-	//			String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//			throw new XmlParseException(i18nMessage);
-	//		}
-	//	}
-
-	//	public void isEmpty(Collection<?> collection, String errorMessage) {
-	//		if (CollectionUtils.isEmpty(collection)) {
-	//			String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//			throw new XmlParseException(i18nMessage);
-	//		}
-	//		// TODO
-	//	}
-	//
-	//	public void isEmpty(Collection<?> collection, String errorMessage, Object... args) {
-	//		if (CollectionUtils.isEmpty(collection)) {
-	//			String i18nMessage = TangYuanLang.get(this.childClass, errorMessage);
-	//			throw new XmlParseException(i18nMessage);
-	//		}
-	//		// TODO
-	//	}
-
-	// protected void throwException() {
-	//
-	// }
-
-	//	protected void info(String message) {
-	//		String i18nMessage = TangYuanLang.get(this.childClass, message);
-	//		log.info(i18nMessage);
-	//	}
-	//
-	//	protected void info(String message, Object... args) {
-	//		String i18nMessage = TangYuanLang.get(this.childClass, message);
-	//		log.info(i18nMessage, args);
-	//	}
-	//
-	//	protected String trim(String str) {
-	//		return StringUtils.trim(str);
-	//	}
-
-	//	public String trimEmpty(String str) {
-	//		if (null == str) {
-	//			return null;
-	//		}
-	//		str = str.trim();
-	//		if (0 == str.length()) {
-	//			str = null;
-	//		}
-	//		return str;
-	//	}
-
-	// public String getAttrValue(String str) {
-	//
-	// }
-
-	//	protected Integer attributeToInteger(String val) {
-	//		// val = trim(val);
-	//		// if (StringUtils.isEmpty(val)) {
-	//		// return null;
-	//		// }
-	//		// return Integer.parseInt(val);
-	//
-	//		val = trimEmpty(val);
-	//		if (null == val) {
-	//			return null;
-	//		}
-	//		return Integer.parseInt(val);
-	//	}
-	//
-	//	protected Boolean attributeToBoolean(String val) {
-	//		val = trim(val);
-	//		if (StringUtils.isEmpty(val)) {
-	//			return null;
-	//		}
-	//		return Boolean.parseBoolean(val);
-	//	}
-	//
-	//	protected Boolean attributeToBoolean(String val, Boolean defVal) {
-	//		val = trimEmpty(val);
-	//		if (null == val) {
-	//			return defVal;
-	//		}
-	//		return Boolean.parseBoolean(val);
-	//	}
 
 	// /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -502,10 +358,6 @@ public class DefaultXmlBuilder {
 			throw new XmlParseException("value is not legal: " + str);
 		}
 	}
-
-	//	protected String parseVariableKey(XmlNodeWrapper xNode, String tagName) {
-	//		return parseVariableKey(xNode, "resultType", tagName);
-	//	}
 
 	protected String parseVariableKey(XmlNodeWrapper xNode, String attributeName, String tagName) {
 		String resultKey = getStringFromAttr(xNode, attributeName);

@@ -7,22 +7,15 @@ import org.xson.tangyuan.log.LogFactory;
 
 public class LoggingCache extends AbstractCache {
 
-	// protected Log log = LogFactory.getLog(LoggingCache.class);
-	//	private Logger			log			= LoggerFactory.getLogger(LoggingCache.class);
-	protected Log         log      = LogFactory.getLog(getClass());
+	protected Log			log			= LogFactory.getLog(getClass());
 
-	private AbstractCache delegate = null;
-	protected int         requests = 0;
-	protected int         hits     = 0;
+	private AbstractCache	delegate	= null;
+	protected int			requests	= 0;
+	protected int			hits		= 0;
 
 	public LoggingCache(AbstractCache delegate) {
 		this.delegate = delegate;
 	}
-
-	// @Override
-	// public void start(String resource, Map<String, String> properties) {
-	// this.delegate.start(resource, properties);
-	// }
 
 	@Override
 	public void start(CacheVo cacheVo) throws Throwable {

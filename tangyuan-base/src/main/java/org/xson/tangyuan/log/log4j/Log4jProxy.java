@@ -23,30 +23,14 @@ public class Log4jProxy extends AbstractLog {
 				RuntimeContext rc = RuntimeContext.get();
 				if (null != rc) {
 					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-					//					MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
-					//					MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+					// MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
+					// MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
 				}
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
-	//	private void setContextLog() {
-	//		if (enableContextLog) {
-	//			try {
-	//				MDC.clear();
-	//				RuntimeContext rc = RuntimeContext.get();
-	//				if (null != rc) {
-	//					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-	//					MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
-	//					MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
-	//				}
-	//			} catch (Throwable e) {
-	//				e.printStackTrace();
-	//			}
-	//		}
-	//	}
 
 	@Override
 	public boolean isDebugEnabled() {

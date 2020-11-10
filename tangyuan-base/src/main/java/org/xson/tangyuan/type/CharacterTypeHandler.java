@@ -59,11 +59,6 @@ public class CharacterTypeHandler extends BaseTypeHandler<Character> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		xco.setCharValue(property, getResult(rs, columnName));
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Character v = getResult(rs, columnName);

@@ -5,10 +5,10 @@ import java.util.Map.Entry;
 
 public class ActuatorContextXCO extends XCO {
 
-	private static final long        serialVersionUID = 1L;
+	private static final long			serialVersionUID	= 1L;
 
-	private XCO                      delegate         = null;
-	private HashMap<String, Integer> deletedFieldMap  = null;
+	private XCO							delegate			= null;
+	private HashMap<String, Integer>	deletedFieldMap		= null;
 
 	public ActuatorContextXCO(XCO xco) {
 		this.delegate = xco;
@@ -56,9 +56,9 @@ public class ActuatorContextXCO extends XCO {
 		}
 		for (Entry<String, Integer> entry : deletedFieldMap.entrySet()) {
 			String key = entry.getKey();
-			//			if (this.exists(key)) {
-			//				count--;
-			//			}
+			// if (this.exists(key)) {
+			// count--;
+			// }
 			if (this.delegate.exists(key)) {
 				count--;
 			}
@@ -69,6 +69,12 @@ public class ActuatorContextXCO extends XCO {
 		return count;
 	}
 
-	// TODO toString
-	// TODO toXmlString
+	@Override
+	public String toString() {
+		return toXMLString();
+	}
+
+	public String toXMLString() {
+		return this.delegate.toXMLString();
+	}
 }

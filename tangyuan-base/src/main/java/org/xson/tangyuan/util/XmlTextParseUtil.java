@@ -1,7 +1,6 @@
 package org.xson.tangyuan.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.xson.tangyuan.TangYuanException;
@@ -78,8 +77,8 @@ public class XmlTextParseUtil {
 	}
 
 	public static int findMatchedChar(String context, int start, int end, char chrFlag) {
-		char    chr;
-		boolean stringMode             = false;
+		char chr;
+		boolean stringMode = false;
 		boolean stringModeSingleQuotes = false;
 		boolean stringModeDoubleQuotes = false;
 		for (int i = start; i < end; i++) {
@@ -125,11 +124,11 @@ public class XmlTextParseUtil {
 	}
 
 	public static int findNestedMatchedChar(String context, int start, char startChar, char endChar) {
-		char    chr;
-		boolean stringMode             = false;
+		char chr;
+		boolean stringMode = false;
 		boolean stringModeSingleQuotes = false;
 		boolean stringModeDoubleQuotes = false;
-		int     count                  = 0;
+		int count = 0;
 		for (int i = start + 1; i < context.length(); i++) {
 			chr = context.charAt(i);
 			switch (chr) {
@@ -180,15 +179,17 @@ public class XmlTextParseUtil {
 	//
 
 	/**
-	 * 查找关键字的最后一个位置 
+	 * 查找关键字的最后一个位置
 	 * 
 	 * @param context
-	 * @param start n->pos
-	 * @param keys { "new", "Date", "(" }
-	 * @return  pos->'(' 
+	 * @param start
+	 *            n->pos
+	 * @param keys
+	 *            { "new", "Date", "(" }
+	 * @return pos->'('
 	 */
 	public static int findKeysEndPos(String context, int start, String[] keys) {
-		int length    = context.length();
+		int length = context.length();
 		int keysIndex = 0;
 		for (int i = start; i < length; i++) {
 			// skip
@@ -205,7 +206,7 @@ public class XmlTextParseUtil {
 			if (!keys[keysIndex].equals(key)) {
 				return -1;
 			}
-			i = i + keys[keysIndex].length() - 1;//指到最后
+			i = i + keys[keysIndex].length() - 1;// 指到最后
 			keysIndex++;
 			if (keysIndex == keys.length) {
 				return i;
@@ -216,6 +217,7 @@ public class XmlTextParseUtil {
 
 	/**
 	 * 分割字符串
+	 * 
 	 * @param src
 	 * @param separator
 	 * @return
@@ -224,11 +226,11 @@ public class XmlTextParseUtil {
 		if (StringUtils.isEmptySafe(context)) {
 			return null;
 		}
-		List<String>  temp                   = new ArrayList<String>();
-		StringBuilder sb                     = new StringBuilder();
-		boolean       stringMode             = false;
-		boolean       stringModeSingleQuotes = false;
-		boolean       stringModeDoubleQuotes = false;
+		List<String> temp = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		boolean stringMode = false;
+		boolean stringModeSingleQuotes = false;
+		boolean stringModeDoubleQuotes = false;
 
 		for (int i = 0; i < context.length(); i++) {
 			char key = context.charAt(i);
@@ -262,7 +264,7 @@ public class XmlTextParseUtil {
 				sb.append(key);
 				break;
 			default:
-				if (separator == key && !stringMode) {//TODO escapeFlag
+				if (separator == key && !stringMode) {// TODO escapeFlag
 					if (sb.length() > 0) {
 						temp.add(sb.toString());
 						sb = new StringBuilder();
@@ -319,36 +321,4 @@ public class XmlTextParseUtil {
 		return new NormalParser().parse(text);
 	}
 
-	public static void main(String[] args) {
-		//		String   str1 = "ccc, 'a,b', 0L";
-		//		String   str2 = ",,,,";
-		//		String   str3 = "ccc, \"a,b\", 0L";
-		//		String   str4 = "ccc, \"a'\\\",b\", 0L";
-
-		String[] strs = { "ccc, 'a,b', 0L", ",,,,", "ccc, \"a,b\", 0L", "ccc, \"a'\",b\", 0L", "ccc, 'a\",b', 0L" };
-		for (int i = 0; i < strs.length; i++) {
-			String       str = strs[i];
-			List<String> a   = splitToList(str, ',');
-			List<String> b   = Arrays.asList(str.split(","));
-			if (null == a) {
-				a = new ArrayList<String>();
-			}
-			if (null == b) {
-				b = new ArrayList<String>();
-			}
-			System.out.println("src[" + str + "]" + "\t" + a.toString() + ":" + a.size() + "\t" + b.toString() + ":" + b.size());
-		}
-
-		System.out.println(",".split(",").length);
-
-	}
-
-	//	String[] result = new String[temp.size()];
-	//	return temp.toArray(result);
-	//			case '\'':
-	//				isString = !isString;
-	//				sb.append(key);
-	//				break;
-	//			case '"':
-	//				break;
 }

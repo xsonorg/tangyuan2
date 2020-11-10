@@ -75,12 +75,4 @@ public class ByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 		}
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		byte[] v = rs.getBytes(columnName);
-	//		if (v != null && !rs.wasNull()) {
-	//			xco.setByteArrayValue(property, v);
-	//		}
-	//	}
-
 }

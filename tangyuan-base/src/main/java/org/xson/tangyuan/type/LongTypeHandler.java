@@ -40,20 +40,9 @@ public class LongTypeHandler extends BaseTypeHandler<Long> {
 		builder.append(parameter);
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		Long v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setLongValue(property, v.longValue());
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Long v = getResult(rs, columnName);
-		//		if (null != valueHandler && null != v) {
-		//			v = (Long) valueHandler.process(columnName, v);
-		//		}
 
 		if (null != valueHandler && null != v) {
 			Object nv = valueHandler.process(columnName, v);
@@ -61,7 +50,7 @@ public class LongTypeHandler extends BaseTypeHandler<Long> {
 				xco.setObjectValue(property, nv);
 				return;
 			}
-			
+
 			v = (Long) nv;
 		}
 

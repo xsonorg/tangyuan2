@@ -15,9 +15,9 @@ import org.xson.tangyuan.util.ClassUtils;
  */
 public class StaticMethodContainer {
 
-	private static StaticMethodContainer instance = new StaticMethodContainer();
+	private static StaticMethodContainer	instance	= new StaticMethodContainer();
 
-	private Log                          log      = LogFactory.getLog(getClass());
+	private Log								log			= LogFactory.getLog(getClass());
 
 	private StaticMethodContainer() {
 	}
@@ -33,10 +33,10 @@ public class StaticMethodContainer {
 		if (lastpos < 0) {
 			throw new TangYuanException("Illegal method call name: " + fullName);
 		}
-		String   className  = fullName.substring(0, lastpos);
-		String   methodName = fullName.substring(lastpos + 1);
-		Class<?> clazz      = ClassUtils.forName(className);
-		Method[] methods    = clazz.getMethods();
+		String className = fullName.substring(0, lastpos);
+		String methodName = fullName.substring(lastpos + 1);
+		Class<?> clazz = ClassUtils.forName(className);
+		Method[] methods = clazz.getMethods();
 		for (Method m : methods) {
 			if (m.getName().equals(methodName)) {
 				if (!Modifier.isStatic(m.getModifiers())) {
@@ -77,9 +77,4 @@ public class StaticMethodContainer {
 		instance.register0(null, methodFullName);
 	}
 
-	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	
-
-	//	class StaticMethod {
-	//		Method m;
-	//	}
 }

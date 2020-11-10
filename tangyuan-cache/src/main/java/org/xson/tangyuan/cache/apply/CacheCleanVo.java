@@ -12,11 +12,6 @@ import org.xson.tangyuan.xml.XmlParseException;
 
 public class CacheCleanVo extends CacheBase {
 
-	//	public CacheCleanVo(TangYuanCache cache, String key, String service) {
-	//		super(cache);
-	//		parseKey(service, key);
-	//	}
-
 	public CacheCleanVo(TangYuanCache cache, String key, String service, boolean encodeKey) {
 		super(cache);
 		this.encodeKey = encodeKey;
@@ -40,7 +35,7 @@ public class CacheCleanVo extends CacheBase {
 			return null;
 		}
 		CacheCleanVo cacheCleanVo = null;
-		String[]     array        = cacheUse.split(";");
+		String[] array = cacheUse.split(";");
 		if (array.length > 0) {
 			Map<String, String> map = new HashMap<String, String>();
 			for (int i = 0; i < array.length; i++) {
@@ -61,24 +56,9 @@ public class CacheCleanVo extends CacheBase {
 				encodeKey = Boolean.parseBoolean(map.get("encodeKey".toUpperCase()));
 			}
 
-			//			cacheCleanVo = new CacheCleanVo(cache, key, service);
 			cacheCleanVo = new CacheCleanVo(cache, key, service, encodeKey);
 		}
 		return cacheCleanVo;
 	}
 
-	// String[] ignore = null;
-	// if (map.containsKey("ignore".toUpperCase())) {
-	// ignore = map.get("ignore".toUpperCase()).split(",");
-	// }
-	// cacheCleanVo = new CacheCleanVo(cacheVo, key, ignore, service);
-	//	public void removeObject(final Object arg) {
-	//		TangYuanContainer.getInstance().addAsyncTask(new AsyncTask() {
-	//			@Override
-	//			public void run() {
-	//				String key = buildKey(arg);
-	//				cache.remove(key);
-	//			}
-	//		});
-	//	}
 }

@@ -46,14 +46,6 @@ public class SqlTimeTypeHandler extends BaseTypeHandler<Time> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		java.sql.Time v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setTimeValue(property, v);
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.sql.Time v = getResult(rs, columnName);

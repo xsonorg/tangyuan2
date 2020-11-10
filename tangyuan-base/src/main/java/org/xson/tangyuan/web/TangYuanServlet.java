@@ -21,9 +21,9 @@ import org.xson.tangyuan.util.TangYuanUtil;
 
 public class TangYuanServlet extends HttpServlet {
 
-	private final static long serialVersionUID = 1L;
+	private final static long	serialVersionUID	= 1L;
 
-	private static Log        log              = LogFactory.getLog(TangYuanServlet.class);
+	private static Log			log					= LogFactory.getLog(TangYuanServlet.class);
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -60,9 +60,9 @@ public class TangYuanServlet extends HttpServlet {
 	}
 
 	private Object doXcoRpcRquest(ServiceURI serviceURI, final XCO arg) throws Throwable {
-		Object result  = null;
+		Object result = null;
 		String service = serviceURI.getService();
-		String mode    = serviceURI.getMode();
+		String mode = serviceURI.getMode();
 		if (null == mode) {
 			result = Actuator.execute(service, arg);
 		} else if ("async".equalsIgnoreCase(mode)) {
@@ -91,110 +91,5 @@ public class TangYuanServlet extends HttpServlet {
 			manager.checkAccessControl(serviceURI.getService(), remoteIp);
 		}
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////
-	//		if (!TangYuanContainer.getInstance().isRunning()) {
-	//			try {
-	//				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The current system is shutting down");
-	//			} catch (IOException e) {
-	//			}
-	//			return;
-	//		}
-	//	/**
-	//	 * 访问控制检测
-	//	 */
-	//	private boolean checkAccessControl(ServiceURI serviceURI) {
-	//		// 1. 组件的状态
-	//		// 2. 访问控制规则的检查
-	//		boolean         result  = true;
-	//		TangYuanManager manager = TangYuanManager.getInstance();
-	//		if (null != manager) {
-	//			try {
-	//				XCO    header       = RuntimeContext.get().getHeader();
-	//				String remoteDomain = null;
-	//				String remoteIp     = null;
-	//				if (null != header) {
-	//					remoteDomain = header.getStringValue("domain");
-	//					remoteIp = header.getStringValue("ip");// TODO
-	//				}
-	//				if (!manager.checkAccessControl(serviceURI.getService(), remoteIp, remoteDomain)) {
-	//					//				throw new ServiceException(HttpServletResponse.SC_UNAUTHORIZED, "401");
-	//					result = false;
-	//				}
-	//			} catch (Throwable e) {
-	//				log.error(e);
-	//				result = false;
-	//			}
-	//		}
-	//
-	//		return result;
-	//	}
-
-	//	private void startRuntimeContext(XCO arg) {
-	//		RuntimeContext.begin(arg);
-	//		TangYuanManager manager = TangYuanManager.getInstance();
-	//		if (null != manager) {
-	//			manager.initTracking(RuntimeContext.get());
-	//		}
-	//	}
-
-	//	private Object doXcoRpcRquest(String serviceURI, final XCO arg) throws Throwable {
-	//		Object result = Actuator.execute(serviceURI, arg);
-	//		return result;
-	//	}
-
-	//	private String parseServiceURI(HttpServletRequest request) {
-	//		String uri = request.getRequestURI();
-	//		if (null == uri) {
-	//			return null;
-	//		}
-	//		if (uri.startsWith("/")) {
-	//			uri = uri.substring(1);
-	//		}
-	//		int pos = uri.lastIndexOf(".");
-	//		if (pos > -1) {
-	//			return uri.substring(0, pos);
-	//		}
-	//		return uri;
-	//	}
-
-	//	private Object doXcoRpcRquest(ServiceURI sURI, final XCO arg) throws Throwable {
-	//		Object result = null;
-	//		if (null == sURI.getMark()) {
-	//			result = ServiceActuator.execute(sURI.getQualifiedServiceName(), arg);
-	//		} else if ("async".equalsIgnoreCase(sURI.getMark())) {
-	//			ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
-	//		} else if ("timer".equalsIgnoreCase(sURI.getMark())) {
-	//			ServiceActuator.executeAsync(sURI.getQualifiedServiceName(), arg);
-	//		} else {
-	//			throw new TangYuanException("Invalid URL[mark]: " + sURI.getOriginal());
-	//		}
-	//		return result;
-	//	}
-
-	// ServiceURI tyURI  = ServiceURI.parseUrlPath(req.getRequestURI());
-	// String serviceURI = parseServiceURI(req);
-	// Object     retObj = doXcoRpcRquest(serviceURI, arg);
-
-	//		if (!TangYuanContainer.getInstance().isRunning()) {
-	//			try {
-	//				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The current system is shutting down");
-	//			} catch (IOException e) {
-	//			}
-	//			return;
-	//		}
-	//		boolean accessDenied = false;
-	//			if (checkAll()(serviceURI)) {
-	//			} else {
-	//				accessDenied = true;
-	//			}
-	//		if (accessDenied) {
-	//			try {
-	//				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "401");
-	//			} catch (IOException e) {
-	//			}
-	//		} else {
-	//
-	//		}
 
 }

@@ -41,14 +41,6 @@ public class BigDecimalTypeHandler extends BaseTypeHandler<BigDecimal> {
 		builder.append(parameter);
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		BigDecimal v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setBigDecimalValue(property, v);
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		BigDecimal v = getResult(rs, columnName);

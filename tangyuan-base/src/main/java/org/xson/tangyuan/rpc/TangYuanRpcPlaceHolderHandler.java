@@ -41,11 +41,4 @@ public class TangYuanRpcPlaceHolderHandler implements RpcPlaceHolderHandler {
 		return null;
 	}
 
-	// public static void main(String[] args) {
-	// Map<String, Integer> map = new HashMap<>();
-	// map.put("bxxxy", 1);
-	// TangYuanRpcPlaceHolderHandler x = new TangYuanRpcPlaceHolderHandler(map);
-	// String serviceURL = "{bxxxy}/a/b";
-	// System.out.println(x.parse(serviceURL));
-	// }
 }

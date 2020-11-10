@@ -23,7 +23,7 @@ public class ClobTypeHandler extends BaseTypeHandler<String> {
 	@Override
 	public String getNullableResult(ResultSet rs, String columnName) throws SQLException {
 		String value = "";
-		Clob   clob  = rs.getClob(columnName);
+		Clob clob = rs.getClob(columnName);
 		if (clob != null) {
 			int size = (int) clob.length();
 			value = clob.getSubString(1, size);
@@ -34,7 +34,7 @@ public class ClobTypeHandler extends BaseTypeHandler<String> {
 	@Override
 	public String getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
 		String value = "";
-		Clob   clob  = rs.getClob(columnIndex);
+		Clob clob = rs.getClob(columnIndex);
 		if (clob != null) {
 			int size = (int) clob.length();
 			value = clob.getSubString(1, size);
@@ -45,7 +45,7 @@ public class ClobTypeHandler extends BaseTypeHandler<String> {
 	@Override
 	public String getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
 		String value = "";
-		Clob   clob  = cs.getClob(columnIndex);
+		Clob clob = cs.getClob(columnIndex);
 		if (clob != null) {
 			int size = (int) clob.length();
 			value = clob.getSubString(1, size);
@@ -65,20 +65,9 @@ public class ClobTypeHandler extends BaseTypeHandler<String> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		String v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setStringValue(property, v);
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		String v = getResult(rs, columnName);
-		//		if (null != valueHandler && null != v) {
-		//			v = (String) valueHandler.process(columnName, v);
-		//		}
 
 		if (null != valueHandler && null != v) {
 			Object nv = valueHandler.process(columnName, v);

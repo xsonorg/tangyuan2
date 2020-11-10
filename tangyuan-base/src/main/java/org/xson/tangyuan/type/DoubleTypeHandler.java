@@ -40,20 +40,9 @@ public class DoubleTypeHandler extends BaseTypeHandler<Double> {
 		builder.append(parameter);
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		Double v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setDoubleValue(property, v.doubleValue());
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Double v = getResult(rs, columnName);
-		//		if (null != v && null != valueHandler) {
-		//			v = (Double) valueHandler.process(columnName, v);
-		//		}
 
 		if (null != valueHandler && null != v) {
 			Object nv = valueHandler.process(columnName, v);

@@ -11,12 +11,12 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 public class ActuatorContext {
 
 	/** 当前容器持有的上下文数量,关闭时候使用 */
-	protected static AtomicLong globleCounter = new AtomicLong(0);
+	protected static AtomicLong	globleCounter	= new AtomicLong(0);
 	/** 服务的组件上下文 */
-	protected ServiceContext    sc            = null;
+	protected ServiceContext	sc				= null;
 	/** 结果返回对象:组合服务专用 */
-	protected Object            result        = null;
-	protected List<Runnable>    postTaskList  = null;
+	protected Object			result			= null;
+	protected List<Runnable>	postTaskList	= null;
 
 	public ActuatorContext() {
 		globleCounter.getAndIncrement();
@@ -65,6 +65,7 @@ public class ActuatorContext {
 
 	/**
 	 * 后置任务
+	 * 
 	 * @param r
 	 */
 	public void addPostTask(Runnable r) {
@@ -81,61 +82,5 @@ public class ActuatorContext {
 			}
 		}
 	}
-
-	/////////////////////////////////////////////////////////////////////////////
-
-	//	public ActuatorContext(ActuatorContext parent) {
-	//		if (null != parent) {
-	//			// this.parentTrackingVo = parent.parentTrackingVo;
-	//		}
-	//		globleCounter.getAndIncrement();
-	//	}
-
-	//	private static Log              log           = LogFactory.getLog(ActuatorContext.class);
-	/** 使用计数器 */
-	//	protected int                   counter       = 1;
-	/** 服务执行过程中的异常辅助信息 */
-	//	private ServiceExceptionInfo    exceptionInfo = null;
-
-	//	public void setExceptionInfo(ServiceExceptionInfo exceptionInfo) {
-	//		this.exceptionInfo = exceptionInfo;
-	//	}
-	//
-	//	public ServiceExceptionInfo getExceptionInfo() {
-	//		return exceptionInfo;
-	//	}
-	/**
-	 * 异常发生时候入口方法
-	 */
-	//	public void onException(TangYuanServiceType type, Throwable e, String message) throws ServiceException {
-	//		boolean canProcess = getServiceContext(type).onException(exceptionInfo);
-	//		if (canProcess) {
-	//			this.exceptionInfo = null;
-	//			log.error(message, e);
-	//		} else {
-	//			throw TangYuanUtil.getServiceException(e, message);
-	//		}
-	//	}
-
-	//	public void finish() throws Throwable {
-	//		if (null != this.sc) {
-	//			this.sc.commit(true);// 这里是最终的提交
-	//			this.sc = null;
-	//		}
-	//		//		processPostTask();
-	//		//		globleCounter.getAndDecrement();
-	//	}
-	//
-	//	public void finishOnException() {
-	//		if (null != this.sc) {
-	//			this.sc.rollback();
-	//			this.sc = null;
-	//		}
-	//		//		if (null != this.postTaskList) {
-	//		//			this.postTaskList.clear();
-	//		//			this.postTaskList = null;
-	//		//		}
-	//		//		globleCounter.getAndDecrement();
-	//	}
 
 }

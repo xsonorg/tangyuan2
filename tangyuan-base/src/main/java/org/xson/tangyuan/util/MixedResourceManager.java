@@ -12,7 +12,8 @@ import org.xson.tangyuan.xml.XmlGlobalContext;
 import org.xson.tangyuan.xml.XmlParseException;
 
 /**
- * 混合的资源管理器，支持classpath, localStorage, remote 
+ * 混合的资源管理器，支持classpath, localStorage, remote
+ * 
  * @since 1.3.0
  */
 public class MixedResourceManager {
@@ -35,8 +36,8 @@ public class MixedResourceManager {
 	}
 
 	public static Properties getProperties(String resource, boolean placeholder, boolean useLocalStorage) throws Throwable {
-		InputStream in    = getInputStream(resource, placeholder, useLocalStorage);
-		Properties  props = new Properties();
+		InputStream in = getInputStream(resource, placeholder, useLocalStorage);
+		Properties props = new Properties();
 		props.load(in);
 		in.close();
 		return props;
@@ -91,13 +92,4 @@ public class MixedResourceManager {
 		return in;
 	}
 
-	/////////////////////////////////////////////////////
-
-	//	private static Map<String, String> placeholderMap = null;
-	//	public static void setPlaceholderMap(Map<String, String> placeholderMap) {
-	//		MixedResourceManager.placeholderMap = placeholderMap;
-	//	}
-	//	public static void setLocalStorage(LocalStorage localStorage) {
-	//		MixedResourceManager.localStorage = localStorage;
-	//	}
 }

@@ -18,9 +18,4 @@ public class EhCacheCreater implements CacheCreater {
 		return cache;
 	}
 
-	//	//		String       resource = cacheVo.getResource();
-	//	if (null == cacheVo.getResource()) {
-	//		//			throw new CacheException("missing resource in ehcache type.");
-	//	}
-
 }

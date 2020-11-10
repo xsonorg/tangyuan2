@@ -59,14 +59,6 @@ public class TimeOnlyTypeHandler extends BaseTypeHandler<Date> {
 		builder.append('\'');
 	}
 
-	//	@Override
-	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-	//		java.util.Date v = getResult(rs, columnName);
-	//		if (null != v) {
-	//			xco.setTimeValue(property, new java.sql.Time(v.getTime()));
-	//		}
-	//	}
-
 	@Override
 	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.util.Date v = getResult(rs, columnName);

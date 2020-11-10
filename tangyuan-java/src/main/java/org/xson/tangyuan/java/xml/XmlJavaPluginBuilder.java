@@ -56,7 +56,7 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 		String tagName = "service";
 		for (XmlNodeWrapper xNode : contexts) {
 
-			String ns    = getStringFromAttr(xNode, "ns");
+			String ns = getStringFromAttr(xNode, "ns");
 			String clazz = getStringFromAttr(xNode, "class", lang("xml.tag.attribute.empty", "class", tagName, this.resource));
 
 			// 检查clazz重复
@@ -72,8 +72,8 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 			checkNs(ns);
 
 			// include and exclude
-			List<String>         includeList  = new ArrayList<String>();
-			List<String>         excludeList  = new ArrayList<String>();
+			List<String> includeList = new ArrayList<String>();
+			List<String> excludeList = new ArrayList<String>();
 			// <include></include>
 			List<XmlNodeWrapper> includeNodes = xNode.evalNodes("include");
 			for (XmlNodeWrapper include : includeNodes) {
@@ -105,12 +105,12 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 
 	private void parseServiceMethod(List<XmlNodeWrapper> contexts, Map<String, JavaServiceInfoVo> serviceInfoMap, String tagName) {
 		for (XmlNodeWrapper xNode : contexts) {
-			String   method         = getStringFromAttr(xNode, "name", lang("xml.tag.attribute.empty", "name", tagName, this.resource));
-			String   cacheUse       = getStringFromAttr(xNode, "cacheUse");
-			String   cacheClean     = getStringFromAttr(xNode, "cacheClean");
-			String   desc           = getStringFromAttr(xNode, "desc");
-			String[] groups         = getStringArrayFromAttr(xNode, "group");
-			boolean  forcedCloneArg = getBoolFromAttr(xNode, "cloneArg", false);
+			String method = getStringFromAttr(xNode, "name", lang("xml.tag.attribute.empty", "name", tagName, this.resource));
+			String cacheUse = getStringFromAttr(xNode, "cacheUse");
+			String cacheClean = getStringFromAttr(xNode, "cacheClean");
+			String desc = getStringFromAttr(xNode, "desc");
+			String[] groups = getStringArrayFromAttr(xNode, "group");
+			boolean forcedCloneArg = getBoolFromAttr(xNode, "cloneArg", false);
 
 			if (serviceInfoMap.containsKey(method)) {
 				throw new XmlParseException(lang("xml.tag.attribute.repeated", method, tagName, this.resource));
@@ -123,12 +123,12 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 	/** 兼容老的schema */
 	private void parseServiceCache(List<XmlNodeWrapper> contexts, Map<String, JavaServiceInfoVo> serviceInfoMap, String tagName) {
 		for (XmlNodeWrapper xNode : contexts) {
-			String   method         = getStringFromAttr(xNode, "method", lang("xml.tag.attribute.empty", "method", tagName, this.resource));
-			String   cacheUse       = getStringFromAttr(xNode, "cacheUse");
-			String   cacheClean     = getStringFromAttr(xNode, "cacheClean");
-			String   desc           = getStringFromAttr(xNode, "desc");
-			String[] groups         = getStringArrayFromAttr(xNode, "group");
-			boolean  forcedCloneArg = getBoolFromAttr(xNode, "cloneArg", false);
+			String method = getStringFromAttr(xNode, "method", lang("xml.tag.attribute.empty", "method", tagName, this.resource));
+			String cacheUse = getStringFromAttr(xNode, "cacheUse");
+			String cacheClean = getStringFromAttr(xNode, "cacheClean");
+			String desc = getStringFromAttr(xNode, "desc");
+			String[] groups = getStringArrayFromAttr(xNode, "group");
+			boolean forcedCloneArg = getBoolFromAttr(xNode, "cloneArg", false);
 
 			if (serviceInfoMap.containsKey(method)) {
 				throw new XmlParseException(lang("xml.tag.attribute.repeated", method, tagName, this.resource));
@@ -139,11 +139,12 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 	}
 
 	/** 方法解析 */
-	private void parseClass(String ns, String className, List<String> includeList, List<String> excludeList, Map<String, JavaServiceInfoVo> serviceInfoMap) {
-		Class<?> clazz    = ClassUtils.forName(className);
-		Object   instance = TangYuanUtil.newInstance(clazz);
+	private void parseClass(String ns, String className, List<String> includeList, List<String> excludeList,
+			Map<String, JavaServiceInfoVo> serviceInfoMap) {
+		Class<?> clazz = ClassUtils.forName(className);
+		Object instance = TangYuanUtil.newInstance(clazz);
 
-		Method[] methods  = clazz.getMethods();
+		Method[] methods = clazz.getMethods();
 		for (Method m : methods) {
 			if (isIgnoredMethod(m.getName())) {
 				continue;
@@ -177,8 +178,8 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 
 			// Ignored static method
 			int modifiers = m.getModifiers();
-			if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers) || Modifier.isNative(modifiers) || Modifier.isInterface(modifiers) || Modifier.isAbstract(modifiers)
-					|| Modifier.isStrict(modifiers)) {
+			if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers) || Modifier.isNative(modifiers) || Modifier.isInterface(modifiers)
+					|| Modifier.isAbstract(modifiers) || Modifier.isStrict(modifiers)) {
 				continue;
 			}
 
@@ -186,12 +187,12 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 			checkServiceRepeated(m.getName(), fullId, "service");
 
 			// 解析服务的其他信息
-			String            desc           = null;
-			String[]          groups         = null;
-			boolean           forcedCloneArg = false;
-			CacheUseVo        cacheUse       = null;
-			CacheCleanVo      cacheClean     = null;
-			JavaServiceInfoVo serviceInfoVo  = serviceInfoMap.get(m.getName());
+			String desc = null;
+			String[] groups = null;
+			boolean forcedCloneArg = false;
+			CacheUseVo cacheUse = null;
+			CacheCleanVo cacheClean = null;
+			JavaServiceInfoVo serviceInfoVo = serviceInfoMap.get(m.getName());
 			if (null != serviceInfoVo) {
 				if (null != serviceInfoVo.cacheUse) {
 					cacheUse = CacheUseVo.parseCacheUse(serviceInfoVo.cacheUse, fullId);
@@ -204,7 +205,8 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 				forcedCloneArg = serviceInfoVo.forcedCloneArg;
 			}
 
-			AbstractServiceNode service = new JavaServiceNode(m.getName(), ns, fullId, instance, m, cacheUse, cacheClean, forcedCloneArg, desc, groups);
+			AbstractServiceNode service = new JavaServiceNode(m.getName(), ns, fullId, instance, m, cacheUse, cacheClean, forcedCloneArg, desc,
+					groups);
 			registerService(service, "service");
 		}
 	}
@@ -235,13 +237,13 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 
 	class JavaServiceInfoVo {
 
-		String   cacheUse;
-		String   cacheClean;
+		String		cacheUse;
+		String		cacheClean;
 
-		String   desc;
-		String[] groups;
+		String		desc;
+		String[]	groups;
 
-		boolean  forcedCloneArg;
+		boolean		forcedCloneArg;
 
 		public JavaServiceInfoVo(String cacheUse, String cacheClean, String desc, String[] groups, boolean forcedCloneArg) {
 			this.cacheUse = cacheUse;
@@ -252,189 +254,4 @@ public class XmlJavaPluginBuilder extends DefaultXmlPluginBuilder {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////
-	//	class JavaServiceCacheVo {
-	//		String   cacheUse;
-	//		String   cacheClean;
-	//
-	//		public JavaServiceCacheVo(String cacheUse, String cacheClean) {
-	//			this.cacheUse = cacheUse;
-	//			this.cacheClean = cacheClean;
-	//		}
-	//	}
-	//	private Map<String, JavaServiceInfoVo> parseServiceCache(List<XmlNodeWrapper> contexts) {
-	//		String                         tagName        = "methodCache";
-	//		Map<String, JavaServiceInfoVo> serviceInfoMap = new HashMap<String, JavaServiceInfoVo>();
-	//		for (XmlNodeWrapper xNode : contexts) {
-	//			String method     = getStringFromAttr(xNode, "method", lang("xml.tag.attribute.empty", "method", tagName, this.resource));
-	//			String cacheUse   = getStringFromAttr(xNode, "cacheUse");
-	//			String cacheClean = getStringFromAttr(xNode, "cacheClean");
-	//			if (serviceInfoMap.containsKey(method)) {
-	//				throw new XmlParseException(lang("xml.tag.attribute.repeated", method, tagName, this.resource));
-	//			}
-	//			serviceInfoMap.put(method, new JavaServiceInfoVo(cacheUse, cacheClean));
-	//		}
-	//		return serviceInfoMap;
-	//	}
-
-	// existingService(getFullId(ns, m.getName()));
-	//			existingService(fullId);
-	//					cacheUse = parseCacheUse(jscVo.cacheUse, fullId);
-	//					cacheClean = parseCacheClean(jscVo.cacheClean, fullId);
-	// private AbstractServiceNode createService(Object instance, Method method, String ns) {
-	// return new JavaServiceNode(method.getName(), ns, getFullId(ns, method.getName()), instance, method);
-	// }
-	//	/**
-	//	 * 解析: ID:xxx; key:xxx; expiry:10(秒)
-	//	 */
-	//	private CacheUseVo parseCacheUse(String cacheUse, String service) {
-	//		CacheUseVo cacheUseVo = null;
-	//		String[]   array      = cacheUse.split(";");
-	//		if (array.length > 0) {
-	//			Map<String, String> map = new HashMap<String, String>();
-	//			for (int i = 0; i < array.length; i++) {
-	//				String[] item = array[i].split(":");
-	//				map.put(item[0].trim().toUpperCase(), item[1].trim());
-	//			}
-	//			TangYuanCache cache = CacheComponent.getInstance().getCache(map.get("id".toUpperCase()));
-	//			if (null == cache) {
-	//				throw new XmlParseException("Non-existent cache: " + cacheUse);
-	//			}
-	//			String key = map.get("key".toUpperCase());
-	//			if (null == key) {
-	//				throw new XmlParseException("Missing cache.key: " + cacheUse);
-	//			}
-	//			Long expiry = null;
-	//			if (map.containsKey("expiry".toUpperCase())) {
-	//				expiry = Long.parseLong(map.get("expiry".toUpperCase()));
-	//			}
-	//			cacheUseVo = new CacheUseVo(cache, key, expiry, service);
-	//		}
-	//		return cacheUseVo;
-	//	}
-
-	//	/**
-	//	 * 解析: ID:xxx; key:xxx;
-	//	 */
-	//	private CacheCleanVo parseCacheClean(String cacheUse, String service) {
-	//		CacheCleanVo cacheCleanVo = null;
-	//		String[]     array        = cacheUse.split(";");
-	//		if (array.length > 0) {
-	//			Map<String, String> map = new HashMap<String, String>();
-	//			for (int i = 0; i < array.length; i++) {
-	//				String[] item = array[i].split(":");
-	//				map.put(item[0].trim().toUpperCase(), item[1].trim());
-	//			}
-	//			TangYuanCache cache = CacheComponent.getInstance().getCache(map.get("id".toUpperCase()));
-	//			if (null == cache) {
-	//				throw new XmlParseException("Non-existent cache: " + cacheUse);
-	//			}
-	//			String key = map.get("key".toUpperCase());
-	//			if (null == key) {
-	//				throw new XmlParseException("Missing cache.key: " + cacheUse);
-	//			}
-	//			cacheCleanVo = new CacheCleanVo(cache, key, service);
-	//		}
-	//		return cacheCleanVo;
-	//	}
-
-	//////////////
-
-	//	private void configurationElement() {
-	//		List<XmlNodeWrapper> contexts = this.root.evalNodes("service");
-	//		String               tagName  = "service";
-	//		for (XmlNodeWrapper xNode : contexts) {
-	//			//			String ns    = StringUtils.trim(context.getStringAttribute("ns"));
-	//			//			String clazz = StringUtils.trim(context.getStringAttribute("class"));
-	//			String ns    = getStringFromAttr(xNode, "ns");
-	//			String clazz = getStringFromAttr(xNode, "class", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
-	//
-	//			if (null == clazz || clazz.length() == 0) {
-	//				throw new XmlParseException("Invalid service class");
-	//			}
-	//			// 判断clazz重复
-	//			if (this.globalContext.getIntegralServiceClassMap().containsKey(clazz)) {
-	//				throw new XmlParseException("Duplicate service class: " + clazz);
-	//			}
-	//
-	//			if (null == ns || ns.trim().length() == 0) {
-	//				ns = getSimpleClassName(clazz);
-	//			}
-	//
-	//			// 判断ns重复
-	//			if (this.globalContext.getIntegralServiceNsMap().containsKey(ns)) {
-	//				throw new XmlParseException("Duplicate service ns: " + ns);
-	//			}
-	//
-	//			List<String>         includeList  = new ArrayList<String>();
-	//			List<String>         excludeList  = new ArrayList<String>();
-	//
-	//			// <include></include>
-	//			List<XmlNodeWrapper> includeNodes = context.evalNodes("include");
-	//			for (XmlNodeWrapper include : includeNodes) {
-	//				String body = StringUtils.trim(include.getStringBody());
-	//				if (null != body) {
-	//					includeList.add(body);
-	//				}
-	//			}
-	//			// <exclude></exclude>
-	//			List<XmlNodeWrapper> excludeNodes = context.evalNodes("exclude");
-	//			for (XmlNodeWrapper exclude : excludeNodes) {
-	//				String body = StringUtils.trim(exclude.getStringBody());
-	//				if (null != body) {
-	//					excludeList.add(body);
-	//				}
-	//			}
-	//
-	//			// 缓存解析
-	//			// Map<String, JavaServiceCacheVo> serviceCacheMap = parseServiceCache(context.evalNodes("cache"));
-	//			Map<String, JavaServiceCacheVo> serviceCacheMap = parseServiceCache(context.evalNodes("methodCache"));
-	//
-	//			parseClass(ns, clazz, includeList, excludeList, serviceCacheMap);
-	//
-	//			this.context.getIntegralServiceNsMap().put(ns, 1);
-	//			this.context.getIntegralServiceClassMap().put(clazz, 1);
-	//		}
-	//	}
-
-	//	public Map<String, JavaServiceCacheVo> parseServiceCache(List<XmlNodeWrapper> contexts) {
-	//		String                          tagName         = "methodCache";
-	//		Map<String, JavaServiceCacheVo> serviceCacheMap = new HashMap<String, JavaServiceCacheVo>();
-	//		for (XmlNodeWrapper xNode : contexts) {
-	//
-	//			//			String method     = StringUtils.trim(context.getStringAttribute("method"));
-	//			//			String cacheUse   = StringUtils.trim(context.getStringAttribute("cacheUse"));
-	//			//			String cacheClean = StringUtils.trim(context.getStringAttribute("cacheClean"));
-	//
-	//			String method     = getStringFromAttr(xNode, "method", lang("xml.tag.attribute.empty", "method", tagName, this.resource));
-	//			String cacheUse   = getStringFromAttr(xNode, "cacheUse");
-	//			String cacheClean = getStringFromAttr(xNode, "cacheClean");
-	//
-	//			TangYuanAssert.stringEmpty(method, "In tag <cache>, attribute 'method' can not be empty.");
-	//			if (serviceCacheMap.containsKey(method)) {
-	//				throw new XmlParseException("method [" + method + "] repeats the setting cache.");
-	//			}
-	//			serviceCacheMap.put(method, new JavaServiceCacheVo(cacheUse, cacheClean));
-	//		}
-	//		return serviceCacheMap;
-	//	}
-	//	private XmlGlobalContext context = null;
-	//	@Override
-	//	public void setContext(XmlNodeWrapper root, XmlContext context) {
-	//		this.context = (XmlGlobalContext) context;
-	//		this.root = root;
-	//	}
-	//	private void existingService(String fullId) {
-	//		if (null != this.context.getIntegralServiceMap().get(fullId)) {
-	//			throw new XmlParseException("Duplicate service nodes: " + fullId);
-	//		}
-	//		if (null != this.context.getIntegralRefMap().get(fullId)) {
-	//			throw new XmlParseException("Duplicate service nodes: " + fullId);
-	//		}
-	//		this.context.getIntegralServiceMap().put(fullId, 1);
-	//	}
-
-	//	protected String getFullId(String ns, String id) {
-	//		return TangYuanUtil.getQualifiedName(ns, id, null, TangYuanContainer.getInstance().getNsSeparator());
-	//	}
 }

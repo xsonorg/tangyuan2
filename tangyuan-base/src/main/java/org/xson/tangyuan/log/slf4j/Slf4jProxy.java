@@ -10,15 +10,6 @@ public class Slf4jProxy extends AbstractLog {
 
 	private Logger log = null;
 
-	// public Slf4jProxy(String clazz, boolean enableContextLog) {
-	// this.log = LoggerFactory.getLogger(clazz);
-	// this.enableContextLog = enableContextLog;
-	// }
-	// public Slf4jProxy(Logger logger, boolean enableContextLog) {
-	// this.log = logger;
-	// this.enableContextLog = enableContextLog;
-	// }
-
 	public Slf4jProxy(String clazz) {
 		this.log = LoggerFactory.getLogger(clazz);
 	}
@@ -40,18 +31,6 @@ public class Slf4jProxy extends AbstractLog {
 			}
 		}
 	}
-
-	//	private void setContextLog() {
-	//		if (enableContextLog) {
-	//			MDC.clear();
-	//			RuntimeContext rc = RuntimeContext.get();
-	//			if (null != rc) {
-	//				MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-	//				MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
-	//				MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
-	//			}
-	//		}
-	//	}
 
 	public boolean isDebugEnabled() {
 		return log.isDebugEnabled();

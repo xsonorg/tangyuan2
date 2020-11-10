@@ -14,13 +14,6 @@ public class CacheUseVo extends CacheBase {
 
 	private Long expiry;
 
-	//	public CacheUseVo(TangYuanCache cache, String key, Long expiry, String service) {
-	//		super(cache);
-	//		this.expiry = expiry;
-	//		// 预处理key
-	//		parseKey(service, key);
-	//	}
-
 	public CacheUseVo(TangYuanCache cache, String key, Long expiry, String service, boolean encodeKey) {
 		super(cache);
 		this.expiry = expiry;
@@ -50,7 +43,7 @@ public class CacheUseVo extends CacheBase {
 			return null;
 		}
 		CacheUseVo cacheUseVo = null;
-		String[]   array      = cacheUse.split(";");
+		String[] array = cacheUse.split(";");
 		if (array.length > 0) {
 			Map<String, String> map = new HashMap<String, String>();
 			for (int i = 0; i < array.length; i++) {
@@ -79,19 +72,4 @@ public class CacheUseVo extends CacheBase {
 		return cacheUseVo;
 	}
 
-	//////////////////////////////////////////////////////////////
-
-	//	public void putObject(final Object arg, final Object value) {
-	//		TangYuanContainer.getInstance().addAsyncTask(new AsyncTask() {
-	//			@Override
-	//			public void run() {
-	//				String key = buildKey(arg);//TODO arg的key可能会变
-	//				cache.put(key, value, expiry);
-	//			}
-	//		});
-	//	}
-	//	public Object getObject(Object arg) {
-	//		String key = buildKey(arg);
-	//		return cache.get(key);
-	//	}
 }
