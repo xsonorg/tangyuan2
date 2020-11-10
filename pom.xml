@@ -5,21 +5,18 @@
 	<groupId>org.xson</groupId>
 	<artifactId>tangyuan-parent</artifactId>
 	<packaging>pom</packaging>
-	<!-- <version>${tangyuan.version}</version> -->
-	<version>1.2.3</version>
+	<version>1.3.0</version>
 
 	<name>${project.artifactId}</name>
 	<url>http://xson.org/tangyuan</url>
 
 	<properties>
-		<java.version>1.7</java.version>
+		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tangyuan.version>1.2.3</tangyuan.version>
-		<xco.version>1.0.4</xco.version>
-		<xson.redis>1.0.2</xson.redis>
-		<xson.logging>1.0.0</xson.logging>
-		<zongzi.version>1.0.0</zongzi.version>
-		<xson-httpclient.version>1.0.0</xson-httpclient.version>
+		<tangyuan.version>1.3.0</tangyuan.version>
+		<xco.version>1.0.5</xco.version>
+		<xson-redis.version>1.0.2</xson-redis.version>
+		<xson.version>1.0.2</xson.version>
 	</properties>
 
 	<developers>
@@ -45,31 +42,28 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- <dependency> <groupId>org.xson</groupId> <artifactId>logging</artifactId> 
-				<version>${xson.logging}</version> </dependency> -->
-
 			<dependency>
 				<groupId>org.xson</groupId>
 				<artifactId>common-object</artifactId>
 				<version>${xco.version}</version>
 			</dependency>
-
+			
 			<dependency>
+			    <groupId>org.xson</groupId>
+			    <artifactId>xson</artifactId>
+			    <version>${xson.version}</version>
+			</dependency>			
+
+<!-- 			<dependency>
 				<groupId>org.xson</groupId>
 				<artifactId>xson-httpclient</artifactId>
 				<version>${xson-httpclient.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.xson</groupId>
-				<artifactId>zongzi-api</artifactId>
-				<version>${zongzi.version}</version>
-			</dependency>
+			</dependency> -->
 
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
-				<version>1.2.51</version>
+				<version>1.2.73</version>
 			</dependency>
 
 			<dependency>
@@ -111,14 +105,15 @@
 			<dependency>
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
-				<version>2.2.2</version>
+				<!-- <version>2.2.2</version> -->
+				<version>3.3.0</version>
 			</dependency>
 
 			<!--cache -->
 			<dependency>
 				<groupId>org.xson</groupId>
 				<artifactId>xson-redis</artifactId>
-				<version>${xson.redis}</version>
+				<version>${xson-redis.version}</version>
 			</dependency>
 
 			<dependency>
@@ -144,19 +139,20 @@
 			<dependency>
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongo-java-driver</artifactId>
-				<version>3.3.0</version>
+				<!-- <version>3.3.0</version> -->
+				<version>3.12.7</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-client</artifactId>
-				<version>5.14.5</version>
+				<version>5.16.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.rabbitmq</groupId>
 				<artifactId>amqp-client</artifactId>
-				<version>4.1.0</version>
+				<version>5.9.0</version>
 			</dependency>
 
 			<dependency>
@@ -168,13 +164,14 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.5.6</version>
+				<version>4.5.12</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpmime</artifactId>
-				<version>4.5.6</version>
+				<version>4.5.12</version>
+				<!-- <version>4.5.6</version> -->
 			</dependency>
 
 		</dependencies>
@@ -186,7 +183,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<!-- <version>3.1</version> -->
+				<version>3.6.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -210,7 +208,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2</version>
+				<!-- <version>2.2</version> -->
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -288,7 +287,8 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9</version>
+						<!-- <version>2.9</version> -->
+						<version>3.2.0</version>
 						<configuration>
 							<show>public</show>
 							<charset>UTF-8</charset>
