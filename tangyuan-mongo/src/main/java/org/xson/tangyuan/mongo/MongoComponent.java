@@ -5,29 +5,37 @@ import java.util.Map;
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.Version;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.log.TangYuanLang;
+import org.xson.tangyuan.manager.TangYuanState.ComponentState;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceManager;
-import org.xson.tangyuan.mongo.executor.MongoServiceContextFactory;
-import org.xson.tangyuan.mongo.xml.XmlMongoConfigBuilder;
+import org.xson.tangyuan.mongo.util.MongoStaticMethod;
+import org.xson.tangyuan.mongo.xml.XmlMongoComponentBuilder;
+import org.xson.tangyuan.mongo.xml.XmlMongoContext;
+import org.xson.tangyuan.service.context.MongoServiceContextFactory;
 import org.xson.tangyuan.sharding.ShardingDefManager;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
+import com.mongodb.WriteConcern;
+import com.mongodb.util.JSONExtCallback;
+
 public class MongoComponent implements TangYuanComponent {
 
-	private static MongoComponent	instance			= new MongoComponent();
+	private static MongoComponent   instance                = new MongoComponent();
 
-	private Log						log					= LogFactory.getLog(getClass());
-	private MongoDataSourceManager	dataSourceManager	= null;
-	private ShardingDefManager		shardingDefManager	= new ShardingDefManager();
-	private int						defaultFetchSize	= 100;
+	private Log                     log                     = LogFactory.getLog(getClass());
+	private MongoDataSourceManager  dataSourceManager       = null;
+	private ShardingDefManager      shardingDefManager      = new ShardingDefManager();
 
-	// 以后考虑放在每个DS中
-	// private WriteConcern defaultWriteConcern = WriteConcern.ACKNOWLEDGED;
+	private volatile ComponentState state                   = ComponentState.UNINITIALIZED;
+
+	private WriteConcern            defaultWriteConcern     = WriteConcern.ACKNOWLEDGED;
+	private String                  defaultMongoDatePattern = JSONExtCallback._dateTimeFormat;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.MONGO, new MongoServiceContextFactory());
-		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "mongo", 40, 40));
 		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "mongo"));
 	}
 
@@ -50,40 +58,89 @@ public class MongoComponent implements TangYuanComponent {
 		return shardingDefManager;
 	}
 
-	public int getDefaultFetchSize() {
-		return defaultFetchSize;
+	public String getDefaultMongoDatePattern() {
+		return defaultMongoDatePattern;
+	}
+
+	public WriteConcern getDefaultWriteConcern() {
+		return defaultWriteConcern;
+	}
+
+	public boolean isRunning() {
+		return ComponentState.RUNNING == this.state;
 	}
 
 	/** 设置配置文件 */
 	public void config(Map<String, String> properties) {
-		// if (properties.containsKey("errorCode".toUpperCase())) {
-		// errorCode = Integer.parseInt(properties.get("errorCode".toUpperCase()));
-		// }
-		// if (properties.containsKey("errorMessage".toUpperCase())) {
-		// errorMessage = properties.get("errorMessage".toUpperCase());
-		// }
-		// if (properties.containsKey("nsSeparator".toUpperCase())) {
-		// nsSeparator = properties.get("nsSeparator".toUpperCase());
-		// }
-		log.info("config setting success...");
+
+		if (properties.containsKey("defaultMongoDatePattern".toUpperCase())) {
+			this.defaultMongoDatePattern = properties.get("defaultMongoDatePattern".toUpperCase()).trim();
+		}
+
+		log.info(TangYuanLang.get("config.property.load"), "mongo-component");
 	}
 
 	@Override
 	public void start(String resource) throws Throwable {
-		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		log.info("mongo component starting, version: " + Version.getVersion());
-		XmlMongoConfigBuilder xmlConfigBuilder = new XmlMongoConfigBuilder();
-		xmlConfigBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
-		log.info("mongo component successfully.");
+		log.info(TangYuanLang.get("component.dividing.line"));
+		log.info(TangYuanLang.get("component.starting"), "mongo", Version.getVersion());
+
+		this.state = ComponentState.INITIALIZING;
+
+		TangYuanLang.getInstance().load("tangyuan-lang-sql");
+
+		XmlMongoContext componentContext = new XmlMongoContext();
+		componentContext.setXmlContext(TangYuanContainer.getInstance().getXmlGlobalContext());
+
+		MongoStaticMethod.register();
+
+		XmlMongoComponentBuilder builder = new XmlMongoComponentBuilder();
+		builder.parse(componentContext, resource);
+		componentContext.clean();
+
+		this.state = ComponentState.RUNNING;
+
+		log.info(TangYuanLang.get("component.starting.successfully"), "mongo");
 	}
 
 	@Override
-	public void stop(boolean wait) {
-		log.info("mongo component stopping...");
-		if (null != dataSourceManager) {
-			dataSourceManager.close();
+	public void stop(long waitingTime, boolean asyn) {
+		log.info(TangYuanLang.get("component.stopping"), "mongo");
+
+		this.state = ComponentState.CLOSING;
+
+		try {
+			if (null != dataSourceManager) {
+				dataSourceManager.close();
+			}
+		} catch (Throwable e) {
+			log.error(e);
 		}
-		log.info("mongo component stop successfully.");
+
+		this.state = ComponentState.CLOSED;
+
+		log.info(TangYuanLang.get("component.stopping.successfully"), "mongo");
 	}
+
+	////////////////////////////////////////////////////////////////////////////////
+
+	//		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	//		log.info("mongo component starting, version: " + Version.getVersion());
+	//		XmlMongoConfigBuilder xmlConfigBuilder = new XmlMongoConfigBuilder();
+	//		xmlConfigBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
+	//		log.info("mongo component successfully.");
+	//	@Override
+	//	public void stop(boolean wait) {
+	//		log.info("mongo component stopping...");
+	//		if (null != dataSourceManager) {
+	//			dataSourceManager.close();
+	//		}
+	//		log.info("mongo component stop successfully.");
+	//	}
+
+	//	private int                     defaultFetchSize        = 100;
+	//	public int getDefaultFetchSize() {
+	//		return defaultFetchSize;
+	//	}
 
 }

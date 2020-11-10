@@ -264,11 +264,13 @@ public class OperaExprParser extends AbstractParser {
 		// String text = "a + b * c + d";
 		// String text = "1 * 2 * 3 + 4 * 2";
 		// String text = "1 + 2";
-		// ExpressionParser app = new ExpressionParser();
-		// TreeNode tree = app.parse(text);
-		// System.out.println(tree);
-		// System.out.println(1 * 2 * 3 + 4);
-		// System.out.println(tree.getValue(null));
+		String text = "abc";
+		OperaExprParser app = new OperaExprParser();
+		Variable tree = app.parse(text);
+		System.out.println(tree);
+		System.out.println(1 * 2 * 3 + 4);
+		System.out.println(1 * 2 * 3 + 4 * 2);
+		System.out.println(tree.getValue(null));
 		// app.ldr(tree, 1);
 	}
 }

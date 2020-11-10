@@ -4,21 +4,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.tangyuan.web.xml.vo.RESTControllerVo;
 import org.xson.tangyuan.xml.XmlParseException;
 
 public class URINodeTree {
 
-	protected Object					data		= null;
-	private Object						controller	= null;	// ControllerVo
-	private Map<String, URINodeTree>	nodeMap		= null;
+	protected Object                 data       = null;
+	private Object                   controller = null;	// ControllerVo
+	private Map<String, URINodeTree> nodeMap    = null;
 
-	private boolean						l1			= false;
-	private boolean						l2			= false;
-	private boolean						l3			= false;
-	private boolean						l4			= false;
-	private boolean						l5			= false;
-	private boolean						l9			= false;
+	private boolean                  l1         = false;
+	private boolean                  l2         = false;
+	private boolean                  l3         = false;
+	private boolean                  l4         = false;
+	private boolean                  l5         = false;
+	private boolean                  l9         = false;
 
 	public URINodeTree(Object data) {
 		this.data = data;
@@ -38,8 +37,8 @@ public class URINodeTree {
 
 	private Object get(List<String> targetList, int index) {
 		Object result = null;
-		int size = targetList.size();
-		String item = targetList.get(index);
+		int    size   = targetList.size();
+		String item   = targetList.get(index);
 
 		// 要考虑"/"
 		if (1 == size && RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR.equals(item)) {
@@ -92,8 +91,8 @@ public class URINodeTree {
 	private Object getAndCheck(List<String> targetList, int index) {
 		Object result1 = null;
 		Object result2 = null;
-		int size = targetList.size();
-		String item = targetList.get(index);
+		int    size    = targetList.size();
+		String item    = targetList.get(index);
 
 		// 要考虑"/"
 		if (1 == size && RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR.equals(item)) {
@@ -171,9 +170,9 @@ public class URINodeTree {
 		}
 
 		List<String> patternList = restURI.getPatternList();
-		int size = patternList.size();
-		int index = deep - 1;
-		String currentNode = patternList.get(index);
+		int          size        = patternList.size();
+		int          index       = deep - 1;
+		String       currentNode = patternList.get(index);
 
 		// System.out.println("data[" + this.data + "] build--->" + currentNode);
 
@@ -202,7 +201,7 @@ public class URINodeTree {
 
 	private void setLevel(RestURIVo restURI) {
 		List<String> patternList = restURI.getPatternList();
-		int size = patternList.size();
+		int          size        = patternList.size();
 		if (1 == size) {
 			l1 = true;
 		} else if (2 == size) {

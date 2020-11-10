@@ -12,6 +12,8 @@
 			<xs:attribute name="esKey" type="xs:string"/>
 			<xs:attribute name="converter" type="xs:string"/>
 			<xs:attribute name="cacheUse" type="xs:string"/>
+			<xs:attribute name="desc" type="xs:string"/>
+			<xs:attribute name="group" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="post">
@@ -24,6 +26,9 @@
 			<xs:attribute name="esKey" type="xs:string"/>
 			<xs:attribute name="converter" type="xs:string"/>
 			<xs:attribute name="cacheUse" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+			<xs:attribute name="desc" type="xs:string"/>
+			<xs:attribute name="group" type="xs:string"/>			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="put">
@@ -35,6 +40,9 @@
 			<xs:attribute name="id" type="xs:string" use="required"/>
 			<xs:attribute name="esKey" type="xs:string"/>
 			<xs:attribute name="converter" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+			<xs:attribute name="desc" type="xs:string"/>
+			<xs:attribute name="group" type="xs:string"/>			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="delete">
@@ -45,6 +53,9 @@
 			<xs:attribute name="id" type="xs:string" use="required"/>
 			<xs:attribute name="esKey" type="xs:string"/>
 			<xs:attribute name="converter" type="xs:string"/>
+			<xs:attribute name="cacheClean" type="xs:string"/>
+			<xs:attribute name="desc" type="xs:string"/>
+			<xs:attribute name="group" type="xs:string"/>			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="if">

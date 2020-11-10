@@ -18,6 +18,12 @@ public class XCOValidateException extends ServiceException {
 		this.errorMessage = errorMessage;
 	}
 
+	public XCOValidateException(int errorCode, String errorMessage, Throwable cause) {
+		super(errorMessage, cause);
+		this.errorCode = errorCode;
+		this.errorMessage = errorMessage;
+	}
+
 	public int getErrorCode() {
 		return errorCode;
 	}
@@ -25,12 +31,5 @@ public class XCOValidateException extends ServiceException {
 	public String getErrorMessage() {
 		return errorMessage;
 	}
-
-	// public void setErrorCode(int errorCode) {
-	// this.errorCode = errorCode;
-	// }
-	// public void setErrorMessage(String errorMessage) {
-	// this.errorMessage = errorMessage;
-	// }
 
 }

@@ -3,7 +3,7 @@ package org.xson.tangyuan.ognl.vars.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.app.XmlExtNsArg;
 import org.xson.tangyuan.ognl.vars.Variable;
 import org.xson.tangyuan.ognl.vars.vo.NormalVariable;
 import org.xson.tangyuan.ognl.vars.vo.VariableItem;
@@ -15,7 +15,7 @@ public class NormalParser extends AbstractParser {
 	 * 是否只是简单的属性
 	 */
 	protected boolean isSimpleProperty(String text) {
-		int dotIndex = text.indexOf(".");
+		int dotIndex            = text.indexOf(".");
 		int squareBracketsIndex = text.indexOf("[");
 		if (dotIndex < 0 && squareBracketsIndex < 0) {
 			return true;
@@ -46,10 +46,10 @@ public class NormalParser extends AbstractParser {
 	 * 解析属性: p.a.b['xx' ][0].c[x]
 	 */
 	private List<VariableItem> parseProperty0(String text) {
-		List<VariableItem> list = new ArrayList<VariableItem>();
-		int srcLength = text.length();
-		StringBuilder builder = new StringBuilder();
-		boolean isInternalProperty = false; // 是否进入内部属性采集
+		List<VariableItem> list               = new ArrayList<VariableItem>();
+		int                srcLength          = text.length();
+		StringBuilder      builder            = new StringBuilder();
+		boolean            isInternalProperty = false; // 是否进入内部属性采集
 		for (int i = 0; i < srcLength; i++) {
 			char key = text.charAt(i);
 			switch (key) {
@@ -94,7 +94,7 @@ public class NormalParser extends AbstractParser {
 		//		return new NormalVariable(text, new VariableItemWraper(text, itemList));
 
 		text = text.trim();
-		String prefix = TangYuanContainer.getInstance().getExtArg().isExtProperty(text);
+		String prefix = XmlExtNsArg.getInstance().isExtProperty(text);
 		if (null != prefix) {
 			text = text.substring(prefix.length());
 		}

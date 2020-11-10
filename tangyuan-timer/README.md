@@ -151,3 +151,23 @@ tangyuan-timer组件中的定时器分为两种，一种是组件自身实现的
 ## 8. 技术文档
 
 <http://www.xson.org/project/timer/1.2.2/>
+
+
+	<singleLiveController class="org.xson.tangyuan2.demo.timer.RedisHAController">
+		<property name="projectName" value="tangyuan2-demo-timer"/>
+		<property name="cacheId" value="cache4"/>
+		<property name="watchInterval" value="5L"/>
+		<property name="failoverInterval" value="10L"/>
+	</singleLiveController>
+	
+	<timerGroup start="0" end="10" index="{i}">
+	    <timer scheduled="0 */10 * * * ?" service="{iaService}{i}/iaUserBase/checkUserOrderState{i}" desc="清理未支付订单" sync="true">
+			<property name="tt_index" value="0" />
+			<property name="tt_total" value="{i} * 10" />
+			<property name="tt_total" value="{i * 10}" />
+			1. {i * 10}：此种模式解析会统一，但是需要构建上下文，对于{iaService{i}}，解析方式不好统一
+			2. {i} * 10：对于此模式，使用的直接替换，支持service和value，但是解析方式出现了，特殊性
+	    </timer>
+	</timerGroup>
+
+	

@@ -1,8 +1,8 @@
 package org.xson.tangyuan.web;
 
 public class XCOWebException extends RuntimeException {
-	
-	private static final long	serialVersionUID	= -1L;
+
+	private static final long serialVersionUID = -1L;
 
 	public XCOWebException() {
 		super();

@@ -2,6 +2,10 @@ package org.xson.tangyuan.mongo.util;
 
 import java.util.Collection;
 
+import org.xson.common.object.XCO;
+
+import com.mongodb.DBObject;
+
 public class MongoUtil {
 
 	public static String arrayToString(Object obj) {
@@ -76,13 +80,25 @@ public class MongoUtil {
 			}
 		} else {
 			Object[] array = (Object[]) obj;
-			for (int i = 0; i < array.length; i++) {
-				if (i > 0) {
-					sb.append(",");
+			if (array.length > 0) {
+				Class<?> itemClazz = array[0].getClass();
+				if (XCO.class == itemClazz) {
+					for (int i = 0; i < array.length; i++) {
+						if (i > 0) {
+							sb.append(",");
+						}
+						sb.append(((XCO) array[i]).toJSON());
+					}
+				} else {
+					for (int i = 0; i < array.length; i++) {
+						if (i > 0) {
+							sb.append(",");
+						}
+						sb.append('\'');
+						sb.append(array[i].toString());
+						sb.append('\'');
+					}
 				}
-				sb.append('\'');
-				sb.append(array[i].toString());
-				sb.append('\'');
 			}
 		}
 		sb.append(']');
@@ -97,11 +113,26 @@ public class MongoUtil {
 			if (i++ > 0) {
 				sb.append(",");
 			}
-			sb.append('\'');
-			sb.append(item.toString());
-			sb.append('\'');
+			if (XCO.class == item.getClass()) {
+				sb.append(((XCO) item).toJSON());
+			} else {
+				sb.append('\'');
+				sb.append(item.toString());
+				sb.append('\'');
+			}
 		}
 		sb.append(']');
 		return sb.toString();
+	}
+
+	public static String getId(DBObject document) {
+		if (null == document) {
+			return null;
+		}
+		Object oid = document.get("_id");
+		if (null != oid) {
+			return oid.toString();
+		}
+		return null;
 	}
 }

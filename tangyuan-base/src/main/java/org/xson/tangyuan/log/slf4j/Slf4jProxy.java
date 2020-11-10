@@ -4,17 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.xson.tangyuan.log.AbstractLog;
-import org.xson.tangyuan.runtime.RuntimeContext;
+import org.xson.tangyuan.service.runtime.RuntimeContext;
 
 public class Slf4jProxy extends AbstractLog {
 
-	private Logger log;
+	private Logger log = null;
 
 	// public Slf4jProxy(String clazz, boolean enableContextLog) {
 	// this.log = LoggerFactory.getLogger(clazz);
 	// this.enableContextLog = enableContextLog;
 	// }
-	//
 	// public Slf4jProxy(Logger logger, boolean enableContextLog) {
 	// this.log = logger;
 	// this.enableContextLog = enableContextLog;
@@ -29,16 +28,30 @@ public class Slf4jProxy extends AbstractLog {
 	}
 
 	private void setContextLog() {
-		if (enableContextLog) {
-			MDC.clear();
-			RuntimeContext rc = RuntimeContext.get();
-			if (null != rc) {
-				MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-				MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
-				MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+		if (null != logExt && logExt.isEnableContextLog()) {
+			try {
+				MDC.clear();
+				RuntimeContext rc = RuntimeContext.get();
+				if (null != rc) {
+					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 	}
+
+	//	private void setContextLog() {
+	//		if (enableContextLog) {
+	//			MDC.clear();
+	//			RuntimeContext rc = RuntimeContext.get();
+	//			if (null != rc) {
+	//				MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
+	//				MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
+	//				MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+	//			}
+	//		}
+	//	}
 
 	public boolean isDebugEnabled() {
 		return log.isDebugEnabled();

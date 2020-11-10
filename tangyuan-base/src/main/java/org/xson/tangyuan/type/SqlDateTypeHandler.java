@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class SqlDateTypeHandler extends BaseTypeHandler<Date> {
 
@@ -45,12 +46,30 @@ public class SqlDateTypeHandler extends BaseTypeHandler<Date> {
 		builder.append('\'');
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		java.sql.Date v = getResult(rs, columnName);
+	//		if (null != v) {
+	//			xco.setDateValue(property, v);
+	//		}
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.sql.Date v = getResult(rs, columnName);
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof java.sql.Date)) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+
+			v = (java.sql.Date) nv;
+		}
+
 		if (null != v) {
 			xco.setDateValue(property, v);
 		}
 	}
-
 }

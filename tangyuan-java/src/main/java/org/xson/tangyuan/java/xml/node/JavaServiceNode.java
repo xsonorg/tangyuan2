@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 
 import org.xson.tangyuan.cache.apply.CacheCleanVo;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
-import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.service.ActuatorContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
 
 /**
@@ -15,26 +15,17 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode;
  */
 public class JavaServiceNode extends AbstractServiceNode {
 
-	private static Log		log	= LogFactory.getLog(JavaServiceNode.class);
+	private static Log   log            = LogFactory.getLog(JavaServiceNode.class);
 
-	private Object			instance;
+	private Object       instance       = null;
+	private Method       method         = null;
+	private CacheUseVo   cacheUse       = null;
+	private CacheCleanVo cacheClean     = null;
 
-	private Method			method;
+	private boolean      forcedCloneArg = false;
 
-	private CacheUseVo		cacheUse;
-
-	private CacheCleanVo	cacheClean;
-
-	// public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method) {
-	// this.id = id;
-	// this.ns = ns;
-	// this.serviceKey = serviceKey;
-	// this.instance = instance;
-	// this.method = method;
-	// this.serviceType = TangYuanServiceType.JAVA;
-	// }
-
-	public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method, CacheUseVo cacheUse, CacheCleanVo cacheClean) {
+	public JavaServiceNode(String id, String ns, String serviceKey, Object instance, Method method, CacheUseVo cacheUse, CacheCleanVo cacheClean, boolean forcedCloneArg,
+			String desc, String[] groups) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
@@ -44,24 +35,48 @@ public class JavaServiceNode extends AbstractServiceNode {
 
 		this.cacheUse = cacheUse;
 		this.cacheClean = cacheClean;
+
+		this.desc = desc;
+		this.groups = groups;
+
+		this.forcedCloneArg = forcedCloneArg;
 	}
 
 	@Override
-	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-		Object result = null;
+	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
+
+		long   startTime = System.currentTimeMillis();
+		String cacheKey  = null;
+		Object result    = null;
 
 		// 1. cache使用
-		if (null != cacheUse) {
-			result = cacheUse.getObject(arg);
+		if (null != this.cacheUse && null == cacheKey) {
+			cacheKey = this.cacheUse.buildKey(arg);
+		}
+		if (null != this.cacheClean && null == cacheKey) {
+			cacheKey = this.cacheClean.buildKey(arg);
+		}
+		if (null != this.cacheUse) {
+			result = this.cacheUse.getObject(cacheKey);
 			if (null != result) {
-				context.setResult(result);
+				ac.setResult(result);
+				if (log.isInfoEnabled()) {
+					log.info("java execution time: " + getSlowServiceLog(startTime) + " use cache");
+				}
 				return true;
 			}
 		}
 
-		long startTime = System.currentTimeMillis();
+		// 0. 克隆参数
+		if (this.forcedCloneArg) {
+			arg = cloneArg(arg);
+		}
+
 		try {
+			//			result = method.invoke(instance, temp);
+			//			result = method.invoke(instance, cloneArg(arg));
 			result = method.invoke(instance, arg);
+			ac.setResult(result);
 		} catch (Throwable e) {
 			if (e instanceof InvocationTargetException) {
 				throw ((InvocationTargetException) e).getTargetException();
@@ -72,16 +87,35 @@ public class JavaServiceNode extends AbstractServiceNode {
 		if (log.isInfoEnabled()) {
 			log.info("java execution time: " + getSlowServiceLog(startTime));
 		}
-		context.setResult(result);
 
+		// 8. 放置缓存
 		if (null != cacheUse) {
-			cacheUse.putObject(arg, result);
+			putCache(ac, cacheKey, result);
 		}
+		// 8. 清理缓存
 		if (null != cacheClean) {
-			cacheClean.removeObject(arg);
+			removeCache(ac, cacheKey);
 		}
 
 		return true;
+	}
+
+	protected void removeCache(ActuatorContext ac, String cacheKey) {
+		ac.addPostTask(new Runnable() {
+			@Override
+			public void run() {
+				cacheClean.removeObject(cacheKey);
+			}
+		});
+	}
+
+	protected void putCache(ActuatorContext ac, String cacheKey, Object result) {
+		ac.addPostTask(new Runnable() {
+			@Override
+			public void run() {
+				cacheUse.putObject(cacheKey, result);
+			}
+		});
 	}
 
 }

@@ -6,35 +6,35 @@ public class XTransactionDefinition {
 
 	// 表示当前方法必须在一个具有事务的上下文中运行，如有客户端有事务在进行，那么被调用端将在该事务中运行，否则的话重新开启一个事务。
 	// （如果被调用端发生异常，那么调用端和被调用端事务都将回滚）
-	public static final int	PROPAGATION_REQUIRED		= 0;
+	public static final int PROPAGATION_REQUIRED       = 0;
 
 	// 表示当前方法不必需要具有一个事务上下文，但是如果有一个事务的话，它也可以在这个事务中运行
-	public static final int	PROPAGATION_SUPPORTS		= 1;
+	public static final int PROPAGATION_SUPPORTS       = 1;
 
 	// 表示当前方法必须在一个事务中运行，如果没有事务，将抛出异常
-	public static final int	PROPAGATION_MANDATORY		= 2;
+	public static final int PROPAGATION_MANDATORY      = 2;
 
 	// 表示当前方法必须运行在它自己的事务中。一个新的事务将启动，而且如果有一个现有的事务在运行的话，则这个方法将在运行期被挂起，直到新的事务提交或者回滚才恢复执行。
 	// 挂起之前的，先执行它
-	public static final int	PROPAGATION_REQUIRES_NEW	= 3;
+	public static final int PROPAGATION_REQUIRES_NEW   = 3;
 
 	// 表示该方法不应该在一个事务中运行。如果有一个事务正在运行，他将在运行期被挂起，直到这个事务提交或者回滚才恢复执行
 	// 以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
-	public static final int	PROPAGATION_NOT_SUPPORTED	= 4;
+	public static final int PROPAGATION_NOT_SUPPORTED  = 4;
 
 	// 表示当方法务不应该在一个事务中运行，如果存在一个事务，则抛出异常
-	public static final int	PROPAGATION_NEVER			= 5;
+	public static final int PROPAGATION_NEVER          = 5;
 
 	// 表示如果当前方法正有一个事务在运行中，则该方法应该运行在一个嵌套事务中，被嵌套的事务可以独立于被封装的事务中进行提交或者回滚。
 	// 如果封装事务存在，并且外层事务抛出异常回滚，那么内层事务必须回滚，反之，内层事务并不影响外层事务。如果封装事务不存在，则同PROPAGATION_REQUIRED的一样
-	public static final int	PROPAGATION_NESTED			= 6;
+	public static final int PROPAGATION_NESTED         = 6;
 
 	/**
 	 * 默认事务隔离级别，具体使用的数据库事务隔离级别由底层决定。
 	 * 
 	 * @see java.sql.Connection
 	 */
-	public static final int	ISOLATION_DEFAULT			= -1;
+	public static final int ISOLATION_DEFAULT          = -1;
 
 	/**
 	 * 脏读
@@ -45,7 +45,7 @@ public class XTransactionDefinition {
 	 * 
 	 * @see java.sql.Connection#TRANSACTION_READ_UNCOMMITTED
 	 */
-	public static final int	ISOLATION_READ_UNCOMMITTED	= Connection.TRANSACTION_READ_UNCOMMITTED;
+	public static final int ISOLATION_READ_UNCOMMITTED = Connection.TRANSACTION_READ_UNCOMMITTED;
 
 	/**
 	 * 不可重复读
@@ -58,7 +58,7 @@ public class XTransactionDefinition {
 	 * 
 	 * @see java.sql.Connection#TRANSACTION_READ_COMMITTED
 	 */
-	public static final int	ISOLATION_READ_COMMITTED	= Connection.TRANSACTION_READ_COMMITTED;
+	public static final int ISOLATION_READ_COMMITTED   = Connection.TRANSACTION_READ_COMMITTED;
 	/**
 	 * 可重复读取
 	 * <p>
@@ -66,7 +66,7 @@ public class XTransactionDefinition {
 	 * 
 	 * @see java.sql.Connection#TRANSACTION_REPEATABLE_READ
 	 */
-	public static final int	ISOLATION_REPEATABLE_READ	= Connection.TRANSACTION_REPEATABLE_READ;
+	public static final int ISOLATION_REPEATABLE_READ  = Connection.TRANSACTION_REPEATABLE_READ;
 	/**
 	 * 同步事务
 	 * <p>
@@ -76,26 +76,26 @@ public class XTransactionDefinition {
 	 * 
 	 * @see java.sql.Connection#TRANSACTION_SERIALIZABLE
 	 */
-	public static final int	ISOLATION_SERIALIZABLE		= Connection.TRANSACTION_SERIALIZABLE;
+	public static final int ISOLATION_SERIALIZABLE     = Connection.TRANSACTION_SERIALIZABLE;
 
-	public static final int	TIMEOUT_DEFAULT				= -1;
+	public static final int TIMEOUT_DEFAULT            = -1;
 
 	/****************************************************************************************************/
 
-	private String			id							= null;
+	private String          id                         = null;
 
 	// 事务定义的名称, 默认为服务ID, 共后面运行时引用
-	private String			name						= null;
+	private String          name                       = null;
 	// 传播行为
-	private int				behavior					= PROPAGATION_REQUIRED;
+	private int             behavior                   = PROPAGATION_REQUIRED;
 	// 隔离级别
-	private int				isolation					= ISOLATION_DEFAULT;
+	private int             isolation                  = ISOLATION_DEFAULT;
 	// 超时时间
-	private int				timeout						= TIMEOUT_DEFAULT;
+	private int             timeout                    = TIMEOUT_DEFAULT;
 	// 是否只读
-	private boolean			readOnly					= false;
+	private boolean         readOnly                   = false;
 	// 使用之前存在的事务(运行时概念)
-	private String			txUse						= null;
+	private String          txUse                      = null;
 
 	// 是否是xa事务
 	// private boolean xa = false;

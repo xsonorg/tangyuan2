@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class FloatTypeHandler extends BaseTypeHandler<Float> {
 
@@ -39,9 +40,32 @@ public class FloatTypeHandler extends BaseTypeHandler<Float> {
 		builder.append(parameter);
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		Float v = getResult(rs, columnName);
+	//		if (null != v) {
+	//			xco.setFloatValue(property, v.floatValue());
+	//		}
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Float v = getResult(rs, columnName);
+		//		if (null != v && null != valueHandler) {
+		//			v = (Float) valueHandler.process(columnName, v);
+		//		}
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof Float)) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+
+			v = (Float) nv;
+
+		}
+
 		if (null != v) {
 			xco.setFloatValue(property, v.floatValue());
 		}

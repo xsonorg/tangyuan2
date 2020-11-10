@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class ByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 
@@ -55,11 +56,31 @@ public class ByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 	}
 
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		byte[] v = rs.getBytes(columnName);
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof byte[])) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+
+			v = (byte[]) nv;
+
+		}
+
 		if (v != null && !rs.wasNull()) {
 			xco.setByteArrayValue(property, v);
 		}
 	}
+
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		byte[] v = rs.getBytes(columnName);
+	//		if (v != null && !rs.wasNull()) {
+	//			xco.setByteArrayValue(property, v);
+	//		}
+	//	}
 
 }

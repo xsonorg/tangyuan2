@@ -1,31 +1,93 @@
 package org.xson.tangyuan.app;
 
+import java.io.InputStream;
+
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.log.Log;
+import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.log.TangYuanLang;
+import org.xson.tangyuan.manager.conf.DefaultResourceReloader;
+import org.xson.tangyuan.util.INIXLoader;
 
 /**
  * Tangyuan 应用常量
  */
-public class AppProperty {
+public class AppProperty extends DefaultResourceReloader {
 
-	public final static String	HOST_IP		= "$$HOST_IP";
-	public final static String	HOST_NAME	= "$$HOST_NAME";
-	public final static String	APP_NAME	= "$$APP_NAME";
-	public final static String	NODE_NAME	= "$$NODE_NAME";
+	private Log                log      = LogFactory.getLog(getClass());
 
-	private static XCO			appConst	= null;
+	private static AppProperty instance = null;
 
-	public static void init(XCO data) {
-		if (null == appConst) {
-			appConst = data;
+	public static AppProperty getInstance(XCO data) {
+		if (null == instance) {
+			instance = new AppProperty(data);
 		}
+		return instance;
+	}
+
+	private XCO data = null;
+
+	private AppProperty(XCO data) {
+		this.data = data;
+	}
+
+	private void update(XCO data) {
+		this.data = data;
+	}
+
+	private Object get0(String key) {
+		final XCO data = this.data;
+		if (null != data) {
+			return data.get(key);
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T get(String key) {
-		//		if (null == appConst) {
-		//			return null;
-		//		}
-		return (T) appConst.get(key);
+		return (T) ((instance == null) ? null : instance.get0(key));
 	}
+
+	@Override
+	public void reload(String resource) throws Throwable {
+		InputStream in = getInputStreamForReload(resource, null, true, true);
+		if (null != in) {
+			XCO newData = new INIXLoader().load(in, null);
+			in.close();
+			update(newData);
+			log.info(TangYuanLang.get("resource.reload"), resource);
+		}
+	}
+
+	//	@Override
+	//	public void reload(String resource, String context) throws Throwable {
+	//		InputStream in = getInputStreamForReload(resource, context, true, true);
+	//		if (null != in) {
+	//			XCO newData = new INIXLoader().load(in, null);
+	//			in.close();
+	//			update(newData);
+	//		}
+	//		log.info(TangYuanLang.get("resource.reload"), resource);
+	//	}
+
+	//	@Override
+	//	public void reload(String resource, String context) throws Throwable {
+	//		final XCO data    = this.data;
+	//		XCO       newData = null;
+	//		if (null != data) {
+	//			newData = data.clone();
+	//		}
+	//		boolean     reloadFlag = false;
+	//		InputStream in         = getInputStreamForReload(resource, context, true, true);
+	//		if (null != in) {
+	//			newData = new INIXLoader().load(in, newData);
+	//			in.close();
+	//			reloadFlag = true;
+	//		}
+	//		if (reloadFlag) {
+	//			this.data = newData;
+	//			log.info(TangYuanLang.get("resource.reload"), resource);
+	//		}
+	//	}
 
 }

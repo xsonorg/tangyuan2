@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.xson.tangyuan.web.DataConverter;
 import org.xson.tangyuan.web.RequestContext;
-import org.xson.tangyuan.web.xml.vo.ControllerVo;
 
 public class MixedDataConverter implements DataConverter {
 
@@ -15,10 +14,17 @@ public class MixedDataConverter implements DataConverter {
 	}
 
 	@Override
-	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
+	public void convert(RequestContext requestContext) throws Throwable {
 		for (DataConverter converter : converters) {
-			converter.convert(requestContext, cVo);
+			converter.convert(requestContext);
 		}
 	}
+
+	//	@Override
+	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
+	//		for (DataConverter converter : converters) {
+	//			converter.convert(requestContext, cVo);
+	//		}
+	//	}
 
 }

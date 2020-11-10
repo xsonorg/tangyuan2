@@ -6,22 +6,34 @@ import java.util.List;
 
 public class RuleGroup {
 
-	private String				id;
-	private List<RuleGroupItem>	items;
-	private String				desc;		// 描述
-	private String				message;	// 错误信息
-	private int					code;		// 错误代码
+	private String              id      = null;
+	private String              ns      = null;
+	private List<RuleGroupItem> items   = null;
+	/** 描述 */
+	private String              desc    = null;
+	/** 错误信息 */
+	private String              message = null;
+	/** 错误代码 */
+	private int                 code;
 
-	public RuleGroup(String id, List<RuleGroupItem> items, String desc, String message, int code) {
+	private String[]            groups  = null;
+
+	public RuleGroup(String id, String ns, List<RuleGroupItem> items, String desc, String message, int code, String[] groups) {
 		this.id = id;
+		this.ns = ns;
 		this.items = items;
 		this.desc = desc;
 		this.message = message;
 		this.code = code;
+		this.groups = groups;
 	}
 
 	public String getId() {
 		return id;
+	}
+
+	public String getNs() {
+		return ns;
 	}
 
 	protected List<RuleGroupItem> getItems() {
@@ -40,10 +52,18 @@ public class RuleGroup {
 		return code;
 	}
 
+	public String[] getGroups() {
+		return groups;
+	}
+
 	public boolean check(XCO xco, boolean forcedThrowException) {
+		return check(xco, forcedThrowException, false);
+	}
+
+	public boolean check(XCO xco, boolean forcedThrowException, boolean ignoreDefaultValue) {
 		boolean result = false;
 		for (RuleGroupItem item : this.items) {
-			result = item.check(xco, forcedThrowException);
+			result = item.check(xco, forcedThrowException, ignoreDefaultValue);
 			if (!result) {
 				break;
 			}
@@ -51,4 +71,14 @@ public class RuleGroup {
 		return result;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////
+
+	//		boolean result = false;
+	//		for (RuleGroupItem item : this.items) {
+	//			result = item.check(xco, forcedThrowException);
+	//			if (!result) {
+	//				break;
+	//			}
+	//		}
+	//		return result;
 }

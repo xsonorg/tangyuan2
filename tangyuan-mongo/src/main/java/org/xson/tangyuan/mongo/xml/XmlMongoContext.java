@@ -5,25 +5,26 @@ import java.util.Map;
 
 import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceVo;
-import org.xson.tangyuan.xml.XmlContext;
+import org.xson.tangyuan.xml.DefaultXmlContext;
 import org.xson.tangyuan.xml.XmlGlobalContext;
 
-public class XmlMongoContext implements XmlContext {
+public class XmlMongoContext extends DefaultXmlContext {
 
-	private XmlGlobalContext				xmlContext			= null;
+	private XmlGlobalContext               xmlContext        = null;
 
-	private Map<String, MappingVo>			mappingVoMap		= new HashMap<String, MappingVo>();
+	private Map<String, MappingVo>         mappingVoMap      = new HashMap<String, MappingVo>();
 
-	private Map<String, MongoDataSourceVo>	dataSourceVoMap		= new HashMap<String, MongoDataSourceVo>();
+	private Map<String, MongoDataSourceVo> dataSourceVoMap   = new HashMap<String, MongoDataSourceVo>();
 
-	private String							defaultDataSource	= null;
+	private String                         defaultDataSource = null;
 
 	@Override
 	public void clean() {
+		xmlContext = null;
+
 		mappingVoMap = null;
 		dataSourceVoMap = null;
 		defaultDataSource = null;
-		xmlContext = null;
 	}
 
 	public XmlGlobalContext getXmlContext() {

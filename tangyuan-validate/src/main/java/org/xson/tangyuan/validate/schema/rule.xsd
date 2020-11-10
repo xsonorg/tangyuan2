@@ -31,6 +31,7 @@
 			<xs:attribute name="desc" type="xs:string"/>
 			<xs:attribute name="message" type="xs:string"/>
 			<xs:attribute name="code" type="xs:integer" use="optional"/>
+			<xs:attribute name="group" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="rule">
@@ -67,8 +68,11 @@
 	</xs:element>
 	<xs:element name="item">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="rule" maxOccurs="unbounded"/>
+			<xs:sequence minOccurs="0">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="rule"/>
+					<xs:element ref="item"/>
+				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="name" use="required"/>
 			<xs:attribute name="type" use="optional">

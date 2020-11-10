@@ -3,6 +3,7 @@ package org.xson.tangyuan.util;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +25,18 @@ public class TangYuanUtil {
 		}
 		return qName;
 	}
+
+	//	/** 获取完整的服务名[type/ns/id] */
+	//	public static String getFullServiceName(String type, String ns, String id, String separator) {
+	//		String fullName = id;
+	//		if (!StringUtils.isEmpty(ns)) {
+	//			fullName = ns + separator + fullName;
+	//		}
+	//		if (!StringUtils.isEmpty(type)) {
+	//			fullName = type + separator + fullName;
+	//		}
+	//		return fullName;
+	//	}
 
 	public static XCO retObjToXco(Object obj) {
 		return retObjToXco(obj, TangYuanContainer.SUCCESS_CODE);
@@ -71,18 +84,18 @@ public class TangYuanUtil {
 			if (xco.exists(TangYuanContainer.XCO_PACKAGE_KEY)) {
 				return xco.getData();
 			}
-			return xco;
+			//			return xco;
 		}
 		return obj;
 	}
 
 	public static XCO getExceptionResult(Throwable e) {
-		XCO result = new XCO();
-		Throwable tx = e;
+		XCO       result = new XCO();
+		Throwable tx     = e;
 		if (e instanceof InvocationTargetException) {
 			tx = ((InvocationTargetException) e).getTargetException();
 		}
-		int errorCode = 0;
+		int    errorCode    = 0;
 		String errorMessage = null;
 		if (tx instanceof ServiceException) {
 			ServiceException ex = (ServiceException) tx;
@@ -136,14 +149,14 @@ public class TangYuanUtil {
 	}
 
 	public static boolean isIp(String ip) {
-		String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+		String  regex   = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(ip);
 		return matcher.matches();
 	}
 
 	public static boolean isDomain(String domain) {
-		String regex = "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,10}$";
+		String  regex   = "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,10}$";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(domain);
 		return matcher.matches();
@@ -171,13 +184,15 @@ public class TangYuanUtil {
 	}
 
 	public static String format(String str, Object... args) {
-		if (null == args || 0 == args.length) {
-			return str;
-		}
-		for (int i = 0; i < args.length; i++) {
-			str = str.replaceFirst("\\{\\}", String.valueOf(args[i]));
-		}
-		return str;
+		//		if (null == args || 0 == args.length) {
+		//			return str;
+		//		}
+		//		for (int i = 0; i < args.length; i++) {
+		//			str = str.replaceFirst("\\{\\}", String.valueOf(args[i]));
+		//		}
+		//		return str;
+
+		return MessageFormatter.formatArgs(str, args);
 	}
 
 	public static String getHostIp() {
@@ -210,10 +225,10 @@ public class TangYuanUtil {
 	 * 是否是本地服务(a/b)
 	 */
 	public static boolean isLocalService(String serviceURI) {
-		int len = serviceURI.length();
-		int separator = 0;
-		int brackets = 0;
-		char chr = '0';
+		int  len       = serviceURI.length();
+		int  separator = 0;
+		int  brackets  = 0;
+		char chr       = '0';
 		for (int i = 0; i < len; i++) {
 			chr = serviceURI.charAt(i);
 			if ('/' == chr) {
@@ -231,4 +246,47 @@ public class TangYuanUtil {
 		return true;
 	}
 
+	/**
+	 * 解析后缀参数
+	 */
+	public static String parseSuffixGetResource(String resource, Map<String, String> suffixArgs) {
+		int pos = resource.indexOf("?");
+		if (-1 == pos) {
+			return resource;
+		}
+		String   suffix = resource.substring(pos + 1);
+		String[] arr    = suffix.split("&");
+		for (int i = 0; i < arr.length; i++) {
+			String[] tmp = arr[i].split("=");
+			if (tmp.length != 2) {
+				throw new TangYuanException("Invalid resource: " + resource);
+			}
+			suffixArgs.put(tmp[0], tmp[1]);
+		}
+		return resource.substring(pos + 1);
+	}
+
+	public static XCO getXCOResult(int code, String message, Object data) {
+		XCO result = new XCO();
+		result.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
+		if (null != message) {
+			result.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, message);
+		}
+		if (null != data) {
+			result.setObjectValue(TangYuanContainer.XCO_DATA_KEY, data);
+		}
+		return result;
+	}
+
+	public static XCO getXCOResult(int code, String message) {
+		return getXCOResult(code, message, null);
+	}
+
+	public static XCO getXCOResult(int code) {
+		return getXCOResult(code, null);
+	}
+
+	public static XCO getXCOResult() {
+		return getXCOResult(TangYuanContainer.SUCCESS_CODE);
+	}
 }

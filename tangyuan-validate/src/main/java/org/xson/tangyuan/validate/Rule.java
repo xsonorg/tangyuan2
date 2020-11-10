@@ -51,7 +51,7 @@ public class Rule {
 
 	private String	name;
 	private Object	value;
-	// 自定义的
+	/** 自定义的检查器 */
 	private Checker	checker;
 
 	public Rule(String name, String value) {

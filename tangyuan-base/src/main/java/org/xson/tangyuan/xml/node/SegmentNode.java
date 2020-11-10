@@ -1,6 +1,6 @@
 package org.xson.tangyuan.xml.node;
 
-import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.service.ActuatorContext;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
 
 public class SegmentNode implements TangYuanNode {
@@ -12,7 +12,7 @@ public class SegmentNode implements TangYuanNode {
 	}
 
 	@Override
-	public boolean execute(ServiceContext context, Object arg) throws Throwable {
+	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
 		return false;
 	}
 

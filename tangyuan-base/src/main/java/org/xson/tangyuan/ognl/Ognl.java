@@ -14,12 +14,15 @@ public class Ognl {
 		if (null == container) {
 			return;
 		}
-		if (XCO.class == container.getClass()) {
+		Class<?> clazz = container.getClass();
+		//		if (XCO.class == container.getClass()) {
+		if (XCO.class == clazz || XCO.class.isAssignableFrom(clazz)) {
 			((XCO) container).setObjectValue(key, value);
-		} else if (Map.class.isAssignableFrom(container.getClass())) {
+		} else if (Map.class.isAssignableFrom(clazz)) {
 			((Map) container).put(key, value);
 		} else {
-			throw new OgnlException("Ognl.setValue不支持的类型:" + container.getClass());
+			throw new OgnlException("Ognl.setValue不支持的类型:" + clazz);
+			// throw new OgnlException(TangYuanLang.get("1000101", container.getClass().getName()));
 		}
 	}
 
@@ -28,12 +31,15 @@ public class Ognl {
 		if (null == container) {
 			return null;
 		}
-		if (XCO.class == container.getClass()) {
+		Class<?> clazz = container.getClass();
+		//		if (XCO.class == container.getClass()) {
+		if (XCO.class == clazz || XCO.class.isAssignableFrom(clazz)) {
 			return OgnlXCO.getValue((XCO) container, varVo);
-		} else if (Map.class.isAssignableFrom(container.getClass())) {
+		} else if (Map.class.isAssignableFrom(clazz)) {
 			return OgnlMap.getValue((Map<String, Object>) container, varVo);
 		} else {
-			throw new OgnlException("Ognl.getValue不支持的类型:" + container.getClass());
+			throw new OgnlException("Ognl.getValue不支持的类型:" + clazz);
+			// throw new OgnlException(TangYuanLang.get("1000102", container.getClass().getName()));
 		}
 	}
 }

@@ -1,28 +1,27 @@
 package org.xson.tangyuan.web;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.TangYuanException;
-import org.xson.tangyuan.log.Log;
-import org.xson.tangyuan.log.LogFactory;
 
 public class TangYuanContextLoaderListener implements ServletContextListener {
 
-	private Log log = LogFactory.getLog(getClass());
+	private Logger log = Logger.getLogger(getClass().getName());
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		ServletContext context = sce.getServletContext();
 		try {
 			String tangyuanResource = context.getInitParameter("tangyuan.resource");
-			if (null != tangyuanResource) {
-				TangYuanContainer.getInstance().start(tangyuanResource);
-			}
+			TangYuanContainer.getInstance().start(tangyuanResource);
 		} catch (Throwable e) {
-			log.error(null, e);
+			log.log(Level.SEVERE, null, e);
 			throw new TangYuanException(e);
 		}
 	}
@@ -32,8 +31,15 @@ public class TangYuanContextLoaderListener implements ServletContextListener {
 		try {
 			TangYuanContainer.getInstance().stop(true);
 		} catch (Throwable e) {
-			log.error(null, e);
+			log.log(Level.SEVERE, null, e);
 		}
 	}
+
+	//			if (null != tangyuanResource) {
+	//				TangYuanContainer.getInstance().start(tangyuanResource);
+	//			}
+	//	private Log log = LogFactory.getLog(getClass());
+	//	static {
+	//	}
 
 }

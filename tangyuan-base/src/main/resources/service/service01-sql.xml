@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/sql/service.xsd"
+	ns="s1">
+
+	<selectSet id="getRoleList" dsKey="readtvr" txRef="tx_01">
+		select * from system_role
+	</selectSet>
+
+	<selectOne id="s2" dsKey="readtvr" txRef="tx_01"
+		cacheUse="id:cache4; key:${service}${args}; expiry:10">
+		select * from system_role where role_id = 1
+	</selectOne>
+
+	<sql-service id="s10" dsKey="readtvr" txRef="tx_01">
+		<selectSet resultKey="{roleList}">
+			select * from system_role
+		</selectSet>
+		<return>
+			<property value="{roleList}" />
+			<property name="{a}" value="1L" />
+		</return>
+	</sql-service>
+	
+	<delete id="deleteUserById" dsKey="readtvr" txRef="tx_02" cacheClean="id:cache1; key:${service}{user_id}">
+		delete from user where user_id = #{user_id}	
+	</delete>
+
+</sqlservices>

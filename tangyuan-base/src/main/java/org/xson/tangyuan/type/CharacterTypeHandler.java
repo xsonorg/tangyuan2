@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class CharacterTypeHandler extends BaseTypeHandler<Character> {
 
@@ -58,9 +59,29 @@ public class CharacterTypeHandler extends BaseTypeHandler<Character> {
 		builder.append('\'');
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		xco.setCharValue(property, getResult(rs, columnName));
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
-		xco.setCharValue(property, getResult(rs, columnName));
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
+		Character v = getResult(rs, columnName);
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof Character)) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+
+			v = (Character) nv;
+
+		}
+
+		if (null != v) {
+			xco.setCharValue(property, v);
+		}
 	}
 
 }

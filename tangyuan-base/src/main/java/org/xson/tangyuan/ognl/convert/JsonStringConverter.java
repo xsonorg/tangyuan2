@@ -2,6 +2,9 @@ package org.xson.tangyuan.ognl.convert;
 
 import com.alibaba.fastjson.JSON;
 
+/**
+ * @deprecated
+ */
 public class JsonStringConverter extends FastJsonConverter {
 
 	@Override

@@ -5,10 +5,10 @@ import org.xson.tangyuan.TangYuanException;
 
 public class ServiceException extends TangYuanException {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	protected int				errorCode			= TangYuanContainer.getInstance().getErrorCode();
-	protected String			errorMessage		= TangYuanContainer.getInstance().getErrorMessage();
+	protected int             errorCode        = TangYuanContainer.getInstance().getErrorCode();
+	protected String          errorMessage     = TangYuanContainer.getInstance().getErrorMessage();
 
 	public ServiceException() {
 		super();

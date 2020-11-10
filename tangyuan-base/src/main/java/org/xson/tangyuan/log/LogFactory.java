@@ -2,27 +2,24 @@ package org.xson.tangyuan.log;
 
 import java.lang.reflect.Constructor;
 
+import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.log.ext.LogExt;
+
 public final class LogFactory {
 
-	public static final String					MARKER			= "TANGYUAN";
+	private static Constructor<? extends Log> logConstructor = null;
 
-	private static Constructor<? extends Log>	logConstructor	= null;
-
-	private static LogConfig					conf			= null;
+	private static LogExt                     logExt         = null;
 
 	static {
-		try {
-			conf = new LogConfig();
-			conf.init();
-		} catch (Throwable e) {
-		}
+
+		logExt = LogExt.newInstance();
 
 		tryImplementation(new Runnable() {
 			public void run() {
 				useLog4JLogging();
 			}
 		});
-
 		tryImplementation(new Runnable() {
 			public void run() {
 				useSlf4jLogging();
@@ -41,10 +38,9 @@ public final class LogFactory {
 	public static Log getLog(String logger) {
 		try {
 			Log proxy = logConstructor.newInstance(new Object[] { logger });
-			((AbstractLog) proxy).setEnableContextLog(conf.isEnableContextLog());
-			return new TangYuanLog(proxy, conf);
+			return new TangYuanLog(proxy, logExt);
 		} catch (Throwable t) {
-			throw new RuntimeException("Error creating logger for logger " + logger + ".  Cause: " + t, t);
+			throw new TangYuanException("Error creating logger for logger " + logger + ".  Cause: " + t, t);
 		}
 	}
 
@@ -69,11 +65,18 @@ public final class LogFactory {
 	private static void setImplementation(Class<? extends Log> implClass) {
 		try {
 			Constructor<? extends Log> candidate = implClass.getConstructor(new Class[] { String.class });
-			Log log = candidate.newInstance(new Object[] { LogFactory.class.getName() });
+			Log                        log       = candidate.newInstance(new Object[] { LogFactory.class.getName() });
 			log.debug("Logging initialized using '" + implClass + "' adapter.");
 			logConstructor = candidate;
+			//			LogExpandFactory.create();
 		} catch (Throwable t) {
-			throw new RuntimeException("Error setting Log implementation.  Cause: " + t, t);
+			throw new TangYuanException("Error setting Log implementation.  Cause: " + t, t);
 		}
+	}
+
+	//	public static final String                MARKER         = "TANGYUAN";
+
+	public static LogExt getLogExt() {
+		return logExt;
 	}
 }

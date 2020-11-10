@@ -112,6 +112,8 @@ public class INIXLoader {
 				value = new BigInteger(val);
 			} else if ("M".equalsIgnoreCase(type)) {
 				value = new BigDecimal(val);
+			} else if ("X".equalsIgnoreCase(type)) {
+				value = XCO.fromXML(val);// X:XCO
 			}
 
 			else if ("SA".equalsIgnoreCase(type)) {
@@ -150,7 +152,8 @@ public class INIXLoader {
 
 	private List<String> getContent(InputStream in) throws IOException {
 		List<String> list = new ArrayList<String>();
-		// BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		// BufferedReader reader = new BufferedReader(new
+		// InputStreamReader(in));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 		String line = null;
 		while (null != (line = reader.readLine())) {

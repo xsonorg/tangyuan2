@@ -5,8 +5,7 @@
 	<parent>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-parent</artifactId>
-		<!-- <version>${tangyuan.version}</version> -->
-		<version>1.2.3</version>
+		<version>1.3.0</version>
 	</parent>
 
 	<artifactId>tangyuan-mongo</artifactId>
@@ -18,12 +17,6 @@
 
 	<dependencies>
 
-<!-- 		<dependency>
-			<groupId>org.xson</groupId>
-			<artifactId>common-object</artifactId>
-			<scope>provided</scope>
-		</dependency> -->
-
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-base</artifactId>
@@ -32,21 +25,14 @@
 
 		<dependency>
 			<groupId>org.xson</groupId>
-			<artifactId>tangyuan-mongo-datasource</artifactId>
-			<version>${tangyuan.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-cache</artifactId>
 			<version>${tangyuan.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<scope>provided</scope>
+			<scope>provided</scope><!-- -->
 		</dependency>
 
 	</dependencies>

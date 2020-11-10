@@ -21,13 +21,29 @@ public interface Log {
 
 	void error(String s, Object... args);
 
+	void errorLang(Throwable e, String s, Object... args);
+
+	void errorLang(String s, Throwable e);
+
+	void errorLang(String s);
+
+	void errorLang(String s, Object... args);
+
 	void info(String s);
 
 	void info(String s, Object... args);
 
+	void infoLang(String s);
+
+	void infoLang(String s, Object... args);
+
 	void debug(String s);
 
 	void debug(String s, Object... args);
+
+	void debugLang(String s);
+
+	void debugLang(String s, Object... args);
 
 	void trace(String s);
 
@@ -36,5 +52,9 @@ public interface Log {
 	void warn(String s);
 
 	void warn(String s, Object... args);
+
+	void warnLang(String s);
+
+	void warnLang(String s, Object... args);
 
 }

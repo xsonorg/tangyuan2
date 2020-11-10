@@ -7,36 +7,34 @@ import java.util.Map;
 
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.web.ControllerVo;
 import org.xson.tangyuan.web.RequestContext.RequestTypeEnum;
-import org.xson.tangyuan.web.util.RestUtil;
-import org.xson.tangyuan.web.util.ServletUtils;
-import org.xson.tangyuan.web.xml.XMLWebContext;
-import org.xson.tangyuan.web.xml.vo.ControllerVo;
-import org.xson.tangyuan.web.xml.vo.RESTControllerVo;
+import org.xson.tangyuan.web.util.WebUtil;
+import org.xson.tangyuan.web.xml.XmlWebContext;
 import org.xson.tangyuan.xml.XmlParseException;
 
 public class RESTContainer {
 
-	private Log							log				= LogFactory.getLog(getClass());
+	private Log                       log            = LogFactory.getLog(getClass());
 
 	/** 静态URI,包括GET, POST ... */
-	private Map<String, ControllerVo>	staticMap		= new HashMap<String, ControllerVo>();
+	private Map<String, ControllerVo> staticMap      = new HashMap<String, ControllerVo>();
 
-	private URINodeTree					getURITree		= new URINodeTree("/");
-	private URINodeTree					postURITree		= new URINodeTree("/");
-	private URINodeTree					putURITree		= new URINodeTree("/");
-	private URINodeTree					deleteURITree	= new URINodeTree("/");
-	private URINodeTree					headURITree		= new URINodeTree("/");
-	private URINodeTree					optionsURITree	= new URINodeTree("/");
+	private URINodeTree               getURITree     = new URINodeTree("/");
+	private URINodeTree               postURITree    = new URINodeTree("/");
+	private URINodeTree               putURITree     = new URINodeTree("/");
+	private URINodeTree               deleteURITree  = new URINodeTree("/");
+	private URINodeTree               headURITree    = new URINodeTree("/");
+	private URINodeTree               optionsURITree = new URINodeTree("/");
 
 	public ControllerVo getControllerVo(RequestTypeEnum requestType, String path) {
 
-		ControllerVo cVo = staticMap.get(RestUtil.getRestKey(requestType, path));
+		ControllerVo cVo = staticMap.get(WebUtil.getRestKey(requestType, path));
 		if (null != cVo) {
 			return cVo;
 		}
 
-		Object controller = null;
+		Object       controller = null;
 
 		// 确认url格式规范
 		// String rPath = url;
@@ -45,7 +43,7 @@ public class RESTContainer {
 		// }
 		// List<String> targetList = RestUtil.splitToStringList(rPath, RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR);
 
-		List<String> targetList = ServletUtils.parseURIPathItem(path);
+		List<String> targetList = WebUtil.parseURIPathItem(path);
 
 		if (RequestTypeEnum.GET == requestType) {
 			controller = getURITree.get(targetList);
@@ -64,36 +62,36 @@ public class RESTContainer {
 		return (ControllerVo) controller;
 	}
 
-	public void build(XMLWebContext context) {
+	public void build(XmlWebContext context) {
 		List<RESTControllerVo> restControllerList = context.getRestControllerList();
 		if (0 == restControllerList.size()) {
 			return;
 		}
 
-		long start = System.currentTimeMillis();
+		long         start                      = System.currentTimeMillis();
 
 		// static
-		List<String> detectedGetList = new ArrayList<String>();
-		List<String> detectedPostList = new ArrayList<String>();
-		List<String> detectedPutList = new ArrayList<String>();
-		List<String> detectedDeleteList = new ArrayList<String>();
-		List<String> detectedHeadList = new ArrayList<String>();
-		List<String> detectedOptionsList = new ArrayList<String>();
+		List<String> detectedGetList            = new ArrayList<String>();
+		List<String> detectedPostList           = new ArrayList<String>();
+		List<String> detectedPutList            = new ArrayList<String>();
+		List<String> detectedDeleteList         = new ArrayList<String>();
+		List<String> detectedHeadList           = new ArrayList<String>();
+		List<String> detectedOptionsList        = new ArrayList<String>();
 
 		// dynamic
-		List<String> detectedDynamicGetList = new ArrayList<String>();
-		List<String> detectedDynamicPostList = new ArrayList<String>();
-		List<String> detectedDynamicPutList = new ArrayList<String>();
-		List<String> detectedDynamicDeleteList = new ArrayList<String>();
-		List<String> detectedDynamicHeadList = new ArrayList<String>();
+		List<String> detectedDynamicGetList     = new ArrayList<String>();
+		List<String> detectedDynamicPostList    = new ArrayList<String>();
+		List<String> detectedDynamicPutList     = new ArrayList<String>();
+		List<String> detectedDynamicDeleteList  = new ArrayList<String>();
+		List<String> detectedDynamicHeadList    = new ArrayList<String>();
 		List<String> detectedDynamicOptionsList = new ArrayList<String>();
 
 		for (RESTControllerVo cVo : restControllerList) {
-			RestURIVo uriVo = cVo.getRestURIVo();
+			RestURIVo       uriVo       = cVo.getRestURIVo();
 			RequestTypeEnum requestType = cVo.getRequestType();
-			String path = uriVo.getPath();
+			String          path        = uriVo.getPath();
 			if (uriVo.isStaticURI()) {
-				staticMap.put(RestUtil.getRestKey(requestType, path), cVo);
+				staticMap.put(WebUtil.getRestKey(requestType, path), cVo);
 				if (RequestTypeEnum.GET == requestType) {
 					detectedGetList.add(path);
 				} else if (RequestTypeEnum.POST == requestType) {
@@ -130,7 +128,7 @@ public class RESTContainer {
 			}
 
 			// add ControllerMap
-			context.getControllerMap().put(RestUtil.getRestKey(requestType, path), cVo);
+			context.getControllerMap().put(WebUtil.getRestKey(requestType, path), cVo);
 		}
 
 		// 用固定的URI去匹配模糊的URI,检测不明确的控制器
@@ -157,10 +155,10 @@ public class RESTContainer {
 		Object controller = null;
 		if (detectedList.size() > 0) {
 			for (String target : detectedList) {
-				controller = tree.get(ServletUtils.parseURIPathItem(target));
+				controller = tree.get(WebUtil.parseURIPathItem(target));
 				if (null != controller) {
-					throw new XmlParseException("Ambiguous controllers [" + requestType + " " + target + "] and [" + requestType + " "
-							+ ((ControllerVo) controller).getUrl() + "].");
+					throw new XmlParseException(
+							"Ambiguous controllers [" + requestType + " " + target + "] and [" + requestType + " " + ((ControllerVo) controller).getUrl() + "].");
 				}
 			}
 		}
@@ -169,7 +167,7 @@ public class RESTContainer {
 	private void checkDynamicUndefinedMatch(List<String> detectedList, URINodeTree tree, RequestTypeEnum requestType) {
 		if (detectedList.size() > 0) {
 			for (String target : detectedList) {
-				tree.getAndCheck(ServletUtils.parseURIPathItem(target));
+				tree.getAndCheck(WebUtil.parseURIPathItem(target));
 			}
 		}
 	}

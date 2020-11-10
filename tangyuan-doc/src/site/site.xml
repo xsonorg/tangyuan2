@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tangyuan" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+	<bannerLeft>
+		<name>Project Name</name>
+		<src>images/tangyuan_4XX_90.png</src>
+	</bannerLeft>
+<!-- 
+	<bannerRight>
+		<name>Project Name</name>
+		<src>images/xsonorg_4XX_90.png</src>
+		<href>http://www.xson.org/</href>
+	</bannerRight>
+ -->
+	<version position="right" />
+	<publishDate position="right" />
+
+<!-- 
+	<poweredBy>
+		<logo name="Maven" href="http://maven.apache.org/"
+			img="http://maven.apache.org/images/logos/maven-feather.png" />
+	</poweredBy>
+ -->
+	<body>
+
+		<head><![CDATA[<script>
+			var _hmt = _hmt || [];
+			(function() {
+			  var hm = document.createElement("script");
+			  hm.src = "https://hm.baidu.com/hm.js?667c1c941a306c7a5b4eb4d49f740b15";
+			  var s = document.getElementsByTagName("script")[0]; 
+			  s.parentNode.insertBefore(hm, s);
+			})();
+		</script>]]></head>
+
+		<breadcrumbs>
+			<item name="index" href="###" />
+		</breadcrumbs>
+
+		<!-- 项目信息报告 inherit表示子模块继承父模块 -->
+		<menu name="OVERVIEW">
+			<item name="首页" href="index.html" />
+			<item name="使用说明" href="usage.html" />
+			<item name="占位变量" href="placeholder.html" />
+			<item name="应用程序属性配置" href="app-property.html" />
+			<item name="线程池配置" href="thread-pool.html" />
+			<item name="日志管理" href="tangyuan-log.html" />
+<!-- 			<menu name="01章节">
+				<item name="首页01" href="01/index.html" />
+				<item name="使用说明01" href="01/usage01.html" />
+			</menu> -->
+			
+			<item name="01章节" href="01/index.html" collapse="true">
+				<item name="首页01" href="01/index.html" />
+				<item name="使用说明01" href="01/usage01.html" />
+			</item>
+			
+			<!-- <item name="02章节" href="02/index.html" /> -->
+			
+			<item name="02章节" href="02/index.html" collapse="true">
+				<description>xxxx</description>
+				<item name="首页01" href="01/index.html" />
+				<item name="使用说明01" href="01/usage01.html" />	
+			</item>
+			
+		</menu>
+		
+		<menu name="01章节" inheritAsRef="true" inherit="">
+			<item name="首页01" href="01/index.html" />
+			<item name="使用说明01" href="01/usage01.html" />
+		</menu>
+		
+		<menu name="02章节" inheritAsRef="false">
+			<item name="首页01" href="01/index.html" />
+			<item name="使用说明01" href="01/usage01.html" />
+		</menu>				
+		
+		<!-- 
+		<menu name="PROJECT DOCUMENTATION">
+			<item name="Dependencies" href="dependencies.html" />
+			<item name="Dependency Information" href="dependency-info.html" />
+		</menu>
+		 -->
+		<!-- <footer><![CDATA[All rights reserved.]]></footer> -->
+	</body>
+
+	<!-- 皮肤 -->
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.5</version>
+	</skin>
+</project>

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public abstract class BaseTypeHandler<T> extends TypeReference<T> implements TypeHandler<T> {
 
@@ -69,7 +70,12 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 	}
 
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		throw new SQLException("Sub class needs to be implemented");
 	}
+
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		throw new SQLException("Sub class needs to be implemented");
+	//	}
 }

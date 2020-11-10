@@ -1,15 +1,17 @@
 package org.xson.tangyuan.validate;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.xson.tangyuan.ComponentVo;
 import org.xson.tangyuan.TangYuanComponent;
 import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.Version;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.util.ResourceManager;
+import org.xson.tangyuan.log.TangYuanLang;
+import org.xson.tangyuan.service.context.ValidateServiceContextFactory;
+import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.validate.rule.ArrayLengthIntervalChecker;
 import org.xson.tangyuan.validate.rule.ArrayLengthMaxChecker;
 import org.xson.tangyuan.validate.rule.ArrayLengthMinChecker;
@@ -55,25 +57,31 @@ import org.xson.tangyuan.validate.rule.StringLengthMaxChecker;
 import org.xson.tangyuan.validate.rule.StringLengthMinChecker;
 import org.xson.tangyuan.validate.rule.StringMatchChecker;
 import org.xson.tangyuan.validate.rule.StringNoMatchChecker;
-import org.xson.tangyuan.validate.xml.XMLConfigBuilder;
+import org.xson.tangyuan.validate.xml.XmlValidateComponentBuilder;
+import org.xson.tangyuan.validate.xml.XmlValidateContext;
+import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class ValidateComponent implements TangYuanComponent {
 
-	private static ValidateComponent	instance		= new ValidateComponent();
+	private static ValidateComponent instance              = new ValidateComponent();
 
-	private Log							log				= LogFactory.getLog(getClass());
-	protected Map<String, RuleGroup>	ruleGroupsMap	= new HashMap<String, RuleGroup>();
-	protected Map<String, Checker>		checkerMap		= new HashMap<String, Checker>();
-	// 验证失败抛异常
-	protected boolean					throwException	= false;
-	// 验证失败的异常码
-	protected int						errorCode		= -1;
-	// 验证失败的异常信息
-	protected String					errorMessage	= "数据验证错误";
+	private Log                      log                   = LogFactory.getLog(getClass());
+	private Map<String, RuleGroup>   ruleGroupMap          = new HashMap<String, RuleGroup>();
+	private Map<String, Checker>     checkerMap            = new HashMap<String, Checker>();
+
+	/** 验证失败抛异常 */
+	private boolean                  throwException        = true;
+	/** 验证失败的异常码 */
+	private int                      errorCode             = -1;
+	/** 验证失败的异常信息 */
+	private String                   errorMessage          = "数据验证错误";
+	/** 注册为服务 */
+	private boolean                  validateAsService     = false;
+	/** 验证服务统一前缀 */
+	private String                   validateServicePrefix = null;
 
 	static {
-		// validate 10 70
-		// TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "validate", 10, 70));
+		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.VALIDATE, new ValidateServiceContextFactory());
 		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "validate"));
 	}
 
@@ -85,13 +93,11 @@ public class ValidateComponent implements TangYuanComponent {
 	}
 
 	protected Checker getChecker(String key) {
-		return checkerMap.get(key);
+		return this.checkerMap.get(key);
 	}
 
-	public void setRuleGroupsMap(Map<String, RuleGroup> ruleGroupsMap) {
-		if (this.ruleGroupsMap.size() == 0 && ruleGroupsMap.size() > 0) {
-			this.ruleGroupsMap = ruleGroupsMap;
-		}
+	public RuleGroup getRuleGroup(String key) {
+		return this.ruleGroupMap.get(key);
 	}
 
 	public boolean isThrowException() {
@@ -104,6 +110,14 @@ public class ValidateComponent implements TangYuanComponent {
 
 	public String getErrorMessage() {
 		return errorMessage;
+	}
+
+	public boolean isValidateAsService() {
+		return validateAsService;
+	}
+
+	public String getValidateServicePrefix() {
+		return validateServicePrefix;
 	}
 
 	private String createCheckerKey(TypeEnum typeEnum, RuleEnum ruleEnum) {
@@ -172,8 +186,8 @@ public class ValidateComponent implements TangYuanComponent {
 		// array
 
 		ArrayLengthIntervalChecker arrayLengthIntervalChecker = new ArrayLengthIntervalChecker();
-		ArrayLengthMaxChecker arrayLengthMaxChecker = new ArrayLengthMaxChecker();
-		ArrayLengthMinChecker arrayLengthMinChecker = new ArrayLengthMinChecker();
+		ArrayLengthMaxChecker      arrayLengthMaxChecker      = new ArrayLengthMaxChecker();
+		ArrayLengthMinChecker      arrayLengthMinChecker      = new ArrayLengthMinChecker();
 
 		checkerMap.put(createCheckerKey(TypeEnum.ARRAY, RuleEnum.INTERVAL_LENGTH), arrayLengthIntervalChecker);
 		checkerMap.put(createCheckerKey(TypeEnum.ARRAY, RuleEnum.MAX_LENGTH), arrayLengthMaxChecker);
@@ -222,8 +236,8 @@ public class ValidateComponent implements TangYuanComponent {
 		// set
 
 		CollectionLengthIntervalChecker collectionLengthIntervalChecker = new CollectionLengthIntervalChecker();
-		CollectionLengthMaxChecker collectionLengthMaxChecker = new CollectionLengthMaxChecker();
-		CollectionLengthMinChecker collectionLengthMinChecker = new CollectionLengthMinChecker();
+		CollectionLengthMaxChecker      collectionLengthMaxChecker      = new CollectionLengthMaxChecker();
+		CollectionLengthMinChecker      collectionLengthMinChecker      = new CollectionLengthMinChecker();
 
 		checkerMap.put(createCheckerKey(TypeEnum.COLLECTION, RuleEnum.INTERVAL_LENGTH), collectionLengthIntervalChecker);
 		checkerMap.put(createCheckerKey(TypeEnum.COLLECTION, RuleEnum.MAX_LENGTH), collectionLengthMaxChecker);
@@ -248,32 +262,77 @@ public class ValidateComponent implements TangYuanComponent {
 
 	public void config(Map<String, String> properties) {
 		if (properties.containsKey("errorCode".toUpperCase())) {
-			errorCode = Integer.parseInt(properties.get("errorCode".toUpperCase()));
+			this.errorCode = Integer.parseInt(properties.get("errorCode".toUpperCase()));
 		}
 		if (properties.containsKey("errorMessage".toUpperCase())) {
-			errorMessage = properties.get("errorMessage".toUpperCase());
+			this.errorMessage = StringUtils.trimEmpty(properties.get("errorMessage".toUpperCase()));
 		}
 		if (properties.containsKey("throwException".toUpperCase())) {
-			throwException = Boolean.parseBoolean(properties.get("throwException".toUpperCase()));
+			this.throwException = Boolean.parseBoolean(properties.get("throwException".toUpperCase()));
 		}
-		log.info("config setting success...");
+
+		if (properties.containsKey("validateAsService".toUpperCase())) {
+			this.validateAsService = Boolean.parseBoolean(properties.get("validateAsService".toUpperCase()));
+		}
+		if (properties.containsKey("validateServicePrefix".toUpperCase())) {
+			this.validateServicePrefix = StringUtils.trimEmpty(properties.get("validateServicePrefix".toUpperCase()));
+		}
+
+		log.info(TangYuanLang.get("config.property.load"), "validate-component");
 	}
 
 	@Override
 	public void start(String resource) throws Throwable {
-		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		log.info("validate component starting, version: " + Version.getVersion());
-		log.info("*** Start parsing: " + resource);
-		//		InputStream inputStream = Resources.getResourceAsStream(resource);
-		InputStream inputStream = ResourceManager.getInputStream(resource, true);
-		XMLConfigBuilder builder = new XMLConfigBuilder(inputStream);
-		builder.parseNode();
-		initChecker();// 初始化checker
-		log.info("validate component successfully.");
+
+		log.info(TangYuanLang.get("component.dividing.line"));
+		log.info(TangYuanLang.get("component.starting"), "validate", Version.getVersion());
+
+		XmlValidateContext componentContext = new XmlValidateContext();
+		componentContext.setXmlContext(TangYuanContainer.getInstance().getXmlGlobalContext());
+
+		XmlValidateComponentBuilder xmlBuilder = new XmlValidateComponentBuilder();
+		xmlBuilder.parse(componentContext, resource);
+
+		// set
+		this.ruleGroupMap = componentContext.getRuleGroupMap();
+		// init checker
+		initChecker();
+		// clean
+		componentContext.clean();
+
+		log.info(TangYuanLang.get("component.starting.successfully"), "validate");
 	}
 
 	@Override
-	public void stop(boolean wait) {
+	public void stop(long waitingTime, boolean asyn) {
+		log.info(TangYuanLang.get("component.stopping.successfully"), "validate");
 	}
+
+	//	this.ruleGroupsMap = xmlContext.ruleGroupMap;
+	//		resource = TangYuanUtil.parseSuffixGetResource(resource, suffixArgs);
+	//		TangYuanLang.getInstance().load("tangyuan-lang-validate");
+	//		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	//		log.info("validate component starting, version: " + Version.getVersion());
+	//		XmlValidateContext componentContext = new XmlValidateContext(TangYuanContainer.getInstance().getXmlGlobalContext());
+	//		XMLConfigBuilder builder = new XMLConfigBuilder();
+	//		builder.parse(xmlContext, resource);
+	//		builder.clean();
+	/** 后缀参数, 通过配置文件后缀传入 */
+	//	private Map<String, String>      suffixArgs      = new HashMap<>();
+	//	/** 该组件的服务类型名 */
+	//	private String                   serviceTypeName   = null;
+	//	public String getServiceTypeName() {
+	//		return serviceTypeName;
+	//	}
+
+	//		private boolean                  validateAsService     = false;
+	//		/** 验证服务统一前缀 */
+	//		private String                   validateServicePrefix = null;
+	//		if (properties.containsKey("serviceTypeName".toUpperCase())) {
+	//			serviceTypeName = StringUtils.trim(properties.get("serviceTypeName".toUpperCase()));
+	//			if (serviceTypeName.indexOf(TangYuanContainer.getInstance().getNsSeparator()) > -1) {
+	//				throw new XmlParseException("不合法的属性serviceTypeName=" + serviceTypeName);// 
+	//			}
+	//		}
 
 }

@@ -3,7 +3,7 @@ package org.xson.tangyuan.log.log4j;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.xson.tangyuan.log.AbstractLog;
-import org.xson.tangyuan.runtime.RuntimeContext;
+import org.xson.tangyuan.service.runtime.RuntimeContext;
 
 /**
  * Log4j日志代理
@@ -17,20 +17,36 @@ public class Log4jProxy extends AbstractLog {
 	}
 
 	private void setContextLog() {
-		if (enableContextLog) {
+		if (null != logExt && logExt.isEnableContextLog()) {
 			try {
 				MDC.clear();
 				RuntimeContext rc = RuntimeContext.get();
 				if (null != rc) {
 					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
-					MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
-					MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+					//					MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
+					//					MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
 				}
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 	}
+
+	//	private void setContextLog() {
+	//		if (enableContextLog) {
+	//			try {
+	//				MDC.clear();
+	//				RuntimeContext rc = RuntimeContext.get();
+	//				if (null != rc) {
+	//					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
+	//					MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
+	//					MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
+	//				}
+	//			} catch (Throwable e) {
+	//				e.printStackTrace();
+	//			}
+	//		}
+	//	}
 
 	@Override
 	public boolean isDebugEnabled() {

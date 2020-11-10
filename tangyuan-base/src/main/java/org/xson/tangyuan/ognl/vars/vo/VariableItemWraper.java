@@ -2,7 +2,7 @@ package org.xson.tangyuan.ognl.vars.vo;
 
 import java.util.List;
 
-import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.app.XmlExtNsArg;
 import org.xson.tangyuan.ognl.Ognl;
 import org.xson.tangyuan.ognl.vars.Variable;
 
@@ -11,21 +11,11 @@ import org.xson.tangyuan.ognl.vars.Variable;
  */
 public class VariableItemWraper extends Variable {
 
-	private VariableItem		item			= null;
+	private VariableItem       item         = null;
 
-	private List<VariableItem>	itemList		= null;
+	private List<VariableItem> itemList     = null;
 
-	private String				extArgPrefix	= null;
-
-	//	public VariableItemWraper(String original, VariableItem item) {
-	//		this.original = original;
-	//		this.item = item;
-	//	}
-	//
-	//	public VariableItemWraper(String original, List<VariableItem> itemList) {
-	//		this.original = original;
-	//		this.itemList = itemList;
-	//	}
+	private String             extArgPrefix = null;
 
 	public VariableItemWraper(String original, String extArgPrefix, VariableItem item) {
 		this.original = original;
@@ -52,8 +42,18 @@ public class VariableItemWraper extends Variable {
 		if (null == this.extArgPrefix) {
 			return Ognl.getValue(arg, this);
 		} else {
-			Object extArg = TangYuanContainer.getInstance().getExtArg().getArg(this.extArgPrefix);
+			//			Object extArg = TangYuanContainer.getInstance().getExtArg().getArg(this.extArgPrefix);
+			Object extArg = XmlExtNsArg.getInstance().getArg(this.extArgPrefix);
 			return Ognl.getValue(extArg, this);
 		}
 	}
+
+	//	public VariableItemWraper(String original, VariableItem item) {
+	//		this.original = original;
+	//		this.item = item;
+	//	}
+	//	public VariableItemWraper(String original, List<VariableItem> itemList) {
+	//		this.original = original;
+	//		this.itemList = itemList;
+	//	}
 }

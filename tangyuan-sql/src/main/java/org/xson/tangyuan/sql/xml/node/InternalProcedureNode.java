@@ -2,7 +2,7 @@ package org.xson.tangyuan.sql.xml.node;
 
 import java.sql.SQLException;
 
-import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.service.ActuatorContext;
 import org.xson.tangyuan.xml.node.TangYuanNode;
 
 /**
@@ -10,13 +10,11 @@ import org.xson.tangyuan.xml.node.TangYuanNode;
  */
 public class InternalProcedureNode extends AbstractSqlNode {
 
-	// private static Log log = LogFactory.getLog(InternalProcedureNode.class);
-
 	public InternalProcedureNode(String dsKey, String rowCount, TangYuanNode sqlNode) {
 	}
 
 	@Override
-	public boolean execute(ServiceContext context, Object arg) throws SQLException {
+	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws SQLException {
 		return true;
 	}
 

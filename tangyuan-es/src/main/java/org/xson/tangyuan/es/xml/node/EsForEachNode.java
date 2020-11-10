@@ -1,8 +1,8 @@
 package org.xson.tangyuan.es.xml.node;
 
-import org.xson.tangyuan.es.executor.EsServiceContext;
-import org.xson.tangyuan.executor.ServiceContext;
 import org.xson.tangyuan.ognl.vars.Variable;
+import org.xson.tangyuan.service.ActuatorContext;
+import org.xson.tangyuan.service.context.EsServiceContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 import org.xson.tangyuan.xml.node.ForEachNode;
 import org.xson.tangyuan.xml.node.TangYuanNode;
@@ -18,10 +18,10 @@ public class EsForEachNode extends ForEachNode {
 		this.separator = separator;
 	}
 
-	protected void append(ServiceContext context, String str) {
+	protected void append(ActuatorContext ac, String str) {
+		EsServiceContext context = (EsServiceContext) ac.getServiceContext(TangYuanServiceType.ES);
 		if (null != str && str.length() > 0) {
-			EsServiceContext mongoServiceContext = (EsServiceContext) context.getServiceContext(TangYuanServiceType.ES);
-			mongoServiceContext.addSql(str);
+			context.addSql(str);
 		}
 	}
 }

@@ -8,29 +8,25 @@ public class ShardingDefVo {
 		RANGE, HASH, MOD, RANDOM
 	}
 
-	private String			table;
-	private String			dataSource;
-	private ShardingMode	mode;
-	private int				dbCount;
-	private int				tableCount;
-	private int				tableCapacity;
-	// private String[] keywords;
-	private Variable[]		keywords;
-	private boolean			tableNameIndexIncrement;	// 表名称索引是否递增
-	private ShardingHandler	handler;					// impl="mySharding"
-	private int				dataSourceCount;			// 物理数据源数量
-	private boolean			dataSourceGroup;			// 是否是数据源组
-	private boolean			requireKeyword;				// 是否一定需要关键字
+	private String          table;
+	private String          dataSource;
+	private ShardingMode    mode;
+	private int             dbCount;
+	private int             tableCount;
+	private int             tableCapacity;
+	private Variable[]      keywords;
+	private boolean         tableNameIndexIncrement;	// 表名称索引是否递增
+	private ShardingHandler handler;					// impl="mySharding"
+	private int             dataSourceCount;			// 物理数据源数量
+	private boolean         dataSourceGroup;			// 是否是数据源组
+	private boolean         requireKeyword;				// 是否一定需要关键字
 
-	// TODO 这里不使用默认值, 默认值应该在sharding.table中定义
+	// 这里不使用默认值, 默认值应该在sharding.table中定义
 	// 默认的数据源: 选择失败的时候使用
-	private String			defaultDataSource;
-	// 默认的表名: 选择失败的时候使用
-	// private String defaultTable;
+	private String          defaultDataSource;
 
-	public ShardingDefVo(String table, String dataSource, ShardingMode mode, int dbCount, int tableCount, int tableCapacity, Variable[] keywords,
-			boolean tableNameIndexIncrement, ShardingHandler handler, int dataSourceCount, boolean dataSourceGroup, boolean requireKeyword,
-			String defaultDataSource) {
+	public ShardingDefVo(String table, String dataSource, ShardingMode mode, int dbCount, int tableCount, int tableCapacity, Variable[] keywords, boolean tableNameIndexIncrement,
+			ShardingHandler handler, int dataSourceCount, boolean dataSourceGroup, boolean requireKeyword, String defaultDataSource) {
 		this.table = table;
 		this.dataSource = dataSource;
 		this.mode = mode;
@@ -86,10 +82,6 @@ public class ShardingDefVo {
 		return defaultDataSource;
 	}
 
-	// public String getDefaultTable() {
-	// return defaultTable;
-	// }
-
 	public int getDataSourceCount() {
 		return dataSourceCount;
 	}
@@ -102,8 +94,16 @@ public class ShardingDefVo {
 		return requireKeyword;
 	}
 
-	// public ShardingResult getShardingResult(ShardingArgVo argVo, Map<String, Object> arg) {
 	public ShardingResult getShardingResult(ShardingArgVo argVo, Object arg) {
 		return this.handler.selectDataSourceAndTable(this, argVo, arg);
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// private String[] keywords;
+	// 默认的表名: 选择失败的时候使用
+	// private String defaultTable;
+	// public String getDefaultTable() {
+	// return defaultTable;
+	// }
 }

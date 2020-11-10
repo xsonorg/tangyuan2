@@ -3,7 +3,9 @@ package org.xson.tangyuan.sharding;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.xson.tangyuan.log.TangYuanLang;
 import org.xson.tangyuan.sharding.ShardingArgVo.ShardingTemplate;
+import org.xson.tangyuan.util.HashUtil;
 
 public abstract class AbstractShardingHandler implements ShardingHandler {
 
@@ -47,9 +49,10 @@ public abstract class AbstractShardingHandler implements ShardingHandler {
 		return null;
 	}
 
-	protected long getValue(Object value) {
+	protected long getLongValue(Object value) {
 		if (null == value) {
-			throw new ShardingException("分库分表对象值为空");
+			//			throw new ShardingException("分库分表对象值为空");
+			throw new ShardingException(TangYuanLang.get("sharding.value.empty"));
 		}
 		Class<?> type = value.getClass();
 		if (Integer.class == type) {
@@ -65,6 +68,33 @@ public abstract class AbstractShardingHandler implements ShardingHandler {
 		} else if (BigDecimal.class == type) {
 			return ((BigDecimal) value).longValue();
 		}
-		throw new ShardingException("分库分表对象值非法:" + type);
+		throw new ShardingException(TangYuanLang.get("sharding.value.invalid", value.toString()));
 	}
+
+	protected int getHashCode(Object value) {
+		if (null == value) {
+			throw new ShardingException(TangYuanLang.get("sharding.value.empty"));
+		}
+		return Math.abs(HashUtil.jdkHashCode(value.toString()));
+	}
+
+	protected ShardingResult selectByModulusAlgorithm(ShardingDefVo defVo, ShardingArgVo argVo, long value) {
+		int  allTable   = defVo.getDbCount() * defVo.getTableCount();
+		long tableIndex = value % allTable;
+		long dbIndex    = tableIndex / defVo.getTableCount();
+		if (!defVo.isTableNameIndexIncrement()) {
+			tableIndex = tableIndex - (dbIndex * defVo.getTableCount());
+		}
+		return getResult(tableIndex, dbIndex, defVo, argVo);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	//		Variable[] keywords = argVo.getKeywords();
+	//		if (null == keywords) {
+	//			keywords = defVo.getKeywords();
+	//		}
+	//		Object shardingValue = keywords[0].getValue(arg);
+	//		int    hashCode      = getHashCode(shardingValue);
+
 }

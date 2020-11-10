@@ -5,8 +5,7 @@
 	<parent>
 		<groupId>org.xson</groupId>
 		<artifactId>tangyuan-parent</artifactId>
-		<!-- <version>${tangyuan.version}</version> -->
-		<version>1.2.3</version>
+		<version>1.3.0</version>
 	</parent>
 
 	<artifactId>tangyuan-validate</artifactId>
@@ -16,25 +15,6 @@
 	<url>http://xson.org/tangyuan</url>
 	<description>tangyuan-validate is the data validation component in the tangyuan framework that provides data validation based on XCO objects.</description>
 
-	<developers>
-		<developer>
-			<id>david</id>
-			<name>david</name>
-			<email>xson_org@126.com</email>
-		</developer>
-	</developers>
-
-	<scm>
-		<url>https://github.com/xsonorg/tangyuan2.git</url>
-		<connection>scm:git:https://github.com/xsonorg/tangyuan2.git</connection>
-	</scm>
-
-	<licenses>
-		<license>
-			<name>GNU General Public License v3.0</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-		</license>
-	</licenses>
 
 	<dependencies>
 

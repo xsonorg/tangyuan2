@@ -17,19 +17,67 @@ import java.util.TreeSet;
 
 public class StringUtils {
 
-	private static final String	FOLDER_SEPARATOR			= "/";
+	private static final String FOLDER_SEPARATOR         = "/";
 
-	private static final String	WINDOWS_FOLDER_SEPARATOR	= "\\";
+	private static final String WINDOWS_FOLDER_SEPARATOR = "\\";
 
-	private static final String	TOP_PATH					= "..";
+	private static final String TOP_PATH                 = "..";
 
-	private static final String	CURRENT_PATH				= ".";
+	private static final String CURRENT_PATH             = ".";
 
-	private static final char	EXTENSION_SEPARATOR			= '.';
+	private static final char   EXTENSION_SEPARATOR      = '.';
+
+	public static String[] splitStringToArray(String str, String delimiter) {
+		Collection<String> collection = splitStringToList(str, delimiter);
+		if (collection == null || 0 == collection.size()) {
+			return null;
+		}
+		return collection.toArray(new String[collection.size()]);
+	}
+
+	public static List<String> splitStringToList(String str, String delimiter) {
+		List<String> result = new ArrayList<String>();
+		int          pos    = 0;
+		int          delPos;
+		while ((delPos = str.indexOf(delimiter, pos)) != -1) {
+			result.add(str.substring(pos, delPos));
+			pos = delPos + delimiter.length();
+		}
+		if (str.length() > 0 && pos <= str.length()) {
+			result.add(str.substring(pos));
+		}
+		if (0 == result.size()) {
+			return null;
+		}
+		return result;
+	}
 
 	// ---------------------------------------------------------------------
 	// General convenience methods for working with Strings
 	// ---------------------------------------------------------------------
+
+	public static String[] safeSplit(String toSplit) {
+		return safeSplit(toSplit, ",");
+	}
+
+	public static String[] safeSplit(String toSplit, String delimiter) {
+		if (!hasLength(toSplit) || !hasLength(delimiter)) {
+			return null;
+		}
+		String[] array = toSplit.split(delimiter);
+		for (int i = 0; i < array.length; i++) {
+			array[i] = trim(array[i]);
+		}
+		return array;
+	}
+
+	public static String trimEmpty(String str) {
+		str = trim(str);
+		if (isEmpty(str)) {
+			return null;
+		}
+		return str;
+	}
 
 	public static String trim(String str) {
 		if (null == str) {
@@ -60,6 +108,13 @@ public class StringUtils {
 	 */
 	public static boolean isEmpty(Object str) {
 		return (str == null || "".equals(str));
+	}
+
+	public static boolean isEmptySafe(String str) {
+		if (null == str || 0 == str.length() || 0 == str.trim().length()) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -209,8 +264,8 @@ public class StringUtils {
 		if (!hasLength(str)) {
 			return str;
 		}
-		int len = str.length();
-		StringBuilder sb = new StringBuilder(str.length());
+		int           len = str.length();
+		StringBuilder sb  = new StringBuilder(str.length());
 		for (int i = 0; i < len; i++) {
 			char c = str.charAt(i);
 			if (!Character.isWhitespace(c)) {
@@ -317,7 +372,7 @@ public class StringUtils {
 		if (str.length() < prefix.length()) {
 			return false;
 		}
-		String lcStr = str.substring(0, prefix.length()).toLowerCase();
+		String lcStr    = str.substring(0, prefix.length()).toLowerCase();
 		String lcPrefix = prefix.toLowerCase();
 		return lcStr.equals(lcPrefix);
 	}
@@ -342,7 +397,7 @@ public class StringUtils {
 			return false;
 		}
 
-		String lcStr = str.substring(str.length() - suffix.length()).toLowerCase();
+		String lcStr    = str.substring(str.length() - suffix.length()).toLowerCase();
 		String lcSuffix = suffix.toLowerCase();
 		return lcStr.equals(lcSuffix);
 	}
@@ -380,7 +435,7 @@ public class StringUtils {
 			return 0;
 		}
 		int count = 0;
-		int pos = 0;
+		int pos   = 0;
 		int idx;
 		while ((idx = str.indexOf(sub, pos)) != -1) {
 			++count;
@@ -404,11 +459,11 @@ public class StringUtils {
 		if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
 			return inString;
 		}
-		StringBuilder sb = new StringBuilder();
-		int pos = 0; // our position in the old string
-		int index = inString.indexOf(oldPattern);
+		StringBuilder sb     = new StringBuilder();
+		int           pos    = 0;                           // our position in the old string
+		int           index  = inString.indexOf(oldPattern);
 		// the index of an occurrence we've found, or -1
-		int patLen = oldPattern.length();
+		int           patLen = oldPattern.length();
 		while (index >= 0) {
 			sb.append(inString.substring(pos, index));
 			sb.append(newPattern);
@@ -638,14 +693,14 @@ public class StringUtils {
 		if (path == null) {
 			return null;
 		}
-		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+		String pathToUse   = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
 		// Strip prefix from path to analyze, to not treat it as part of the
 		// first path element. This is necessary to correctly parse paths like
 		// "file:core/../core/io/Resource.class", where the ".." should just
 		// strip the first "core" directory while keeping the "file:" prefix.
-		int prefixIndex = pathToUse.indexOf(":");
-		String prefix = "";
+		int    prefixIndex = pathToUse.indexOf(":");
+		String prefix      = "";
 		if (prefixIndex != -1) {
 			prefix = pathToUse.substring(0, prefixIndex + 1);
 			if (prefix.contains("/")) {
@@ -659,9 +714,9 @@ public class StringUtils {
 			pathToUse = pathToUse.substring(1);
 		}
 
-		String[] pathArray = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
+		String[]     pathArray    = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
 		List<String> pathElements = new LinkedList<String>();
-		int tops = 0;
+		int          tops         = 0;
 
 		for (int i = pathArray.length - 1; i >= 0; i--) {
 			String element = pathArray[i];
@@ -715,9 +770,9 @@ public class StringUtils {
 	 *         in case of an invalid locale specification
 	 */
 	public static Locale parseLocaleString(String localeString) {
-		String[] parts = tokenizeToStringArray(localeString, "_ ", false, false);
-		String language = (parts.length > 0 ? parts[0] : "");
-		String country = (parts.length > 1 ? parts[1] : "");
+		String[] parts    = tokenizeToStringArray(localeString, "_ ", false, false);
+		String   language = (parts.length > 0 ? parts[0] : "");
+		String   country  = (parts.length > 1 ? parts[1] : "");
 		validateLocalePart(language);
 		validateLocalePart(country);
 		String variant = "";
@@ -951,7 +1006,7 @@ public class StringUtils {
 			return null;
 		}
 		String beforeDelimiter = toSplit.substring(0, offset);
-		String afterDelimiter = toSplit.substring(offset + delimiter.length());
+		String afterDelimiter  = toSplit.substring(offset + delimiter.length());
 		return new String[] { beforeDelimiter, afterDelimiter };
 	}
 
@@ -1055,8 +1110,8 @@ public class StringUtils {
 		if (str == null) {
 			return null;
 		}
-		StringTokenizer st = new StringTokenizer(str, delimiters);
-		List<String> tokens = new ArrayList<String>();
+		StringTokenizer st     = new StringTokenizer(str, delimiters);
+		List<String>    tokens = new ArrayList<String>();
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
 			if (trimTokens) {
@@ -1150,8 +1205,8 @@ public class StringUtils {
 	 * @return a Set of String entries in the list
 	 */
 	public static Set<String> commaDelimitedListToSet(String str) {
-		Set<String> set = new TreeSet<String>();
-		String[] tokens = commaDelimitedListToStringArray(str);
+		Set<String> set    = new TreeSet<String>();
+		String[]    tokens = commaDelimitedListToStringArray(str);
 		for (String token : tokens) {
 			set.add(token);
 		}
@@ -1177,7 +1232,7 @@ public class StringUtils {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		Iterator<?> it = coll.iterator();
+		Iterator<?>   it = coll.iterator();
 		while (it.hasNext()) {
 			sb.append(prefix).append(it.next()).append(suffix);
 			if (it.hasNext()) {

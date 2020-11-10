@@ -12,6 +12,9 @@ import org.xson.tangyuan.TangYuanException;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * @deprecated
+ */
 public class FastJsonConverter implements IConverter {
 
 	@Override

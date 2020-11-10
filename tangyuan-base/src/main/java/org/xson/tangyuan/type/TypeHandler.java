@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public interface TypeHandler<T> {
 
@@ -19,5 +20,8 @@ public interface TypeHandler<T> {
 
 	void appendLog(StringBuilder builder, T parameter, DatabaseDialect dialect);
 
-	void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException;
+	void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException;
+
+	// void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException;
+
 }

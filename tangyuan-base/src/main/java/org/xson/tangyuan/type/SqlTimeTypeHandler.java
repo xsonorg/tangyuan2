@@ -8,6 +8,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class SqlTimeTypeHandler extends BaseTypeHandler<Time> {
 
@@ -45,9 +46,28 @@ public class SqlTimeTypeHandler extends BaseTypeHandler<Time> {
 		builder.append('\'');
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		java.sql.Time v = getResult(rs, columnName);
+	//		if (null != v) {
+	//			xco.setTimeValue(property, v);
+	//		}
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.sql.Time v = getResult(rs, columnName);
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof java.sql.Time)) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+
+			v = (java.sql.Time) nv;
+		}
+
 		if (null != v) {
 			xco.setTimeValue(property, v);
 		}

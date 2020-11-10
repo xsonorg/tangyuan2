@@ -4,26 +4,31 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.executor.ServiceException;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.util.CollectionUtils;
 
 public class RuleGroupItem {
 
-	private static Log	log	= LogFactory.getLog(RuleGroupItem.class);
+	private static Log          log = LogFactory.getLog(RuleGroupItem.class);
 
-	private String		fieldName;
-	private TypeEnum	type;
-	private List<Rule>	rules;
-	private boolean		require;
-	private Object		defaultValue;
-	private String		desc;
-	private String		message;
-	private int			code;
+	private String              fieldName;
+	private TypeEnum            type;
+	private List<Rule>          rules;
+	private boolean             require;
+	private Object              defaultValue;
+	private String              desc;
+	private String              message;
+	private int                 code;
+	// 内嵌对象
+	private List<RuleGroupItem> items;
 
-	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message,
-			int code) {
+	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message, int code,
+			List<RuleGroupItem> items) {
 		this.fieldName = fieldName;
 		this.type = type;
 		this.rules = rules;
@@ -31,58 +36,115 @@ public class RuleGroupItem {
 		this.desc = desc;
 		this.message = message;
 		this.code = code;
+		this.items = items;
 		parseDefaultValue(defaultValue);
 	}
 
 	public boolean check(XCO xco, boolean forcedThrowException) {
-		boolean result = false;
+		return check(xco, forcedThrowException, false);
+	}
+
+	/**
+	 * item验证<br />
+	 * 
+	 * @param xco 被验证的数据对象
+	 * @param forcedThrowException 	true: 强制抛出异常
+	 * @param ignoreDefaultValue	true: 忽略设置默认值
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean check(XCO xco, boolean forcedThrowException, boolean ignoreDefaultValue) {
+		Object value = null;
 		try {
-			Object value = xco.getObjectValue(fieldName);
-			// 需要做非必填的判断
+			value = xco.getObjectValue(fieldName);
+			// 不存在验证数据
 			if (null == value) {
+				// 必须
 				if (require) {
-					result = false;
-				} else {
-					if (null != defaultValue) {
-						setDefaultValue(xco);
-					}
-					return true;
+					throw new XCOValidateException(this.code, this.message);
 				}
-			} else {
-				if (rules.size() > 0) {
-					for (Rule rule : rules) {
-						Checker checker = rule.findChecker(type);
-						if (null == checker) {
-							throw new XCOValidateException("Field type and validation rules do not match: " + fieldName);
-						}
-						result = checker.check(xco, this.fieldName, rule.getValue());
-						if (!result) {
-							break;
-						}
-					}
-				} else {
-					// 在没有规则的情况, 支持类型的验证
-					result = checkValueType(value, xco);
+				// 非必须
+				if (null != defaultValue && !ignoreDefaultValue) {
+					setDefaultValue(xco);
+				}
+				return true;
+			}
+			// 存在验证数据
+
+			// 验证数据类型
+			if (!checkValueType(value, xco)) {
+				throw new XCOValidateException(this.code, this.message);
+			}
+
+			// 无验证规则
+			if (CollectionUtils.isEmpty(this.rules)) {
+				return true;
+			}
+
+			// 存在验证规则
+			for (Rule rule : rules) {
+				Checker checker = rule.findChecker(type);
+				if (null == checker) {
+					throw new XCOValidateException("Field type and validation rules do not match: " + fieldName);
+				}
+				if (!checker.check(xco, this.fieldName, rule.getValue())) {
+					throw new XCOValidateException(this.code, this.message);
 				}
 			}
+
+			// 不存在嵌套字段
+			if (CollectionUtils.isEmpty(this.items)) {
+				return true;
+			}
+
+			// 存在嵌套字段
+			if (TypeEnum.XCO == type) {
+				for (RuleGroupItem item : this.items) {
+					if (!item.check((XCO) value, forcedThrowException, ignoreDefaultValue)) {
+						throw new XCOValidateException(this.code, this.message);
+					}
+				}
+			} else if (TypeEnum.XCO_ARRAY == type) {
+				XCO[] array = (XCO[]) value;
+				for (int i = 0; i < array.length; i++) {
+					for (RuleGroupItem item : this.items) {
+						if (!item.check(array[i], forcedThrowException, ignoreDefaultValue)) {
+							throw new XCOValidateException(this.code, this.message);
+						}
+					}
+				}
+			} else if (TypeEnum.XCO_LIST == type) {
+				List<XCO> list = (List<XCO>) value;
+				for (XCO child : list) {
+					for (RuleGroupItem item : this.items) {
+						if (!item.check(child, forcedThrowException, ignoreDefaultValue)) {
+							throw new XCOValidateException(this.code, this.message);
+						}
+					}
+				}
+			} else if (TypeEnum.XCO_SET == type) {
+				Set<XCO> list = (Set<XCO>) value;
+				for (XCO child : list) {
+					for (RuleGroupItem item : this.items) {
+						if (!item.check(child, forcedThrowException, ignoreDefaultValue)) {
+							throw new XCOValidateException(this.code, this.message);
+						}
+					}
+				}
+			}
+
 		} catch (Throwable e) {
-			log.error(null, e);
-		}
-
-		// if (!result && ValidateComponent.getInstance().isThrowException()) {
-		// throw new XCOValidateException(this.code, this.message);
-		// }
-
-		if (!result) {
-			if (forcedThrowException) {
+			if (forcedThrowException || ValidateComponent.getInstance().isThrowException()) {
+				if (e instanceof ServiceException) {
+					throw e;
+				}
+				log.error(e);// 未知异常
 				throw new XCOValidateException(this.code, this.message);
 			}
-			if (ValidateComponent.getInstance().isThrowException()) {
-				throw new XCOValidateException(this.code, this.message);
-			}
+			log.error(e);
+			return false;
 		}
-
-		return result;
+		return true;
 	}
 
 	private boolean checkValueType(Object value, XCO data) {
@@ -341,4 +403,79 @@ public class RuleGroupItem {
 	public List<Rule> getRules() {
 		return rules;
 	}
+
+	public List<RuleGroupItem> getItems() {
+		return items;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	//	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message, int code) {
+	//		this.fieldName = fieldName;
+	//		this.type = type;
+	//		this.rules = rules;
+	//		this.require = require;
+	//		this.desc = desc;
+	//		this.message = message;
+	//		this.code = code;
+	//		parseDefaultValue(defaultValue);
+	//	}
+
+	//	public boolean check(XCO xco, boolean forcedThrowException, boolean ignoreDefaultValue) {
+	//		boolean result = false;
+	//		Object  value  = null;
+	//		try {
+	//			value = xco.getObjectValue(fieldName);
+	//			// 需要做非必填的判断
+	//			if (null == value) {
+	//				if (require) {
+	//					result = false;
+	//				} else {
+	//					// support service
+	//					if (null != defaultValue && !ignoreDefaultValue) {
+	//						setDefaultValue(xco);
+	//					}
+	//					return true;
+	//				}
+	//			} else {
+	//				if (rules.size() > 0) {
+	//					for (Rule rule : rules) {
+	//						Checker checker = rule.findChecker(type);
+	//						if (null == checker) {
+	//							throw new XCOValidateException("Field type and validation rules do not match: " + fieldName);
+	//						}
+	//						result = checker.check(xco, this.fieldName, rule.getValue());
+	//						if (!result) {
+	//							break;
+	//						}
+	//					}
+	//				} else {
+	//					// 在没有规则的情况, 支持类型的验证
+	//					result = checkValueType(value, xco);
+	//				}
+	//			}
+	//		} catch (Throwable e) {
+	//			log.error(null, e);
+	//		}
+	//
+	//		// support items
+	//		if (null != this.items && result) {
+	//			for (RuleGroupItem item : this.items) {
+	//				result = item.check((XCO) value, forcedThrowException, ignoreDefaultValue);
+	//				if (!result) {
+	//					break;
+	//				}
+	//			}
+	//		}
+	//
+	//		if (!result) {
+	//			if (forcedThrowException) {
+	//				throw new XCOValidateException(this.code, this.message);
+	//			}
+	//			if (ValidateComponent.getInstance().isThrowException()) {
+	//				throw new XCOValidateException(this.code, this.message);
+	//			}
+	//		}
+	//
+	//		return result;
+	//	}
 }

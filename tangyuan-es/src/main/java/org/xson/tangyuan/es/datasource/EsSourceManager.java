@@ -5,39 +5,39 @@ import java.util.Map.Entry;
 
 public class EsSourceManager {
 
-	private static EsSourceVo				defaultVo		= null;
-	private static Map<String, EsSourceVo>	esSourceVoMap	= null;
+	private EsSourceVo              defaultVo     = null;
+	private Map<String, EsSourceVo> esSourceVoMap = null;
 
-	public static void setEsSourceVoMap(EsSourceVo essVo, Map<String, EsSourceVo> voMap) {
+	public EsSourceManager(EsSourceVo essVo, Map<String, EsSourceVo> voMap) {
 		if (null != essVo) {
-			defaultVo = essVo;
+			this.defaultVo = essVo;
 		} else {
-			esSourceVoMap = voMap;
+			this.esSourceVoMap = voMap;
 		}
 	}
 
-	public static String getDefaultEsKey() {
+	public String getDefaultEsKey() {
 		if (null != defaultVo) {
 			return defaultVo.getId();
 		}
 		return null;
 	}
 
-	public static boolean isValidEsKey(String esKey) {
+	public boolean isValidEsKey(String esKey) {
 		if (null != defaultVo) {
 			return defaultVo.getId().equals(esKey);
 		}
 		return esSourceVoMap.containsKey(esKey);
 	}
 
-	public static EsSourceVo getEsSource(String esKey) {
+	public EsSourceVo getEsSource(String esKey) {
 		if (null != defaultVo) {
 			return defaultVo;
 		}
 		return esSourceVoMap.get(esKey);
 	}
 
-	public static void start() throws Throwable {
+	public void start() throws Throwable {
 		if (null != defaultVo) {
 			defaultVo.start();
 		} else {
@@ -47,7 +47,7 @@ public class EsSourceManager {
 		}
 	}
 
-	public static void stop() {
+	public void stop() {
 		if (null != defaultVo) {
 			defaultVo.stop();
 		} else {
@@ -56,4 +56,12 @@ public class EsSourceManager {
 			}
 		}
 	}
+
+	//	public void setEsSourceVoMap(EsSourceVo essVo, Map<String, EsSourceVo> voMap) {
+	//		if (null != essVo) {
+	//			defaultVo = essVo;
+	//		} else {
+	//			esSourceVoMap = voMap;
+	//		}
+	//	}
 }

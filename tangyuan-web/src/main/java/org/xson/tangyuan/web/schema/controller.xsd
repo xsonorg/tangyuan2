@@ -5,104 +5,19 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/web/controller" targetNamespace="http://xson.org/schema/tangyuan/web/controller" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="web-controller">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:choice maxOccurs="unbounded">
-					<xs:element ref="bean"/>
-					<xs:element ref="converter"/>
-					<xs:element ref="converter-group"/>
-					<xs:element ref="assembly"/>
-					<xs:element ref="before"/>
-					<xs:element ref="after"/>
-					<xs:element ref="response"/>
 					<xs:element ref="c"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="ns" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="bean">
-		<xs:complexType>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="class" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="converter">
-		<xs:complexType>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="class" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="converter-group">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="converter" minOccurs="2" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:attribute name="ref" type="xs:string" use="required"/>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="assembly">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="call" type="xs:string" use="required"/>
-			<xs:attribute name="order" type="xs:int" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="before">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="call" type="xs:string" use="required"/>
-			<xs:attribute name="order" type="xs:int" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="after">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="call" type="xs:string" use="required"/>
-			<xs:attribute name="order" type="xs:int" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="response">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="bean" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="c">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element ref="assembly"/>
-					<xs:element ref="before"/>
-					<xs:element ref="after"/>
-				</xs:choice>
-			</xs:sequence>
 			<xs:attribute name="url" type="xs:string" use="required"/>
 			<xs:attribute name="type" use="optional">
 				<xs:simpleType>
@@ -121,6 +36,8 @@
 			<xs:attribute name="cacheUse" type="xs:string" use="optional"/>
 			<xs:attribute name="cacheInAop" type="xs:boolean" use="optional"/>
 			<xs:attribute name="converter" type="xs:string" use="optional"/>
+			<xs:attribute name="desc" type="xs:string" use="optional"/>
+			<xs:attribute name="group" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

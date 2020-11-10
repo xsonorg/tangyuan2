@@ -2,6 +2,9 @@ package org.xson.tangyuan.ognl.convert;
 
 import org.xson.common.object.XCO;
 
+/**
+ * @deprecated
+ */
 public class XmlStringConverter implements IConverter {
 
 	@Override

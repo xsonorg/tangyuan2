@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
 
@@ -57,12 +58,34 @@ public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
 		builder.append('\'');
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		java.util.Date v = getResult(rs, columnName);
+	//		if (null != v) {
+	//			xco.setDateValue(property, new java.sql.Date(v.getTime()));
+	//		}
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		java.util.Date v = getResult(rs, columnName);
+		//		if (null != v && null != valueHandler) {
+		//			v = (java.util.Date) valueHandler.process(columnName, v);
+		//		}
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof java.util.Date)) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+			
+			v = (java.util.Date) nv;
+			
+		}
+
 		if (null != v) {
 			xco.setDateValue(property, new java.sql.Date(v.getTime()));
 		}
 	}
-
 }

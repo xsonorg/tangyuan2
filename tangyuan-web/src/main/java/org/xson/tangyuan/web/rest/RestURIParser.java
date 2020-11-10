@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.tangyuan.web.util.RestUtil;
-import org.xson.tangyuan.web.util.ServletUtils;
+import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.web.util.WebUtil;
 import org.xson.tangyuan.xml.XmlParseException;
 
 public class RestURIParser {
@@ -34,21 +34,22 @@ public class RestURIParser {
 		if (0 == query.length()) {
 			return null;
 		}
-		List<String> itemList = RestUtil.splitToStringList(query, RestURIVo.URI_SYMBOL_AND);
+		//		List<String> itemList = RestUtil.splitToStringList(query, RestURIVo.URI_SYMBOL_AND);
+		List<String> itemList = StringUtils.splitStringToList(query, RestURIVo.URI_SYMBOL_AND);
 		if (null == itemList || 0 == itemList.size()) {
 			return null;
 		}
 		// key: originalVarName, value:customVarName
 		Map<String, String> queryVariables = new HashMap<String, String>();
 
-		int size = itemList.size();
+		int                 size           = itemList.size();
 		for (int i = 0; i < size; i++) {
 			String item = itemList.get(i);
-			int pos = item.indexOf(RestURIVo.URI_SYMBOL_EQUAL);
+			int    pos  = item.indexOf(RestURIVo.URI_SYMBOL_EQUAL);
 			if (pos < 0) {
 				throw new XmlParseException("Invalid query string. uri: " + uri);
 			}
-			String name = item.substring(0, pos);
+			String name  = item.substring(0, pos);
 			String value = item.substring(pos + 1);
 			if (!checkQueryVar(value)) {
 				throw new XmlParseException("Query string variable format is illegal, it should be {XXX}. uri: " + uri);
@@ -71,14 +72,14 @@ public class RestURIParser {
 	public RestURIVo parseURI(String uri) {
 		/* /xx1/{id}/animals?page={}&per_page={per_page} */
 
-		RestURIVo restURI = null;
+		RestURIVo            restURI        = null;
 		// key: pos, value:varName
-		Map<Integer, String> pathVariables = null;
+		Map<Integer, String> pathVariables  = null;
 		// key: originalVarName, value:customVarName
-		Map<String, String> queryVariables = null;
+		Map<String, String>  queryVariables = null;
 
-		int pos = uri.indexOf(RestURIVo.URI_SYMBOL_QUESTION_MARK);// ?
-		String path = uri;
+		int                  pos            = uri.indexOf(RestURIVo.URI_SYMBOL_QUESTION_MARK);// ?
+		String               path           = uri;
 		if (pos > 0) {
 			path = uri.substring(0, pos);
 			queryVariables = parseQueryString(uri.substring(pos + 1), uri);
@@ -93,12 +94,12 @@ public class RestURIParser {
 			// List<String> itemList = RestUtil.splitToStringList(rPath, RestURIVo.URI_SYMBOL_FOLDER_SEPARATOR);// /
 			// item首元素为'/'
 
-			List<String> itemList = ServletUtils.parseURIPathItem(path);
+			List<String> itemList = WebUtil.parseURIPathItem(path);
 
 			pathVariables = new HashMap<Integer, String>();
 			List<String> patternList = new ArrayList<String>();
 
-			int size = itemList.size();
+			int          size        = itemList.size();
 			for (int i = 0; i < size; i++) {
 				String item = itemList.get(i);
 				if (checkPathVar(item)) {

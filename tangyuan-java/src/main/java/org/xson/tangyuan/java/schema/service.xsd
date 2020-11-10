@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/java/service" targetNamespace="http://xson.org/schema/tangyuan/java/service" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="javaservices">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="service"/>
 				</xs:choice>
 			</xs:sequence>
@@ -14,17 +18,18 @@
 	<xs:element name="service">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="include"/>
-					<xs:element name="exclude"/>
-					<xs:element name="methodCache">
-						<xs:complexType>
-							<xs:attribute name="method" type="xs:string" use="required"/>
-							<xs:attribute name="cacheUse" type="xs:string" use="optional"/>
-							<xs:attribute name="cacheClean" type="xs:string" use="optional"/>
-						</xs:complexType>
-					</xs:element>
-				</xs:choice>
+				<xs:element name="include" minOccurs="0"/>
+				<xs:element name="exclude" minOccurs="0"/>
+				<xs:element name="method" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="cacheUse" type="xs:string" use="optional"/>
+						<xs:attribute name="cacheClean" type="xs:string" use="optional"/>
+						<xs:attribute name="desc" type="xs:string" use="optional"/>
+						<xs:attribute name="group" type="xs:string" use="optional"/>
+						<xs:attribute name="cloneArg" type="xs:boolean" use="optional" default="false"/>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>
 			<xs:attribute name="ns" type="xs:string" use="optional"/>

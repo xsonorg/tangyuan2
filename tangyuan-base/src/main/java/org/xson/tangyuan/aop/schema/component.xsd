@@ -25,8 +25,7 @@
 			<xs:attribute name="mode">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="EXTEND"/>
-						<xs:enumeration value="ALONE"/>
+						<xs:enumeration value="SYNC"/>
 						<xs:enumeration value="ASYNC"/>
 					</xs:restriction>
 				</xs:simpleType>
@@ -46,8 +45,7 @@
 			<xs:attribute name="mode">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="EXTEND"/>
-						<xs:enumeration value="ALONE"/>
+						<xs:enumeration value="SYNC"/>
 						<xs:enumeration value="ASYNC"/>
 					</xs:restriction>
 				</xs:simpleType>

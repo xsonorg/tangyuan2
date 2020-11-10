@@ -3,33 +3,65 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/timer/component" targetNamespace="http://xson.org/schema/tangyuan/timer/component" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="timer-component">
+	<xs:element name="config-property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="single-live">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="config-property" maxOccurs="unbounded">
+				<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:attribute name="name" type="xs:string" use="required"/>
 						<xs:attribute name="value" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="timer" maxOccurs="unbounded">
+			</xs:sequence>
+			<xs:attribute name="class" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timer">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:attribute name="name" type="xs:string" use="required"/>
-									<xs:attribute name="value" type="xs:string" use="required"/>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-						<xs:attribute name="scheduled" type="xs:string" use="required"/>
-						<xs:attribute name="service" type="xs:string" use="required"/>
-						<xs:attribute name="desc" type="xs:string" use="optional"/>
-						<xs:attribute name="sync" type="xs:boolean" use="optional" default="true"/>
-						<xs:attribute name="custom" type="xs:string" use="optional"/>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="scheduled" type="xs:string" use="required"/>
+			<xs:attribute name="service" type="xs:string" use="required"/>
+			<xs:attribute name="desc" type="xs:string" use="optional"/>
+			<xs:attribute name="sync" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="custom" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timerGroup">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="timer"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="start" type="xs:int" use="required"/>
+			<xs:attribute name="end" type="xs:int" use="optional"/>
+			<xs:attribute name="index" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timer-component">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="config-property"/>
+					<xs:element ref="single-live"/>
+					<xs:element ref="timer"/>
+					<xs:element ref="timerGroup"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

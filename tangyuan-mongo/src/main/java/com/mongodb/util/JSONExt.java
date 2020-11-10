@@ -1,9 +1,14 @@
 package com.mongodb.util;
 
+import java.util.Date;
 import java.util.regex.Pattern;
 
-import org.bson.BSONCallback;
+import org.bson.types.BSONTimestamp;
+import org.bson.types.Code;
+import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
+
+import com.mongodb.util.ParserExt.ParserExtResult;
 
 public class JSONExt {
 
@@ -66,9 +71,9 @@ public class JSONExt {
 	 * @throws JSONParseException
 	 *             if jsonString is not valid JSON
 	 */
-	public static Object parse(final String jsonString) {
-		return parse(jsonString, null);
-	}
+	//	public static Object parse(final String jsonString) {
+	//		return parse(jsonString, null);
+	//	}
 
 	/**
 	 * Parses a JSON string and constructs a corresponding Java object by calling the methods of a {@link org.bson.BSONCallback BSONCallback} during
@@ -82,11 +87,18 @@ public class JSONExt {
 	 * @throws JSONParseException
 	 *             if s is not valid JSON
 	 */
-	public static Object parse(final String s, final BSONCallback c) {
+	//	public static Object parse(final String s, final BSONCallback c) {
+	//		if (s == null || (s.trim()).equals("")) {
+	//			return null;
+	//		}
+	//		JSONParser p = new JSONParser(s, c);
+	//		return p.parse();
+	//	}
+
+	public static Object parse(final String s, final JSONExtCallback c) {
 		if (s == null || (s.trim()).equals("")) {
 			return null;
 		}
-
 		JSONParser p = new JSONParser(s, c);
 		return p.parse();
 	}
@@ -128,9 +140,10 @@ public class JSONExt {
  */
 class JSONParser {
 
-	final String		s;
-	int					pos	= 0;
-	final BSONCallback	_callback;
+	final String          s;
+	int                   pos       = 0;
+	final JSONExtCallback _callback;
+	ParserExt             parserExt = new ParserExt();
 
 	/**
 	 * Create a new parser.
@@ -142,9 +155,12 @@ class JSONParser {
 	/**
 	 * Create a new parser.
 	 */
-	public JSONParser(final String s, final BSONCallback callback) {
+	public JSONParser(final String s, final JSONExtCallback callback) {
 		this.s = s;
-		_callback = (callback == null) ? new JSONCallback() : callback;
+		this._callback = callback;
+
+		//		_callback = (callback == null) ? new JSONCallback() : callback;
+		// _callback = (callback == null) ? new JSONExtCallback() : callback;
 	}
 
 	/**
@@ -166,25 +182,43 @@ class JSONParser {
 	 *             if invalid JSON is found
 	 */
 	protected Object parse(final String name) {
-		Object value = null;
-		char current = get();
+		ParserExtResult res     = null;
+		Object          value   = null;
+		char            current = get();
 
 		switch (current) {
-		// null
-		case 'n':
-			read('n');
-			read('u');
-			read('l');
-			read('l');
-			value = null;
+
+		case 'n':// null, new Date(), new Timestamp
+			res = parserExt.parseN(s, pos);
+			value = res.value;
+			this.pos = res.endPos + 1;
 			break;
-		// NaN
-		case 'N':
-			read('N');
-			read('a');
-			read('N');
-			value = Double.NaN;
+		//			read('n');
+		//			read('u');
+		//			read('l');
+		//			read('l');
+		//			value = null;
+		//			break;
+		case 'I'://ISODate, 
+			res = parserExt.parseI(s, pos);
+			value = res.value;
+			this.pos = res.endPos + 1;
 			break;
+		case 'D'://Date(), 
+			res = parserExt.parseD(s, pos);
+			value = res.value;
+			this.pos = res.endPos + 1;
+			break;
+		case 'N':// NaN
+			res = parserExt.parseNN(s, pos);
+			value = res.value;
+			this.pos = res.endPos + 1;
+			break;
+		//			read('N');
+		//			read('a');
+		//			read('N');
+		//			value = Double.NaN;
+		//			break;
 		// true
 		case 't':
 			read('t');
@@ -193,22 +227,23 @@ class JSONParser {
 			read('e');
 			value = true;
 			break;
-		// false
-		case 'f':
-			read('f');
-			read('a');
-			read('l');
-			read('s');
-			read('e');
-			value = false;
+		case 'f':// false
+			res = parserExt.parsef(s, pos);
+			value = res.value;
+			this.pos = res.endPos + 1;
 			break;
-		// string
+		//			read('f');
+		//			read('a');
+		//			read('l');
+		//			read('s');
+		//			read('e');
+		//			value = false;
+		//			break;
 		case '\'':
-		case '\"':
+		case '\"':// string
 			value = parseString(true);
 			break;
-		// ObjectId
-		case 'O':
+		case 'O':// ObjectId
 			read('O');
 			read('b');
 			read('j');
@@ -219,7 +254,6 @@ class JSONParser {
 			read('d');
 			value = parseObjectId(name);
 			break;
-		// number
 		case '0':
 		case '1':
 		case '2':
@@ -231,19 +265,21 @@ class JSONParser {
 		case '8':
 		case '9':
 		case '+':
-		case '-':
+		case '-':// number
 			value = parseNumber();
 			break;
-		// array
-		case '[':
+		case '[':// array
 			value = parseArray(name);
 			break;
-		// object
-		case '{':
+		case '@':// @{}
+			res = parserExt.parseCall(s, pos, _callback);
+			value = res.value;
+			this.pos = res.endPos + 1;
+			break;
+		case '{':// object
 			value = parseObject(name);
 			break;
-		// regex
-		case '/':
+		case '/':// regex
 			value = parseRegex(name);
 			break;
 		default:
@@ -272,8 +308,8 @@ class JSONParser {
 
 	protected Object parseRegex(final String name) {
 
-		int start = pos + 1;
-		int end = -1;
+		int  start = pos + 1;
+		int  end   = -1;
 		char current;
 
 		while (start < s.length()) {
@@ -354,7 +390,8 @@ class JSONParser {
 		return _callback.objectDone();
 	}
 
-	protected void doCallback(final String name, final Object value) {
+	protected void doCallback(String name, final Object value) {
+		name = name.trim();//fix bug 
 		if (value == null) {
 			_callback.gotNull(name);
 		} else if (value instanceof String) {
@@ -371,10 +408,33 @@ class JSONParser {
 			_callback.gotObjectId(name, (ObjectId) value);
 		}
 
+		else if (value instanceof Date) {
+			((JSONExtCallback) _callback).gotDate(name, (Date) value);
+		} else if (value instanceof BSONTimestamp) {
+			((JSONExtCallback) _callback).gotTimestamp(name, (BSONTimestamp) value);
+		}
+		//		else if (value instanceof FunctionCode) {
+		//			((JSONExtCallback) _callback).gotCode(name, ((FunctionCode) value).value);
+		//		} 
+		else if (value instanceof Code) {
+			((JSONExtCallback) _callback).gotCode(name, ((Code) value).getCode());
+		} else if (value instanceof Decimal128) {
+			((JSONExtCallback) _callback).gotDecimal128(name, (Decimal128) value);
+		}
+
 		// regex
 		else if (value instanceof Pattern) {
 			((JSONExtCallback) _callback).gotRegex(name, (Pattern) value);
 		}
+
+		else {
+			((JSONExtCallback) _callback).gotOther(name, value);
+		}
+
+		// _callback.gotCodeWScope(name, code, scope);
+		// _callback.gotUUID(name, part1, part2);
+		// _callback.gotDate(name, millis);
+		// _callback.gotTimestamp(name, time, increment);
 
 	}
 
@@ -407,8 +467,8 @@ class JSONParser {
 	 *             if the current character is not a hexidecimal character
 	 */
 	public void readHex() {
-		if (pos < s.length() && ((s.charAt(pos) >= '0' && s.charAt(pos) <= '9') || (s.charAt(pos) >= 'A' && s.charAt(pos) <= 'F')
-				|| (s.charAt(pos) >= 'a' && s.charAt(pos) <= 'f'))) {
+		if (pos < s.length()
+				&& ((s.charAt(pos) >= '0' && s.charAt(pos) <= '9') || (s.charAt(pos) >= 'A' && s.charAt(pos) <= 'F') || (s.charAt(pos) >= 'a' && s.charAt(pos) <= 'f'))) {
 			pos++;
 		} else {
 			throw new JSONParseException(s, pos);
@@ -471,8 +531,8 @@ class JSONParser {
 		if (quot > 0) {
 			read(quot);
 		}
-		StringBuilder buf = new StringBuilder();
-		int start = pos;
+		StringBuilder buf   = new StringBuilder();
+		int           start = pos;
 		while (pos < s.length()) {
 			current = s.charAt(pos);
 			if (quot > 0) {
@@ -488,7 +548,7 @@ class JSONParser {
 			if (current == '\\') {
 				pos++;
 
-				char x = get();
+				char x       = get();
 
 				char special = 0;
 
@@ -559,7 +619,7 @@ class JSONParser {
 	public Number parseNumber() {
 
 		get();
-		int start = this.pos;
+		int     start    = this.pos;
 		boolean isDouble = false;
 
 		if (check('-') || check('+')) {
@@ -698,11 +758,11 @@ class JSONParser {
 
 		read('[');
 
-		int i = 0;
+		int  i       = 0;
 		char current = get();
 		while (current != ']') {
 			String elemName = String.valueOf(i++);
-			Object elem = parse(elemName);
+			Object elem     = parse(elemName);
 			doCallback(elemName, elem);
 
 			if ((current = get()) == ',') {

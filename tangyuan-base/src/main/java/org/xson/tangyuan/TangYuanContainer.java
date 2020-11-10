@@ -1,6 +1,5 @@
 package org.xson.tangyuan;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,17 +9,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.aop.sys.SystemAopVo;
-import org.xson.tangyuan.app.ExtArg;
-import org.xson.tangyuan.executor.ServiceActuator;
-import org.xson.tangyuan.executor.ServiceContextFactory;
-import org.xson.tangyuan.httpclient.HttpClientManager;
+import org.xson.tangyuan.client.http.HttpClientManager;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.pool.ThreadPool;
-import org.xson.tangyuan.runtime.RuntimeContext;
-import org.xson.tangyuan.task.AsyncTask;
-import org.xson.tangyuan.util.LicensesHelper;
-import org.xson.tangyuan.util.ResourceManager;
+import org.xson.tangyuan.log.TangYuanLang;
+import org.xson.tangyuan.manager.ManagerLauncher;
+import org.xson.tangyuan.manager.TangYuanManager;
+import org.xson.tangyuan.manager.TangYuanState.ComponentState;
+import org.xson.tangyuan.service.context.ServiceContextFactory;
+import org.xson.tangyuan.service.pool.AsyncTask;
+import org.xson.tangyuan.service.pool.ThreadPool;
+import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XmlGlobalContext;
 import org.xson.tangyuan.xml.XmlTangYuanBuilder;
 import org.xson.tangyuan.xml.node.AbstractServiceNode;
@@ -28,52 +27,49 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class TangYuanContainer implements TangYuanComponent {
 
-	private static TangYuanContainer				instance				= new TangYuanContainer();
+	private static TangYuanContainer               instance                = new TangYuanContainer();
 
-	public final static String						XCO_DATA_KEY			= "$$DATA";
-	public final static String						XCO_CODE_KEY			= "$$CODE";
-	public final static String						XCO_MESSAGE_KEY			= "$$MESSAGE";
-	// XCO返回对象包装标识
-	public final static String						XCO_PACKAGE_KEY			= "$$PACKAGE";
-	public final static String						XCO_HEADER_KEY			= "$$HEADER";
+	public final static String                     XCO_DATA_KEY            = "$$DATA";
+	public final static String                     XCO_CODE_KEY            = "$$CODE";
+	public final static String                     XCO_MESSAGE_KEY         = "$$MESSAGE";
+	/** XCO返回对象包装标识 */
+	public final static String                     XCO_PACKAGE_KEY         = "$$PACKAGE";
+	public final static String                     XCO_HEADER_KEY          = "$$HEADER";
+	public final static int                        SUCCESS_CODE            = 0;
 
-	public final static int							SUCCESS_CODE			= 0;
+	private Log                                    log                     = null;
+	private XmlGlobalContext                       xmlGlobalContext        = null;
+	private volatile ComponentState                state                   = ComponentState.UNINITIALIZED;
 
-	private Log										log						= LogFactory.getLog(getClass());
-	private volatile boolean						closing					= false;
-	private String									systemName				= "tangyuan";
-	private String									appName					= "tangyuan-app";
-	private XmlGlobalContext						xmlGlobalContext		= null;
+	private final Map<String, AbstractServiceNode> tangyuanServices        = new HashMap<String, AbstractServiceNode>();
+	private final Map<String, AbstractServiceNode> tangyuanDynamicServices = new ConcurrentHashMap<String, AbstractServiceNode>();
 
-	private final Map<String, AbstractServiceNode>	tangyuanServices		= new HashMap<String, AbstractServiceNode>();
-	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices	= new ConcurrentHashMap<String, AbstractServiceNode>();
-	// private AsyncTaskThread asyncTaskThread = null;
-	private ThreadPool								threadPool				= null;
-	private Map<String, ServiceContextFactory>		scFactoryMap			= new HashMap<String, ServiceContextFactory>();
+	private ThreadPool                             threadPool              = null;
 
-	private Map<String, ComponentVo>				componentMap			= new HashMap<String, ComponentVo>();
+	private Map<String, ServiceContextFactory>     scFactoryMap            = new HashMap<String, ServiceContextFactory>();
+	private Map<String, ComponentVo>               componentMap            = new HashMap<String, ComponentVo>();
 
-	// ss-aop
-	private List<SystemAopVo>						closingBeforeList		= null;
-	private List<SystemAopVo>						closingAfterList		= null;
-
-	private Class<?>								defaultResultType		= XCO.class;
-	private boolean									licenses				= false;
+	/** system AOP */
+	private List<SystemAopVo>                      closingBeforeList       = null;
+	private List<SystemAopVo>                      closingAfterList        = null;
+	private Class<?>                               defaultResultType       = XCO.class;
 	/** true:jdk, false:cglib */
-	private boolean									jdkProxy				= false;
+	private boolean                                jdkProxy                = false;
 	/** 错误信息编码 */
-	private int										errorCode				= -1;
-	private String									errorMessage			= "服务异常";
-	private String									nsSeparator				= "/";
-	private String									licenseResource			= null;
+	private int                                    errorCode               = -1;
+	private String                                 errorMessage            = "服务异常";
+	private String                                 nsSeparator             = "/";
+
 	/** 最大关闭等待时间(秒) */
-	private long									maxWaitTimeForShutDown	= 10L;
+	private long                                   maxWaitTimeForShutDown  = 10L;
 	/** 所有服务统一返回XCO */
-	private boolean									allServiceReturnXCO		= true;
-	/** 外部扩展参数 */
-	private ExtArg									extArg					= new ExtArg();
+	private boolean                                allServiceReturnXCO     = true;
 	/** 关闭的时候是否启动一个新的线程 */
-	private boolean									shutdownInNewThread		= false;
+	private boolean                                shutdownInNewThread     = false;
+	/** 克隆服务参数 */
+	private boolean                                cloneServiceArg         = false;
+	/** 后缀参数, 通过配置文件后缀传入 */
+	private Map<String, String>                    suffixArgs              = new HashMap<>();
 
 	private TangYuanContainer() {
 	}
@@ -82,358 +78,13 @@ public class TangYuanContainer implements TangYuanComponent {
 		return instance;
 	}
 
-	/** 设置配置文件 */
-	public void config(Map<String, String> properties) {
-		if (properties.containsKey("errorCode".toUpperCase())) {
-			errorCode = Integer.parseInt(properties.get("errorCode".toUpperCase()));
-		}
-		if (properties.containsKey("errorMessage".toUpperCase())) {
-			errorMessage = properties.get("errorMessage".toUpperCase());
-		}
-		if (properties.containsKey("jdkProxy".toUpperCase())) {
-			jdkProxy = Boolean.parseBoolean(properties.get("jdkProxy".toUpperCase()));
-		}
-
-		// if (properties.containsKey("nsSeparator".toUpperCase())) {
-		// nsSeparator = properties.get("nsSeparator".toUpperCase());
-		// }
-
-		if (properties.containsKey("systemName".toUpperCase())) {
-			systemName = properties.get("systemName".toUpperCase());
-		}
-		if (properties.containsKey("appName".toUpperCase())) {
-			appName = properties.get("appName".toUpperCase());
-		}
-		if (properties.containsKey("licenseResource".toUpperCase())) {
-			this.licenseResource = properties.get("licenseResource".toUpperCase());
-		}
-
-		if (properties.containsKey("maxWaitTimeForShutDown".toUpperCase())) {
-			maxWaitTimeForShutDown = Long.parseLong(properties.get("maxWaitTimeForShutDown".toUpperCase()));
-		}
-
-		if (properties.containsKey("allServiceReturnXCO".toUpperCase())) {
-			allServiceReturnXCO = Boolean.parseBoolean(properties.get("allServiceReturnXCO".toUpperCase()));
-			log.info("open the unified return object mode.");
-		}
-
-		if (properties.containsKey("shutdownInNewThread".toUpperCase())) {
-			shutdownInNewThread = Boolean.parseBoolean(properties.get("shutdownInNewThread".toUpperCase()));
-		}
-
-		log.info("config setting success...");
-	}
-
 	public void setClosingList(List<SystemAopVo> closingBeforeList, List<SystemAopVo> closingAfterList) {
 		this.closingBeforeList = closingBeforeList;
 		this.closingAfterList = closingAfterList;
 	}
 
-	public void startThreadPool(Properties p) throws Throwable {
-		if (null == this.threadPool) {
-			threadPool = new ThreadPool();
-			threadPool.start(p, this.maxWaitTimeForShutDown);
-		}
-	}
-
-	@Override
-	public void start(String resource) throws Throwable {
-		log.info("tangyuan framework starting, version: " + Version.getVersion());
-		try {
-			InputStream licenseInputStream = null;
-			if (null != this.licenseResource) {
-				licenseInputStream = ResourceManager.getInputStream(resource);
-			}
-			licenses = LicensesHelper.check(licenseInputStream);
-			if (licenses) {
-				log.info("tangyuan licenses verification is successful.");
-			}
-		} catch (Throwable e) {
-		}
-
-		// 异步队列
-		// asyncTaskThread = new AsyncTaskThread();
-		// asyncTaskThread.start();
-
-		// 死锁服务监控
-		// if (openDeadlockMonitor) {
-		// DeadlockMonitorWriter writer = null;
-		// if (null != deadlockMonitorWriterClassName) {
-		// Class<?> clazz = ClassUtils.forName(deadlockMonitorWriterClassName);
-		// writer = (DeadlockMonitorWriter) TangYuanUtil.newInstance(clazz);
-		// }
-		// deadlockMonitor = new ServiceDeadlockMonitor(writer);
-		// deadlockMonitor.start();
-		// }
-
-		xmlGlobalContext = new XmlGlobalContext();
-
-		XmlTangYuanBuilder xmlBuilder = new XmlTangYuanBuilder();
-		xmlBuilder.parse(xmlGlobalContext, resource);
-		xmlGlobalContext.clean();
-
-		log.info("tangyuan framework successfully.");
-	}
-
-	@Override
-	public void stop(boolean wait) {
-		log.info("tangyuan framework stopping...");
-
-		// for (ComponentVo component : ComponentVo.sort(components, false)) {
-		// component.getComponent().stop(true);
-		// }
-
-		closing = true;
-		// wait = true;
-		final boolean _wait = true;
-
-		if (shutdownInNewThread) {
-			Thread shutdownThread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					stop0(_wait);
-				}
-			});
-			shutdownThread.setDaemon(false);
-			shutdownThread.start();
-		} else {
-			stop0(_wait);
-		}
-
-		// executeSSAop(this.closingBeforeList);
-		//
-		// String type = "web".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// // 如果是RPC服务,先停止服务
-		// type = "rpc".toUpperCase();
-		// if (componentMap.containsKey("rpc-server")) {
-		// componentMap.get("rpc-server").getComponent().stop(wait);
-		// }
-		//
-		// type = "timer".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "mq".toUpperCase();
-		// if (componentMap.containsKey("mq-listener".toUpperCase())) {
-		// componentMap.get("mq-listener".toUpperCase()).getComponent().stop(wait);
-		// }
-		//
-		// // 停止服务
-		// ServiceActuator.shutdown();
-		//
-		// type = "sql".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "java".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "mongo".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "hbase".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "hive".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "es".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "mq".toUpperCase();
-		// if (componentMap.containsKey("mq-service".toUpperCase())) {
-		// componentMap.get("mq-service".toUpperCase()).getComponent().stop(wait);
-		// }
-		//
-		// type = "rpc".toUpperCase();
-		// if (componentMap.containsKey("rpc-client")) {
-		// componentMap.get("rpc-client").getComponent().stop(wait);
-		// }
-		//
-		// type = "cache".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "validate".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// type = "tools".toUpperCase();
-		// if (componentMap.containsKey(type)) {
-		// componentMap.get(type).getComponent().stop(wait);
-		// }
-		//
-		// RuntimeContext.shutdown();
-		//
-		// // if (null != asyncTaskThread) {
-		// // asyncTaskThread.stop();
-		// // }
-		//
-		// if (null != threadPool) {
-		// threadPool.stop();
-		// }
-		//
-		// // if (null != deadlockMonitor) {
-		// // deadlockMonitor.stop();
-		// // }
-		// // if (null != trackingManager) {
-		// // trackingManager.stop();
-		// // }
-		//
-		// executeSSAop(this.closingAfterList);
-		//
-		// HttpClientManager.shutdown();
-		//
-		// log.info("tangyuan framework stop successfully.");
-	}
-
-	private void stop0(boolean wait) {
-
-		// log.info("tangyuan framework stopping...:xxx");
-
-		executeSSAop(this.closingBeforeList);
-
-		String type = "web".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		// 如果是RPC服务,先停止服务
-		type = "rpc".toUpperCase();
-		if (componentMap.containsKey("rpc-server")) {
-			componentMap.get("rpc-server").getComponent().stop(wait);
-		}
-
-		type = "timer".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "mq".toUpperCase();
-		if (componentMap.containsKey("mq-listener".toUpperCase())) {
-			componentMap.get("mq-listener".toUpperCase()).getComponent().stop(wait);
-		}
-
-		// 停止服务
-		ServiceActuator.shutdown();
-
-		type = "sql".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "java".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "mongo".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "hbase".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "hive".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "es".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "mq".toUpperCase();
-		if (componentMap.containsKey("mq-service".toUpperCase())) {
-			componentMap.get("mq-service".toUpperCase()).getComponent().stop(wait);
-		}
-
-		type = "rpc".toUpperCase();
-		if (componentMap.containsKey("rpc-client")) {
-			componentMap.get("rpc-client").getComponent().stop(wait);
-		}
-
-		type = "cache".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "validate".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		type = "tools".toUpperCase();
-		if (componentMap.containsKey(type)) {
-			componentMap.get(type).getComponent().stop(wait);
-		}
-
-		RuntimeContext.shutdown();
-
-		// if (null != asyncTaskThread) {
-		// asyncTaskThread.stop();
-		// }
-
-		if (null != threadPool) {
-			threadPool.stop();
-		}
-
-		// if (null != deadlockMonitor) {
-		// deadlockMonitor.stop();
-		// }
-		// if (null != trackingManager) {
-		// trackingManager.stop();
-		// }
-
-		executeSSAop(this.closingAfterList);
-
-		HttpClientManager.shutdown();
-
-		log.info("tangyuan framework stop successfully.");
-	}
-
-	private void executeSSAop(List<SystemAopVo> ssList) {
-		if (null == ssList) {
-			return;
-		}
-		for (SystemAopVo ssVo : ssList) {
-			try {
-				ssVo.getHandler().execute(ssVo.getProperties());
-				log.info("execute system-aop class: " + ssVo.getClassName());
-			} catch (Throwable e) {
-				log.error("execute system-aop exception.", e);
-			}
-		}
-	}
-
 	public XmlGlobalContext getXmlGlobalContext() {
 		return xmlGlobalContext;
-	}
-
-	public boolean hasLicenses() {
-		return licenses;
 	}
 
 	public Class<?> getDefaultResultType() {
@@ -444,21 +95,24 @@ public class TangYuanContainer implements TangYuanComponent {
 		tangyuanServices.put(service.getServiceKey(), service);
 	}
 
+	public boolean checkServiceKey(String serviceKey) {
+		return tangyuanServices.containsKey(serviceKey);
+	}
+
 	public void addDynamicService(AbstractServiceNode service) {
 		this.tangyuanDynamicServices.put(service.getServiceKey(), service);
 	}
 
 	public void addAsyncTask(AsyncTask task) {
-		// asyncTaskThread.addTask(task);
 		this.threadPool.execute(task);
 	}
 
 	public ServiceContextFactory getContextFactory(TangYuanServiceType type) {
-		return scFactoryMap.get(type.name());
+		return this.scFactoryMap.get(type.name());
 	}
 
 	public void registerContextFactory(TangYuanServiceType type, ServiceContextFactory factory) {
-		scFactoryMap.put(type.name(), factory);
+		this.scFactoryMap.put(type.name(), factory);
 	}
 
 	public AbstractServiceNode getService(String serviceKey) {
@@ -479,6 +133,10 @@ public class TangYuanContainer implements TangYuanComponent {
 
 	public String getNsSeparator() {
 		return nsSeparator;
+	}
+
+	public boolean isCloneServiceArg() {
+		return cloneServiceArg;
 	}
 
 	public Set<String> getServicesKeySet() {
@@ -502,75 +160,340 @@ public class TangYuanContainer implements TangYuanComponent {
 		componentMap.put(type, componentVo);
 	}
 
-	public String getSystemName() {
-		return systemName;
-	}
-
 	public boolean isJdkProxy() {
 		return jdkProxy;
 	}
 
-	public long getMaxWaitTimeForShutDown() {
-		return maxWaitTimeForShutDown * 1000L;
-	}
-
-	public boolean isClosing() {
-		return closing;
+	public boolean isRunning() {
+		return ComponentState.RUNNING == this.state;
 	}
 
 	public boolean isAllServiceReturnXCO() {
 		return allServiceReturnXCO;
 	}
 
-	public ExtArg getExtArg() {
-		return extArg;
-	}
-
 	public ThreadPool getThreadPool() {
 		return threadPool;
 	}
 
-	public String getAppName() {
-		return appName;
+	public void startThreadPool(Properties p) throws Throwable {
+		if (null == this.threadPool) {
+			threadPool = new ThreadPool();
+			threadPool.start(p, this.maxWaitTimeForShutDown);
+		}
 	}
 
-	// private List<ComponentVo> components = new ArrayList<ComponentVo>();
-	// private Map<String, TangYuanComponent> componentMap = new HashMap<String, TangYuanComponent>();
+	private void executeSSAop(List<SystemAopVo> ssList) {
+		if (null == ssList) {
+			return;
+		}
+		for (SystemAopVo ssVo : ssList) {
+			try {
+				ssVo.getHandler().execute(ssVo.getProperties());
+				log.info("execute system-aop class: " + ssVo.getClassName());
+			} catch (Throwable e) {
+				log.error("execute system-aop exception.", e);
+			}
+		}
+	}
 
+	/** 设置配置文件 */
+	public void config(Map<String, String> properties) {
+		if (properties.containsKey("errorCode".toUpperCase())) {
+			this.errorCode = Integer.parseInt(properties.get("errorCode".toUpperCase()));
+		}
+		if (properties.containsKey("errorMessage".toUpperCase())) {
+			this.errorMessage = properties.get("errorMessage".toUpperCase());
+		}
+		if (properties.containsKey("jdkProxy".toUpperCase())) {
+			this.jdkProxy = Boolean.parseBoolean(properties.get("jdkProxy".toUpperCase()));
+		}
+		if (properties.containsKey("maxWaitTimeForShutDown".toUpperCase())) {
+			this.maxWaitTimeForShutDown = Long.parseLong(properties.get("maxWaitTimeForShutDown".toUpperCase()));
+		}
+		if (properties.containsKey("shutdownInNewThread".toUpperCase())) {
+			this.shutdownInNewThread = Boolean.parseBoolean(properties.get("shutdownInNewThread".toUpperCase()));
+		}
+
+		if (properties.containsKey("cloneServiceArg".toUpperCase())) {
+			this.cloneServiceArg = Boolean.parseBoolean(properties.get("cloneServiceArg".toUpperCase()));
+		}
+
+		log.info(TangYuanLang.get("config.property.load"), "tangyuan-component");
+	}
+
+	/** 解析日志语言 */
+	private String parseLang(String resource) throws Throwable {
+		// 1. 解析后缀参数, E.g: tangyuan.xml?lang=cn
+		resource = TangYuanUtil.parseSuffixGetResource(resource, suffixArgs);
+		// 2. 加载日志语言
+		TangYuanLang.getInstance().init(suffixArgs.get("lang"));
+		TangYuanLang.getInstance().load("tangyuan-lang-base");
+
+		return resource;
+	}
+
+	/**
+	 * 是否忽略异常，由内部控制
+	 */
+	private void startManagerLauncher() throws Throwable {
+		new ManagerLauncher().start(null);
+	}
+
+	private void initLog() {
+		this.log = LogFactory.getLog(getClass());
+	}
+
+	@Override
+	public void start(String resource) throws Throwable {
+		// 1. 初始化ManagerLauncher
+		startManagerLauncher();
+		// 2. Pre-work
+		resource = parseLang(resource);
+		// 3. 初始化Log
+		initLog();
+
+		log.info(TangYuanLang.get("tangyuan.starting"), Version.getVersion());
+
+		this.state = ComponentState.INITIALIZING;
+
+		// 4. Parsing
+		this.xmlGlobalContext = new XmlGlobalContext();
+		XmlTangYuanBuilder xmlBuilder = new XmlTangYuanBuilder();
+		xmlBuilder.parse(this.xmlGlobalContext, resource);
+		this.xmlGlobalContext.clean();
+
+		this.state = ComponentState.RUNNING;
+		reportInitialized();
+
+		log.info(TangYuanLang.get("tangyuan.starting.successfully"));
+		log.info("#####################################################");
+	}
+
+	public void stop(boolean asyn) {
+		stop(maxWaitTimeForShutDown, asyn);
+	}
+
+	public void reportInitialized() {
+		TangYuanManager tm = TangYuanManager.getInstance();
+		if (null != tm) {
+			tm.reportInitialized();
+		}
+	}
+
+	public void reportClosing() {
+		TangYuanManager tm = TangYuanManager.getInstance();
+		if (null != tm) {
+			tm.reportClosing();
+		}
+	}
+
+	public void reportClosed() {
+		TangYuanManager tm = TangYuanManager.getInstance();
+		if (null != tm) {
+			tm.reportClosed();
+		}
+	}
+
+	@Override
+	public void stop(long waitingTime, boolean asyn) {
+		log.info("#####################################################");
+		log.info(TangYuanLang.get("tangyuan.stopping"));
+
+		reportClosing();
+
+		this.state = ComponentState.CLOSING;
+
+		boolean _wait = true;
+		if (this.shutdownInNewThread) {
+			Thread shutdownThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					stop0(waitingTime, _wait);
+				}
+			});
+			shutdownThread.setDaemon(false);
+			shutdownThread.start();
+		} else {
+			stop0(waitingTime, _wait);
+		}
+	}
+
+	private void stop0(long waitingTime, boolean wait) {
+
+		// 0. 关闭时的AOP
+		executeSSAop(this.closingBeforeList);
+
+		String type = null;
+
+		// 1. 关闭监控
+		type = "manager".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, false);
+		}
+
+		// 2. 关闭入口
+		type = "web".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, false);
+		}
+		type = "timer".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, false);
+		}
+		type = "mq".toUpperCase();
+		if (componentMap.containsKey("mq-listener".toUpperCase())) {
+			componentMap.get("mq-listener".toUpperCase()).getComponent().stop(waitingTime, false);
+		}
+
+		// 3. 停止服务 TODO
+
+		type = "sql".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		type = "java".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		type = "mongo".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		type = "hbase".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		type = "hive".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		type = "es".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		type = "mq".toUpperCase();
+		if (componentMap.containsKey("mq-service".toUpperCase())) {
+			componentMap.get("mq-service".toUpperCase()).getComponent().stop(waitingTime, wait);
+		}
+
+		// 4. 停止基础组件
+
+		type = "rpc".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+		type = "cache".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+		type = "validate".toUpperCase();
+		if (componentMap.containsKey(type)) {
+			componentMap.get(type).getComponent().stop(waitingTime, wait);
+		}
+
+		// 5. 关闭线程池
+		if (null != threadPool) {
+			threadPool.stop();
+		}
+
+		executeSSAop(this.closingAfterList);
+
+		HttpClientManager.getInstance().shutdown();
+
+		this.state = ComponentState.CLOSED;
+
+		reportClosed();
+
+		log.info(TangYuanLang.get("tangyuan.stopping.successfully"));
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+
+	//	private volatile boolean                       closing                 = false;
+
+	// log.info(TangYuanLang.get(this.getClass(), "tangyuan framework stopping."));
+	//		this.closing = true;
+
+	//	public boolean isClosing() {
+	//		return closing;
+	//	}
+
+	//	/** 外部扩展参数 */
+	//	private ExtArg                                 extArg                  = new ExtArg();
+	//	public long getMaxWaitTimeForShutDown() {
+	//		return maxWaitTimeForShutDown * 1000L;
+	//	}
+	//	public ExtArg getExtArg() {
+	//		return extArg;
+	//	}
+
+	//private Map<String, ComponentServiceContextFactory> scFactoryMap            = new HashMap<String, ComponentServiceContextFactory>();
+	//	private boolean                                licenses                = false;
+	//	private String                                 licenseResource         = null;
+	// private Log                                    log                     = LogFactory.getLog(getClass());
+
+	//	public boolean hasLicenses() {
+	//		return licenses;
+	//	}
+	// log.info("tangyuan framework stop successfully.");
+	// log.info(TangYuanLang.get(this.getClass(), "tangyuan framework stop successfully."));
+	//	public ComponentServiceContextFactory getContextFactory(TangYuanServiceType type) {
+	//		return this.scFactoryMap.get(type.name());
+	//	}
+	//	public void registerContextFactory(TangYuanServiceType type, ComponentServiceContextFactory factory) {
+	//		this.scFactoryMap.put(type.name(), factory);
+	//	}
+	//	public String getSystemName() {
+	//		return systemName;
+	//	}
+	//	public String getAppName() {
+	//		return appName;
+	//	}
 	// 默认扩展参数前缀
 	// public final static String DEFAULT_EXT_ARG_PREFIX = "EXT:";
+	//	private String                                 systemName              = "tangyuan";
+	//	private String                                 appName                 = "tangyuan-app";
 
-	// 服务死锁监控
-	// private boolean openDeadlockMonitor = false;
-	// private ServiceDeadlockMonitor deadlockMonitor = null;
-	// private String deadlockMonitorWriterClassName = null;
-	// private long deadlockMonitorSleepTime = 2L;
-	// private long deadlockIntervalTime = 10L;
+	//		if (properties.containsKey("systemName".toUpperCase())) {
+	//			this.systemName = properties.get("systemName".toUpperCase());
+	//		}
+	//		if (properties.containsKey("appName".toUpperCase())) {
+	//			this.appName = properties.get("appName".toUpperCase());
+	//		}
+	//		if (properties.containsKey("licenseResource".toUpperCase())) {
+	//			this.licenseResource = properties.get("licenseResource".toUpperCase());
+	//		}
+	//		if (properties.containsKey("allServiceReturnXCO".toUpperCase())) {
+	//			this.allServiceReturnXCO = Boolean.parseBoolean(properties.get("allServiceReturnXCO".toUpperCase()));
+	//			log.info("open the unified return object mode.");
+	//		}
+	//	private void parseExternalLicense(String resource) {
+	//		try {
+	//			InputStream licenseInputStream = null;
+	//			if (null != this.licenseResource) {
+	//				// fix bug
+	//				licenseInputStream = ResourceManager.getInputStream(this.licenseResource);
+	//			}
+	//			this.licenses = LicensesHelper.check(licenseInputStream);
+	//			if (this.licenses) {
+	//				log.info("tangyuan licenses verification is successful.");
+	//			}
+	//		} catch (Throwable e) {
+	//		}
+	//	}
+	//	private void startManagerLauncher() {
+	//		try {
+	//			new ManagerLauncher().start(null);
+	//		} catch (Throwable e) {
+	//			e.printStackTrace();
+	//		}
+	//	}
 
-	// deadlock
-	// if (properties.containsKey("openDeadlockMonitor".toUpperCase())) {
-	// openDeadlockMonitor = Boolean.parseBoolean(properties.get("openDeadlockMonitor".toUpperCase()));
-	// }
-	// if (properties.containsKey("deadlockMonitorWriter".toUpperCase())) {
-	// deadlockMonitorWriterClassName = properties.get("deadlockMonitorWriter".toUpperCase());
-	// }
-	// if (properties.containsKey("deadlockMonitorSleepTime".toUpperCase())) {
-	// deadlockMonitorSleepTime = Long.parseLong(properties.get("deadlockMonitorSleepTime".toUpperCase()));
-	// }
-	// if (properties.containsKey("deadlockIntervalTime".toUpperCase())) {
-	// deadlockIntervalTime = Long.parseLong(properties.get("deadlockIntervalTime".toUpperCase()));
-	// }
-
-	// public boolean isOpenDeadlockMonitor() {
-	// return openDeadlockMonitor;
-	// }
-	// public long getDeadlockMonitorSleepTime() {
-	// return deadlockMonitorSleepTime * 1000L;
-	// }
-	// public long getDeadlockIntervalTime() {
-	// return deadlockIntervalTime * 1000L;
-	// }
-	// public ServiceDeadlockMonitor getDeadlockMonitor() {
-	// return deadlockMonitor;
-	// }
 }

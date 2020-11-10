@@ -6,6 +6,7 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/mongo/component" targetNamespace="http://xson.org/schema/tangyuan/mongo/component" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="dataSource">
 		<xs:complexType>
@@ -19,7 +20,6 @@
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required"/>
 			<xs:attribute name="isDefault" type="xs:boolean" default="false"/>
-			<xs:attribute name="sharedUse" type="xs:string" use="optional"/>
 			<xs:attribute name="resource" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>

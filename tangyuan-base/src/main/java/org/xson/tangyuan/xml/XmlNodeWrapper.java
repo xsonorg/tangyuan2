@@ -98,6 +98,15 @@ public class XmlNodeWrapper {
 		return this.xmlPathParser.evalNodes(node, expression);
 	}
 
+	public List<XmlNodeWrapper> evalNodes(String expr1, String expr2) {
+		List<XmlNodeWrapper> nodeList1 = this.xmlPathParser.evalNodes(node, expr1);
+		List<XmlNodeWrapper> nodeList2 = this.xmlPathParser.evalNodes(node, expr2);
+		if (nodeList2.size() > 0) {
+			nodeList1.addAll(nodeList2);
+		}
+		return nodeList1;
+	}	
+	
 	public XmlNodeWrapper newXMlNode(Node node) {
 		return new XmlNodeWrapper(this.xmlPathParser, node);
 	}

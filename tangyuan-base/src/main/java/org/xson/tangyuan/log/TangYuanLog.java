@@ -1,5 +1,7 @@
 package org.xson.tangyuan.log;
 
+import org.xson.tangyuan.log.ext.LogExt;
+
 /**
  * TangYuan日志, 顶层的控制(过滤的控制)
  */
@@ -7,9 +9,10 @@ public class TangYuanLog extends AbstractLog {
 
 	private Log proxy = null;
 
-	protected TangYuanLog(Log proxy, LogConfig conf) {
+	protected TangYuanLog(Log proxy, LogExt ext) {
 		this.proxy = proxy;
-		this.conf = conf;
+		((AbstractLog) this.proxy).setLogExt(ext);
+		this.logExt = ext;
 	}
 
 	@Override
@@ -130,5 +133,7 @@ public class TangYuanLog extends AbstractLog {
 		}
 		proxy.warn(s, args);
 	}
+
+	////////////////////////////lang////////////////////////////
 
 }

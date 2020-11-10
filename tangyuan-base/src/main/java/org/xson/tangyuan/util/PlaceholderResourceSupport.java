@@ -4,17 +4,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
-import org.xson.tangyuan.TangYuanContainer;
+import org.xson.tangyuan.app.AppPlaceholder;
 
 public class PlaceholderResourceSupport {
 
 	public static final String PLACEHOLDER_SYMBOL = "%"; // symbol
 
 	public static void processMap(Map<String, String> properties) throws Throwable {
-		processMap(properties, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		// processMap(properties, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
+		processMap(properties, AppPlaceholder.getData());
 	}
 
 	public static void processMap(Map<String, String> properties, Map<String, String> placeholderMap) throws Throwable {
@@ -32,7 +33,7 @@ public class PlaceholderResourceSupport {
 	}
 
 	public static Properties getProperties(String resource) throws Throwable {
-		Properties properties = new Properties();
+		Properties  properties  = new Properties();
 		InputStream inputStream = ResourceManager.getInputStream(resource, true);
 		properties.load(inputStream);
 		inputStream.close();
@@ -56,9 +57,9 @@ public class PlaceholderResourceSupport {
 		if (null == placeholderMap || 0 == placeholderMap.size()) {
 			return property;
 		}
-		int placeholderLength = PLACEHOLDER_SYMBOL.length();
-		StringBuilder result = new StringBuilder(property);
-		int startIndex = property.indexOf(PLACEHOLDER_SYMBOL);
+		int           placeholderLength = PLACEHOLDER_SYMBOL.length();
+		StringBuilder result            = new StringBuilder(property);
+		int           startIndex        = property.indexOf(PLACEHOLDER_SYMBOL);
 		while (startIndex != -1) {
 			int endIndex = findPlaceholderEndIndex(result, startIndex);
 			if (endIndex == -1) {
@@ -67,7 +68,7 @@ public class PlaceholderResourceSupport {
 			}
 			String placeholder = result.substring(startIndex + placeholderLength, endIndex);
 			// System.out.println("originalPlaceholder\t" + placeholder);
-			String propVal = placeholderMap.get(placeholder);
+			String propVal     = placeholderMap.get(placeholder);
 			if (propVal != null) {
 				result.replace(startIndex, endIndex + placeholderLength, propVal);
 				startIndex = result.indexOf(PLACEHOLDER_SYMBOL, startIndex + propVal.length());
@@ -81,7 +82,7 @@ public class PlaceholderResourceSupport {
 	}
 
 	private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
-		int index = startIndex + PLACEHOLDER_SYMBOL.length();
+		int  index  = startIndex + PLACEHOLDER_SYMBOL.length();
 		char symbol = PLACEHOLDER_SYMBOL.charAt(0);
 		while (index < buf.length()) {
 			if (symbol == buf.charAt(index)) {
@@ -96,13 +97,14 @@ public class PlaceholderResourceSupport {
 		return processInputStream(src, "UTF-8", placeholderMap);
 	}
 
-	public static InputStream processInputStream(InputStream src, String charsetName, Map<String, String> placeholderMap) throws Throwable {
+	public static InputStream processInputStream(InputStream src, String charsetName,
+			Map<String, String> placeholderMap) throws Throwable {
 		if (null == placeholderMap || 0 == placeholderMap.size()) {
 			return src;
 		}
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		byte[] buffer = new byte[4096];
-		int n = 0;
+		byte[]                buffer = new byte[4096];
+		int                   n      = 0;
 		while (-1 != (n = src.read(buffer))) {
 			output.write(buffer, 0, n);
 		}

@@ -2,7 +2,7 @@ package org.xson.tangyuan.sql.xml.node;
 
 import java.sql.SQLException;
 
-import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.service.ActuatorContext;
 
 public class ProcedureNode extends AbstractSqlNode {
 
@@ -11,7 +11,7 @@ public class ProcedureNode extends AbstractSqlNode {
 	}
 
 	@Override
-	public boolean execute(ServiceContext context, Object arg) throws SQLException {
+	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws SQLException {
 		return true;
 	}
 

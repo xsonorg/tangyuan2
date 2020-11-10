@@ -21,6 +21,12 @@
 			<xs:attribute name="resource" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="httpclient">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="resource" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="config-property">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -45,7 +51,7 @@
 						<xs:enumeration value="cache"/>
 						<xs:enumeration value="validate"/>
 						<xs:enumeration value="aop"/>
-						<xs:enumeration value="tools"/>
+						<xs:enumeration value="hive"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -82,6 +88,7 @@
 					<xs:element ref="app-property"/>
 					<xs:element ref="config-property"/>
 					<xs:element ref="thread-pool"/>
+					<xs:element ref="httpclient"/>
 					<xs:element ref="system-aop"/>
 					<xs:element ref="component"/>
 				</xs:choice>

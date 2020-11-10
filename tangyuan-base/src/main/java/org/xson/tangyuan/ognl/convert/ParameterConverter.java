@@ -9,6 +9,9 @@ import org.xson.tangyuan.ognl.map.OgnlMap;
 import org.xson.tangyuan.ognl.xco.OgnlXCO;
 import org.xson.tangyuan.util.TypeUtils;
 
+/**
+ * @deprecated
+ */
 public class ParameterConverter {
 
 	private IConverter	fastJsonConverter	= new FastJsonConverter();

@@ -1,17 +1,19 @@
 package org.xson.tangyuan.xml.node;
 
-import org.xson.tangyuan.executor.ServiceContext;
+import org.xson.tangyuan.service.ActuatorContext;
 
 public interface TangYuanNode {
 
+	//	boolean execute(ActuatorContext ac, Object arg) throws Throwable;
+
 	/**
-	 * 执行当前节点
+	 * 执行服务
 	 * 
-	 * @param context
-	 * @param arg
-	 *            support map and xco
+	 * @param ac		执行上下文
+	 * @param arg 		参数
+	 * @param acArg	 	执行上下文参数
 	 * @return
-	 * @throws Throwable
+	 * @throws Throwable	
 	 */
-	boolean execute(ServiceContext context, Object arg) throws Throwable;
+	boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable;
 }

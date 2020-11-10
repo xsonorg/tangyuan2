@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<access-manager
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/tangyuan/manage/access-manager.xsd">
+
+
+	<!-- 令牌策略/限流 -->
+
+	<!-- token -->
+
+	<!-- 防火墙 -->
+
+
+	<!-- ****应用级的规则[黑名单, 白名单]**** -->
+	<!-- 黑名单 -->
+	<!-- 域名：部分匹配 -->
+	<app-rule type="黑名单:不允许的域名" value="*.aixbx.com" />
+	<!-- 域名：完全匹配 -->
+	<app-rule type="黑名单:不允许的域名" value="api.aixbx.com" />
+	<!-- 域名：全匹配，代表只能该应用内部访问，不能被外部访问 -->
+	<app-rule type="黑名单:不允许的域名" value="*" />
+	<!-- IP：部分匹配 -->
+	<app-rule type="黑名单:不允许的IP" value="192.168.50.*" />
+	<app-rule type="黑名单:不允许的IP" value="192.168.50.248/8" />
+	<!-- IP：完全匹配 -->
+	<app-rule type="黑名单:不允许的IP" value="192.168.50.222" />
+	<!-- IP：全匹配，代表只能该应用内部访问，不能被外部访问 -->
+	<app-rule type="黑名单:不允许的IP" value="*" />
+	<!-- 白名单: 同黑名单 -->
+	<app-rule type="白名单:允许的域名" value="" />
+	<app-rule type="白名单:允许的IP" value="" />
+
+	<!-- ****服务级的规则[白名单]**** -->
+	<service-rule service="a/b" type="白名单:允许的域名" value="*.aixbx.com"  />
+	<service-rule service="a/*" type="白名单:允许的IP" value="*.aixbx.com"  />
+
+</access-manager>

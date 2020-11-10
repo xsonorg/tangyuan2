@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class BooleanTypeHandler extends BaseTypeHandler<Boolean> {
 
@@ -48,9 +49,31 @@ public class BooleanTypeHandler extends BaseTypeHandler<Boolean> {
 		}
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		Boolean v = getResult(rs, columnName);
+	//		if (null != v) {
+	//			xco.setBooleanValue(property, v.booleanValue());
+	//		}
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Boolean v = getResult(rs, columnName);
+		//		if (null != v && null != valueHandler) {
+		//			v = (Boolean) valueHandler.process(columnName, v);
+		//		}
+
+		if (null != valueHandler && null != v) {
+			Object nv = valueHandler.process(columnName, v);
+			if (!(nv instanceof Boolean)) {
+				xco.setObjectValue(property, nv);
+				return;
+			}
+
+			v = (Boolean) nv;
+		}
+
 		if (null != v) {
 			xco.setBooleanValue(property, v.booleanValue());
 		}

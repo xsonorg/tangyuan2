@@ -1,9 +1,14 @@
 package org.xson.tangyuan.type;
 
 import java.io.ByteArrayInputStream;
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.xson.common.object.XCO;
+import org.xson.tangyuan.mapping.ColumnValueHandler;
 
 public class BlobByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 
@@ -49,11 +54,33 @@ public class BlobByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 		builder.append(parameter);
 	}
 
+	//	@Override
+	//	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	//		Blob blob = rs.getBlob(columnName);
+	//		if (blob != null && !rs.wasNull()) {
+	//			byte[] v = blob.getBytes(1, (int) blob.length());
+	//			if (null != v) {
+	//				xco.setByteArrayValue(property, v);
+	//			}
+	//		}
+	//	}
+
 	@Override
-	public void setResultToXCO(ResultSet rs, String columnName, String property, XCO xco) throws SQLException {
+	public void setResultToXCO(ResultSet rs, String columnName, String property, ColumnValueHandler valueHandler, XCO xco) throws SQLException {
 		Blob blob = rs.getBlob(columnName);
 		if (blob != null && !rs.wasNull()) {
 			byte[] v = blob.getBytes(1, (int) blob.length());
+
+			if (null != valueHandler && null != v) {
+				Object nv = valueHandler.process(columnName, v);
+				if (!(nv instanceof byte[])) {
+					xco.setObjectValue(property, nv);
+					return;
+				}
+
+				v = (byte[]) nv;
+			}
+
 			if (null != v) {
 				xco.setByteArrayValue(property, v);
 			}
