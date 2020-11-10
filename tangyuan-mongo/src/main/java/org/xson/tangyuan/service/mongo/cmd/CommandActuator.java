@@ -32,11 +32,11 @@ import com.mongodb.WriteResult;
 
 public class CommandActuator extends MongoBaseActuator {
 
-	private static Map<String, CommandHandler> collectionHandlerMap = new HashMap<String, CommandHandler>();
-	private static Map<String, CommandHandler> cursorHandlerMap     = new HashMap<String, CommandHandler>();
-	private static Object                      dbProxy              = new Object();
+	private static Map<String, CommandHandler>	collectionHandlerMap	= new HashMap<String, CommandHandler>();
+	private static Map<String, CommandHandler>	cursorHandlerMap		= new HashMap<String, CommandHandler>();
+	private static Object						dbProxy					= new Object();
 
-	private CommandParser                      parser               = new CommandParser();
+	private CommandParser						parser					= new CommandParser();
 
 	static {
 		collectionHandlerMap.put("count".toUpperCase(), new CountHandler());
@@ -59,9 +59,9 @@ public class CommandActuator extends MongoBaseActuator {
 	}
 
 	public Object execute(String context, String dsKey, Class<?> resultType, MappingVo resultMap, Object arg) {
-		List<CommandVo> voList     = this.parser.parse(context);
-		int             size       = voList.size();
-		Object          lastResult = null;
+		List<CommandVo> voList = this.parser.parse(context);
+		int size = voList.size();
+		Object lastResult = null;
 		for (int i = 0; i < size; i++) {
 			CommandVo vo = voList.get(i);
 			lastResult = execute0(lastResult, vo, dsKey, arg);
@@ -112,7 +112,7 @@ public class CommandActuator extends MongoBaseActuator {
 				// return BSONUtil.BSONToXCO((BSONObject) mongoResult);
 				return getXCOResult((DBObject) mongoResult, resultMap);
 			} else {
-				//				return BSONUtil.BSONToMap((BSONObject) mongoResult);
+				// return BSONUtil.BSONToMap((BSONObject) mongoResult);
 				return getResult((DBObject) mongoResult, resultMap);
 			}
 		} else if (mongoResult instanceof Cursor) {
@@ -129,117 +129,4 @@ public class CommandActuator extends MongoBaseActuator {
 		return mongoResult;
 	}
 
-	//	private List<Map<String, Object>> getResults(DBCursor cursor, MappingVo resultMap) {
-	//		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-	//		try {
-	//			if (null == resultMap) {
-	//				while (cursor.hasNext()) {
-	//					DBObject            bson = cursor.next();
-	//					Map<String, Object> row  = new HashMap<String, Object>();
-	//					for (String key : bson.keySet()) {
-	//						BSONUtil.setObjectValue(row, key, bson.get(key));
-	//					}
-	//					list.add(row);
-	//				}
-	//			} else {
-	//				while (cursor.hasNext()) {
-	//					DBObject            bson = cursor.next();
-	//					Map<String, Object> row  = new HashMap<String, Object>();
-	//					for (String key : bson.keySet()) {
-	//						//						BSONUtil.setObjectValue(row, resultMap.getProperty(key), bson.get(key));
-	//						String             property    = resultMap.getProperty(key);
-	//						ColumnValueHandler cvh         = resultMap.getColumnValueHandler(key);
-	//						Object             columnValue = bson.get(key);
-	//						if (null != cvh) {
-	//							columnValue = cvh.process(key, columnValue);
-	//						}
-	//						BSONUtil.setObjectValue(row, property, columnValue);
-	//					}
-	//					list.add(row);
-	//				}
-	//			}
-	//			return list;
-	//		} finally {
-	//			cursor.close();
-	//		}
-	//	}
-	//
-	//	private List<XCO> getXCOResults(DBCursor cursor, MappingVo resultMap) {
-	//		List<XCO> list = new ArrayList<XCO>();
-	//		try {
-	//			if (null == resultMap) {
-	//				while (cursor.hasNext()) {
-	//					DBObject bson = cursor.next();
-	//					XCO      row  = new XCO();
-	//					for (String key : bson.keySet()) {
-	//						Object obj = bson.get(key);
-	//						BSONUtil.setObjectValue(row, key, obj);
-	//					}
-	//					list.add(row);
-	//				}
-	//			} else {
-	//				while (cursor.hasNext()) {
-	//					DBObject bson = cursor.next();
-	//					XCO      row  = new XCO();
-	//					for (String key : bson.keySet()) {
-	//						//						BSONUtil.setObjectValue(row, resultMap.getProperty(key), bson.get(key));
-	//						String             property    = resultMap.getProperty(key);
-	//						ColumnValueHandler cvh         = resultMap.getColumnValueHandler(key);
-	//						Object             columnValue = bson.get(key);
-	//						if (null != cvh) {
-	//							columnValue = cvh.process(key, columnValue);
-	//						}
-	//						BSONUtil.setObjectValue(row, property, columnValue);
-	//					}
-	//					list.add(row);
-	//				}
-	//			}
-	//			return list;
-	//		} finally {
-	//			cursor.close();
-	//		}
-	//	}
-
-	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//
-
-	// collectionHandlerMap.put("count", new CountHandler());
-	// collectionHandlerMap.put("find", new FindHandler());
-	// collectionHandlerMap.put("findAndModify", new FindAndModifyHandler());
-	// collectionHandlerMap.put("findOne", new FindOneHandler());
-	// collectionHandlerMap.put("group", new GroupHandler());
-	// collectionHandlerMap.put("insert", new InsertHandler());
-	// collectionHandlerMap.put("remove", new RemoveHandler());
-	// collectionHandlerMap.put("save", new SaveHandler());
-	// collectionHandlerMap.put("update", new UpdateHandler());
-	//
-	// cursorHandlerMap.put("count", new CursorCountHandler());
-	// cursorHandlerMap.put("limit", new CursorLimitHandler());
-	// cursorHandlerMap.put("skip", new CursorSkipHandler());
-	// cursorHandlerMap.put("sort", new CursorSortHandler());
-
-	//	public Object execute(String context, String dsKey, Class<?> resultType, MappingVo resultMap) {
-	//	try {
-	//		List<CommandVo> voList     = this.parser.parse(context);
-	//		int             size       = voList.size();
-	//		Object          lastResult = null;
-	//		for (int i = 0; i < size; i++) {
-	//			CommandVo vo = voList.get(i);
-	//			lastResult = execute0(lastResult, vo, dsKey);
-	//		}
-	//		lastResult = convert(lastResult, resultType, resultMap);
-	//		return lastResult;
-	//	} catch (Throwable e) {
-	//		if (LogExtUtil.isSqlErrorLogPrint()) {
-	//			printErrorCommand(context);
-	//		}
-	//		throw e;
-	//	}
-	//}
-
-	//	private void printErrorCommand(String context) {
-	//		System.err.print("相关异常SQL:");
-	//		System.err.print("\n\n\n");
-	//		System.err.print(context);
-	//		System.err.print("\n\n\n");
-	//	}
 }

@@ -25,20 +25,20 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class SqlComponent implements TangYuanComponent {
 
-	private static SqlComponent       instance            = new SqlComponent();
+	private static SqlComponent			instance			= new SqlComponent();
 
-	private Log                       log                 = LogFactory.getLog(getClass());
-	private DataSourceManager         dataSourceManager   = null;
-	private ShardingDefManager        shardingDefManager  = new ShardingDefManager();
-	private TypeHandlerRegistry       typeHandlerRegistry = null;
-	private DefaultTransactionMatcher transactionMatcher  = null;
-	private int                       defaultFetchSize    = 100;
+	private Log							log					= LogFactory.getLog(getClass());
+	private DataSourceManager			dataSourceManager	= null;
+	private ShardingDefManager			shardingDefManager	= new ShardingDefManager();
+	private TypeHandlerRegistry			typeHandlerRegistry	= null;
+	private DefaultTransactionMatcher	transactionMatcher	= null;
+	private int							defaultFetchSize	= 100;
 	// 需要静态化的对象
-	private XTransactionManager       transactionManager  = null;
-	private SqlActuator               sqlActuator         = null;
-	private SqlLog                    sqlLog              = null;
+	private XTransactionManager			transactionManager	= null;
+	private SqlActuator					sqlActuator			= null;
+	private SqlLog						sqlLog				= null;
 
-	private volatile ComponentState   state               = ComponentState.UNINITIALIZED;
+	private volatile ComponentState		state				= ComponentState.UNINITIALIZED;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.SQL, new SqlServiceContextFactory());
@@ -98,14 +98,10 @@ public class SqlComponent implements TangYuanComponent {
 
 	@Override
 	public void config(Map<String, String> properties) {
-		//		if (properties.containsKey("printErrorSqlLog".toUpperCase())) {
-		//			this.printErrorSqlLog = Boolean.parseBoolean(properties.get("printErrorSqlLog".toUpperCase()));
-		//		}
-		//		log.info(TangYuanLang.get("config.property.load"), "sql-component");
+		// log.info(TangYuanLang.get("config.property.load"), "sql-component");
 	}
 
 	private void post(XmlSqlContext componentContext) {
-		//		this.sqlActuator = new SqlActuator(getTypeHandlerRegistry(), printErrorSqlLog);
 		this.sqlActuator = new SqlActuator(getTypeHandlerRegistry());
 		this.sqlLog = new SqlLog(getTypeHandlerRegistry());
 		this.transactionManager = new MultipleTransactionManager(getDataSourceManager());
@@ -114,14 +110,14 @@ public class SqlComponent implements TangYuanComponent {
 
 	public void start(String resource) throws Throwable {
 
-		//		log.info("sql component starting, version: " + Version.getVersion());
+		// log.info("sql component starting, version: " + Version.getVersion());
 		log.info(TangYuanLang.get("component.dividing.line"));
 		log.info(TangYuanLang.get("component.starting"), "sql", Version.getVersion());
 
 		this.state = ComponentState.INITIALIZING;
 
 		TangYuanLang.getInstance().load("tangyuan-lang-sql");
-		
+
 		XmlSqlContext componentContext = new XmlSqlContext();
 		componentContext.setXmlContext(TangYuanContainer.getInstance().getXmlGlobalContext());
 
@@ -153,10 +149,5 @@ public class SqlComponent implements TangYuanComponent {
 
 		log.info(TangYuanLang.get("component.stopping.successfully"), "sql");
 	}
-
-	////////////////////////////////
-
-	/** 打印错误SQL日志 */
-	//	private boolean                   printErrorSqlLog    = false;
 
 }

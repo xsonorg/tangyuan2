@@ -33,25 +33,25 @@ public class InsertHandler implements CommandHandler {
 
 		if (parameters.size() == 1) {
 
-			InsertReturn ir  = null;
+			InsertReturn ir = null;
 
-			DBObject     obj = (DBObject) JSONExt.parse(parameters.get(0), new JSONExtCallback(arg));
+			DBObject obj = (DBObject) JSONExt.parse(parameters.get(0), new JSONExtCallback(arg));
 
 			// WriteResult result = null;
 			if (obj instanceof BasicDBList) {// 数组
-				//				List<DBObject> documents = (List<DBObject>) obj;
-				//				collection.insert(documents, writeConcern);
-				//				int      size = documents.size();
-				//				String[] ids  = new String[size];
-				//				for (int i = 0; i < size; i++) {
-				//					ids[i] = getId(documents.get(i));
-				//				}
-				//				return ids;
+				// List<DBObject> documents = (List<DBObject>) obj;
+				// collection.insert(documents, writeConcern);
+				// int size = documents.size();
+				// String[] ids = new String[size];
+				// for (int i = 0; i < size; i++) {
+				// ids[i] = getId(documents.get(i));
+				// }
+				// return ids;
 
 				List<DBObject> documents = (List<DBObject>) obj;
-				WriteResult    result    = collection.insert(documents, writeConcern);
-				int            rowCount  = result.getN();
-				List<String>   idList    = new ArrayList<String>();
+				WriteResult result = collection.insert(documents, writeConcern);
+				int rowCount = result.getN();
+				List<String> idList = new ArrayList<String>();
 				for (DBObject document : documents) {
 					String _id = MongoUtil.getId(document);
 					if (null != _id) {
@@ -64,12 +64,12 @@ public class InsertHandler implements CommandHandler {
 				ir = new InsertReturn(rowCount, idList);
 				return ir;
 			} else {
-				//				collection.insert(obj, writeConcern);
-				//				return getId(obj);
+				// collection.insert(obj, writeConcern);
+				// return getId(obj);
 
-				WriteResult result   = collection.insert(obj, writeConcern);
-				int         rowCount = result.getN();
-				String      _id      = MongoUtil.getId(obj);
+				WriteResult result = collection.insert(obj, writeConcern);
+				int rowCount = result.getN();
+				String _id = MongoUtil.getId(obj);
 				ir = new InsertReturn(rowCount, _id);
 				return ir;
 			}
@@ -79,11 +79,4 @@ public class InsertHandler implements CommandHandler {
 		throw new TangYuanException("Invalid action parameter size: " + vo.toString());
 	}
 
-	//	private String getId(DBObject document) {
-	//		Object oid = document.get("_id");
-	//		if (null != oid) {
-	//			return oid.toString();
-	//		}
-	//		return null;
-	//	}
 }

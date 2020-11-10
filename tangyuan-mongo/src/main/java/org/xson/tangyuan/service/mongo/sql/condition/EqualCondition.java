@@ -18,8 +18,6 @@ public class EqualCondition extends WhereCondition {
 
 	private ValueVo value;
 
-	// TODO 还要确定是不是OID
-
 	@Override
 	public void setValue(Object value) {
 		this.value = (ValueVo) value;
@@ -55,17 +53,14 @@ public class EqualCondition extends WhereCondition {
 		// orList.add(new BasicDBObject(this.name, value.getValue()));
 		// }
 
-		//		if (this.name.equals("_id")) {
 		if (isObjectIdField(this.name)) {
 			Object v = value.getValue(arg);
 			if (!(v instanceof ObjectId)) {
 				v = new ObjectId(v.toString());
 			}
 			if (null == orList) {
-				// query.put(this.name, new ObjectId(value.getValue(arg).toString()));
 				query.put(this.name, v);
 			} else {
-				// orList.add(new BasicDBObject(this.name, new ObjectId(value.getValue(arg).toString())));
 				orList.add(new BasicDBObject(this.name, v));
 			}
 		} else {

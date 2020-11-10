@@ -11,7 +11,8 @@ public class MongoUpdateNode extends AbstractMongoNode {
 
 	private static Log log = LogFactory.getLog(MongoUpdateNode.class);
 
-	public MongoUpdateNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheCleanVo cacheClean, String desc, String[] groups) {
+	public MongoUpdateNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheCleanVo cacheClean, String desc,
+			String[] groups) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
@@ -36,33 +37,5 @@ public class MongoUpdateNode extends AbstractMongoNode {
 		ac.setResult(result);
 		return result;
 	}
-
-	//	@Override
-	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-	//		MongoServiceContext mongoContext = (MongoServiceContext) context.getServiceContext(TangYuanServiceType.MONGO);
-	//
-	//		// 2. 清理和重置执行环境
-	//		mongoContext.resetExecEnv();
-	//
-	//		long startTime = System.currentTimeMillis();
-	//
-	//		sqlNode.execute(context, arg); // 获取sql
-	//		if (log.isInfoEnabled()) {
-	//			log.info(mongoContext.getSql());
-	//		}
-	//
-	//		int result = mongoContext.executeUpdate(this, arg);
-	//		context.setResult(result);
-	//
-	//		if (log.isInfoEnabled()) {
-	//			log.info("mongo execution time: " + getSlowServiceLog(startTime));
-	//		}
-	//
-	//		if (null != cacheClean) {
-	//			cacheClean.removeObject(arg);
-	//		}
-	//
-	//		return true;
-	//	}
 
 }

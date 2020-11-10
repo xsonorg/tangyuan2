@@ -11,8 +11,8 @@ public class MongoServiceNode extends AbstractMongoNode {
 
 	private static Log log = LogFactory.getLog(MongoServiceNode.class);
 
-	public MongoServiceNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheUseVo cacheUse, CacheCleanVo cacheClean, Class<?> resultType,
-			String desc, String[] groups) {
+	public MongoServiceNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheUseVo cacheUse, CacheCleanVo cacheClean,
+			Class<?> resultType, String desc, String[] groups) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
@@ -29,11 +29,11 @@ public class MongoServiceNode extends AbstractMongoNode {
 	}
 
 	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
-		//		MongoServiceContext context   = (MongoServiceContext) ac.getServiceContext(this.serviceType);
+		// MongoServiceContext context = (MongoServiceContext) ac.getServiceContext(this.serviceType);
 
-		long   startTime = System.currentTimeMillis();
-		String cacheKey  = null;
-		Object result    = null;
+		long startTime = System.currentTimeMillis();
+		String cacheKey = null;
+		Object result = null;
 
 		// 1. cache使用
 		if (null != this.cacheUse && null == cacheKey) {
@@ -55,9 +55,9 @@ public class MongoServiceNode extends AbstractMongoNode {
 		}
 
 		// 0. 克隆参数
-		//		if (null == temp) {
-		//			temp = cloneArg(arg);
-		//		}
+		// if (null == temp) {
+		// temp = cloneArg(arg);
+		// }
 
 		// sqlContext.setResultType(arg);// 设置同进同出的类型
 
@@ -81,35 +81,4 @@ public class MongoServiceNode extends AbstractMongoNode {
 		return true;
 	}
 
-	//	@Override
-	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-	//
-	//		// MongoServiceContext mongoContext = (MongoServiceContext) context.getServiceContext(TangYuanServiceType.MONGO);
-	//
-	//		// 1. cache使用
-	//		if (null != cacheUse) {
-	//			Object result = cacheUse.getObject(arg);
-	//			if (null != result) {
-	//				context.setResult(result);
-	//				return true;
-	//			}
-	//		}
-	//
-	//		long startTime = System.currentTimeMillis();
-	//
-	//		sqlNode.execute(context, arg);
-	//
-	//		if (log.isInfoEnabled()) {
-	//			log.info("mongo execution time: " + getSlowServiceLog(startTime));
-	//		}
-	//
-	//		if (null != cacheUse) {
-	//			cacheUse.putObject(arg, context.getResult());
-	//		}
-	//		if (null != cacheClean) {
-	//			cacheClean.removeObject(arg);
-	//		}
-	//
-	//		return true;
-	//	}
 }

@@ -23,16 +23,16 @@ import com.mongodb.util.JSONExtCallback;
 
 public class MongoComponent implements TangYuanComponent {
 
-	private static MongoComponent   instance                = new MongoComponent();
+	private static MongoComponent	instance				= new MongoComponent();
 
-	private Log                     log                     = LogFactory.getLog(getClass());
-	private MongoDataSourceManager  dataSourceManager       = null;
-	private ShardingDefManager      shardingDefManager      = new ShardingDefManager();
+	private Log						log						= LogFactory.getLog(getClass());
+	private MongoDataSourceManager	dataSourceManager		= null;
+	private ShardingDefManager		shardingDefManager		= new ShardingDefManager();
 
-	private volatile ComponentState state                   = ComponentState.UNINITIALIZED;
+	private volatile ComponentState	state					= ComponentState.UNINITIALIZED;
 
-	private WriteConcern            defaultWriteConcern     = WriteConcern.ACKNOWLEDGED;
-	private String                  defaultMongoDatePattern = JSONExtCallback._dateTimeFormat;
+	private WriteConcern			defaultWriteConcern		= WriteConcern.ACKNOWLEDGED;
+	private String					defaultMongoDatePattern	= JSONExtCallback._dateTimeFormat;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.MONGO, new MongoServiceContextFactory());
@@ -121,26 +121,5 @@ public class MongoComponent implements TangYuanComponent {
 
 		log.info(TangYuanLang.get("component.stopping.successfully"), "mongo");
 	}
-
-	////////////////////////////////////////////////////////////////////////////////
-
-	//		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	//		log.info("mongo component starting, version: " + Version.getVersion());
-	//		XmlMongoConfigBuilder xmlConfigBuilder = new XmlMongoConfigBuilder();
-	//		xmlConfigBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
-	//		log.info("mongo component successfully.");
-	//	@Override
-	//	public void stop(boolean wait) {
-	//		log.info("mongo component stopping...");
-	//		if (null != dataSourceManager) {
-	//			dataSourceManager.close();
-	//		}
-	//		log.info("mongo component stop successfully.");
-	//	}
-
-	//	private int                     defaultFetchSize        = 100;
-	//	public int getDefaultFetchSize() {
-	//		return defaultFetchSize;
-	//	}
 
 }

@@ -36,6 +36,4 @@ public abstract class WhereCondition {
 
 	abstract public void setQuery(DBObject query, BasicDBList orList, Object arg);
 
-	// abstract public boolean check();
-	// abstract public void setQuery(DBObject query);
 }

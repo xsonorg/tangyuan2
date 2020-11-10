@@ -35,26 +35,26 @@ public class NotInCondition extends WhereCondition {
 
 	@Override
 	public void toSQL(StringBuilder builder) {
-		//		builder.append(this.name);
-		//		builder.append(SqlParser.BLANK_MARK);
-		//		builder.append("NOT IN");
-		//		builder.append(SqlParser.BLANK_MARK);
-		//		builder.append("(");
-		//		for (int i = 0, n = value.size(); i < n; i++) {
-		//			if (i > 0) {
-		//				builder.append(",");
-		//				builder.append(SqlParser.BLANK_MARK);
-		//			}
-		//			ValueVo valueVo = value.get(i);
-		//			if (ValueType.STRING == valueVo.getType()) {
-		//				builder.append('\'');
-		//				builder.append(valueVo.getSqlValue());
-		//				builder.append('\'');
-		//			} else {
-		//				builder.append(valueVo.getSqlValue());
-		//			}
-		//		}
-		//		builder.append(")");
+		// builder.append(this.name);
+		// builder.append(SqlParser.BLANK_MARK);
+		// builder.append("NOT IN");
+		// builder.append(SqlParser.BLANK_MARK);
+		// builder.append("(");
+		// for (int i = 0, n = value.size(); i < n; i++) {
+		// if (i > 0) {
+		// builder.append(",");
+		// builder.append(SqlParser.BLANK_MARK);
+		// }
+		// ValueVo valueVo = value.get(i);
+		// if (ValueType.STRING == valueVo.getType()) {
+		// builder.append('\'');
+		// builder.append(valueVo.getSqlValue());
+		// builder.append('\'');
+		// } else {
+		// builder.append(valueVo.getSqlValue());
+		// }
+		// }
+		// builder.append(")");
 	}
 
 	@Override
@@ -75,12 +75,6 @@ public class NotInCondition extends WhereCondition {
 				orList.add(new BasicDBObject(this.name, new BasicDBObject("$nin", this.value.getValue(arg))));
 			}
 		}
-
-		//		if (null == orList) {
-		//			query.put(this.name, new BasicDBObject("$nin", this.value.getValue(arg)));
-		//		} else {
-		//			orList.add(new BasicDBObject(this.name, new BasicDBObject("$nin", this.value.getValue(arg))));
-		//		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -122,34 +116,5 @@ public class NotInCondition extends WhereCondition {
 		}
 		return value;
 	}
-
-	//////////////
-
-	//	@Override
-	//	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
-	//		if (null == orList) {
-	//			BasicDBList list = new BasicDBList();
-	//			for (int i = 0, n = value.size(); i < n; i++) {
-	//				list.add(value.get(i).getValue(arg));
-	//			}
-	//			query.put(this.name, new BasicDBObject("$nin", list));
-	//		} else {
-	//			BasicDBList list = new BasicDBList();
-	//			for (int i = 0, n = value.size(); i < n; i++) {
-	//				list.add(value.get(i).getValue(arg));
-	//			}
-	//			orList.add(new BasicDBObject(this.name, new BasicDBObject("$nin", list)));
-	//		}
-	//	}
-	//	private List<ValueVo> value;
-	//
-	//	@SuppressWarnings("unchecked")
-	//	@Override
-	//	public void setValue(Object value) {
-	//		this.value = (List<ValueVo>) value;
-	//	}
-	//		if (null == value || 0 == value.size()) {
-	//			throw new SqlParseException("Illegal not in condition");
-	//		}
 
 }

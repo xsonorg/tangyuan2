@@ -20,9 +20,9 @@ public class BSONUtil {
 		} else if (value instanceof BasicDBList) {
 			setArrayToXCO(xco, key, (BasicDBList) value);
 		} else if (value instanceof DBObject[]) {
-			DBObject[] array    = (DBObject[]) value;
-			int        length   = array.length;
-			XCO[]      xcoArray = new XCO[length];
+			DBObject[] array = (DBObject[]) value;
+			int length = array.length;
+			XCO[] xcoArray = new XCO[length];
 			for (int i = 0; i < length; i++) {
 				xcoArray[i] = BSONToXCO(array[i]);
 			}
@@ -53,17 +53,17 @@ public class BSONUtil {
 		if (value instanceof org.bson.types.ObjectId) {
 			map.put(key, value.toString());
 		} else if (value instanceof BasicDBList) {
-			//			BasicDBList               list    = (BasicDBList) value;
-			//			int                       length  = list.size();
-			//			List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
-			//			for (int i = 0; i < length; i++) {
-			//				mapList.add(BSONToMap((DBObject) list.get(i)));
-			//			}
-			//			map.put(key, mapList);
+			// BasicDBList list = (BasicDBList) value;
+			// int length = list.size();
+			// List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+			// for (int i = 0; i < length; i++) {
+			// mapList.add(BSONToMap((DBObject) list.get(i)));
+			// }
+			// map.put(key, mapList);
 			setArrayToMap(map, key, (BasicDBList) value);
 		} else if (value instanceof DBObject[]) {
-			DBObject[]            array    = (DBObject[]) value;
-			int                   length   = array.length;
+			DBObject[] array = (DBObject[]) value;
+			int length = array.length;
 			Map<String, Object>[] mapArray = new Map[length];
 			for (int i = 0; i < length; i++) {
 				mapArray[i] = BSONToMap(array[i]);
@@ -116,7 +116,7 @@ public class BSONUtil {
 		if (0 == array.size()) {
 			return;
 		}
-		Object   first      = array.get(0);
+		Object first = array.get(0);
 		Class<?> firstClass = first.getClass();
 		if (Integer.class == firstClass) {
 			int[] arr = new int[array.size()];
@@ -180,7 +180,7 @@ public class BSONUtil {
 		if (0 == array.size()) {
 			return;
 		}
-		Object   first      = array.get(0);
+		Object first = array.get(0);
 		Class<?> firstClass = first.getClass();
 		if (Integer.class == firstClass) {
 			int[] arr = new int[array.size()];
@@ -218,7 +218,7 @@ public class BSONUtil {
 			xco.setBooleanArrayValue(key, arr);
 			return;
 		} else if (String.class == firstClass) {
-			//			xco.setStringListValue(key, (List) array);
+			// xco.setStringListValue(key, (List) array);
 			String[] arr = new String[array.size()];
 			for (int i = 0; i < array.size(); i++) {
 				arr[i] = (String) array.get(i);
@@ -226,12 +226,12 @@ public class BSONUtil {
 			xco.setStringArrayValue(key, arr);
 			return;
 		} else if (first instanceof DBObject) {
-			//			List<XCO> list = new ArrayList<XCO>();
-			//			for (Object item : array) {
-			//				DBObject obj = (DBObject) item;
-			//				list.add(BSONToXCO(obj));
-			//			}
-			//			xco.setXCOListValue(key, list);
+			// List<XCO> list = new ArrayList<XCO>();
+			// for (Object item : array) {
+			// DBObject obj = (DBObject) item;
+			// list.add(BSONToXCO(obj));
+			// }
+			// xco.setXCOListValue(key, list);
 
 			XCO[] arr = new XCO[array.size()];
 			for (int i = 0; i < array.size(); i++) {
@@ -239,11 +239,11 @@ public class BSONUtil {
 			}
 			xco.setXCOArrayValue(key, arr);
 		} else {
-			//			List<String> list = new ArrayList<String>();
-			//			for (Object item : array) {
-			//				list.add(item.toString());
-			//			}
-			//			xco.setStringListValue(key, list);
+			// List<String> list = new ArrayList<String>();
+			// for (Object item : array) {
+			// list.add(item.toString());
+			// }
+			// xco.setStringListValue(key, list);
 
 			String[] arr = new String[array.size()];
 			for (int i = 0; i < array.size(); i++) {
@@ -255,31 +255,4 @@ public class BSONUtil {
 		// throw new TangYuanException("Unsupported conversion type: " + item.getClass().getName());
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////
-
-	//	public static void setObjectValue(XCO xco, String key, Object value) {
-	//		if (value instanceof org.bson.types.ObjectId) {
-	//			xco.setStringValue(key, value.toString());
-	//		} else if (value instanceof DBObject) {
-	//			xco.setXCOValue(key, BSONToXCO((DBObject) value));
-	//		} else if (value instanceof BasicDBList) {
-	//			BasicDBList list = (BasicDBList) value;
-	//			int length = list.size();
-	//			List<XCO> xcoList = new ArrayList<XCO>();
-	//			for (int i = 0; i < length; i++) {
-	//				xcoList.add(BSONToXCO((DBObject) list.get(i)));
-	//			}
-	//			xco.setXCOListValue(key, xcoList);
-	//		} else if (value instanceof DBObject[]) {
-	//			DBObject[] array = (DBObject[]) value;
-	//			int length = array.length;
-	//			XCO[] xcoArray = new XCO[length];
-	//			for (int i = 0; i < length; i++) {
-	//				xcoArray[i] = BSONToXCO(array[i]);
-	//			}
-	//			xco.setXCOArrayValue(key, xcoArray);
-	//		} else {
-	//			xco.setObjectValue(key, value);
-	//		}
-	//	}
 }

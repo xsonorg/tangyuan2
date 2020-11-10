@@ -97,7 +97,6 @@ public class SqlErrorLog {
 
 		if (count > 0) {
 			if (count > argSize) {
-				// throw new TangYuanException("所需SQL变量数和入参数不符");
 				errorBuilder.append(TangYuanUtil.format("所需SQL变量数量[{}]和入参数量[{}]不符", count, argSize));
 			}
 			return list;

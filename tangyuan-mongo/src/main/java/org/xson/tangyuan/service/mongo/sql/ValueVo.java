@@ -7,19 +7,15 @@ import com.mongodb.util.JSONExtCallback;
 
 public class ValueVo {
 
-	// INTEGER, DOUBLE, BOOLEAN, STRING, NULL
-	// INTEGER, LONG, DOUBLE, BOOLEAN, STRING, NULL
-	// INTEGER, LONG, DOUBLE, BOOLEAN, STRING, NULL, ARRAY, CALL
-
 	public enum ValueType {
 		INTEGER, LONG, DOUBLE, BOOLEAN, STRING, NULL, ARRAY, CALL, OBJECT, UNKNOWN
 	}
 
-	private Object    value;
+	private Object		value;
 
-	private ValueType type;
+	private ValueType	type;
 
-	private String    original;
+	private String		original;
 
 	public ValueVo(Object value, ValueType type, String original) {
 		this.value = value;
@@ -29,26 +25,16 @@ public class ValueVo {
 
 	public Object getValue(Object arg) {
 
-		//		if (ValueType.CALL == type) {
-		//			Method staticMethod = (Method) value;
-		//			try {
-		//				return staticMethod.invoke(null, arg);
-		//			} catch (Throwable e) {
-		//				throw new TangYuanException(e);
-		//			}
-		//		}
-
 		if (ValueType.CALL == type) {
 			return ((Variable) value).getValue(arg);
 		}
 
 		// new support json object
 		if (ValueType.OBJECT == type) {
-			// DBObject obj = (DBObject) JSONExt.parse(original, new JSONExtCallback());
 			return JSONExt.parse(original, new JSONExtCallback(arg));
 		}
 
-		// new support array 
+		// new support array
 		if (ValueType.ARRAY == type) {
 			return JSONExt.parse(original, new JSONExtCallback(arg));
 		}
@@ -82,15 +68,5 @@ public class ValueVo {
 	public ValueType getType() {
 		return type;
 	}
-
-	//////////////////////////////////////////////////////////////////////////////
-
-	// public Object getValue() {
-	// if (ValueType.CALL == type) {
-	// Method staticMethod = (Method) value;
-	// return staticMethod.invoke(null, tempArgs);
-	// }
-	// return value;
-	// }
 
 }

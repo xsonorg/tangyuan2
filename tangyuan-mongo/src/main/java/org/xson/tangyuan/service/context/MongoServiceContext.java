@@ -17,16 +17,16 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class MongoServiceContext extends DefaultServiceContext {
 
-	private static Log      log             = LogFactory.getLog(MongoServiceContext.class);
+	private static Log		log				= LogFactory.getLog(MongoServiceContext.class);
 
-	private StringBuilder   sqlBuilder      = null;
+	private StringBuilder	sqlBuilder		= null;
 	/** 真正的数据源dsKey */
-	private String          realDsKey       = null;
+	private String			realDsKey		= null;
 
-	private MongoActuator   mongoActuator   = null;
-	private CommandActuator commandActuator = null;
+	private MongoActuator	mongoActuator	= null;
+	private CommandActuator	commandActuator	= null;
 
-	private TangYuanManager tangYuanManager = null;
+	private TangYuanManager	tangYuanManager	= null;
 
 	protected MongoServiceContext() {
 		this.mongoActuator = new MongoActuator();
@@ -64,7 +64,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public List<Map<String, Object>> executeSelectSetListMap(AbstractMongoNode sqlNode, MappingVo resultMap, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			List<Map<String, Object>> result = mongoActuator.selectAllMap(dsKey, sql, resultMap, arg);
 			printSql(sql);
@@ -78,7 +78,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public Map<String, Object> executeSelectOneMap(AbstractMongoNode sqlNode, MappingVo resultMap, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			Map<String, Object> result = mongoActuator.selectOneMap(dsKey, sql, resultMap, arg);
 			printSql(sql);
@@ -94,7 +94,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public List<XCO> executeSelectSetListXCO(AbstractMongoNode sqlNode, MappingVo resultMap, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			List<XCO> result = mongoActuator.selectAllXCO(dsKey, sql, resultMap, arg);
 			printSql(sql);
@@ -108,7 +108,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public XCO executeSelectOneXCO(AbstractMongoNode sqlNode, MappingVo resultMap, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			XCO result = mongoActuator.selectOneXCO(dsKey, sql, resultMap, arg);
 			printSql(sql);
@@ -122,7 +122,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public Object executeSelectVar(AbstractMongoNode sqlNode, MappingVo resultMap, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			Object result = mongoActuator.selectVar(dsKey, sql, resultMap, arg);
 			printSql(sql);
@@ -136,7 +136,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public int executeDelete(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			int result = mongoActuator.delete(dsKey, sql, arg);
 			printSql(sql);
@@ -150,7 +150,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public int executeUpdate(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			int result = mongoActuator.update(dsKey, sql, arg);
 			printSql(sql);
@@ -164,7 +164,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public Object executeInsert(AbstractMongoNode sqlNode, Object arg) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			Object result = mongoActuator.insert(dsKey, sql, arg);
 			printSql(sql);
@@ -178,7 +178,7 @@ public class MongoServiceContext extends DefaultServiceContext {
 
 	public Object executeCommand(AbstractMongoNode sqlNode, Object arg, Class<?> resultType, MappingVo resultMap) throws Throwable {
 		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-		String sql   = getSql();
+		String sql = getSql();
 		try {
 			Object result = commandActuator.execute(sql, dsKey, resultType, resultMap, arg);
 			printSql(sql);
@@ -217,27 +217,5 @@ public class MongoServiceContext extends DefaultServiceContext {
 			System.err.print("\n\n\n");
 		}
 	}
-
-	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	
-
-	//		this.tangYuanManager.appendTrackingCommand(getSql());
-
-	//		if (null != this.tangYuanManager) {
-	//			this.tangYuanManager.appendTracking(TraceManager.SERVICE_TYPE_MONGO, getSql());
-	//		}
-	//	private void appendTracking() {
-	//		RuntimeContext.appendTracking(TrackingManager.SERVICE_TYPE_MONGO, getSql());
-	//	}
-	// public int executeInsert(AbstractMongoNode sqlNode) throws Throwable {
-	// String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-	// int result = mongoActuator.insert(dsKey, getSql());
-	// return result;
-	// }
-
-	// public InsertReturn executeInsertReturn(AbstractMongoNode sqlNode) throws Throwable {
-	// String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-	// InsertReturn result = mongoActuator.insertReturn(dsKey, getSql());
-	// return result;
-	// }
 
 }

@@ -17,12 +17,6 @@ public class DataSourceCreaterFactory {
 		} else if (ConnPoolType.DRUID == type) {
 			throw new TangYuanException(TangYuanLang.get("sql.datasource.impl.unsupported", type.toString()));
 		}
-		//		else if (ConnPoolType.SHARE == type) {
-		//			return new ShareDataSourceCreater();
-		//		} 
-		//		else if (ConnPoolType.JNDI == type) {
-		//			return null;
-		//		}
 		return null;
 	}
 

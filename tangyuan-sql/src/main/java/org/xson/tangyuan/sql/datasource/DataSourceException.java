@@ -1,6 +1,7 @@
 package org.xson.tangyuan.sql.datasource;
 
 import org.xson.tangyuan.TangYuanException;
+import org.xson.tangyuan.log.TangYuanLang;
 
 public class DataSourceException extends TangYuanException {
 
@@ -20,5 +21,13 @@ public class DataSourceException extends TangYuanException {
 
 	public DataSourceException(Throwable cause) {
 		super(cause);
+	}
+
+	public static DataSourceException createLang(String message) {
+		return new DataSourceException(TangYuanLang.get(message));
+	}
+
+	public static DataSourceException createLang(String message, Object... args) {
+		return new DataSourceException(TangYuanLang.get(message, args));
 	}
 }

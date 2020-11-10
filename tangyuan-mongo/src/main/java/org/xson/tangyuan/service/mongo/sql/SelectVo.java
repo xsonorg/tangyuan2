@@ -22,22 +22,22 @@ import com.mongodb.DBObject;
 // [LIMIT {[offset,] row_count | row_count OFFSET offset}]
 public class SelectVo implements SqlVo {
 
-	private static Log      log = LogFactory.getLog(SelectVo.class);
+	private static Log		log	= LogFactory.getLog(SelectVo.class);
 
 	// 列字段
-	private List<String>    columns;
+	private List<String>	columns;
 
-	private String          allColumn;
+	private String			allColumn;
 
-	private String          count;
+	private String			count;
 
-	private String          table;
+	private String			table;
 
-	private WhereCondition  condition;
+	private WhereCondition	condition;
 
-	private List<OrderByVo> orderByList;
+	private List<OrderByVo>	orderByList;
 
-	private LimitVo         limit;
+	private LimitVo			limit;
 
 	public void setAllColumn(String allColumn) {
 		this.allColumn = allColumn;
@@ -180,8 +180,8 @@ public class SelectVo implements SqlVo {
 	}
 
 	private long getQueryCount(DBCollection collection, Object arg) {
-		DBObject query  = getQuery(arg);
-		long     result = -1;
+		DBObject query = getQuery(arg);
+		long result = -1;
 		if (null == query) {
 			result = collection.count();
 		} else {
@@ -196,11 +196,11 @@ public class SelectVo implements SqlVo {
 	}
 
 	public DBObject selectOne(DBCollection collection, Object arg) {
-		DBObject fields        = getFields();
-		DBObject query         = getQuery(arg);
+		DBObject fields = getFields();
+		DBObject query = getQuery(arg);
 		DBObject orderByObject = getOrderByObject();
 
-		DBObject result        = null;
+		DBObject result = null;
 		if (null == fields && null == orderByObject) {
 			result = collection.findOne(query);
 		} else if (null != fields && null == orderByObject) {
@@ -235,10 +235,10 @@ public class SelectVo implements SqlVo {
 	}
 
 	public DBCursor selectSet(DBCollection collection, Object arg) {
-		DBObject fields        = getFields();
-		DBObject query         = getQuery(arg);
+		DBObject fields = getFields();
+		DBObject query = getQuery(arg);
 		DBObject orderByObject = getOrderByObject();
-		DBCursor cursor        = null;
+		DBCursor cursor = null;
 
 		if (null != query && null == fields) {
 			cursor = collection.find(query);
@@ -345,80 +345,5 @@ public class SelectVo implements SqlVo {
 
 		log.info(sb.toString());
 	}
-
-	// // // // // 
-
-	//	public DBObject selectOne(DBCollection collection, Object arg) {
-	//		DBObject fields        = getFields();
-	//		DBObject query         = getQuery(arg);
-	//		DBObject orderByObject = getOrderByObject();
-	//
-	//		// 日志
-	//		log(fields, query, orderByObject);
-	//
-	//		if (null == fields && null == orderByObject) {
-	//			return collection.findOne(query);
-	//		} else if (null != fields && null == orderByObject) {
-	//			return collection.findOne(query, fields);
-	//		} else {
-	//			return collection.findOne(query, fields, orderByObject);
-	//		}
-	//	}
-
-	//	public DBCursor selectSet(DBCollection collection, Object arg) {
-	//	DBObject fields        = getFields();
-	//	DBObject query         = getQuery(arg);
-	//	DBObject orderByObject = getOrderByObject();
-	//	DBCursor cursor        = null;
-	//
-	//	// 日志
-	//	log(fields, query, orderByObject);
-	//
-	//	if (null != query && null == fields) {
-	//		cursor = collection.find(query);
-	//	} else if (null == query && null != fields) {
-	//		cursor = collection.find(new BasicDBObject(), fields);
-	//	} else if (null != fields && null != query) {
-	//		cursor = collection.find(query, fields);
-	//	} else {
-	//		cursor = collection.find();
-	//	}
-	//
-	//	if (null != orderByObject) {
-	//		cursor.sort(orderByObject);
-	//	}
-	//	if (null != this.limit) {
-	//		if (null == this.limit.getOffset()) {
-	//			cursor.limit(this.limit.getRowCount());
-	//		} else {
-	//			cursor.limit(this.limit.getRowCount());
-	//			cursor.skip(this.limit.getOffset());
-	//		}
-	//	}
-	//	return cursor;
-	//}
-
-	//	private long getQueryCount(DBCollection collection, Object arg) {
-	//	DBObject query = getQuery(arg);
-	//	if (null == query) {
-	//		return collection.count();
-	//	} else {
-	//		return collection.count(query);
-	//	}
-	//}
-
-	//	private void log(DBObject fields, DBObject query, DBObject orderByObject) {
-	//		if (log.isInfoEnabled()) {
-	//			if (null != fields) {
-	//				log.info("field:" + fields.toString());
-	//			}
-	//			if (null != query) {
-	//				log.info("query:" + query.toString());
-	//			}
-	//			if (null != orderByObject) {
-	//				log.info("order:" + orderByObject.toString());
-	//			}
-	//		}
-	//	}
 
 }

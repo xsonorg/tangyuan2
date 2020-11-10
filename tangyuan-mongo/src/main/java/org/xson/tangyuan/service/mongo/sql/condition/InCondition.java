@@ -19,18 +19,6 @@ import com.mongodb.DBObject;
  */
 public class InCondition extends WhereCondition {
 
-	//	private List<ValueVo> value;
-	//	@SuppressWarnings("unchecked")
-	//	@Override
-	//	public void setValue(Object value) {
-	//		this.value = (List<ValueVo>) value;
-	//	}
-	//		if (null == value || 0 == value.size()) {
-	//			throw new SqlParseException("Illegal in condition");
-	//		}
-
-	// TODO 还要确定是不是OID
-
 	private ValueVo value;
 
 	@Override
@@ -47,26 +35,26 @@ public class InCondition extends WhereCondition {
 
 	@Override
 	public void toSQL(StringBuilder builder) {
-		//		builder.append(this.name);
-		//		builder.append(SqlParser.BLANK_MARK);
-		//		builder.append("IN");
-		//		builder.append(SqlParser.BLANK_MARK);
-		//		builder.append("(");
-		//		for (int i = 0, n = value.size(); i < n; i++) {
-		//			if (i > 0) {
-		//				builder.append(",");
-		//				builder.append(SqlParser.BLANK_MARK);
-		//			}
-		//			ValueVo valueVo = value.get(i);
-		//			if (ValueType.STRING == valueVo.getType()) {
-		//				builder.append('\'');
-		//				builder.append(valueVo.getSqlValue());
-		//				builder.append('\'');
-		//			} else {
-		//				builder.append(valueVo.getSqlValue());
-		//			}
-		//		}
-		//		builder.append(")");
+		// builder.append(this.name);
+		// builder.append(SqlParser.BLANK_MARK);
+		// builder.append("IN");
+		// builder.append(SqlParser.BLANK_MARK);
+		// builder.append("(");
+		// for (int i = 0, n = value.size(); i < n; i++) {
+		// if (i > 0) {
+		// builder.append(",");
+		// builder.append(SqlParser.BLANK_MARK);
+		// }
+		// ValueVo valueVo = value.get(i);
+		// if (ValueType.STRING == valueVo.getType()) {
+		// builder.append('\'');
+		// builder.append(valueVo.getSqlValue());
+		// builder.append('\'');
+		// } else {
+		// builder.append(valueVo.getSqlValue());
+		// }
+		// }
+		// builder.append(")");
 	}
 
 	@Override
@@ -128,25 +116,4 @@ public class InCondition extends WhereCondition {
 		return value;
 	}
 
-	//	@Override
-	//	public void setQuery(DBObject query, BasicDBList orList, Object arg) {
-	//		if (null == orList) {
-	//			BasicDBList list = new BasicDBList();
-	//			for (int i = 0, n = value.size(); i < n; i++) {
-	//				list.add(value.get(i).getValue(arg));
-	//			}
-	//			query.put(this.name, new BasicDBObject("$in", list));
-	//		} else {
-	//			BasicDBList list = new BasicDBList();
-	//			for (int i = 0, n = value.size(); i < n; i++) {
-	//				list.add(value.get(i).getValue(arg));
-	//			}
-	//			orList.add(new BasicDBObject(this.name, new BasicDBObject("$in", list)));
-	//		}
-	//	}
-
-	//			BasicDBList list = new BasicDBList();
-	//			for (int i = 0, n = value.size(); i < n; i++) {
-	//				list.add(value.get(i).getValue(arg));
-	//			}
 }

@@ -11,9 +11,9 @@ import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 
 public class DBCPDataSource extends AbstractDataSource {
 
-	private Log                   log = LogFactory.getLog(getClass());
+	private Log						log	= LogFactory.getLog(getClass());
 
-	private final BasicDataSource dataSource;
+	private final BasicDataSource	dataSource;
 
 	protected DBCPDataSource(String creator, BasicDataSource dataSource, String logicDataSourceId, String realDataSourceId) {
 		this.dataSource = dataSource;
@@ -31,19 +31,14 @@ public class DBCPDataSource extends AbstractDataSource {
 		try {
 			connection.close();
 		} catch (Exception e) {
-			//			log.error("recycleConnection exception", e);
+			// log.error("recycleConnection exception", e);
 			log.error(TangYuanLang.get("sql.datasource.conn.recycle.error"), e);
 		}
 	}
 
 	@Override
 	public void close(String creator) throws SQLException {
-		//		if (this.creator != creator || !this.creator.equals(creator)) {
-		//			return;
-		//		}
 		dataSource.close();
 	}
 
-	////////////////////////////////////////
-	//	private static Logger			log	= LoggerFactory.getLogger(DBCPDataSource.class);
 }

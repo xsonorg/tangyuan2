@@ -14,7 +14,7 @@ import org.xson.tangyuan.mongo.datasource.DataSourceCreater;
 import org.xson.tangyuan.mongo.datasource.DataSourceException;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceGroupVo;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceVo;
-import org.xson.tangyuan.mongo.datasource.util.DSPropertyUtil;
+import org.xson.tangyuan.util.PropertyUtils;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -27,9 +27,9 @@ import com.mongodb.WriteConcern;
 
 public class DefaultDataSourceCreater implements DataSourceCreater {
 
-	private Log          log                 = LogFactory.getLog(getClass());
+	private Log				log					= LogFactory.getLog(getClass());
 
-	private WriteConcern defaultWriteConcern = null;
+	private WriteConcern	defaultWriteConcern	= null;
 
 	@Override
 	public void newInstance(MongoDataSourceVo dsVo, Map<String, MongoDataSourceVo> logicMap, Map<String, AbstractMongoDataSource> realMap) {
@@ -42,14 +42,14 @@ public class DefaultDataSourceCreater implements DataSourceCreater {
 				}
 				DefaultMongoDataSource ds = createDataSource(dsVo, i + "");
 				realMap.put(realId, ds);
-				//				log.info("add mongo datasource[group]: " + realId);
+				// log.info("add mongo datasource[group]: " + realId);
 				log.infoLang("add.tag", "datasource", realId);
 			}
 
 		} else {
 			DefaultMongoDataSource ds = createDataSource(dsVo, null);
 			realMap.put(dsVo.getId(), ds);
-			//			log.info("add mongo datasource: " + dsVo.getId());
+			// log.info("add mongo datasource: " + dsVo.getId());
 			log.infoLang("add.tag", "datasource", dsVo.getId());
 		}
 		logicMap.put(dsVo.getId(), dsVo);
@@ -65,18 +65,19 @@ public class DefaultDataSourceCreater implements DataSourceCreater {
 		// builder.socketKeepAlive(DSPropertyUtil.getBooleanValue(properties, "socketKeepAlive".toUpperCase(), true));
 
 		// 长链接的最大等待时间
-		builder.maxWaitTime(DSPropertyUtil.getIntValue(properties, "maxWaitTime".toUpperCase(), 1000 * 60 * 10));
+		builder.maxWaitTime(PropertyUtils.getIntValue(properties, "maxWaitTime".toUpperCase(), 1000 * 60 * 10));
 		// 链接超时时间
-		builder.connectTimeout(DSPropertyUtil.getIntValue(properties, "connectTimeout".toUpperCase(), 60 * 1000));
+		builder.connectTimeout(PropertyUtils.getIntValue(properties, "connectTimeout".toUpperCase(), 60 * 1000));
 		// read数据超时时间
-		builder.socketTimeout(DSPropertyUtil.getIntValue(properties, "socketTimeout".toUpperCase(), 60 * 1000));
+		builder.socketTimeout(PropertyUtils.getIntValue(properties, "socketTimeout".toUpperCase(), 60 * 1000));
 		// 最近优先策略
 		builder.readPreference(ReadPreference.primary());
 		// 每个地址最大请求数
-		builder.connectionsPerHost(DSPropertyUtil.getIntValue(properties, "connectionsPerHost".toUpperCase(), 30));
+		builder.connectionsPerHost(PropertyUtils.getIntValue(properties, "connectionsPerHost".toUpperCase(), 30));
 
 		// 一个socket最大的等待请求数(新版本弃用)
-		// builder.threadsAllowedToBlockForConnectionMultiplier(DSPropertyUtil.getIntValue(properties, "threadsAllowedToBlockForConnectionMultiplier".toUpperCase(), 50));
+		// builder.threadsAllowedToBlockForConnectionMultiplier(DSPropertyUtil.getIntValue(properties,
+		// "threadsAllowedToBlockForConnectionMultiplier".toUpperCase(), 50));
 
 		if (properties.containsKey("minConnectionsPerHost".toUpperCase())) {
 			builder.minConnectionsPerHost(Integer.parseInt(properties.get("minConnectionsPerHost".toUpperCase())));
@@ -112,7 +113,7 @@ public class DefaultDataSourceCreater implements DataSourceCreater {
 
 		// 这里统一设置，其他地方需要保持一致
 		if (properties.containsKey("writeConcern".toUpperCase())) {
-			String       writeConcern        = properties.get("writeConcern".toUpperCase());
+			String writeConcern = properties.get("writeConcern".toUpperCase());
 			WriteConcern defaultWriteConcern = getWriteConcern(writeConcern);
 			builder.writeConcern(getWriteConcern(writeConcern));
 			this.defaultWriteConcern = defaultWriteConcern;
@@ -198,16 +199,16 @@ public class DefaultDataSourceCreater implements DataSourceCreater {
 	}
 
 	private List<MongoCredential> getCredentials(String username, String password, String dbName) {
-		List<MongoCredential> list       = new ArrayList<MongoCredential>();
-		MongoCredential       credential = MongoCredential.createCredential(username, dbName, password.toCharArray());
+		List<MongoCredential> list = new ArrayList<MongoCredential>();
+		MongoCredential credential = MongoCredential.createCredential(username, dbName, password.toCharArray());
 		list.add(credential);
 		return list;
 	}
 
 	private ServerAddress parseAddr(String url) {
-		int      start = "mongodb://".length();
-		int      end   = url.lastIndexOf("/");
-		String   host  = url.substring(start, end).trim();
+		int start = "mongodb://".length();
+		int end = url.lastIndexOf("/");
+		String host = url.substring(start, end).trim();
 		String[] array = host.split(":");
 		return new ServerAddress(array[0], Integer.parseInt(array[1]));
 	}
@@ -217,9 +218,10 @@ public class DefaultDataSourceCreater implements DataSourceCreater {
 			throw new DataSourceException("mongo url is null");
 		}
 		Pattern pattern = Pattern.compile("^mongodb://[a-zA-Z0-9\\.]+?:[0-9]{2,5}/.+?$");
-		Matcher m       = pattern.matcher(url);
+		Matcher m = pattern.matcher(url);
 		if (!m.matches()) {
-			throw new DataSourceException("Illegal mongo url: " + url + ", The correct format should be similar: [mongodb://127.0.0.1:27027/tangyuan_db]");
+			throw new DataSourceException(
+					"Illegal mongo url: " + url + ", The correct format should be similar: [mongodb://127.0.0.1:27027/tangyuan_db]");
 		}
 	}
 
@@ -227,24 +229,24 @@ public class DefaultDataSourceCreater implements DataSourceCreater {
 	public DefaultMongoDataSource createDataSource(MongoDataSourceVo dsVo, String urlPattern) {
 		this.defaultWriteConcern = null;
 		Map<String, String> properties = dsVo.getProperties();
-		MongoClient         mongo      = null;
-		DB                  db         = null;
+		MongoClient mongo = null;
+		DB db = null;
 
 		// mongodb://127.0.0.1:27027/tangyuan_db
-		String              url        = properties.get("url".toUpperCase());
+		String url = properties.get("url".toUpperCase());
 		// 检测URL
 		checkMongoUrl(url);
 		if (null != urlPattern) {
-			url = DSPropertyUtil.replace(url, "{}", urlPattern);
+			url = PropertyUtils.replace(url, "{}", urlPattern);
 		}
-		ServerAddress         addr            = parseAddr(url);
+		ServerAddress addr = parseAddr(url);
 
 		// String host = null;// int port = 0;
-		String                dbName          = url.substring(url.lastIndexOf("/") + 1).trim();
-		String                username        = properties.get("username".toUpperCase());
-		String                password        = properties.get("password".toUpperCase());
+		String dbName = url.substring(url.lastIndexOf("/") + 1).trim();
+		String username = properties.get("username".toUpperCase());
+		String password = properties.get("password".toUpperCase());
 
-		MongoClientOptions    options         = createOptions(properties);
+		MongoClientOptions options = createOptions(properties);
 		List<MongoCredential> credentialsList = null;
 		if (null != username && null != password) {
 			credentialsList = getCredentials(username, password, dbName);

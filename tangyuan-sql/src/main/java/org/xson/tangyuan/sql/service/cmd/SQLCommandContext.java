@@ -20,8 +20,8 @@ public class SQLCommandContext extends ActuatorContext {
 
 	protected void commitAndRollBack(Throwable ex) throws Throwable {
 		SqlServiceContext sqlContext = (SqlServiceContext) getServiceContext(TangYuanServiceType.SQL);
-		Throwable         throwEx    = null;
-		boolean           success    = false;
+		Throwable throwEx = null;
+		boolean success = false;
 		try {
 			success = sqlContext.commitAndRollBack(ex); // 这里也可能开启异常
 		} catch (Throwable e) {
@@ -29,11 +29,7 @@ public class SQLCommandContext extends ActuatorContext {
 		}
 		// 处理后置事件和总计数
 		this.sc = null;
-		//		if (success) {
-		//			finish();
-		//		} else {
-		//			finishOnException();
-		//		}
+
 		this.post(success);
 		// 抛出新异常
 		if (null != throwEx) {

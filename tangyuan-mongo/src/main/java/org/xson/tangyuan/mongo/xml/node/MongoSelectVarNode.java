@@ -10,11 +10,12 @@ import org.xson.tangyuan.xml.node.TangYuanNode;
 
 public class MongoSelectVarNode extends AbstractMongoNode {
 
-	private static Log log       = LogFactory.getLog(MongoSelectVarNode.class);
+	private static Log	log			= LogFactory.getLog(MongoSelectVarNode.class);
 
-	private MappingVo  resultMap = null;// TODO
+	private MappingVo	resultMap	= null;
 
-	public MongoSelectVarNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheUseVo cacheUse, String desc, String[] groups) {
+	public MongoSelectVarNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, CacheUseVo cacheUse, String desc,
+			String[] groups) {
 
 		this.id = id;
 		this.ns = ns;
@@ -43,43 +44,5 @@ public class MongoSelectVarNode extends AbstractMongoNode {
 		ac.setResult(result);
 		return result;
 	}
-
-	//	@Override
-	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-	//
-	//		MongoServiceContext mongoContext = (MongoServiceContext) context.getServiceContext(TangYuanServiceType.MONGO);
-	//
-	//		// 1. cache使用
-	//		if (null != cacheUse) {
-	//			Object result = cacheUse.getObject(arg);
-	//			if (null != result) {
-	//				context.setResult(result);
-	//				return true;
-	//			}
-	//		}
-	//
-	//		// 2. 清理和重置执行环境
-	//		mongoContext.resetExecEnv();
-	//		long   startTime = System.currentTimeMillis();
-	//		Object result    = null;
-	//
-	//		sqlNode.execute(context, arg); // 获取sql
-	//		if (log.isInfoEnabled()) {
-	//			log.info(mongoContext.getSql());
-	//		}
-	//
-	//		result = mongoContext.executeSelectVar(this, arg);
-	//		context.setResult(result);
-	//
-	//		if (log.isInfoEnabled()) {
-	//			log.info("mongo execution time: " + getSlowServiceLog(startTime));
-	//		}
-	//
-	//		if (null != cacheUse) {
-	//			cacheUse.putObject(arg, result);
-	//		}
-	//
-	//		return true;
-	//	}
 
 }

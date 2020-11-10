@@ -25,24 +25,4 @@ public class SqlForNode extends ForNode {
 		}
 	}
 
-	// if (null != str && str.length() > 0) {
-	// context.getSqlServiceContext().addSql(str);
-	// }
-	//		SqlServiceContext sqlContext = (SqlServiceContext) serviceContext.getSqlServiceContext();
-
-	//	public SqlForEachNode(TangYuanNode sqlNode, Variable collection, String index, String open, String close, String separator, Object start,
-	//			Object end, Object pLen, boolean ignoreIOOB, int indexMode) {
-	//		this.sqlNode = sqlNode;
-	//		this.collection = collection;
-	//		this.index = index;
-	//		this.open = open;
-	//		this.close = close;
-	//		this.separator = separator;
-	//
-	//		this.start = start;
-	//		this.end = end;
-	//		this.pLen = pLen;
-	//		this.ignoreIOOB = ignoreIOOB;
-	//		this.indexMode = indexMode;
-	//	}
 }

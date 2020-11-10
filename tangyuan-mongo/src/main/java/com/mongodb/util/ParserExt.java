@@ -1,16 +1,10 @@
 package com.mongodb.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.SimpleTimeZone;
 
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Code;
@@ -30,9 +24,9 @@ public class ParserExt {
 	}
 
 	class ParserExtResult {
-		/** 结束的位置*/
-		int    endPos;
-		Object value;
+		/** 结束的位置 */
+		int		endPos;
+		Object	value;
 
 		public ParserExtResult(int endPos, Object value) {
 			super();
@@ -40,97 +34,6 @@ public class ParserExt {
 			this.value = value;
 		}
 	}
-
-	//	private char escapeFlag = '\\';
-	//	private int findMatchedChar(String context, int start, char startChar, char endChar) {
-	//		char    chr;
-	//		boolean stringMode             = false;
-	//		boolean stringModeSingleQuotes = false;
-	//		boolean stringModeDoubleQuotes = false;
-	//		int     count                  = 0;
-	//		for (int i = start + 1; i < context.length(); i++) {
-	//			chr = context.charAt(i);
-	//			switch (chr) {
-	//			case '\'':
-	//				if (stringMode) {
-	//					if (stringModeSingleQuotes && (escapeFlag != context.charAt(i - 1))) {
-	//						stringModeSingleQuotes = false;
-	//						stringMode = false;
-	//					}
-	//				} else {
-	//					if (escapeFlag != context.charAt(i - 1)) {
-	//						stringModeSingleQuotes = true;
-	//						stringMode = true;
-	//					}
-	//				}
-	//				break;
-	//			case '"':
-	//				if (stringMode) {
-	//					if (stringModeDoubleQuotes && (escapeFlag != context.charAt(i - 1))) {
-	//						stringModeDoubleQuotes = false;
-	//						stringMode = false;
-	//					}
-	//				} else {
-	//					if ('\\' != context.charAt(i - 1)) {
-	//						stringModeDoubleQuotes = true;
-	//						stringMode = true;
-	//					}
-	//				}
-	//				break;
-	//			default:
-	//				if (stringMode) {
-	//					break;
-	//				}
-	//				if (chr == startChar && (escapeFlag != context.charAt(i - 1))) {
-	//					count++;
-	//				} else if (chr == endChar && (escapeFlag != context.charAt(i - 1))) {
-	//					if (count == 0) {
-	//						return i;
-	//					} else {
-	//						count--;
-	//					}
-	//				}
-	//			}
-	//		}
-	//		return -1;
-	//	}
-
-	/**
-	 * 查找关键字的最后一个位置
-	 */
-	//	private int findKeysEndPos(String src, int pos, String[] keys) {
-	//		int length    = src.length();
-	//		int keysIndex = 0;
-	//		for (int i = pos; i < length; i++) {
-	//			// skip
-	//			char cur = src.charAt(i);
-	//			if (Character.isWhitespace(cur)) {
-	//				continue;
-	//			}
-	//			// safe
-	//			int end = i + keys[keysIndex].length();
-	//			if (end >= length) {
-	//				end = length;
-	//			}
-	//			String key = src.substring(i, end);
-	//			if (!keys[keysIndex].equals(key)) {
-	//				return -1;
-	//			}
-	//			i = i + keys[keysIndex].length() - 1;//指到最后
-	//			keysIndex++;
-	//			if (keysIndex == keys.length) {
-	//				return i;
-	//			}
-	//		}
-	//		return -1;
-	//	}
-
-	//	protected boolean isString(String text) {
-	//		if (text.length() >= 2 && ((text.startsWith("'") && text.endsWith("'")) || (text.startsWith("\"") && text.endsWith("\"")))) {
-	//			return true;
-	//		}
-	//		return false;
-	//	}
 
 	////////////////////////////////////////////////////////// -->n
 
@@ -176,12 +79,7 @@ public class ParserExt {
 				value = JSONExtCallback.parseISODate(content);
 			}
 
-			//			System.out.println("###" + content);
-			//			return new ParserExtResult(nextEndPos + 1, value);
 			return new ParserExtResult(nextEndPos, value);
-			//			System.out.println(src.charAt(pos));
-			//			System.out.println(src.substring(pos, keysEndPos));
-			//			System.out.println(src.substring(pos, keysEndPos + 1));
 		}
 	}
 
@@ -212,12 +110,11 @@ public class ParserExt {
 				String[] array = content.split(",");
 				value = new BSONTimestamp(Integer.parseInt(StringUtils.trim(array[0])), Integer.parseInt(StringUtils.trim(array[1])));
 			}
-			//			return new ParserExtResult(nextEndPos + 1, value);
 			return new ParserExtResult(nextEndPos, value);
 		}
 	}
 
-	//////////////////////////////////////////////////////////-->N
+	////////////////////////////////////////////////////////// -->N
 
 	// NaN
 	protected class NaNParser implements SpecialParser {
@@ -358,14 +255,9 @@ public class ParserExt {
 			if (-1 == nextEndPos) {
 				return null;
 			}
-			//			Object value = new Date().toString();
-			//			System.out.println(value);
-			//			System.out.println(new Date().toGMTString());
-			//			System.out.println(new Date().toLocaleString());
 
-			//SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
 			String pattern = MongoComponent.getInstance().getDefaultMongoDatePattern();
-			Object value   = new SimpleDateFormat(pattern, Locale.US).format(new Date());
+			Object value = new SimpleDateFormat(pattern, Locale.US).format(new Date());
 			return new ParserExtResult(nextEndPos, value);
 		}
 	}
@@ -404,47 +296,24 @@ public class ParserExt {
 			if (-1 == nextEndPos) {
 				return null;
 			}
-			//			nextEndPos = src.indexOf("}", keysEndPos + 1);
-			//			nextEndPos = findMatchedChar(src, nextEndPos, '{', '}');
+
 			nextEndPos = XmlTextParseUtil.findNestedMatchedChar(src, nextEndPos, '{', '}');
 			if (-1 == nextEndPos) {
 				return null;
 			}
 
 			String content = src.substring(pos, nextEndPos + 1);
-			//			FunctionCode code    = new FunctionCode(content);
-			Code   code    = new Code(content);
-			//			System.out.println("==================================\n\n" + content);
+			Code code = new Code(content);
 
 			return new ParserExtResult(nextEndPos, code);
 		}
 	}
 
-	// @
-	//	protected class AtParser implements SpecialParser {
-	//
-	//		private String[] keys = { "@", "{" };
-	//
-	//		@Override
-	//		public ParserExtResult parse(String src, int pos) throws Throwable {
-	//			int keysEndPos = findKeysEndPos(src, pos, keys);
-	//			if (-1 == keysEndPos) {
-	//				return null;
-	//			}
-	//			int nextEndPos = XmlTextParseUtil.findNestedMatchedChar(src, keysEndPos, '{', '}');
-	//			if (-1 == nextEndPos) {
-	//				return null;
-	//			}
-	//			String content = src.substring(pos + 2, nextEndPos);
-	//			return new ParserExtResult(nextEndPos, code);
-	//		}
-	//	}
-
-	private List<SpecialParser> nParserList = new ArrayList<SpecialParser>();
-	private List<SpecialParser> NParserList = new ArrayList<SpecialParser>();
-	private List<SpecialParser> IParserList = new ArrayList<SpecialParser>();
-	private List<SpecialParser> DParserList = new ArrayList<SpecialParser>();
-	private List<SpecialParser> fParserList = new ArrayList<SpecialParser>();
+	private List<SpecialParser>	nParserList	= new ArrayList<SpecialParser>();
+	private List<SpecialParser>	NParserList	= new ArrayList<SpecialParser>();
+	private List<SpecialParser>	IParserList	= new ArrayList<SpecialParser>();
+	private List<SpecialParser>	DParserList	= new ArrayList<SpecialParser>();
+	private List<SpecialParser>	fParserList	= new ArrayList<SpecialParser>();
 
 	protected ParserExt() {
 		// n
@@ -468,8 +337,6 @@ public class ParserExt {
 		fParserList.add(new FalseParser());
 		fParserList.add(new FunctionParser());
 
-		// @
-		//		atParserList.add(new AtParser());
 	}
 
 	protected ParserExtResult parseN(String src, int pos) {
@@ -517,7 +384,7 @@ public class ParserExt {
 		if (endBracketsPos == -1) {
 			return null;
 		}
-		String   original = src.substring(leftStart + 1, endBracketsPos).trim();
+		String original = src.substring(leftStart + 1, endBracketsPos).trim();
 		Variable variable = new GAParserWarper().parse(original);
 		return new ParserExtResult(endBracketsPos, variable.getValue(callback.getArg()));
 	}
@@ -535,42 +402,6 @@ public class ParserExt {
 			throw new TangYuanException(e);
 		}
 		throw new TangYuanException("命令解析异常[" + flag + "]:\n" + src);
-	}
-
-	public static void main(String[] args) {
-		//		String fileName = "C:/Users/Lenovo/Desktop/temp/mongo_shell_test.txt";
-		//		String str      = readFile(fileName);
-		//		System.out.println(str);
-		//		JSONExt.parse(str, new JSONExtCallback());
-
-		String           _msDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-		SimpleDateFormat format        = new SimpleDateFormat(_msDateFormat);
-		//		SimpleDateFormat format        = new SimpleDateFormat();
-		format.setCalendar(new GregorianCalendar(new SimpleTimeZone(8, "GMT")));
-		//		o = format.parse(b.get("$date").toString(), new ParsePosition(0));
-		System.out.println(format.format(new Date()));
-
-		new Date().toGMTString();
-	}
-
-	public static String readFile(String fileName) {
-		File            file   = new File(fileName);
-		FileInputStream reader = null;
-		byte[]          result = null;
-		try {
-			reader = new FileInputStream(file);
-			result = new byte[reader.available()];
-			reader.read(result);
-		} catch (IOException e) {
-		} finally {
-			if (null != reader) {
-				try {
-					reader.close();
-				} catch (IOException e1) {
-				}
-			}
-		}
-		return new String(result, StandardCharsets.UTF_8);
 	}
 
 }

@@ -10,7 +10,6 @@ public abstract class DataSourceManager {
 	protected String creator      = null;
 
 	public boolean isValidDsKey(String dsKey) {
-		//		return dsKey.equals(this.defaultDsKey);
 		return dsKey.equalsIgnoreCase(this.defaultDsKey);
 	}
 

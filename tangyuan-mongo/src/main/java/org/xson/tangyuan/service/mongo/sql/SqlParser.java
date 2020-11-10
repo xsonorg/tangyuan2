@@ -23,22 +23,18 @@ import org.xson.tangyuan.util.XmlTextParseUtil;
 
 public class SqlParser {
 
-	public final static String BLANK_MARK    = " ";
-	public final static String SELECT_MARK   = "SELECT";
-	public final static String INSERT_MARK   = "INSERT INTO";
-	public final static String UPDATE_MARK   = "UPDATE";
-	public final static String DELETE_MARK   = "DELETE FROM";
+	public final static String	BLANK_MARK		= " ";
+	public final static String	SELECT_MARK		= "SELECT";
+	public final static String	INSERT_MARK		= "INSERT INTO";
+	public final static String	UPDATE_MARK		= "UPDATE";
+	public final static String	DELETE_MARK		= "DELETE FROM";
 
-	public final static String FROM_MARK     = "FROM";
-	public final static String WHERE_MARK    = "WHERE";
-	public final static String ORDER_BY_MARK = "ORDER BY";
-	public final static String LIMIT_MARK    = "LIMIT";
+	public final static String	FROM_MARK		= "FROM";
+	public final static String	WHERE_MARK		= "WHERE";
+	public final static String	ORDER_BY_MARK	= "ORDER BY";
+	public final static String	LIMIT_MARK		= "LIMIT";
 
 	public SqlVo parse(String sql) throws SqlParseException {
-
-		//		System.out.println("############################################################\n\n\n\n");
-		//		System.out.println(sql);
-		//		System.out.println("\n\n\n\n############################################################");
 
 		sql = sql.trim();
 		if (sql.endsWith(";")) {// fix bug
@@ -68,12 +64,12 @@ public class SqlParser {
 		// x. a in (1, 2, 3) InCondition
 		// x. a not in (1, 2, 3) NotInCondition
 
-		StringBuilder                 builder           = new StringBuilder();
-		String                        leftKey           = null;
+		StringBuilder builder = new StringBuilder();
+		String leftKey = null;
 
-		LinkedList<BracketsCondition> stack             = new LinkedList<BracketsCondition>();
-		BracketsCondition             bracketsCondition = new BracketsCondition(false);
-		boolean                       isString          = false;                              // 是否进入字符串采集
+		LinkedList<BracketsCondition> stack = new LinkedList<BracketsCondition>();
+		BracketsCondition bracketsCondition = new BracketsCondition(false);
+		boolean isString = false; // 是否进入字符串采集
 		for (int i = wherePos; i < endPos; i++) {
 			char key = sql.charAt(i);
 			switch (key) {
@@ -237,7 +233,7 @@ public class SqlParser {
 					isString = true;
 				}
 				break;
-			case '@'://新增，支持二次解析和调用
+			case '@':// 新增，支持二次解析和调用
 				if (isString) {
 					builder.append(key);
 					break;
@@ -311,16 +307,6 @@ public class SqlParser {
 			return -1;
 		}
 
-		//		List<ValueVo> value = new ArrayList<ValueVo>();
-		//		for (int i = 0; i < array.length; i++) {
-		//			value.add(parseValueVo(array[i].trim(), false));
-		//		}
-
-		//		List<String> list = XmlTextParseUtil.splitToList(sql.substring(startBracketsPos + 1, endBracketsPos), ',');
-		//		if (null == list) {
-		//			throw new SqlParseException("Illegal where in: " + sql);
-		//		}
-
 		ValueVo value = new ValueVo(null, ValueType.ARRAY, "[" + sql.substring(startBracketsPos + 1, endBracketsPos) + "]");
 		condition.setValue(value);
 		return endBracketsPos;
@@ -355,9 +341,9 @@ public class SqlParser {
 		if (-1 == endBracketsPos) {
 			return -1;
 		}
-		String   original = sql.substring(startBracketsPos + 2, endBracketsPos).trim();
+		String original = sql.substring(startBracketsPos + 2, endBracketsPos).trim();
 		Variable variable = new GAParserWarper().parse(original);
-		ValueVo  value    = new ValueVo(variable, ValueType.CALL, original);
+		ValueVo value = new ValueVo(variable, ValueType.CALL, original);
 		condition.setValue(value);
 		return endBracketsPos;
 	}
@@ -384,9 +370,9 @@ public class SqlParser {
 
 	protected int findWhere(String sql, int start) {
 		// // public final static String WHERE_MARK = " WHERE ";
-		char[]  src       = sql.toCharArray();
-		int     srcLength = src.length;
-		boolean isString  = false;            // 是否进入字符串采集
+		char[] src = sql.toCharArray();
+		int srcLength = src.length;
+		boolean isString = false; // 是否进入字符串采集
 		for (int i = 0; i < srcLength; i++) {
 			char key = src[i];
 			switch (key) {
@@ -411,9 +397,9 @@ public class SqlParser {
 	}
 
 	protected int findFrom(String sql, int start) {
-		char[]  src       = sql.toCharArray();
-		int     srcLength = src.length;
-		boolean isString  = false;            // 是否进入字符串采集
+		char[] src = sql.toCharArray();
+		int srcLength = src.length;
+		boolean isString = false; // 是否进入字符串采集
 		for (int i = 0; i < srcLength; i++) {
 			char key = src[i];
 			switch (key) {
@@ -438,9 +424,9 @@ public class SqlParser {
 	}
 
 	protected int findLimit(String sql, int start) {
-		char[]  src       = sql.toCharArray();
-		int     srcLength = src.length;
-		boolean isString  = false;            // 是否进入字符串采集
+		char[] src = sql.toCharArray();
+		int srcLength = src.length;
+		boolean isString = false; // 是否进入字符串采集
 		for (int i = 0; i < srcLength; i++) {
 			char key = src[i];
 			switch (key) {
@@ -466,9 +452,9 @@ public class SqlParser {
 
 	protected int findOrderBy(String sql, int start) {
 		// public final static String ORDER_BY_MARK = " ORDER BY ";
-		char[]  src       = sql.toCharArray();
-		int     srcLength = src.length;
-		boolean isString  = false;            // 是否进入字符串采集
+		char[] src = sql.toCharArray();
+		int srcLength = src.length;
+		boolean isString = false; // 是否进入字符串采集
 		for (int i = 0; i < srcLength; i++) {
 			char key = src[i];
 			switch (key) {
@@ -505,9 +491,9 @@ public class SqlParser {
 
 	/** values分隔 */
 	protected List<String> splitValues(String src, char separator) {
-		List<String>  temp     = new ArrayList<String>();
-		StringBuilder sb       = new StringBuilder();
-		boolean       isString = false;                  // 是否进入字符串采集
+		List<String> temp = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		boolean isString = false; // 是否进入字符串采集
 		for (int i = 0; i < src.length(); i++) {
 			char key = src.charAt(i);
 			switch (key) {
@@ -519,7 +505,7 @@ public class SqlParser {
 				if (isString) {
 					sb.append(key);
 				} else {
-					//					int end = findNestedCharIndex(src, i + 1, src.length(), '[', ']');
+					// int end = findNestedCharIndex(src, i + 1, src.length(), '[', ']');
 					int end = XmlTextParseUtil.findNestedMatchedChar(src, i, '[', ']');
 					if (-1 == end) {
 						throw new SqlParseException("The array is missing an end tag: " + src);
@@ -532,7 +518,7 @@ public class SqlParser {
 				if (isString) {
 					sb.append(key);
 				} else {
-					//					int end = findNestedCharIndex(src, i + 1, src.length(), '{', '}');
+					// int end = findNestedCharIndex(src, i + 1, src.length(), '{', '}');
 					int end = XmlTextParseUtil.findNestedMatchedChar(src, i, '{', '}');
 					if (-1 == end) {
 						throw new SqlParseException("The object is missing an end tag: " + src);
@@ -583,21 +569,18 @@ public class SqlParser {
 
 		// add array type
 		if (val.startsWith("[") && val.endsWith("]")) {
-			//			return new ValueVo(val, ValueType.ARRAY, val);
 			return new ValueVo(null, ValueType.ARRAY, val);
 		}
 
 		// support function call
 		if (val.startsWith("@{") && val.endsWith("}")) {
-			// return new ValueVo(parseCall(val.substring(2, val.length() - 1).trim()), ValueType.CALL, val);
-			String   original = val.substring(2, val.length() - 1).trim();
+			String original = val.substring(2, val.length() - 1).trim();
 			Variable variable = new GAParserWarper().parse(original);
 			return new ValueVo(variable, ValueType.CALL, original);
 		}
 
 		// support json object
 		if (val.startsWith("{") && val.endsWith("}")) {
-			//			return new ValueVo(val, ValueType.OBJECT, val);
 			return new ValueVo(null, ValueType.OBJECT, val);
 		}
 
@@ -620,301 +603,17 @@ public class SqlParser {
 		return new ValueVo(val, ValueType.UNKNOWN, val);
 	}
 
-	public static void main(String[] args) {
-		// String sql = "select count(*) from table";
-		// String sql = "select a, b from table where a>2 or (c = '4' and c = 1) order by a b,c DESC limit 1,2";
-		String    sql    = "select * from table where ((c= '4' or c =1) or (c = '4' and c = 1)) and (c = '4' and ( c = '4' and c = 1)) order by a b asc,c limit 1";
-		// String sql = "INSERT INTO tbTrade (name, age) VALUES ('gaop34', 22)";
-		// String sql = "DELETE FROM 表名称 WHERE age = 22";
-		// String sql = " UPDATE Person SET FirstName = FirstName +4, WHERE LastName = 'Wilson'";
-		SqlParser parser = new SqlParser();
-		SqlVo     sqlVo  = parser.parse(sql);
-		System.out.println(sqlVo.toSQL());
-
-	}
-
-	// // // // // // // // // // // // // // // // // // // // // // 
-
-	// public final static int START = 7;
-	// Mark
-	// public final static String FROM_MARK = " FROM ";
-	// public final static String WHERE_MARK = " WHERE ";
-	// public final static String ORDER_BY_MARK = " ORDER BY ";
-	// public final static String LIMIT_MARK = " LIMIT ";
-	//	protected int findNestedCharIndex(String src, int start, int end, char startChr, char endChr) {
-	//		boolean isString    = false; // 是否进入字符串采集
-	//		int     nestedCount = 0;
-	//		for (int i = start; i < end; i++) {
-	//			char key = src.charAt(i);
-	//			switch (key) {
-	//			case '\'':
-	//				isString = !isString;
-	//				break;
-	//			default:
-	//				if (isString) {
-	//					break;
-	//				}
-	//				if (startChr == key) {
-	//					nestedCount++;
-	//					break;
-	//				}
-	//				if (endChr == key && 0 == nestedCount) {
-	//					return i;
-	//				}
-	//				if (endChr == key && 0 != nestedCount) {
-	//					nestedCount--;
-	//				}
-	//				break;
-	//			}
-	//		}
-	//		return -1;
-	//	}
-	// protected int findCharIndex(String src, char chr) {
-	// boolean isString = false; // 是否进入字符串采集
-	// for (int i = 0; i < src.length(); i++) {
-	// char key = src.charAt(i);
-	// switch (key) {
-	// case '\'':
-	// isString = !isString;
-	// break;
-	// default:
-	// if (chr == key && !isString) {
-	// return i;
-	// }
-	// break;
-	// }
-	// }
-	// return -1;
+	// public static void main(String[] args) {
+	// // String sql = "select count(*) from table";
+	// // String sql = "select a, b from table where a>2 or (c = '4' and c = 1) order by a b,c DESC limit 1,2";
+	// String sql = "select * from table where ((c= '4' or c =1) or (c = '4' and c = 1)) and (c = '4' and ( c = '4' and c = 1)) order by a b asc,c
+	// limit 1";
+	// // String sql = "INSERT INTO tbTrade (name, age) VALUES ('gaop34', 22)";
+	// // String sql = "DELETE FROM 表名称 WHERE age = 22";
+	// // String sql = " UPDATE Person SET FirstName = FirstName +4, WHERE LastName = 'Wilson'";
+	// SqlParser parser = new SqlParser();
+	// SqlVo sqlVo = parser.parse(sql);
+	// System.out.println(sqlVo.toSQL());
 	// }
 
-	// private ValueVo parseValueVo(String val, boolean isString) {
-	// if (isString) {
-	// return new ValueVo(val, ValueType.STRING);
-	// }
-	//
-	// if (val.equalsIgnoreCase("null")) {
-	// return new ValueVo(null, ValueType.NULL);
-	// }
-	//
-	// if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
-	// return new ValueVo(Boolean.parseBoolean(val), ValueType.BOOLEAN);
-	// }
-	//
-	// if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith("\"") && val.endsWith("\""))) {
-	// return new ValueVo(val.substring(1, val.length() - 1), ValueType.STRING);
-	// }
-	//
-	// // add array type
-	// if (val.startsWith("[") && val.endsWith("]")) {
-	// parseArrayValue(val.substring(1, val.length() - 1).trim());
-	// return new ValueVo(val, ValueType.ARRAY);
-	// }
-	//
-	// if (isInteger(val)) {
-	// // return new ValueVo(Integer.parseInt(val), ValueType.INTEGER);
-	// // fix bug, support long
-	// Object number = null;
-	// try {
-	// number = Integer.parseInt(val);
-	// return new ValueVo(number, ValueType.INTEGER);
-	// } catch (NumberFormatException e) {
-	// number = Long.parseLong(val);
-	// }
-	// return new ValueVo(number, ValueType.LONG);
-	// }
-	// return new ValueVo(Double.parseDouble(val), ValueType.DOUBLE);
-	// }
-
-	//		protected ValueVo parseValueVo(String val, boolean isString) {
-	//			if (isString) {
-	//				return new ValueVo(val, ValueType.STRING, val);
-	//			}
-	//
-	//			if (val.equalsIgnoreCase("null")) {
-	//				return new ValueVo(null, ValueType.NULL, val);
-	//			}
-	//
-	//			if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
-	//				return new ValueVo(Boolean.parseBoolean(val), ValueType.BOOLEAN, val);
-	//			}
-	//
-	//			if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith("\"") && val.endsWith("\""))) {
-	//				return new ValueVo(val.substring(1, val.length() - 1), ValueType.STRING, val);
-	//			}
-	//
-	//			// add array type
-	//			if (val.startsWith("[") && val.endsWith("]")) {
-	//				return new ValueVo(parseArrayValue(val.substring(1, val.length() - 1).trim()), ValueType.ARRAY, val);
-	//			}
-	//
-	//			// support function call
-	//			if (val.startsWith("@{") && val.endsWith("}")) {
-	//				return new ValueVo(parseCall(val.substring(2, val.length() - 1).trim()), ValueType.CALL, val);
-	//			}
-	//
-	//			if (isInteger(val)) {
-	//				// return new ValueVo(Integer.parseInt(val), ValueType.INTEGER);
-	//				// fix bug, support long
-	//				Object number = null;
-	//				try {
-	//					number = Integer.parseInt(val);
-	//					return new ValueVo(number, ValueType.INTEGER, val);
-	//				} catch (NumberFormatException e) {
-	//					number = Long.parseLong(val);
-	//				}
-	//				return new ValueVo(number, ValueType.LONG, val);
-	//			}
-	//			return new ValueVo(Double.parseDouble(val), ValueType.DOUBLE, val);
-	//		}
-
-	//	protected Object parseCall(String val) {
-	//	Method method = getStaticMethod(val);
-	//	return method;
-	//}
-	//
-	//private Method getStaticMethod(String fullName) {
-	//	int lastpos = fullName.lastIndexOf(".");
-	//	if (lastpos < 0) {
-	//		throw new OgnlException("Illegal method call name: " + fullName);
-	//	}
-	//
-	//	String   className  = fullName.substring(0, lastpos);
-	//	String   methodName = fullName.substring(lastpos + 1);
-	//	Class<?> clazz      = ClassUtils.forName(className);
-	//
-	//	Method[] methods    = clazz.getMethods();
-	//	for (Method m : methods) {
-	//		if (m.getName().equals(methodName)) {
-	//			if (!Modifier.isStatic(m.getModifiers())) {
-	//				throw new OgnlException("The method invoked in XML must be static: " + fullName);
-	//			}
-	//			return m;
-	//		}
-	//	}
-	//
-	//	throw new OgnlException("Non-existent method call name: " + fullName);
-	//}
-
-	//	protected Object parseValue(String val) {
-	//		if (val.equalsIgnoreCase("null")) {
-	//			return null;
-	//		}
-	//
-	//		if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
-	//			return Boolean.parseBoolean(val);
-	//		}
-	//
-	//		if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith("\"") && val.endsWith("\""))) {
-	//			return val.substring(1, val.length() - 1);
-	//		}
-	//
-	//		if (isInteger(val)) {
-	//			Object number = null;
-	//			try {
-	//				number = Integer.parseInt(val);
-	//			} catch (NumberFormatException e) {
-	//				number = Long.parseLong(val);
-	//			}
-	//			return number;
-	//		}
-	//		return Double.parseDouble(val);
-	//	}
-	//
-	//	protected Object parseArrayValue(String val) {
-	//		if (0 == val.length()) {
-	//			return new Object[0];
-	//		}
-	//		String[] temp   = val.split(",");
-	//		Object[] result = new Object[temp.length];
-	//		for (int i = 0; i < temp.length; i++) {
-	//			result[i] = parseValue(temp[i].trim());
-	//		}
-	//		return result;
-	//	}
-
-	//	protected int findIn(BracketsCondition condition, String sql, int startPos, int endPos) {
-	//		// 可以直接找对末尾
-	//		// x. a in (1, 2, 3) InCondition
-	//		int startBracketsPos = sql.indexOf("(", startPos);
-	//		if (-1 == startBracketsPos) {
-	//			throw new SqlParseException("Illegal where in: " + sql);
-	//		}
-	//		// int endBracketsPos = sql.indexOf(")", startBracketsPos);
-	//		// fix bug
-	//		int endBracketsPos = findCharIndex(sql, startBracketsPos, ')');
-	//		if (-1 == endBracketsPos) {
-	//			throw new SqlParseException("Illegal where in: " + sql);
-	//		}
-	//		// INTEGER, DOUBLE, STRING
-	//		// String[] array = sql.substring(startBracketsPos + 1, endBracketsPos).split(",");
-	//		// fix bug
-	//		String[] array = safeSplit(sql.substring(startBracketsPos + 1, endBracketsPos), ',');
-	//		if (0 == array.length) {
-	//			throw new SqlParseException("Illegal where in: " + sql);
-	//		}
-	//
-	//		List<ValueVo> value = new ArrayList<ValueVo>();
-	//		for (int i = 0; i < array.length; i++) {
-	//			value.add(parseValueVo(array[i].trim(), false));
-	//		}
-	//		condition.setValue(value);
-	//		return endBracketsPos + 1;
-	//	}
-
-	/** 把字符串分割成数组 */
-	//	protected String[] safeSplit(String src, char separator) {
-	//		List<String>  temp     = new ArrayList<String>();
-	//		StringBuilder sb       = new StringBuilder();
-	//		boolean       isString = false; // 是否进入字符串采集
-	//		for (int i = 0; i < src.length(); i++) {
-	//			char key = src.charAt(i);
-	//			switch (key) {
-	//			case '\'':
-	//				isString = !isString;
-	//				sb.append(key);
-	//				break;
-	//			default:
-	//				if (separator == key && !isString) {
-	//					if (sb.length() > 0) {
-	//						temp.add(sb.toString());
-	//						sb = new StringBuilder();
-	//					}
-	//				} else {
-	//					sb.append(key);
-	//				}
-	//				break;
-	//			}
-	//		}
-	//
-	//		if (sb.length() > 0) {
-	//			temp.add(sb.toString());
-	//		}
-	//
-	//		String[] result = new String[temp.size()];
-	//		return temp.toArray(result);
-	//	}
-
-	//	protected int findCharIndex(String src, char chr) {
-	//		return findCharIndex(src, 0, src.length(), chr);
-	//	}
-	//	protected int findCharIndex(String src, int start, char chr) {
-	//		return findCharIndex(src, start, src.length(), chr);
-	//	}
-	//	protected int findCharIndex(String src, int start, int end, char chr) {
-	//		boolean isString = false; // 是否进入字符串采集
-	//		for (int i = start; i < end; i++) {
-	//			char key = src.charAt(i);
-	//			switch (key) {
-	//			case '\'':
-	//				isString = !isString;
-	//				break;
-	//			default:
-	//				if (chr == key && !isString) {
-	//					return i;
-	//				}
-	//				break;
-	//			}
-	//		}
-	//		return -1;
-	//	}
 }

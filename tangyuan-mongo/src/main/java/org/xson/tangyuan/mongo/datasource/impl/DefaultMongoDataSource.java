@@ -9,11 +9,11 @@ import com.mongodb.WriteConcern;
 
 public class DefaultMongoDataSource extends AbstractMongoDataSource {
 
-	private MongoClient  mongo               = null;
+	private MongoClient		mongo				= null;
 
-	private DB           db                  = null;
+	private DB				db					= null;
 
-	private WriteConcern defaultWriteConcern = WriteConcern.ACKNOWLEDGED;
+	private WriteConcern	defaultWriteConcern	= WriteConcern.ACKNOWLEDGED;
 
 	public DefaultMongoDataSource(String creator, MongoClient mongo, DB db, String logicDataSourceId, String realDataSourceId) {
 		this.mongo = mongo;
@@ -41,8 +41,4 @@ public class DefaultMongoDataSource extends AbstractMongoDataSource {
 		this.defaultWriteConcern = defaultWriteConcern;
 	}
 
-	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	//	
-	//		if (this.creator != creator || !this.creator.equals(creator)) {
-	//			return;
-	//		}
 }

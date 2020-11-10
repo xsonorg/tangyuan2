@@ -12,12 +12,12 @@ import org.xson.tangyuan.xml.node.TangYuanNode;
 
 public abstract class AbstractSqlNode extends AbstractServiceNode {
 
-	protected TangYuanNode           sqlNode    = null;
-	protected String                 dsKey      = null;
-	protected XTransactionDefinition txDef      = null;
-	protected boolean                simple     = false;
-	protected CacheUseVo             cacheUse   = null;
-	protected CacheCleanVo           cacheClean = null;
+	protected TangYuanNode				sqlNode		= null;
+	protected String					dsKey		= null;
+	protected XTransactionDefinition	txDef		= null;
+	protected boolean					simple		= false;
+	protected CacheUseVo				cacheUse	= null;
+	protected CacheCleanVo				cacheClean	= null;
 
 	protected AbstractSqlNode() {
 		this.serviceType = TangYuanServiceType.SQL;
@@ -60,9 +60,9 @@ public abstract class AbstractSqlNode extends AbstractServiceNode {
 	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
 
 		SqlServiceContext sqlContext = (SqlServiceContext) ac.getServiceContext(this.serviceType);
-		long              startTime  = System.currentTimeMillis();
-		String            cacheKey   = null;
-		Object            result     = null;
+		long startTime = System.currentTimeMillis();
+		String cacheKey = null;
+		Object result = null;
 
 		// 1. cache使用
 		if (null != this.cacheUse && null == cacheKey) {
@@ -83,9 +83,9 @@ public abstract class AbstractSqlNode extends AbstractServiceNode {
 		}
 
 		// 0. 克隆参数
-		//		if (null == temp) {
-		//			temp = cloneArg(arg);
-		//		}
+		// if (null == temp) {
+		// temp = cloneArg(arg);
+		// }
 
 		// 1. 清理和重置执行环境
 		sqlContext.resetExecEnv();
@@ -97,16 +97,16 @@ public abstract class AbstractSqlNode extends AbstractServiceNode {
 			sqlContext.parseSqlLog();
 		}
 		// 3. 开启事务
-		//		sqlContext.beforeExecute(this);
+		// sqlContext.beforeExecute(this);
 		// 5. 提交:这里做不确定的提交
-		//		sqlContext.commit(false);
+		// sqlContext.commit(false);
 		// 6. 后置处理
-		//		sqlContext.afterExecute(this);
+		// sqlContext.afterExecute(this);
 		// 4. 执行SQL
-		//		result = sqlContext.executeSelectSetListXCO(this, this.resultMap, fetchSize);
+		// result = sqlContext.executeSelectSetListXCO(this, this.resultMap, fetchSize);
 		// 7. 设置结果
-		//		ac.setResult(result);
-		//		result = executeSql(sqlContext, temp);
+		// ac.setResult(result);
+		// result = executeSql(sqlContext, temp);
 
 		result = executeSql(ac, sqlContext, temp);
 
@@ -128,89 +128,8 @@ public abstract class AbstractSqlNode extends AbstractServiceNode {
 	}
 
 	protected Object executeSql(ActuatorContext ac, SqlServiceContext sqlContext, Object temp) throws Throwable {
-		//		return null;
+		// return null;
 		throw new TangYuanException("subclass must implement this method");
 	}
-
-	/////////////////////////////////////////
-
-	//	protected boolean isTraceCommand() {
-	//		return RuntimeContext.isTraceCommand(TrackingManager.SERVICE_TYPE_SQL);
-	//	}
-
-	//	protected boolean executeInternal(ActuatorContext ac, Object arg, Object temp) throws Throwable {
-	//		SqlServiceContext sqlContext = (SqlServiceContext) ac.getServiceContext(this.serviceType);
-	//	
-	//		long              startTime  = System.currentTimeMillis();
-	//		String            cacheKey   = null;
-	//		Object            result     = null;
-	//	
-	//		// 1. cache使用
-	//		if (null != this.cacheUse && null == cacheKey) {
-	//			cacheKey = this.cacheUse.buildKey(arg);
-	//		}
-	//		if (null != this.cacheClean && null == cacheKey) {
-	//			cacheKey = this.cacheClean.buildKey(arg);
-	//		}
-	//		if (null != this.cacheUse) {
-	//			result = this.cacheUse.getObject(cacheKey);
-	//			if (null != result) {
-	//				ac.setResult(result);
-	//				if (getLog().isInfoEnabled()) {
-	//					//  use cache
-	//					getLog().info("sql execution time: " + getSlowServiceLog(startTime));
-	//				}
-	//				return true;
-	//			}
-	//		}
-	//	
-	//		// 0. 克隆参数
-	//		arg = cloneArg(arg);
-	//	
-	//		// 1. 清理和重置执行环境
-	//		sqlContext.resetExecEnv();
-	//	
-	//		// 2. 解析SQL
-	//		sqlNode.execute(ac, arg, temp);
-	//		// 获取sql
-	//		if (getLog().isInfoEnabled() || sqlContext.isTraceCommand()) {
-	//			sqlContext.parseSqlLog();
-	//		}
-	//	
-	//		//		sqlContext.beforeExecute(this, true);// 只是打开连接
-	//		//		result = context.executeSelectSetListXCO(this, null, fetchSize);
-	//	
-	//		result = executeSql(sqlContext, temp);
-	//	
-	//		//		if (null != this.resultKey) {
-	//		//			Ognl.setValue(temp, this.resultKey, result);
-	//		//		}
-	//	
-	//		if (getLog().isInfoEnabled()) {
-	//			getLog().info("sql execution time: " + getSlowServiceLog(startTime));
-	//		}
-	//	
-	//		// 8. 放置缓存
-	//		if (null != cacheUse) {
-	//			// 需要在事物提交后，或者finish的时候再处理
-	//			putCache(ac, cacheKey, result);
-	//		}
-	//		// 8. 清理缓存
-	//		if (null != cacheClean) {
-	//			removeCache(ac, cacheKey);
-	//		}
-	//	
-	//		return true;
-	//	}
-
-	//	protected Object executeSql(SqlServiceContext sqlContext, Object temp) throws Throwable {
-	//		return null;
-	//	}
-	//		try {
-	//			
-	//		} catch (Throwable e) {
-	//			sqlContext.onException(e);
-	//			throw e;
-	//		}
 
 }

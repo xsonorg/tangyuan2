@@ -65,11 +65,5 @@ public class NotEqualCondition extends WhereCondition {
 				orList.add(new BasicDBObject(this.name, new BasicDBObject("$ne", value.getValue(arg))));
 			}
 		}
-
-		//		if (null == orList) {
-		//			query.put(this.name, new BasicDBObject("$ne", value.getValue(arg)));
-		//		} else {
-		//			orList.add(new BasicDBObject(this.name, new BasicDBObject("$ne", value.getValue(arg))));
-		//		}
 	}
 }

@@ -78,9 +78,12 @@ public class SQL {
 
 	/**
 	 * 开始一个指定的SQL事物，并执行SQL上下文中的内容
+	 * 
 	 * @param <T>
-	 * @param context	SQL上下文
-	 * @param txRef		所使用SQL事物
+	 * @param context
+	 *            SQL上下文
+	 * @param txRef
+	 *            所使用SQL事物
 	 * @return
 	 * @throws Throwable
 	 */
@@ -94,12 +97,12 @@ public class SQL {
 		if (null == txDef) {
 			throw new TangYuanException("不存在的事物定义: " + txRef);
 		}
-		//SQLCommandContext sqlAc  = new SQLCommandContext(null, txDef);
-		//		SQLCommand        cmd    = new SQLCommandImpl(sqlAc);
+		// SQLCommandContext sqlAc = new SQLCommandContext(null, txDef);
+		// SQLCommand cmd = new SQLCommandImpl(sqlAc);
 
-		SQLCommandContext sqlAc  = new SQLCommandContext(txDef);
-		Throwable         ex     = null;
-		Object            result = null;
+		SQLCommandContext sqlAc = new SQLCommandContext(txDef);
+		Throwable ex = null;
+		Object result = null;
 		try {
 			sqlAc.begin();
 			result = context.execute(new SQLCommandImpl(sqlAc));
@@ -119,94 +122,4 @@ public class SQL {
 		return (T) result;
 	}
 
-	public static void main(String[] args) throws Throwable {
-		//		SQL    sql    = new SQL();
-		//
-		//		String sqlURI = null;
-		//		XCO    arg    = null;
-		//		XCO    res    = sql.trans(new SqlTransContext() {
-		//							@Override
-		//							public Object execute() {
-		//								return sql.selectOne(sqlURI, arg);
-		//							}
-		//						}, "tx01");
-		//		XCO    res1   = sql.trans(() -> {
-		//							return sql.selectSet(sqlURI, arg);
-		//						}, "tx01");
-		//		XCO    res2   = sql.trans(() -> sql.selectSet(sqlURI, arg), "tx01");
-		//		XCO    res3   = sql.trans(() -> {
-		//							XCO a    = sql.selectOne(sqlURI, arg);
-		//							XCO b    = sql.selectOne(sqlURI, arg);
-		//							XCO c    = sql.selectOne(sqlURI, arg);
-		//							XCO resx = new XCO();
-		//							resx.setXCOValue("a", a);
-		//							resx.setXCOValue("b", b);
-		//							resx.setXCOValue("c", c);
-		//							return resx;
-		//						}, "tx01");
-		//		int    x      = sql.trans(() -> sql.selectSet(sqlURI, arg), "tx01");
-
-		String sqlURI = null;
-		XCO    arg    = null;
-		XCO    res    = SQL.trans((x) -> x.selectSet(sqlURI, arg), "tx01");
-		XCO    res3   = SQL.trans((x) -> {
-							XCO a    = x.selectOne(sqlURI, arg);
-							XCO b    = x.selectOne(sqlURI, arg);
-							XCO c    = x.selectOne(sqlURI, arg);
-							XCO resx = new XCO();
-							resx.setXCOValue("a", a);
-							resx.setXCOValue("b", b);
-							resx.setXCOValue("c", c);
-							return resx;
-						}, "tx01");
-		System.out.println(res);
-		System.out.println(res3);
-	}
-
-	//	public long beginTransaction(String txRef) throws ServiceException {
-	//		return -1L;
-	//	}
-	//	public long begin(String txRef) throws ServiceException {
-	//		return -1L;
-	//	}
-	//	public void commit() throws ServiceException {
-	//	}
-	//	public void commit(long txID) throws ServiceException {
-	//	}
-	//	public void rollback() throws ServiceException {
-	//	}
-	//	public void rollback(long txID) throws ServiceException {
-	//	}
-	//	public void commitAndRollback() {
-	//	}
-	//	public <T> T trans(Runnable r) throws ServiceException {
-	//	}
-	//	public <T> T execute(String sqlURI, Object arg, String txRef) throws ServiceException {
-	//		return null;
-	//	}
-	//	public List<XCO> selectSet(String sqlURI, XCO arg, String txRef) throws ServiceException {
-	//		return null;//
-	//	}
-	//	public XCO selectOne(String sqlURI, XCO arg, String txRef) throws ServiceException {
-	//		return null;//
-	//	}
-	//	public int delete(String sqlURI, XCO arg, String txRef) throws ServiceException {
-	//		return 0;//
-	//	}
-	//	public <T> T selectVar(String sqlURI, XCO arg, String txRef) throws ServiceException {
-	//		return null;/
-	//	}
-	//	public int update(String sqlURI, XCO arg, String txRef) throws ServiceException {
-	//		return 0;//
-	//	}
-	//	public <T> T insert(String sqlURI, XCO arg, String txRef) throws ServiceException {
-	//		return null;//
-	//	}
-	//		public <T> T execute(String sqlURI, Object arg) throws ServiceException {
-	//			return null;
-	//		}
-	//
-	//		public List<XCO> selectSet(String sqlURI, XCO arg) throws ServiceException {
-	//			return null;
-	//		}
 }

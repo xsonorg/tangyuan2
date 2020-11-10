@@ -27,29 +27,25 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class SqlServiceContext implements ServiceContext {
 
-	private static Log          log                = LogFactory.getLog(SqlServiceContext.class);
-	private StringBuilder       sqlBuilder         = null;
+	private static Log			log					= LogFactory.getLog(SqlServiceContext.class);
+	private StringBuilder		sqlBuilder			= null;
 	/** 经过解析后的sql语句,日志专用 */
-	private String              realSql            = null;
+	private String				realSql				= null;
 	/** SQL参数值列表 */
-	private List<Object>        argList            = null;
+	private List<Object>		argList				= null;
 	/** 真正的数据源dsKey */
-	private String              realDsKey          = null;
-	private XTransactionStatus  transaction        = null;
+	private String				realDsKey			= null;
+	private XTransactionStatus	transaction			= null;
 	/**
 	 * 发送异常时的计数，用作于command模式
 	 */
-	private int                 exceptionCount     = 0;
+	private int					exceptionCount		= 0;
 
-	//	private XTransactionManager transactionManager = SqlComponent.getInstance().getTransactionManager();
-	//	private SqlActuator         sqlActuator        = SqlComponent.getInstance().getSqlActuator();
-	//	private SqlLog              sqlLog             = SqlComponent.getInstance().getSqlLog();
+	private XTransactionManager	transactionManager	= null;
+	private SqlActuator			sqlActuator			= null;
+	private SqlLog				sqlLog				= null;
 
-	private XTransactionManager transactionManager = null;
-	private SqlActuator         sqlActuator        = null;
-	private SqlLog              sqlLog             = null;
-
-	private TangYuanManager     tangYuanManager    = null;
+	private TangYuanManager		tangYuanManager		= null;
 
 	protected SqlServiceContext() {
 		this.tangYuanManager = TangYuanManager.getInstance();
@@ -94,7 +90,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public void addStaticVarList(List<Variable> varList, Object arg) {
-		// TODO 以后考虑 arg...
+		// 以后考虑 arg...
 		if (null == varList) {
 			this.argList = null;
 			return;
@@ -104,14 +100,9 @@ public class SqlServiceContext implements ServiceContext {
 			this.argList = new ArrayList<Object>();
 		}
 
-		// for (VariableVo var : varList) {
-		// argList.add(var.getValue(arg));
-		// }
-
 		for (Variable var : varList) {
 			Object value = var.getValue(arg);
 			if (null == value) {
-				// log.error("Field does not exist: " + var.getOriginal());
 				throw new TangYuanException("Field does not exist: " + var.getOriginal());
 			}
 			argList.add(value);
@@ -119,7 +110,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public List<Map<String, Object>> executeSelectSetListMap(AbstractSqlNode sqlNode, MappingVo resultMap, Integer fetchSize) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -134,7 +125,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public List<XCO> executeSelectSetListXCO(AbstractSqlNode sqlNode, MappingVo resultMap, Integer fetchSize) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -148,7 +139,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public Map<String, Object> executeSelectOneMap(AbstractSqlNode sqlNode, MappingVo resultMap, Integer fetchSize) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -162,7 +153,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public XCO executeSelectOneXCO(AbstractSqlNode sqlNode, MappingVo resultMap, Integer fetchSize) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -176,7 +167,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public Object executeSelectVar(AbstractSqlNode sqlNode) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -190,7 +181,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public int executeDelete(AbstractSqlNode sqlNode) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -204,7 +195,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public int executeUpdate(AbstractSqlNode sqlNode) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -218,7 +209,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public int executeInsert(AbstractSqlNode sqlNode) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -232,7 +223,7 @@ public class SqlServiceContext implements ServiceContext {
 	}
 
 	public InsertReturn executeInsertReturn(AbstractSqlNode sqlNode) throws SQLException {
-		String     dsKey      = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
+		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
 		Connection connection = transaction.getConnection(dsKey);
 		if (null == connection) {
 			throw new SQLException("Connection is null:" + dsKey);
@@ -270,16 +261,8 @@ public class SqlServiceContext implements ServiceContext {
 		transaction = transactionManager.getTransaction(null, txDef, transaction);
 	}
 
-	//	/**
-	//	 * 打开连接，供SQL命令调用
-	//	 */
-	//	public void beforeExecuteForCommandOpen(AbstractSqlNode sqlNode) throws SQLException {
-	//		String dsKey = (null != this.realDsKey) ? this.realDsKey : sqlNode.getDsKey();
-	//		transaction = transactionManager.getTransaction(dsKey, null, transaction);
-	//	}
-
 	public void afterExecute(AbstractSqlNode sqlNode) throws SQLException {
-		// TODO 1. count time
+		// 1. count time
 	}
 
 	public void commit(boolean confirm) throws Throwable {
@@ -307,6 +290,7 @@ public class SqlServiceContext implements ServiceContext {
 
 	/**
 	 * 提交或者回滚
+	 * 
 	 * @param ex
 	 */
 	public boolean commitAndRollBack(Throwable ex) throws Throwable {
@@ -320,7 +304,7 @@ public class SqlServiceContext implements ServiceContext {
 			} catch (Throwable e) {
 				log.error("commit error", e);
 				rollback();
-				throw e;//新的异常
+				throw e;// 新的异常
 			}
 		}
 		return true;
@@ -330,30 +314,6 @@ public class SqlServiceContext implements ServiceContext {
 	public void onException(Object info) {
 		this.exceptionCount++;
 	}
-
-	//	@Override
-	//	public boolean onException(ServiceExceptionInfo exceptionInfo) throws ServiceException {
-	//		// if (null == exceptionInfo) {
-	//		// throw new ServiceException("exceptionInfo is null");
-	//		// }
-	//		if (null == exceptionInfo) { // fix:info为空, sql上下文将不能准确的处理异常, 认为是系统未考虑到的特殊异常
-	//			log.error("exceptionInfo is null.");
-	//			return false;
-	//		}
-	//
-	//		SqlServiceExceptionInfo info = (SqlServiceExceptionInfo) exceptionInfo;
-	//		if (info.isNewTranscation()) {
-	//			if (info.isCreatedTranscation()) {
-	//				try {
-	//					rollbackCurrentTransaction();
-	//				} catch (Throwable e) {
-	//					log.error("rollback error", e);
-	//				}
-	//			}
-	//			return true;
-	//		}
-	//		return false;
-	//	}
 
 	private void appendTracking() {
 		if (isTraceCommand()) {
@@ -368,15 +328,4 @@ public class SqlServiceContext implements ServiceContext {
 		return false;
 	}
 
-	//	private XTransactionManager transactionManager = null;
-	//	private SqlActuator         sqlActuator        = null;
-	//	private SqlLog              sqlLog             = null;
-	// 有入参决定的, 可以保证默认情况下同进同出, 用户组合SQL
-	// protected Class<?> resultType = null;
-	//  考虑如何优化　单例
-	//		this.sqlActuator = new SqlActuator(SqlComponent.getInstance().getTypeHandlerRegistry());
-	//		this.transactionManager = new MultipleTransactionManager(SqlComponent.getInstance().getDataSourceManager());
-	//		if (log.isInfoEnabled()) {
-	//			sqlLog = new SqlLog(SqlComponent.getInstance().getTypeHandlerRegistry());
-	//		}
 }

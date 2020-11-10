@@ -25,11 +25,11 @@ public class UpdateVo implements SqlVo {
 		NORMAL, ADD, MINUS, MUL
 	}
 
-	private List<ColumnUpdateVo> setColumns;
+	private List<ColumnUpdateVo>	setColumns;
 
-	private String               table;
+	private String					table;
 
-	private WhereCondition       condition;
+	private WhereCondition			condition;
 
 	public void setSetColumns(List<ColumnUpdateVo> setColumns) {
 		this.setColumns = setColumns;
@@ -129,22 +129,22 @@ public class UpdateVo implements SqlVo {
 	}
 
 	public int update(DBCollection collection, WriteConcern writeConcern, Object arg) {
-		DBObject query  = new BasicDBObject();
+		DBObject query = new BasicDBObject();
 		DBObject update = new BasicDBObject();
 
 		if (null != this.condition) {
 			this.condition.setQuery(query, null, arg);
 		}
 
-		boolean  hasSet    = false;
-		boolean  hasInc    = false;
-		boolean  hasMul    = false;// 新增:乘法
+		boolean hasSet = false;
+		boolean hasInc = false;
+		boolean hasMul = false;// 新增:乘法
 		DBObject setObject = new BasicDBObject();
 		DBObject incObject = new BasicDBObject();
 		DBObject mulObject = new BasicDBObject();
 		for (int i = 0, n = setColumns.size(); i < n; i++) {
 			ColumnUpdateVo columnUpdateVo = setColumns.get(i);
-			ValueVo        valueVo        = columnUpdateVo.getValueVo();
+			ValueVo valueVo = columnUpdateVo.getValueVo();
 			if (ColumnUpdateType.NORMAL == columnUpdateVo.getType()) {
 				setObject.put(columnUpdateVo.getName(), valueVo.getValue(arg));
 				hasSet = true;
@@ -204,23 +204,9 @@ public class UpdateVo implements SqlVo {
 		sb.append(", ");
 		sb.append(update.toString());
 		sb.append(", ");
-		sb.append("{upsert: false, multi: true}");//upsert, final boolean multi
+		sb.append("{upsert: false, multi: true}");// upsert, final boolean multi
 		sb.append(")");
 		log.info(sb.toString());
 	}
 
-	// // // // // // // // // // // // // // // // // // // // // // // // // // 
-
-	// System.out.println(query.toString());
-	// System.out.println(update.toString());
-	//	private void log(DBObject query, DBObject update) {
-	//	if (log.isInfoEnabled()) {
-	//		if (null != query) {
-	//			log.info("query:" + query.toString());
-	//		}
-	//		if (null != update) {
-	//			log.info("update:" + update.toString());
-	//		}
-	//	}
-	//}
 }

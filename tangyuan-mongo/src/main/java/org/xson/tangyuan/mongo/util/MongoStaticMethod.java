@@ -84,8 +84,8 @@ public class MongoStaticMethod {
 
 	public static java.util.Date ISODate_SS(String dateString, String pattern) {
 		if (null != pattern) {
-			Date             isoDate = null;
-			SimpleDateFormat format  = new SimpleDateFormat(pattern);
+			Date isoDate = null;
+			SimpleDateFormat format = new SimpleDateFormat(pattern);
 			format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 			isoDate = format.parse(dateString, new ParsePosition(0));
 			return isoDate;
@@ -93,7 +93,7 @@ public class MongoStaticMethod {
 		return JSONExtCallback.parseISODate(dateString);
 	}
 
-	//	Timestamp
+	// Timestamp
 	public static BSONTimestamp Timestamp() {
 		return new BSONTimestamp();
 	}
@@ -123,7 +123,5 @@ public class MongoStaticMethod {
 	public static Decimal128 Decimal128(Object val) {
 		return Decimal128.parse(val.toString());
 	}
-
-	/////////////////////////
 
 }

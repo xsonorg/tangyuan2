@@ -16,13 +16,13 @@ import com.mongodb.DBObject;
  */
 public class BracketsCondition extends WhereCondition {
 
-	private List<WhereCondition> conditions;
+	private List<WhereCondition>	conditions;
 
 	// true: and, false:or
-	private Boolean              andOr;
+	private Boolean					andOr;
 
 	// 是否原始就有括号
-	private boolean              brackets;
+	private boolean					brackets;
 
 	public BracketsCondition(boolean brackets) {
 		this.brackets = brackets;
