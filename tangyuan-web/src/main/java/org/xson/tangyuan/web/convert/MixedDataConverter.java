@@ -20,11 +20,4 @@ public class MixedDataConverter implements DataConverter {
 		}
 	}
 
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		for (DataConverter converter : converters) {
-	//			converter.convert(requestContext, cVo);
-	//		}
-	//	}
-
 }

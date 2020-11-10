@@ -31,7 +31,7 @@ public class RuleConverterSupport {
 	}
 
 	public Map<String, RuleGroupItem> getRuleMap(ControllerVo cVo) {
-		List<RuleGroupItem>        items   = getRuleList(cVo);
+		List<RuleGroupItem> items = getRuleList(cVo);
 		Map<String, RuleGroupItem> ruleMap = new HashMap<String, RuleGroupItem>();
 		for (RuleGroupItem item : items) {
 			ruleMap.put(item.getFieldName(), item);
@@ -79,11 +79,11 @@ public class RuleConverterSupport {
 				continue;
 			}
 			this.jsonFieldConverterSupport.converterJSONField(item, arg, value);
-			//			TypeEnum            type     = item.getType();
-			//			List<RuleGroupItem> children = item.getItems();
-			//			if (CollectionUtils.isEmpty(children)) {
-			//				setXCOValue(arg, fieldName, type, value);
-			//			}
+			// TypeEnum type = item.getType();
+			// List<RuleGroupItem> children = item.getItems();
+			// if (CollectionUtils.isEmpty(children)) {
+			// setXCOValue(arg, fieldName, type, value);
+			// }
 		}
 	}
 
@@ -109,48 +109,5 @@ public class RuleConverterSupport {
 			this.jsonFieldConverterSupport.converterJSONField(item, arg, value);
 		}
 	}
-
-	//	/**
-	//	 * 支持单层的，简单类型的转换
-	//	 */
-	//	public void setXCOValue(XCO xco, String fieldName, TypeEnum type, String value) {
-	//		if (type == TypeEnum.STRING || type == null) {
-	//			xco.setStringValue(fieldName, value);
-	//			return;
-	//		}
-	//
-	//		if (type == TypeEnum.INTEGER) {
-	//			xco.setIntegerValue(fieldName, Integer.parseInt(value));
-	//		} else if (type == TypeEnum.LONG) {
-	//			xco.setLongValue(fieldName, Long.parseLong(value));
-	//		} else if (type == TypeEnum.FLOAT) {
-	//			xco.setFloatValue(fieldName, Float.parseFloat(value));
-	//		} else if (type == TypeEnum.DOUBLE) {
-	//			xco.setDoubleValue(fieldName, Double.parseDouble(value));
-	//		} else if (type == TypeEnum.BIGINTEGER) {
-	//			xco.setBigIntegerValue(fieldName, new BigInteger(value));
-	//		} else if (type == TypeEnum.BIGDECIMAL) {
-	//			xco.setBigDecimalValue(fieldName, new BigDecimal(value));
-	//		} else if (type == TypeEnum.DATETIME) {
-	//			xco.setDateTimeValue(fieldName, XCOUtil.parseDateTime(value));
-	//		} else if (type == TypeEnum.DATE) {
-	//			xco.setDateValue(fieldName, XCOUtil.parseDate(value));
-	//		} else if (type == TypeEnum.TIME) {
-	//			xco.setTimeValue(fieldName, XCOUtil.parseTime(value));
-	//		} else if (type == TypeEnum.TIMESTAMP) {
-	//			xco.setTimestampValue(fieldName, XCOUtil.parseTimestamp(value));
-	//		} else if (type == TypeEnum.BYTE) {
-	//			xco.setByteValue(fieldName, Byte.parseByte(value));
-	//		} else if (type == TypeEnum.BOOLEAN) {
-	//			xco.setBooleanValue(fieldName, Boolean.parseBoolean(value));
-	//		} else if (type == TypeEnum.SHORT) {
-	//			xco.setShortValue(fieldName, Short.parseShort(value));
-	//		} else if (type == TypeEnum.CHAR) {
-	//			xco.setCharValue(fieldName, value.charAt(0));
-	//		} else {
-	//			// 其他作为字符串处理
-	//			xco.setStringValue(fieldName, value);
-	//		}
-	//	}
 
 }

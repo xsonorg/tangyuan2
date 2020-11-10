@@ -19,8 +19,8 @@ public class URL2XCOConverter extends AbstractDataConverter {
 
 	@Override
 	public void convert(RequestContext requestContext) throws Throwable {
-		String              queryString = requestContext.getQueryString();
-		Map<String, String> queryMap    = ServletUtil.queryStringToMap(queryString);
+		String queryString = requestContext.getQueryString();
+		Map<String, String> queryMap = ServletUtil.queryStringToMap(queryString);
 
 		if (CollectionUtils.isEmpty(queryMap)) {
 			return;
@@ -33,19 +33,4 @@ public class URL2XCOConverter extends AbstractDataConverter {
 		setArg(requestContext, arg);
 	}
 
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		String              queryString = requestContext.getQueryString();
-	//		Map<String, String> queryMap    = ServletUtil.queryStringToMap(queryString);
-	//
-	//		if (CollectionUtils.isEmpty(queryMap)) {
-	//			return;
-	//		}
-	//
-	//		XCO arg = new XCO();
-	//		for (Entry<String, String> entry : queryMap.entrySet()) {
-	//			arg.setStringValue(entry.getKey(), entry.getValue());
-	//		}
-	//		setArg(requestContext, arg);
-	//	}
 }

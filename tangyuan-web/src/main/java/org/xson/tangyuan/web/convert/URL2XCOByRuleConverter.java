@@ -17,45 +17,13 @@ public class URL2XCOByRuleConverter extends AbstractDataConverter {
 
 	@Override
 	public void convert(RequestContext requestContext) throws Throwable {
-		String              queryString = requestContext.getQueryString();
-		Map<String, String> queryMap    = ServletUtil.queryStringToMap(queryString);
+		String queryString = requestContext.getQueryString();
+		Map<String, String> queryMap = ServletUtil.queryStringToMap(queryString);
 
-		XCO                 arg         = new XCO();
+		XCO arg = new XCO();
 		this.ruleSupport.convertFromMap(arg, requestContext.getControllerVo(), queryMap);
 
 		setArg(requestContext, arg);
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		String              queryString = requestContext.getQueryString();
-	//		Map<String, String> queryMap    = ServletUtil.queryStringToMap(queryString);
-	//
-	//		XCO                 arg         = new XCO();
-	//		this.ruleSupport.convertFromMap(arg, cVo, queryMap);
-	//
-	//		setArg(requestContext, arg);
-	//	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		String                     queryString = requestContext.getQueryString();
-	//		Map<String, String>        queryMap    = ServletUtil.queryStringToMap(queryString);
-	//
-	//		// 附带检查的效果
-	//		Map<String, RuleGroupItem> ruleMap     = this.ruleSupport.getRuleMap(cVo);
-	//		if (CollectionUtils.isEmpty(queryMap)) {
-	//			return;
-	//		}
-	//
-	//		XCO arg = new XCO();
-	//		for (Entry<String, String> entry : queryMap.entrySet()) {
-	//			String        fieldName = entry.getKey();
-	//			RuleGroupItem item      = ruleMap.get(fieldName);
-	//			TypeEnum      type      = (null == item) ? null : item.getType();
-	//			this.ruleSupport.setXCOValueSimple(arg, fieldName, type, entry.getValue());
-	//		}
-	//		setArg(requestContext, arg);
-	//	}
 
 }

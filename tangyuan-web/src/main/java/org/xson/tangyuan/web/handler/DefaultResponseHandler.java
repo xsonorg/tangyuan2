@@ -22,7 +22,6 @@ public class DefaultResponseHandler implements ResponseHandler {
 	private Log log = LogFactory.getLog(DefaultResponseHandler.class);
 
 	private void printResult(RequestContext context, Object result) {
-		//		log.info("controller[" + context.getPath() + "] result: " + result.toString());
 		if (null == result) {
 			log.info(context.getContextType() + " " + context.getPath() + ", result: Null");
 		} else {
@@ -63,33 +62,5 @@ public class DefaultResponseHandler implements ResponseHandler {
 		xco.setIntegerValue(TangYuanContainer.XCO_CODE_KEY, code);
 		xco.setStringValue(TangYuanContainer.XCO_MESSAGE_KEY, message);
 	}
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	//		if (null == result) {
-	//			return TangYuanUtil.retObjToXco(null);
-	//		}
-	//		if (result instanceof XCO) {
-	//			return TangYuanUtil.retObjToXco(result);
-	//		}
-	//		if (result instanceof JSONObject) {}
-
-	//	@Override
-	//	public void onError(RequestContext context, Throwable ex) throws IOException {
-	//		XCO errorResult = null;
-	//
-	//		if (null != context.getCode()) {
-	//			errorResult = new XCO();
-	//			setXCOResult(errorResult, context.getCode(), context.getMessage());
-	//		} else if (ex instanceof ServiceException) {
-	//			errorResult = TangYuanUtil.getExceptionResult(ex);
-	//		} else {
-	//			errorResult = new XCO();
-	//			setXCOResult(errorResult, WebComponent.getInstance().getErrorCode(), WebComponent.getInstance().getErrorMessage());
-	//		}
-	//
-	//		context.setResult(errorResult);
-	//		onSuccess(context);
-	//	}
 
 }

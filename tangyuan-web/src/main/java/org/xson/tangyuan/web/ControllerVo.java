@@ -14,32 +14,32 @@ import org.xson.tangyuan.web.xml.vo.MethodObject;
 
 public class ControllerVo {
 
-	private static Log           log             = LogFactory.getLog(ControllerVo.class);
+	private static Log				log				= LogFactory.getLog(ControllerVo.class);
 
-	protected String             url             = null;
-	protected String             transfer        = null;
-	protected String             validate        = null;
-	protected MethodObject       execMethod      = null;
-	protected List<MethodObject> assemblyMethods = null;
-	protected List<MethodObject> beforeMethods   = null;
-	protected List<MethodObject> afterMethods    = null;
+	protected String				url				= null;
+	protected String				transfer		= null;
+	protected String				validate		= null;
+	protected MethodObject			execMethod		= null;
+	protected List<MethodObject>	assemblyMethods	= null;
+	protected List<MethodObject>	beforeMethods	= null;
+	protected List<MethodObject>	afterMethods	= null;
 	/** 权限设置: 用户可自行处理 */
-	protected String             permission      = null;
-	protected CacheUseVo         cacheUse        = null;
-	protected boolean            cacheInAop      = false;
+	protected String				permission		= null;
+	protected CacheUseVo			cacheUse		= null;
+	protected boolean				cacheInAop		= false;
 	/** 数据转换器 */
-	protected DataConverter      dataConverter   = null;
-	protected RequestTypeEnum    requestType     = null;
+	protected DataConverter			dataConverter	= null;
+	protected RequestTypeEnum		requestType		= null;
 	/** 返回结果处理器 */
-	protected ResponseHandler    responseHandler = null;
+	protected ResponseHandler		responseHandler	= null;
 	/** 服务的描述 */
-	protected String             desc            = null;
+	protected String				desc			= null;
 	/** 服务组名 */
-	protected String[]           groups          = null;
+	protected String[]				groups			= null;
 
-	public ControllerVo(String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod, List<MethodObject> assemblyMethods,
-			List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission, CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop,
-			ResponseHandler responseHandler, String desc, String[] groups) {
+	public ControllerVo(String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
+			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler, String desc, String[] groups) {
 		this.url = url;
 		this.requestType = requestType;
 		this.transfer = transfer;
@@ -109,6 +109,7 @@ public class ControllerVo {
 		if (null != tempConverter) {
 			tempConverter.convert(context);
 		}
+		// TODO InvocationTargetException
 	}
 
 	protected void assembly(RequestContext context) throws Throwable {
@@ -172,9 +173,9 @@ public class ControllerVo {
 				// context.setResult(TangYuanUtil.retObjToXco(retObj));
 				// }
 				// fix bug 这里已经做转换了，后面需要注意
-				//				if (null == context.getResult()) {
-				//					context.setResult(TangYuanUtil.retObjToXco(retObj));
-				//				}
+				// if (null == context.getResult()) {
+				// context.setResult(TangYuanUtil.retObjToXco(retObj));
+				// }
 
 			} else {
 				XCO request = (XCO) context.getArg();
@@ -182,10 +183,10 @@ public class ControllerVo {
 					request = new XCO();
 				}
 
-				//				XCO    result = null;
-				//				// 统一服务调用
-				//				Object retObj = Actuator.execute(transfer, request);
-				//				result = TangYuanUtil.retObjToXco(retObj);
+				// XCO result = null;
+				// // 统一服务调用
+				// Object retObj = Actuator.execute(transfer, request);
+				// result = TangYuanUtil.retObjToXco(retObj);
 
 				XCO result = Actuator.execute(transfer, request);
 				context.setResult(result);
@@ -231,55 +232,4 @@ public class ControllerVo {
 		}
 	}
 
-	//////////////////////////////////////////////////////////
-
-	// public boolean cacheGet(RequestContext context) throws Throwable {
-	// if (null != cacheUse) {
-	// Object result = cacheUse.getObject(context.getArg());
-	// if (null != result) {
-	// context.setResult(result);
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
-	//
-	// public void cachePut(RequestContext context) throws Throwable {
-	// if (null != cacheUse) {
-	// cacheUse.putObject(context.getArg(), context.getResult());
-	// }
-	// }
-	// public boolean existDataConverter() {
-	// return null == this.dataConverter ? false : true;
-	// }
-
-	//	public void exec(RequestContext context) throws Throwable {
-	//		try {
-	//			if (null != this.execMethod) {
-	//				Object retObj = this.execMethod.getMethod().invoke(this.execMethod.getInstance(), context);
-	//				// if (null == context.getResult() && null != retObj) {
-	//				// context.setResult(TangYuanUtil.retObjToXco(retObj));
-	//				// }
-	//				// fix bug 这里已经做转换了，后面需要注意 
-	//				if (null == context.getResult()) {
-	//					context.setResult(TangYuanUtil.retObjToXco(retObj));
-	//				}
-	//			} else {
-	//				XCO request = (XCO) context.getArg();
-	//				if (null == request) {
-	//					request = new XCO();
-	//				}
-	//				XCO    result = null;
-	//				// 统一服务调用
-	//				Object retObj = Actuator.execute(transfer, request);
-	//				result = TangYuanUtil.retObjToXco(retObj);
-	//				context.setResult(result);
-	//			}
-	//		} catch (Throwable e) {
-	//			if (e instanceof InvocationTargetException) {
-	//				throw ((InvocationTargetException) e).getTargetException();
-	//			}
-	//			throw e;
-	//		}
-	//	}
 }

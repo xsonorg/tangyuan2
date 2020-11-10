@@ -18,10 +18,4 @@ public class JSONRESTURIBodyDataConverter implements DataConverter {
 		JSONDataConverter.instance.convert(requestContext);
 	}
 
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		JSONRESTURIDataConverter.instance.convert(requestContext, cVo);
-	//		JSONDataConverter.instance.convert(requestContext, cVo);
-	//	}
-
 }

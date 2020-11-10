@@ -18,12 +18,10 @@ import org.xson.tangyuan.es.datasource.EsSourceVo;
 
 public class EsHttpClient {
 
-	//	private static Log  log            = LogFactory.getLog(EsHttpClient.class);
-
-	private String      contentType    = "application/json; charset=UTF-8";
-	private EsSourceVo  essvo          = null;
-	private XHttpClient xHttpClient    = null;
-	private String      defaultCharset = "UTF-8";
+	private String		contentType		= "application/json; charset=UTF-8";
+	private EsSourceVo	essvo			= null;
+	private XHttpClient	xHttpClient		= null;
+	private String		defaultCharset	= "UTF-8";
 
 	public EsHttpClient(EsSourceVo essvo) {
 		this.essvo = essvo;
@@ -31,7 +29,7 @@ public class EsHttpClient {
 
 	public EsHttpResultWrapper get(String url) throws Throwable {
 		try {
-			URI     uri     = new URI(url);
+			URI uri = new URI(url);
 			HttpGet httpGet = new HttpGet(uri);
 			httpGet.addHeader(HTTP.CONTENT_TYPE, contentType);
 			CloseableHttpResponse response = (CloseableHttpResponse) this.xHttpClient.execute(httpGet);
@@ -47,7 +45,7 @@ public class EsHttpClient {
 
 	public EsHttpResultWrapper delete(String url) throws Throwable {
 		try {
-			URI        uri     = new URI(url);
+			URI uri = new URI(url);
 			HttpDelete httpGet = new HttpDelete(uri);
 			httpGet.addHeader(HTTP.CONTENT_TYPE, contentType);
 			CloseableHttpResponse response = (CloseableHttpResponse) this.xHttpClient.execute(httpGet);
@@ -63,9 +61,9 @@ public class EsHttpClient {
 
 	public EsHttpResultWrapper post(String url, String body) throws Throwable {
 		try {
-			URI          uri     = new URI(url);
-			HttpPost     httpost = new HttpPost(uri);
-			StringEntity entity  = new StringEntity(body, ContentType.APPLICATION_JSON);
+			URI uri = new URI(url);
+			HttpPost httpost = new HttpPost(uri);
+			StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
 			httpost.setEntity(entity);
 			CloseableHttpResponse response = (CloseableHttpResponse) this.xHttpClient.execute(httpost);
 			try {
@@ -80,9 +78,9 @@ public class EsHttpClient {
 
 	public EsHttpResultWrapper put(String url, String body) throws Throwable {
 		try {
-			URI          uri     = new URI(url);
-			HttpPut      httpost = new HttpPut(uri);
-			StringEntity entity  = new StringEntity(body, ContentType.APPLICATION_JSON);
+			URI uri = new URI(url);
+			HttpPut httpost = new HttpPut(uri);
+			StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
 			httpost.setEntity(entity);
 			CloseableHttpResponse response = (CloseableHttpResponse) this.xHttpClient.execute(httpost);
 			try {
@@ -96,37 +94,11 @@ public class EsHttpClient {
 	}
 
 	private EsHttpResultWrapper getResponseString(CloseableHttpResponse response) throws Throwable {
-		//		int status = response.getStatusLine().getStatusCode();
-		//		if (status != 200) {
-		//			printResponseError(response);
-		//			throw new ServiceException("Unexpected response status: " + status);
-		//		}
-		//		HttpEntity entity = response.getEntity();
-		//		return EntityUtils.toString(entity, defaultCharset);
-
-		int        status  = response.getStatusLine().getStatusCode();
-		HttpEntity entity  = response.getEntity();
-		String     content = EntityUtils.toString(entity, defaultCharset);
+		int status = response.getStatusLine().getStatusCode();
+		HttpEntity entity = response.getEntity();
+		String content = EntityUtils.toString(entity, defaultCharset);
 		return new EsHttpResultWrapper(content, status);
 	}
-
-	//	private String getResponseString201(CloseableHttpResponse response) throws Throwable {
-	//		int status = response.getStatusLine().getStatusCode();
-	//		if (!(status == 200 || status == 201)) {
-	//			printResponseError(response);
-	//			throw new ServiceException("Unexpected response status: " + status);
-	//		}
-	//		HttpEntity entity = response.getEntity();
-	//		return EntityUtils.toString(entity, defaultCharset);
-	//	}
-	//	private void printResponseError(CloseableHttpResponse response) {
-	//		try {
-	//			HttpEntity entity    = response.getEntity();
-	//			String     errorInfo = EntityUtils.toString(entity, defaultCharset);
-	//			log.error(errorInfo);
-	//		} catch (Throwable e) {
-	//		}
-	//	}
 
 	public void init() throws Throwable {
 		this.xHttpClient = HttpClientManager.getInstance().getXHttpClient(this.essvo.getUsi());

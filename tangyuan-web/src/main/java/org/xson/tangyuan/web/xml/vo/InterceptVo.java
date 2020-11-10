@@ -33,24 +33,6 @@ public class InterceptVo implements Comparable<InterceptVo> {
 		this.order = order;
 	}
 
-	// public boolean match(String url) {
-	// if (null != excludeList) {
-	// for (String pattern : excludeList) {
-	// if (PatternMatchUtils.simpleMatch(pattern, url)) {
-	// return false;
-	// }
-	// }
-	// }
-	// if (null != includeList) {
-	// for (String pattern : includeList) {
-	// if (!PatternMatchUtils.simpleMatch(pattern, url)) {
-	// return false;
-	// }
-	// }
-	// }
-	// return true;
-	// }
-
 	public boolean match(String url) {
 		if (null != excludeList) {
 			for (String pattern : excludeList) {

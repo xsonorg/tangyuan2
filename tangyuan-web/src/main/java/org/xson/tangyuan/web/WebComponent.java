@@ -18,9 +18,9 @@ import org.xson.tangyuan.web.xml.XmlWebContext;
 
 public class WebComponent implements TangYuanComponent {
 
-	private static WebComponent instance = new WebComponent();
+	private static WebComponent	instance	= new WebComponent();
 
-	private Log                 log      = LogFactory.getLog(getClass());
+	private Log					log			= LogFactory.getLog(getClass());
 
 	static {
 		TangYuanContainer.getInstance().registerComponent(new ComponentVo(instance, "web"));
@@ -33,27 +33,27 @@ public class WebComponent implements TangYuanComponent {
 		return instance;
 	}
 
-	public ThreadLocal<RequestContext>  requestContextThreadLocal = new ThreadLocal<RequestContext>();
+	public ThreadLocal<RequestContext>	requestContextThreadLocal	= new ThreadLocal<RequestContext>();
 
-	protected Map<String, ControllerVo> controllerMap             = null;
-	protected RESTContainer             restContainer             = null;
+	protected Map<String, ControllerVo>	controllerMap				= null;
+	protected RESTContainer				restContainer				= null;
 
-	private volatile ComponentState     state                     = ComponentState.UNINITIALIZED;
+	private volatile ComponentState		state						= ComponentState.UNINITIALIZED;
 
-	private int                         errorCode                 = -1;
-	private String                      errorMessage              = "系统错误";
-	private String                      errorRedirectPage         = "/404.html";
-	private int                         order                     = 10;
-	private boolean                     cacheInAop                = true;
+	private int							errorCode					= -1;
+	private String						errorMessage				= "系统错误";
+	private String						errorRedirectPage			= "/404.html";
+	private int							order						= 10;
+	private boolean						cacheInAop					= true;
 
 	/** 是否存在本地服务 */
-	private boolean                     existLocalService         = false;
+	private boolean						existLocalService			= false;
 	/** URL默认映射模式 */
-	private boolean                     urlAutoMappingMode        = false;
+	private boolean						urlAutoMappingMode			= false;
 	/** 控制器直接向后台转发模式 */
-	private boolean                     forwardingMode            = false;
+	private boolean						forwardingMode				= false;
 	/** REST API模式 */
-	private boolean                     restMode                  = false;
+	private boolean						restMode					= false;
 
 	public void setControllerMap(Map<String, ControllerVo> controllerMap) {
 		if (null == this.controllerMap) {
@@ -99,9 +99,9 @@ public class WebComponent implements TangYuanComponent {
 			this.errorRedirectPage = properties.get("errorRedirectPage".toUpperCase());
 		}
 
-		//		if (properties.containsKey("printResultLog".toUpperCase())) {
-		//			this.printResultLog = Boolean.parseBoolean(properties.get("printResultLog".toUpperCase()));
-		//		}
+		// if (properties.containsKey("printResultLog".toUpperCase())) {
+		// this.printResultLog = Boolean.parseBoolean(properties.get("printResultLog".toUpperCase()));
+		// }
 
 		if (properties.containsKey("urlAutoMappingMode".toUpperCase())) {
 			this.urlAutoMappingMode = Boolean.parseBoolean(properties.get("urlAutoMappingMode".toUpperCase()));
@@ -134,7 +134,7 @@ public class WebComponent implements TangYuanComponent {
 			log.info("Turn on tangyuan-web rest mode.");
 		}
 
-		//		log.info("config setting successfully.");
+		// log.info("config setting successfully.");
 		log.info(TangYuanLang.get("config.property.load"), "web-component");
 	}
 
@@ -183,9 +183,6 @@ public class WebComponent implements TangYuanComponent {
 	}
 
 	public void start(String resource) throws Throwable {
-		//		if (initialization) {
-		//			return;
-		//		}
 
 		log.info(TangYuanLang.get("component.dividing.line"));
 		log.info(TangYuanLang.get("component.starting"), "web", Version.getVersion());
@@ -204,7 +201,6 @@ public class WebComponent implements TangYuanComponent {
 		builder.parse(componentContext, resource);
 		componentContext.clean();
 
-		//		initialization = true;
 		this.state = ComponentState.RUNNING;
 
 		log.info(TangYuanLang.get("component.starting.successfully"), "web");
@@ -221,55 +217,5 @@ public class WebComponent implements TangYuanComponent {
 	public boolean isRunning() {
 		return ComponentState.RUNNING == this.state;
 	}
-
-	////////////////////////////////////////////////////////////////////
-
-	//	private volatile boolean            initialization            = false;
-	//	/** 控制器返回结果日志 */
-	//	private boolean                     printResultLog            = false;
-	//		if (initialization) {
-	//			initialization = false;
-	//			log.info("web component stop successfully.");
-	//		}
-	//	public boolean isclosing() {
-	//		return !initialization;
-	//	}
-	//	@Override
-	//	public void stop(boolean wait) {
-	//		if (initialization) {
-	//			initialization = false;
-	//			log.info("web component stop successfully.");
-	//		}
-	//	}
-
-	/** K/V形式的参数的是否自动转换 */
-	// private boolean kvAutoConvert = false;
-	// if (properties.containsKey("kvAutoConvert".toUpperCase())) {
-	// this.kvAutoConvert = Boolean.parseBoolean(properties.get("kvAutoConvert".toUpperCase()));
-	// }
-	// if (this.kvAutoConvert) {
-	// log.info("Turn on tangyuan-web k/v parameter auto-convert mode.");
-	// }
-
-	//	public boolean isPrintResultLog() {
-	//		return printResultLog;
-	//	}
-
-	//	@Override
-	//	public void start(String resource) throws Throwable {
-	//		if (!initialization) {
-	//			log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	//			log.info("web component starting, version: " + Version.getVersion());
-	//			// 是否存在本地服务
-	//			this.existLocalService = TangYuanContainer.getInstance().getServicesKeySet().size() > 0;
-	//			log.info("*** Start parsing: " + resource);
-	//			//InputStream inputStream = Resources.getResourceAsStream(resource);
-	//			InputStream      inputStream = ResourceManager.getInputStream(resource, true);
-	//			XMLConfigBuilder builder     = new XMLConfigBuilder(inputStream);
-	//			builder.parseNode();
-	//			initialization = true;
-	//			log.info("web component successfully.");
-	//		}
-	//	}
 
 }

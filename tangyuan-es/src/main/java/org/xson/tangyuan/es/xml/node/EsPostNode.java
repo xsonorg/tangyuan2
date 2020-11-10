@@ -17,12 +17,12 @@ import org.xson.tangyuan.xml.node.TangYuanNode;
 
 public class EsPostNode extends AbstractEsNode {
 
-	private static Log   log = LogFactory.getLog(EsPostNode.class);
+	private static Log		log	= LogFactory.getLog(EsPostNode.class);
 
-	private TangYuanNode bodyNode;
+	private TangYuanNode	bodyNode;
 
-	public EsPostNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, TangYuanNode bodyNode, EsResultConverter converter, CacheUseVo cacheUse,
-			CacheCleanVo cacheClean, String desc, String[] groups) {
+	public EsPostNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, TangYuanNode bodyNode, EsResultConverter converter,
+			CacheUseVo cacheUse, CacheCleanVo cacheClean, String desc, String[] groups) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
@@ -47,13 +47,9 @@ public class EsPostNode extends AbstractEsNode {
 	@Override
 	protected String parseBody(ActuatorContext ac, EsServiceContext context, EsSourceVo esSourceVo, Object arg, Object temp) throws Throwable {
 		context.resetExecEnv();
-		//		context.setIgnoreQuotes();
+		// context.setIgnoreQuotes();
 		bodyNode.execute(ac, arg, temp);
 		String body = StringUtils.trim(context.getSql());
-		//		if (getLog().isInfoEnabled()) {
-		//			// trace
-		//			getLog().info("BODY " + body);
-		//		}
 		return body;
 	}
 
@@ -72,70 +68,5 @@ public class EsPostNode extends AbstractEsNode {
 			throw new ServiceException(TangYuanLang.get("convert.result.x.error", "es"), e);
 		}
 	}
-
-	//	private CacheUseVo		cacheUse;
-
-	//	public EsPostNode(String id, String ns, String serviceKey, String dsKey, TangYuanNode sqlNode, TangYuanNode bodyNode, CacheUseVo cacheUse,
-	//			ResultConverter converter) {
-	//		this.id = id;
-	//		this.ns = ns;
-	//		this.serviceKey = serviceKey;
-	//		this.dsKey = dsKey;
-	//		this.resultType = XCO.class;
-	//
-	//		this.sqlNode = sqlNode;
-	//		this.bodyNode = bodyNode;
-	//		this.cacheUse = cacheUse;
-	//		this.converter = converter;
-	//	}
-	//	@Override
-	//	public boolean execute(ServiceContext context, Object arg) throws Throwable {
-	//		EsServiceContext esContext = (EsServiceContext) context.getServiceContext(TangYuanServiceType.ES);
-	//
-	//		// 1. cache使用
-	//		if (null != cacheUse) {
-	//			Object result = cacheUse.getObject(arg);
-	//			if (null != result) {
-	//				context.setResult(result);
-	//				return true;
-	//			}
-	//		}
-	//
-	//		long   startTime = System.currentTimeMillis();
-	//		Object result    = null;
-	//
-	//		// 2. 清理和重置执行环境
-	//		esContext.resetExecEnv();
-	//		esContext.setIgnoreQuotes();
-	//		sqlNode.execute(context, arg); // 获取URL
-	//		String url = StringUtils.trim(esContext.getSql());
-	//
-	//		esContext.resetExecEnv();
-	//		bodyNode.execute(context, arg); // 获取BODY
-	//		String     body       = esContext.getSql();
-	//
-	//		EsSourceVo esSourceVo = EsSourceManager.getEsSource(this.dsKey);
-	//		url = ESUtil.mergeURL(esSourceVo.getHost(), url);
-	//
-	//		if (log.isInfoEnabled()) {
-	//			log.info("POST " + url);
-	//			log.info(body);
-	//		}
-	//
-	//		String json = esSourceVo.getClient().post(url, StringUtils.trim(body));
-	//		result = converter.convert(json);
-	//
-	//		context.setResult(result);
-	//
-	//		if (log.isInfoEnabled()) {
-	//			log.info("es execution time: " + getSlowServiceLog(startTime));
-	//		}
-	//
-	//		if (null != cacheUse) {
-	//			cacheUse.putObject(arg, result);
-	//		}
-	//
-	//		return true;
-	//	}
 
 }

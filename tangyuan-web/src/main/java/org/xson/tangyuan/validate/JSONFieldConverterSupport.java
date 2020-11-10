@@ -140,8 +140,8 @@ public class JSONFieldConverterSupport {
 	class StringArrayFieldConverter implements FieldConverter {
 		@Override
 		public void convert(RuleGroupItem item, XCO xco, String fieldName, Object value) throws Throwable {
-			JSONArray data  = (JSONArray) value;
-			String[]  array = data.toArray(new String[data.size()]);
+			JSONArray data = (JSONArray) value;
+			String[] array = data.toArray(new String[data.size()]);
 			xco.setStringArrayValue(fieldName, array);
 		}
 	}
@@ -193,11 +193,11 @@ public class JSONFieldConverterSupport {
 			JSONObject data = (JSONObject) value;
 			for (RuleGroupItem childItem : childItemList) {
 				String childFieldName = childItem.getFieldName();
-				Object childValue     = data.get(childFieldName);
+				Object childValue = data.get(childFieldName);
 				if (null == childValue) {
 					continue;
 				}
-				//converterJSONField(childItem, childXco, childFieldName, childItem.getType(), childValue);
+				// converterJSONField(childItem, childXco, childFieldName, childItem.getType(), childValue);
 				converterJSONField(childItem, childXco, childValue);
 			}
 		}
@@ -222,7 +222,7 @@ public class JSONFieldConverterSupport {
 
 			for (int i = 0; i < data.size(); i++) {
 				Object childValue = data.get(i);
-				XCO    childXco   = new XCO();
+				XCO childXco = new XCO();
 				array[i] = childXco;
 				for (RuleGroupItem childItem : childItemList) {
 					// String childFieldName = childItem.getFieldName();
@@ -252,11 +252,11 @@ public class JSONFieldConverterSupport {
 
 			for (int i = 0; i < data.size(); i++) {
 				Object childValue = data.get(i);
-				XCO    childXco   = new XCO();
+				XCO childXco = new XCO();
 				list.add(childXco);
 				for (RuleGroupItem childItem : childItemList) {
-					//					String childFieldName = childItem.getFieldName();
-					//					converterJSONField(childItem, childXco, childFieldName, childItem.getType(), childValue);
+					// String childFieldName = childItem.getFieldName();
+					// converterJSONField(childItem, childXco, childFieldName, childItem.getType(), childValue);
 					converterJSONField(childItem, childXco, childValue);
 				}
 			}
@@ -282,11 +282,11 @@ public class JSONFieldConverterSupport {
 
 			for (int i = 0; i < data.size(); i++) {
 				Object childValue = data.get(i);
-				XCO    childXco   = new XCO();
+				XCO childXco = new XCO();
 				set.add(childXco);
 				for (RuleGroupItem childItem : childItemList) {
-					//					String childFieldName = childItem.getFieldName();
-					//					converterJSONField(childItem, childXco, childFieldName, childItem.getType(), childValue);
+					// String childFieldName = childItem.getFieldName();
+					// converterJSONField(childItem, childXco, childFieldName, childItem.getType(), childValue);
 					converterJSONField(childItem, childXco, childValue);
 				}
 			}
@@ -475,32 +475,13 @@ public class JSONFieldConverterSupport {
 	}
 
 	public void converterJSONField(RuleGroupItem item, XCO xco, Object value) throws Throwable {
-		String         fieldName = item.getFieldName();
-		TypeEnum       type      = item.getType();
-		FieldConverter c         = converterMap.get(type);
+		String fieldName = item.getFieldName();
+		TypeEnum type = item.getType();
+		FieldConverter c = converterMap.get(type);
 		if (null == c) {
 			throw new XCOWebException(TangYuanLang.get("web.converter.field.json.unsupported", type.toString()));
 		}
 		c.convert(item, xco, fieldName, value);
 	}
-
-	//////////////////////////////////////////////////////////////////////
-
-	//		ARRAY("array"),
-	//		COLLECTION("collection"),
-	//
-
-	//	public void converterJSONField0(RuleGroupItem item, XCO xco, String fieldName, TypeEnum type, Object value) throws Throwable {
-	//		// value != null
-	//		FieldConverter c = converterMap.get(type);
-	//		c.convert(item, xco, fieldName, value);
-	//	}
-
-	//			Class<?> targetClass = value.getClass();
-	//			if (Integer.class == targetClass) {
-	//				xco.setIntegerValue(fieldName, (Integer) value);
-	//			} else {
-	//				xco.setIntegerValue(fieldName, Integer.parseInt(value.toString()));
-	//			}
 
 }

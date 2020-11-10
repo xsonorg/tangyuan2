@@ -18,11 +18,11 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class EsComponent implements TangYuanComponent {
 
-	private static EsComponent      instance        = new EsComponent();
+	private static EsComponent		instance		= new EsComponent();
 
-	private Log                     log             = LogFactory.getLog(getClass());
-	private volatile ComponentState state           = ComponentState.UNINITIALIZED;
-	private EsSourceManager         esSourceManager = null;
+	private Log						log				= LogFactory.getLog(getClass());
+	private volatile ComponentState	state			= ComponentState.UNINITIALIZED;
+	private EsSourceManager			esSourceManager	= null;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.ES, new EsServiceContextFactory());
@@ -38,7 +38,7 @@ public class EsComponent implements TangYuanComponent {
 
 	/** 设置配置文件 */
 	public void config(Map<String, String> properties) {
-		//		log.info(TangYuanLang.get("config.property.load"), "elasticsearch-component");
+		// log.info(TangYuanLang.get("config.property.load"), "elasticsearch-component");
 	}
 
 	public EsSourceManager getEsSourceManager() {
@@ -93,35 +93,5 @@ public class EsComponent implements TangYuanComponent {
 
 		log.info(TangYuanLang.get("component.stopping.successfully"), "elasticsearch");
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// log.info("config setting success...");
-	// <config-property name="http.client.resource" value="http.client.properties"/>
-	// if (properties.containsKey("http.client.resource".toUpperCase())) {
-	// this.httpClientResource = StringUtils.trim(properties.get("http.client.resource".toUpperCase()));
-	// }
-	//	@Override
-	//	public void stop(boolean wait) {
-	//		EsSourceManager.stop();
-	//		log.info("elasticsearch component stop successfully.");
-	//	}
-	// public String getHttpClientResource() {
-	// return httpClientResource;
-	// }
-	//	public void start(String resource) throws Throwable {
-	//	log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	//	log.info("elasticsearch component starting, version: " + Version.getVersion());
-	//	XmlConfigBuilder xmlBuilder = new XmlConfigBuilder();
-	//	xmlBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
-	//	EsSourceManager.start();
-	//	log.info("elasticsearch component successfully.");
-	//}
-	//		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	//		log.info("elasticsearch component starting, version: " + Version.getVersion());
-	//		XmlConfigBuilder xmlBuilder = new XmlConfigBuilder();
-	//		xmlBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
-	//		EsSourceManager.start();
-	//		log.info("elasticsearch component successfully.");
 
 }

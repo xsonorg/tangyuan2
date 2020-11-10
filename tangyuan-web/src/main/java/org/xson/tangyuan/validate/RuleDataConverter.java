@@ -14,69 +14,6 @@ public class RuleDataConverter {
 
 	public final static RuleDataConverter instance = new RuleDataConverter();
 
-	//	@Override
-	//	public void convert(RequestContext requestContext) throws Throwable {
-	//		//		String ruleGroupId = cVo.getValidate();
-	//		String ruleGroupId = requestContext.getControllerVo().getValidate();
-	//		if (null == ruleGroupId) {
-	//			throw new XCOValidateException("When using the rules for data conversion need to specify a template. uri: " + requestContext.getControllerVo().getUrl());
-	//		}
-	//		RuleGroup group = ValidateComponent.getInstance().getRuleGroup(ruleGroupId);
-	//		if (group == null) {
-	//			throw new XCOValidateException("The validation template required for data conversion does not exist: " + ruleGroupId);
-	//		}
-	//		HttpServletRequest  request = requestContext.getRequest();
-	//		XCO                 xco     = new XCO();
-	//		List<RuleGroupItem> items   = group.getItems();
-	//		for (RuleGroupItem item : items) {
-	//			String fieldName = item.getFieldName();
-	//			if (null != fieldName) {
-	//				String tmp = StringUtils.trim(request.getParameter(fieldName));
-	//				if (null != tmp) {
-	//					setXCOValue(xco, fieldName, item.getType(), tmp);
-	//				}
-	//			}
-	//		}
-	//		XCO old = (XCO) requestContext.getArg();
-	//		if (null == old) {
-	//			requestContext.setArg(xco);
-	//		} else {
-	//			old.append(xco);
-	//			requestContext.setArg(old);
-	//		}
-	//	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		String ruleGroupId = cVo.getValidate();
-	//		if (null == ruleGroupId) {
-	//			throw new XCOValidateException("When using the rules for data conversion need to specify a template. uri: " + cVo.getUrl());
-	//		}
-	//		RuleGroup group = ValidateComponent.getInstance().getRuleGroup(ruleGroupId);
-	//		if (group == null) {
-	//			throw new XCOValidateException("The validation template required for data conversion does not exist: " + ruleGroupId);
-	//		}
-	//		HttpServletRequest  request = requestContext.getRequest();
-	//		XCO                 xco     = new XCO();
-	//		List<RuleGroupItem> items   = group.getItems();
-	//		for (RuleGroupItem item : items) {
-	//			String fieldName = item.getFieldName();
-	//			if (null != fieldName) {
-	//				String tmp = StringUtils.trim(request.getParameter(fieldName));
-	//				if (null != tmp) {
-	//					setXCOValue(xco, fieldName, item.getType(), tmp);
-	//				}
-	//			}
-	//		}
-	//		XCO old = (XCO) requestContext.getArg();
-	//		if (null == old) {
-	//			requestContext.setArg(xco);
-	//		} else {
-	//			old.append(xco);
-	//			requestContext.setArg(old);
-	//		}
-	//	}
-
 	private void setXCOValue(XCO xco, String fieldName, TypeEnum type, String value) {
 		if (type == TypeEnum.STRING) {
 			xco.setStringValue(fieldName, value);
@@ -131,7 +68,7 @@ public class RuleDataConverter {
 			throw new XCOValidateException("The validation template required for data conversion does not exist: " + ruleGroupId);
 		}
 
-		XCO                 xco   = new XCO();
+		XCO xco = new XCO();
 		List<RuleGroupItem> items = group.getItems();
 		for (RuleGroupItem item : items) {
 			String fieldName = item.getFieldName();

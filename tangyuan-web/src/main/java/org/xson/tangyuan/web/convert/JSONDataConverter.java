@@ -15,23 +15,9 @@ public class JSONDataConverter extends AbstractDataConverter {
 	@Override
 	public void convert(RequestContext requestContext) throws Throwable {
 		HttpServletRequest request = requestContext.getRequest();
-		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-		JSONObject         arg     = (JSONObject) JSON.parse(new String(buffer, encoding));
+		byte[] buffer = IOUtils.toByteArray(request.getInputStream());
+		JSONObject arg = (JSONObject) JSON.parse(new String(buffer, encoding));
 		setArg(requestContext, arg);
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		HttpServletRequest request = requestContext.getRequest();
-	//		byte[] buffer = IOUtils.toByteArray(request.getInputStream());
-	//		JSONObject arg = (JSONObject) JSON.parse(new String(buffer, encoding));
-	//		JSONObject old = (JSONObject) requestContext.getArg();
-	//		if (null == old) {
-	//			requestContext.setArg(arg);
-	//		} else {
-	//			old.putAll(arg);
-	//			requestContext.setArg(old);
-	//		}
-	//	}
 
 }

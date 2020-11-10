@@ -126,16 +126,11 @@ public abstract class AbstractEsNode extends AbstractServiceNode {
 	}
 
 	protected String parseURL(ActuatorContext ac, EsServiceContext context, EsSourceVo esSourceVo, Object arg, Object temp) throws Throwable {
-		//		throw new TangYuanException("subclass must implement this method");
 		context.resetExecEnv();
 		context.setIgnoreQuotes();
 		sqlNode.execute(ac, arg, temp);
 		String url = StringUtils.trim(context.getSql());
 		url = ESUtil.mergeURL(esSourceVo.getHost(), url);
-		//		if (getLog().isInfoEnabled()) {
-		//			// trace
-		//			getLog().info("GET " + url);
-		//		}
 		return url;
 	}
 

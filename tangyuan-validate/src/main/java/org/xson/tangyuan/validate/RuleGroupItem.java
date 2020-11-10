@@ -14,21 +14,21 @@ import org.xson.tangyuan.util.CollectionUtils;
 
 public class RuleGroupItem {
 
-	private static Log          log = LogFactory.getLog(RuleGroupItem.class);
+	private static Log			log	= LogFactory.getLog(RuleGroupItem.class);
 
-	private String              fieldName;
-	private TypeEnum            type;
-	private List<Rule>          rules;
-	private boolean             require;
-	private Object              defaultValue;
-	private String              desc;
-	private String              message;
-	private int                 code;
+	private String				fieldName;
+	private TypeEnum			type;
+	private List<Rule>			rules;
+	private boolean				require;
+	private Object				defaultValue;
+	private String				desc;
+	private String				message;
+	private int					code;
 	// 内嵌对象
-	private List<RuleGroupItem> items;
+	private List<RuleGroupItem>	items;
 
-	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message, int code,
-			List<RuleGroupItem> items) {
+	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message,
+			int code, List<RuleGroupItem> items) {
 		this.fieldName = fieldName;
 		this.type = type;
 		this.rules = rules;
@@ -408,74 +408,4 @@ public class RuleGroupItem {
 		return items;
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	//	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message, int code) {
-	//		this.fieldName = fieldName;
-	//		this.type = type;
-	//		this.rules = rules;
-	//		this.require = require;
-	//		this.desc = desc;
-	//		this.message = message;
-	//		this.code = code;
-	//		parseDefaultValue(defaultValue);
-	//	}
-
-	//	public boolean check(XCO xco, boolean forcedThrowException, boolean ignoreDefaultValue) {
-	//		boolean result = false;
-	//		Object  value  = null;
-	//		try {
-	//			value = xco.getObjectValue(fieldName);
-	//			// 需要做非必填的判断
-	//			if (null == value) {
-	//				if (require) {
-	//					result = false;
-	//				} else {
-	//					// support service
-	//					if (null != defaultValue && !ignoreDefaultValue) {
-	//						setDefaultValue(xco);
-	//					}
-	//					return true;
-	//				}
-	//			} else {
-	//				if (rules.size() > 0) {
-	//					for (Rule rule : rules) {
-	//						Checker checker = rule.findChecker(type);
-	//						if (null == checker) {
-	//							throw new XCOValidateException("Field type and validation rules do not match: " + fieldName);
-	//						}
-	//						result = checker.check(xco, this.fieldName, rule.getValue());
-	//						if (!result) {
-	//							break;
-	//						}
-	//					}
-	//				} else {
-	//					// 在没有规则的情况, 支持类型的验证
-	//					result = checkValueType(value, xco);
-	//				}
-	//			}
-	//		} catch (Throwable e) {
-	//			log.error(null, e);
-	//		}
-	//
-	//		// support items
-	//		if (null != this.items && result) {
-	//			for (RuleGroupItem item : this.items) {
-	//				result = item.check((XCO) value, forcedThrowException, ignoreDefaultValue);
-	//				if (!result) {
-	//					break;
-	//				}
-	//			}
-	//		}
-	//
-	//		if (!result) {
-	//			if (forcedThrowException) {
-	//				throw new XCOValidateException(this.code, this.message);
-	//			}
-	//			if (ValidateComponent.getInstance().isThrowException()) {
-	//				throw new XCOValidateException(this.code, this.message);
-	//			}
-	//		}
-	//
-	//		return result;
-	//	}
 }

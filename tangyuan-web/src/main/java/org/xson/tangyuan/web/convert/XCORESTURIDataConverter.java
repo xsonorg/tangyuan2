@@ -26,10 +26,10 @@ public class XCORESTURIDataConverter implements DataConverter {
 		// HttpServletRequest request = requestContext.getRequest();
 		// String query = StringUtils.trim(request.getQueryString());
 
-		String           query     = requestContext.getQueryString();
+		String query = requestContext.getQueryString();
 
-		RESTControllerVo restVo    = (RESTControllerVo) requestContext.getControllerVo();
-		RestURIVo        restURIVo = restVo.getRestURIVo();
+		RESTControllerVo restVo = (RESTControllerVo) requestContext.getControllerVo();
+		RestURIVo restURIVo = restVo.getRestURIVo();
 
 		// 生么情况下不需要处理URI，pathVar == null && queryString == null
 		if ((null == query || 0 == query.length()) && restURIVo.isStaticURI()) {
@@ -38,12 +38,12 @@ public class XCORESTURIDataConverter implements DataConverter {
 
 		// 1. queryString
 		Map<String, String> queryVariables = restVo.getRestURIVo().getQueryVariables();
-		Map<String, String> queryMap       = WebUtil.queryStringToMap(query, queryVariables);
+		Map<String, String> queryMap = WebUtil.queryStringToMap(query, queryVariables);
 
 		// 2. append path var
 		if (!restURIVo.isStaticURI()) {
 			// 这部分工作可以提前做,但是意义不大
-			List<String>         itemList      = WebUtil.parseURIPathItem(requestContext.getPath());
+			List<String> itemList = WebUtil.parseURIPathItem(requestContext.getPath());
 			Map<Integer, String> pathVariables = restURIVo.getPathVariables();
 			for (Map.Entry<Integer, String> entry : pathVariables.entrySet()) {
 				queryMap.put(entry.getValue(), itemList.get(entry.getKey()));
@@ -60,46 +60,5 @@ public class XCORESTURIDataConverter implements DataConverter {
 			requestContext.setArg(old);
 		}
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//
-	//		// HttpServletRequest request = requestContext.getRequest();
-	//		// String query = StringUtils.trim(request.getQueryString());
-	//
-	//		String           query     = requestContext.getQueryString();
-	//
-	//		RESTControllerVo restVo    = (RESTControllerVo) cVo;
-	//		RestURIVo        restURIVo = restVo.getRestURIVo();
-	//
-	//		// 生么情况下不需要处理URI，pathVar == null && queryString == null
-	//		if ((null == query || 0 == query.length()) && restURIVo.isStaticURI()) {
-	//			return;
-	//		}
-	//
-	//		// 1. queryString
-	//		Map<String, String> queryVariables = restVo.getRestURIVo().getQueryVariables();
-	//		Map<String, String> queryMap       = WebUtil.queryStringToMap(query, queryVariables);
-	//
-	//		// 2. append path var
-	//		if (!restURIVo.isStaticURI()) {
-	//			// 这部分工作可以提前做,但是意义不大
-	//			List<String>         itemList      = WebUtil.parseURIPathItem(requestContext.getPath());
-	//			Map<Integer, String> pathVariables = restURIVo.getPathVariables();
-	//			for (Map.Entry<Integer, String> entry : pathVariables.entrySet()) {
-	//				queryMap.put(entry.getValue(), itemList.get(entry.getKey()));
-	//			}
-	//		}
-	//
-	//		// 当程序进行到这里,后续一定会产生xco参数
-	//		XCO arg = RuleDataConverter.instance.convertRESTURI(queryMap, cVo);
-	//		XCO old = (XCO) requestContext.getArg();
-	//		if (null == old) {
-	//			requestContext.setArg(arg);
-	//		} else {
-	//			old.append(arg);
-	//			requestContext.setArg(old);
-	//		}
-	//	}
 
 }

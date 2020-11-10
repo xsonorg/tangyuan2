@@ -44,20 +44,20 @@ public abstract class TimerJob implements Job {
 		RuntimeContext.begin(null, TraceManager.TRACE_ORIGIN_TIMER);
 
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-		TimerVo    config  = (TimerVo) dataMap.get("CONFIG");
+		TimerVo config = (TimerVo) dataMap.get("CONFIG");
 		getLogger().info(config.getDesc() + ":" + config.getService() + " start");
-		CustomJob customJob    = config.getCustomJob();
+		CustomJob customJob = config.getCustomJob();
 
 		// 跟踪相关
-		long      now          = System.currentTimeMillis();
-		Object    traceContext = null;
-		XCO       result       = null;
-		Throwable ex           = null;
+		long now = System.currentTimeMillis();
+		Object traceContext = null;
+		XCO result = null;
+		Throwable ex = null;
 
 		try {
 			if (null == customJob) {
 				String service = config.getService();
-				Object arg     = config.getArg(null);
+				Object arg = config.getArg(null);
 
 				// 添加跟踪
 				traceContext = startTracking(config, now);
@@ -106,10 +106,10 @@ public abstract class TimerJob implements Job {
 	 */
 	private Object startTracking(TimerVo config, long now) {
 		if (null != tangYuanManager) {
-			String  serviceKey  = getServiceName(config);
+			String serviceKey = getServiceName(config);
 			Integer serviceType = TangYuanServiceType.NO.getVal();
 			Integer executeMode = TraceManager.EXECUTE_MODE_SYNC;
-			Object  arg         = null;
+			Object arg = null;
 			return tangYuanManager.startTracking(serviceKey, serviceType, arg, executeMode, now);
 		}
 		return null;
@@ -124,8 +124,4 @@ public abstract class TimerJob implements Job {
 		}
 	}
 
-	//	private Object startTracking(TimerVo config, Object arg) {
-	//		String serviceURI = getServiceName(config);
-	//		return RuntimeContext.startTracking(null, serviceURI, arg, TrackingManager.SERVICE_TYPE_NO, TrackingManager.RECORD_TYPE_TIMER, TrackingManager.EXECUTE_MODE_SYNC, null);
-	//	}
 }

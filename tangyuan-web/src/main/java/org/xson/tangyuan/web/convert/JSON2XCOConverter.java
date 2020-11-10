@@ -17,21 +17,11 @@ public class JSON2XCOConverter extends AbstractDataConverter {
 	@Override
 	public void convert(RequestContext requestContext) throws Throwable {
 		HttpServletRequest request = requestContext.getRequest();
-		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-		JSONObject         obj     = (JSONObject) JSON.parse(new String(buffer, encoding));
-		XCO                arg     = FastJsonUtil.toXCO(obj);
+		byte[] buffer = IOUtils.toByteArray(request.getInputStream());
+		JSONObject obj = (JSONObject) JSON.parse(new String(buffer, encoding));
+		XCO arg = FastJsonUtil.toXCO(obj);
 
 		setArg(requestContext, arg);
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		HttpServletRequest request = requestContext.getRequest();
-	//		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-	//		JSONObject         obj     = (JSONObject) JSON.parse(new String(buffer, encoding));
-	//		XCO                arg     = FastJsonUtil.toXCO(obj);
-	//
-	//		setArg(requestContext, arg);
-	//	}
 
 }

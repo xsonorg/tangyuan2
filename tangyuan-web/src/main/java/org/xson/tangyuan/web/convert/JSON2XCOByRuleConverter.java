@@ -22,47 +22,12 @@ public class JSON2XCOByRuleConverter extends AbstractDataConverter {
 	public void convert(RequestContext requestContext) throws Throwable {
 
 		HttpServletRequest request = requestContext.getRequest();
-		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-		JSONObject         obj     = (JSONObject) JSON.parse(new String(buffer, encoding));
+		byte[] buffer = IOUtils.toByteArray(request.getInputStream());
+		JSONObject obj = (JSONObject) JSON.parse(new String(buffer, encoding));
 
-		XCO                arg     = new XCO();
+		XCO arg = new XCO();
 		this.ruleSupport.convertFromJSON(arg, requestContext.getControllerVo(), obj);
 		setArg(requestContext, arg);
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//
-	//		HttpServletRequest request = requestContext.getRequest();
-	//		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-	//		JSONObject         obj     = (JSONObject) JSON.parse(new String(buffer, encoding));
-	//
-	//		XCO                arg     = new XCO();
-	//		this.ruleSupport.convertFromJSON(arg, cVo, obj);
-	//		setArg(requestContext, arg);
-	//	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//
-	//		HttpServletRequest         request = requestContext.getRequest();
-	//		byte[]                     buffer  = IOUtils.toByteArray(request.getInputStream());
-	//		JSONObject                 obj     = (JSONObject) JSON.parse(new String(buffer, encoding));
-	//
-	//		// 附带检查的效果
-	//		Map<String, RuleGroupItem> ruleMap = this.ruleSupport.getRuleMap(cVo);
-	////		if (CollectionUtils.isEmpty(queryMap)) {
-	////			return;
-	////		}
-	//
-	//		XCO arg = new XCO();
-	//		for (Entry<String, String> entry : queryMap.entrySet()) {
-	//			String        fieldName = entry.getKey();
-	//			RuleGroupItem item      = ruleMap.get(fieldName);
-	//			TypeEnum      type      = (null == item) ? null : item.getType();
-	//			this.ruleSupport.setXCOValueSimple(arg, fieldName, type, entry.getValue());
-	//		}
-	//		setArg(requestContext, arg);
-	//	}
 
 }

@@ -13,28 +13,12 @@ public class XCODataConverter extends AbstractDataConverter {
 	@Override
 	public void convert(RequestContext requestContext) throws Throwable {
 		HttpServletRequest request = requestContext.getRequest();
-		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-		String             xml     = new String(buffer, encoding);
+		byte[] buffer = IOUtils.toByteArray(request.getInputStream());
+		String xml = new String(buffer, encoding);
 		xml = java.net.URLDecoder.decode(xml, encoding);
 		XCO arg = XCO.fromXML(xml);
 
 		setArg(requestContext, arg);
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		HttpServletRequest request = requestContext.getRequest();
-	//		byte[]             buffer  = IOUtils.toByteArray(request.getInputStream());
-	//		String             xml     = new String(buffer, encoding);
-	//		xml = java.net.URLDecoder.decode(xml, encoding);
-	//		XCO arg = XCO.fromXML(xml);
-	//		XCO old = (XCO) requestContext.getArg();
-	//		if (null == old) {
-	//			requestContext.setArg(arg);
-	//		} else {
-	//			old.append(arg);
-	//			requestContext.setArg(old);
-	//		}
-	//	}
 
 }

@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 
 public class EsSourceManager {
 
-	private EsSourceVo              defaultVo     = null;
-	private Map<String, EsSourceVo> esSourceVoMap = null;
+	private EsSourceVo				defaultVo		= null;
+	private Map<String, EsSourceVo>	esSourceVoMap	= null;
 
 	public EsSourceManager(EsSourceVo essVo, Map<String, EsSourceVo> voMap) {
 		if (null != essVo) {
@@ -57,11 +57,4 @@ public class EsSourceManager {
 		}
 	}
 
-	//	public void setEsSourceVoMap(EsSourceVo essVo, Map<String, EsSourceVo> voMap) {
-	//		if (null != essVo) {
-	//			defaultVo = essVo;
-	//		} else {
-	//			esSourceVoMap = voMap;
-	//		}
-	//	}
 }

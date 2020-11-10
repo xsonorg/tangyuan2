@@ -6,6 +6,4 @@ public interface DataConverter {
 
 	void convert(RequestContext requestContext) throws Throwable;
 
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable;
-
 }

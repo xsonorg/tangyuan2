@@ -14,8 +14,4 @@ public class NothingConverter implements DataConverter {
 	public void convert(RequestContext requestContext) throws Throwable {
 	}
 
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//	}
-
 }

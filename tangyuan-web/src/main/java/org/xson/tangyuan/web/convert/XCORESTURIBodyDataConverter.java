@@ -18,10 +18,4 @@ public class XCORESTURIBodyDataConverter implements DataConverter {
 		XCODataConverter.instance.convert(requestContext);
 	}
 
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		XCORESTURIDataConverter.instance.convert(requestContext, cVo);
-	//		XCODataConverter.instance.convert(requestContext, cVo);
-	//	}
-
 }

@@ -18,21 +18,11 @@ public class JSONRESTURIDataConverter implements DataConverter {
 	@Override
 	public void convert(RequestContext requestContext) throws Throwable {
 		HttpServletRequest request = requestContext.getRequest();
-		String             query   = StringUtils.trim(request.getQueryString());
+		String query = StringUtils.trim(request.getQueryString());
 		if (null == query || 0 == query.length()) {
 			return;
 		}
 		// TODO
 	}
-
-	//	@Override
-	//	public void convert(RequestContext requestContext, ControllerVo cVo) throws Throwable {
-	//		HttpServletRequest request = requestContext.getRequest();
-	//		String query = StringUtils.trim(request.getQueryString());
-	//		if (null == query || 0 == query.length()) {
-	//			return;
-	//		}
-	//		// TODO
-	//	}
 
 }
