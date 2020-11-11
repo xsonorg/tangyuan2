@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tangyuan-rest" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+	<bannerLeft>
+		<name>Project Name</name>
+		<src>images/tangyuan_4XX_90.png</src>
+	</bannerLeft>
+
+	<version position="right" />
+	<publishDate position="right" />
+
+	<body>
+
+		<head><![CDATA[<script>
+			var _hmt = _hmt || [];
+			(function() {
+			  var hm = document.createElement("script");
+			  hm.src = "https://hm.baidu.com/hm.js?667c1c941a306c7a5b4eb4d49f740b15";
+			  var s = document.getElementsByTagName("script")[0]; 
+			  s.parentNode.insertBefore(hm, s);
+			})();
+		</script>]]></head>
+
+		<breadcrumbs>
+			<item name="index" href="###" />
+		</breadcrumbs>
+
+		<!-- 项目信息报告 inherit表示子模块继承父模块 -->
+		<menu name="OVERVIEW">
+			<item name="首页" href="index.html" />
+			<item name="使用说明" href="usage.html" />
+			<item name="REST模式" href="rest.html" />
+		</menu>
+		<menu name="PROJECT DOCUMENTATION">
+			<item name="Dependencies" href="dependencies.html" />
+			<item name="Dependency Information" href="dependency-info.html" />
+		</menu>
+		<!-- <footer><![CDATA[All rights reserved.]]></footer> -->
+	</body>
+
+	<!-- 皮肤 -->
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.5</version>
+	</skin>
+</project>
