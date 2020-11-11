@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.aop.sys.SystemAopVo;
@@ -16,9 +17,11 @@ import org.xson.tangyuan.log.TangYuanLang;
 import org.xson.tangyuan.manager.ManagerLauncher;
 import org.xson.tangyuan.manager.TangYuanManager;
 import org.xson.tangyuan.manager.TangYuanState.ComponentState;
+import org.xson.tangyuan.service.ActuatorContext;
 import org.xson.tangyuan.service.context.ServiceContextFactory;
 import org.xson.tangyuan.service.pool.AsyncTask;
 import org.xson.tangyuan.service.pool.ThreadPool;
+import org.xson.tangyuan.util.NumberUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
 import org.xson.tangyuan.xml.XmlGlobalContext;
 import org.xson.tangyuan.xml.XmlTangYuanBuilder;
@@ -27,49 +30,49 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class TangYuanContainer implements TangYuanComponent {
 
-	private static TangYuanContainer				instance				= new TangYuanContainer();
+	private static TangYuanContainer               instance                = new TangYuanContainer();
 
-	public final static String						XCO_DATA_KEY			= "$$DATA";
-	public final static String						XCO_CODE_KEY			= "$$CODE";
-	public final static String						XCO_MESSAGE_KEY			= "$$MESSAGE";
+	public final static String                     XCO_DATA_KEY            = "$$DATA";
+	public final static String                     XCO_CODE_KEY            = "$$CODE";
+	public final static String                     XCO_MESSAGE_KEY         = "$$MESSAGE";
 	/** XCO返回对象包装标识 */
-	public final static String						XCO_PACKAGE_KEY			= "$$PACKAGE";
-	public final static String						XCO_HEADER_KEY			= "$$HEADER";
-	public final static int							SUCCESS_CODE			= 0;
+	public final static String                     XCO_PACKAGE_KEY         = "$$PACKAGE";
+	public final static String                     XCO_HEADER_KEY          = "$$HEADER";
+	public final static int                        SUCCESS_CODE            = 0;
 
-	private Log										log						= null;
-	private XmlGlobalContext						xmlGlobalContext		= null;
-	private volatile ComponentState					state					= ComponentState.UNINITIALIZED;
+	private Log                                    log                     = null;
+	private XmlGlobalContext                       xmlGlobalContext        = null;
+	private volatile ComponentState                state                   = ComponentState.UNINITIALIZED;
 
-	private final Map<String, AbstractServiceNode>	tangyuanServices		= new HashMap<String, AbstractServiceNode>();
-	private final Map<String, AbstractServiceNode>	tangyuanDynamicServices	= new ConcurrentHashMap<String, AbstractServiceNode>();
+	private final Map<String, AbstractServiceNode> tangyuanServices        = new HashMap<String, AbstractServiceNode>();
+	private final Map<String, AbstractServiceNode> tangyuanDynamicServices = new ConcurrentHashMap<String, AbstractServiceNode>();
 
-	private ThreadPool								threadPool				= null;
+	private ThreadPool                             threadPool              = null;
 
-	private Map<String, ServiceContextFactory>		scFactoryMap			= new HashMap<String, ServiceContextFactory>();
-	private Map<String, ComponentVo>				componentMap			= new HashMap<String, ComponentVo>();
+	private Map<String, ServiceContextFactory>     scFactoryMap            = new HashMap<String, ServiceContextFactory>();
+	private Map<String, ComponentVo>               componentMap            = new HashMap<String, ComponentVo>();
 
 	/** system AOP */
-	private List<SystemAopVo>						closingBeforeList		= null;
-	private List<SystemAopVo>						closingAfterList		= null;
-	private Class<?>								defaultResultType		= XCO.class;
+	private List<SystemAopVo>                      closingBeforeList       = null;
+	private List<SystemAopVo>                      closingAfterList        = null;
+	private Class<?>                               defaultResultType       = XCO.class;
 	/** true:jdk, false:cglib */
-	private boolean									jdkProxy				= false;
+	private boolean                                jdkProxy                = false;
 	/** 错误信息编码 */
-	private int										errorCode				= -1;
-	private String									errorMessage			= "服务异常";
-	private String									nsSeparator				= "/";
+	private int                                    errorCode               = -1;
+	private String                                 errorMessage            = "服务异常";
+	private String                                 nsSeparator             = "/";
 
 	/** 最大关闭等待时间(秒) */
-	private long									maxWaitTimeForShutDown	= 10L;
+	private long                                   maxWaitTimeForShutDown  = 10L;
 	/** 所有服务统一返回XCO */
-	private boolean									allServiceReturnXCO		= true;
+	private boolean                                allServiceReturnXCO     = true;
 	/** 关闭的时候是否启动一个新的线程 */
-	private boolean									shutdownInNewThread		= false;
+	private boolean                                shutdownInNewThread     = false;
 	/** 克隆服务参数 */
-	private boolean									cloneServiceArg			= false;
+	private boolean                                cloneServiceArg         = false;
 	/** 后缀参数, 通过配置文件后缀传入 */
-	private Map<String, String>						suffixArgs				= new HashMap<>();
+	private Map<String, String>                    suffixArgs              = new HashMap<>();
 
 	private TangYuanContainer() {
 	}
@@ -209,7 +212,8 @@ public class TangYuanContainer implements TangYuanComponent {
 			this.jdkProxy = Boolean.parseBoolean(properties.get("jdkProxy".toUpperCase()));
 		}
 		if (properties.containsKey("maxWaitTimeForShutDown".toUpperCase())) {
-			this.maxWaitTimeForShutDown = Long.parseLong(properties.get("maxWaitTimeForShutDown".toUpperCase()));
+			// this.maxWaitTimeForShutDown = Long.parseLong(properties.get("maxWaitTimeForShutDown".toUpperCase()));
+			this.maxWaitTimeForShutDown = NumberUtils.parseTimeWithUnit(properties.get("maxWaitTimeForShutDown".toUpperCase()), TimeUnit.SECONDS);
 		}
 		if (properties.containsKey("shutdownInNewThread".toUpperCase())) {
 			this.shutdownInNewThread = Boolean.parseBoolean(properties.get("shutdownInNewThread".toUpperCase()));
@@ -346,7 +350,8 @@ public class TangYuanContainer implements TangYuanComponent {
 			componentMap.get("mq-listener".toUpperCase()).getComponent().stop(waitingTime, false);
 		}
 
-		// 3. 停止服务 TODO
+		// 3. 停止服务 
+		waitForService();
 
 		type = "sql".toUpperCase();
 		if (componentMap.containsKey(type)) {
@@ -414,4 +419,22 @@ public class TangYuanContainer implements TangYuanComponent {
 		log.info(TangYuanLang.get("tangyuan.stopping.successfully"));
 	}
 
+	private void waitForService() {
+		// TODO log
+		long start = System.currentTimeMillis();
+		while (ActuatorContext.getGlobleContextCount() > 0) {
+			if ((System.currentTimeMillis() - start) > maxWaitTimeForShutDown) {
+				log.error("wait for service to close timeout, The current context number " + ActuatorContext.getGlobleContextCount());
+				return;
+			}
+			log.info("waiting for service to close.");
+			try {
+				Thread.sleep(500L);
+			} catch (InterruptedException e) {
+				log.error("wait for service to close exception", e);
+				return;
+			}
+		}
+		log.info("service has been closed normally.");
+	}
 }

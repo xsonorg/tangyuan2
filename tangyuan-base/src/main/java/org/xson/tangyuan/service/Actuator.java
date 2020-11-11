@@ -3,6 +3,7 @@ package org.xson.tangyuan.service;
 import java.util.List;
 
 import org.xson.tangyuan.executor.ServiceException;
+import org.xson.tangyuan.service.Pipeline.ErrorHandler;
 import org.xson.tangyuan.service.mr.MapReduceHander;
 import org.xson.tangyuan.util.TangYuanUtil;
 
@@ -45,16 +46,20 @@ public class Actuator {
 
 	// =================================== executeAlone =====================================
 
-	@Deprecated
-	public static <T> T executeAlone(String serviceURI, Object arg) {
-		return execute(serviceURI, arg);
-	}
+	//	@Deprecated
+	//	public static <T> T executeAlone(String serviceURI, Object arg) {
+	//		return execute(serviceURI, arg);
+	//	}
 
 	// =================================== executeAsync ======================================
 
 	public static void executeAsync(final String serviceURI, final Object arg) {
+		executeAsync(serviceURI, arg, null);
+	}
+
+	public static void executeAsync(final String serviceURI, final Object arg, final String callBackService) {
 		impl.checkContainerState();
-		impl.executeAsync(serviceURI, arg);
+		impl.executeAsync(serviceURI, arg, callBackService);
 	}
 
 	// =================================== executeMapReduce ==================================
@@ -78,4 +83,13 @@ public class Actuator {
 	}
 
 	// =================================== Pipeline ==================================
+
+	public static Pipeline createPipeline(final String serviceURI, final Object arg) {
+		return createPipeline(serviceURI, arg, null);
+	}
+
+	public static Pipeline createPipeline(final String serviceURI, final Object arg, ErrorHandler errorHandler) {
+		impl.checkContainerState();
+		return impl.createPipeline(serviceURI, arg, errorHandler);
+	}
 }

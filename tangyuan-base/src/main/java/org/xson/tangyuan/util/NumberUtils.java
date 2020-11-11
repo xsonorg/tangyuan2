@@ -1,5 +1,6 @@
 package org.xson.tangyuan.util;
 
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.xson.tangyuan.ognl.OgnlException;
@@ -67,25 +68,60 @@ public class NumberUtils {
 		return !randomSuccess();
 	}
 
-	// public static boolean isNumber(String var) {
-	// return var.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
-	// }
-	// public static Object parseNumber(String var) {
-	// Object value = null;
-	// if (var.indexOf(".") == -1) {
-	// try {
-	// value = Integer.parseInt(var);
-	// } catch (NumberFormatException e) {
-	// value = Long.parseLong(var);
-	// }
-	// } else {
-	// try {
-	// value = Float.parseFloat(var);
-	// } catch (NumberFormatException e) {
-	// value = Double.parseDouble(var);
-	// }
-	// }
-	// return value;
-	// }
+	public static long parseTimeWithUnit(String val) {
+		return parseTimeWithUnit(val, null);
+	}
+
+	public static long parseTimeWithUnit(String text, TimeUnit standardUnit) {
+		long val = -1;
+		if (text.endsWith("ns")) {
+			val = Long.parseLong(text.substring(0, text.length() - 2));
+			if (null != standardUnit && TimeUnit.NANOSECONDS != standardUnit) {
+				return standardUnit.convert(val, TimeUnit.NANOSECONDS);
+			}
+			return val;
+		}
+		if (text.endsWith("ms")) {//	ms:MILLISECONDS 
+			val = Long.parseLong(text.substring(0, text.length() - 2));
+			if (null != standardUnit && TimeUnit.MILLISECONDS != standardUnit) {
+				return standardUnit.convert(val, TimeUnit.MILLISECONDS);
+			}
+			return val;
+		}
+		if (text.endsWith("s")) {//	    s:SECONDS 
+			val = Long.parseLong(text.substring(0, text.length() - 1));
+			if (null != standardUnit && TimeUnit.SECONDS != standardUnit) {
+				return standardUnit.convert(val, TimeUnit.SECONDS);
+			}
+			return val;
+		}
+		if (text.endsWith("m")) {//	    m:MINUTES 
+			val = Long.parseLong(text.substring(0, text.length() - 1));
+			if (null != standardUnit && TimeUnit.MINUTES != standardUnit) {
+				return standardUnit.convert(val, TimeUnit.MINUTES);
+			}
+			return val;
+		}
+		if (text.endsWith("h")) {//	    h:HOURS 
+			val = Long.parseLong(text.substring(0, text.length() - 1));
+			if (null != standardUnit && TimeUnit.HOURS != standardUnit) {
+				return standardUnit.convert(val, TimeUnit.HOURS);
+			}
+			return val;
+		}
+		if (text.endsWith("d")) {//	    d:DAYS 
+			val = Long.parseLong(text.substring(0, text.length() - 1));
+			if (null != standardUnit && TimeUnit.DAYS != standardUnit) {
+				return standardUnit.convert(val, TimeUnit.DAYS);
+			}
+			return val;
+		}
+
+		val = Long.parseLong(text);
+		if (null != standardUnit && TimeUnit.SECONDS != standardUnit) {
+			return standardUnit.convert(val, TimeUnit.SECONDS);
+		}
+		return val;
+	}
 
 }

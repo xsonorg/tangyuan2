@@ -11,12 +11,16 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 public class ActuatorContext {
 
 	/** 当前容器持有的上下文数量,关闭时候使用 */
-	protected static AtomicLong	globleCounter	= new AtomicLong(0);
+	protected static AtomicLong globleCounter = new AtomicLong(0);
 	/** 服务的组件上下文 */
-	protected ServiceContext	sc				= null;
+	protected ServiceContext    sc            = null;
 	/** 结果返回对象:组合服务专用 */
-	protected Object			result			= null;
-	protected List<Runnable>	postTaskList	= null;
+	protected Object            result        = null;
+	protected List<Runnable>    postTaskList  = null;
+
+	public static long getGlobleContextCount() {
+		return globleCounter.get();
+	}
 
 	public ActuatorContext() {
 		globleCounter.getAndIncrement();

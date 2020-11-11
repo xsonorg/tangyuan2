@@ -25,33 +25,41 @@ import org.xson.tangyuan.xml.XmlGlobalContext;
  */
 public class ManagerLauncher {
 
-	private Logger       log             = Logger.getLogger(getClass().getName());
+	//	private Logger       log          = Logger.getLogger(getClass().getName());
+	private Logger       log          = null;
 
 	/** 忽略异常 */
-	private boolean      ignoreException = false;
+	//	private boolean      ignoreException = false;
 
 	/** 登录地址和信息 */
-	private String       loginUrl        = null;
-	private String       username        = null;
-	private String       password        = null;
+	private String       loginUrl     = null;
+	private String       username     = null;
+	private String       password     = null;
 	/** 配置信息本地存储路径 */
-	private String       storagePath     = null;
+	private String       storagePath  = null;
 	// LOG INFO
-	private String       logType         = null;
-	private String       logResource     = null;
+	private String       logType      = null;
+	private String       logResource  = null;
 	// APP INFO
-	private String       nodeIp          = null;
-	private String       nodeName        = null;
-	private String       nodePort        = null;
-	private String       appName         = null;
+	private String       nodeIp       = null;
+	private String       nodeName     = null;
+	private String       nodePort     = null;
+	private String       appName      = null;
 
 	/** 包含: allURL, version, token, Secret key */
-	private XCO          loginResult     = null;
+	private XCO          loginResult  = null;
 	/** 服务端所有最新数据 */
-	private XCO          latestData      = null;
+	private XCO          latestData   = null;
 
-	private String       localVersion    = null;
-	private LocalStorage localStorage    = new LocalStorage();
+	private String       localVersion = null;
+	private LocalStorage localStorage = null;
+
+	//	private LocalStorage localStorage = new LocalStorage();
+
+	private boolean isEnableManager() {
+		// TODO 通过环境变量开启
+		return false;// TODO
+	}
 
 	/**
 	 * 入口方法
@@ -59,6 +67,13 @@ public class ManagerLauncher {
 	 * @param args 可以考虑传入nodeIp, nodeName, nodePort, appName
 	 */
 	public void start(String[] args) throws Throwable {
+
+		if (!isEnableManager()) {
+			return;
+		}
+
+		log = Logger.getLogger(getClass().getName());
+		localStorage = new LocalStorage();
 
 		try {
 			// 1. 加载配置文件。 如果此处异常：整个Manager不再启动，所有相关功能失效
@@ -110,7 +125,7 @@ public class ManagerLauncher {
 			}
 		}
 		if (null == p) {
-			this.ignoreException = true;
+			//			this.ignoreException = true;
 			throw new RuntimeException("failed to load 'tangyuan-manager-launcher.properties' file of management module.");
 		}
 

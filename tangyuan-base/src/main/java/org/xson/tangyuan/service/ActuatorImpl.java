@@ -15,6 +15,7 @@ import org.xson.tangyuan.manager.TangYuanManager;
 import org.xson.tangyuan.manager.trace.TraceManager;
 import org.xson.tangyuan.rpc.RpcPlaceHolderHandler;
 import org.xson.tangyuan.rpc.xml.node.RpcServiceNode;
+import org.xson.tangyuan.service.Pipeline.ErrorHandler;
 import org.xson.tangyuan.service.converter.ServiceArgConverter;
 import org.xson.tangyuan.service.converter.TangyuanServiceArgConverter;
 import org.xson.tangyuan.service.mr.MapReduceHander;
@@ -29,17 +30,17 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
  */
 public class ActuatorImpl {
 
-	private static ActuatorImpl		instance				= null;
+	private static ActuatorImpl   instance              = null;
 
-	private Log						log						= LogFactory.getLog(getClass());
-	private boolean					onlyProxy				= false;
-	private Aop						aop						= null;
-	private RpcPlaceHolderHandler	rpcPlaceHolderHandler	= null;
+	private Log                   log                   = LogFactory.getLog(getClass());
+	private boolean               onlyProxy             = false;
+	private Aop                   aop                   = null;
+	private RpcPlaceHolderHandler rpcPlaceHolderHandler = null;
 	// TODO转移到外层
-	private ServiceArgConverter		converter				= null;
-	private TangYuanManager			tangYuanManager			= null;
+	private ServiceArgConverter   converter             = null;
+	private TangYuanManager       tangYuanManager       = null;
 
-	private TangYuanContainer		container				= null;
+	private TangYuanContainer     container             = null;
 
 	private ActuatorImpl(boolean onlyProxy, Aop aop, RpcPlaceHolderHandler rpcPlaceHolderHandler, TangYuanManager tangYuanManager) {
 		this.onlyProxy = onlyProxy;
@@ -60,8 +61,8 @@ public class ActuatorImpl {
 
 	protected Object cloneArg(AbstractServiceNode service, Object arg) {
 		TangYuanServiceType serviceType = service.getServiceType();
-		if (TangYuanServiceType.SQL == serviceType || TangYuanServiceType.MONGO == serviceType || TangYuanServiceType.ES == serviceType
-				|| TangYuanServiceType.HIVE == serviceType || TangYuanServiceType.HBASE == serviceType) {
+		if (TangYuanServiceType.SQL == serviceType || TangYuanServiceType.MONGO == serviceType || TangYuanServiceType.ES == serviceType || TangYuanServiceType.HIVE == serviceType
+				|| TangYuanServiceType.HBASE == serviceType) {
 			return new ActuatorContextXCO((XCO) arg);
 		}
 		// NO(0), SQL(1), JAVA(2), MONGO(3), ES(4), MQ(5), HIVE(6), HBASE(7), PRCPROXY(8), VALIDATE(9), CACHE(10), WEB(99);
@@ -70,24 +71,24 @@ public class ActuatorImpl {
 
 	// =================================== execute ==========================================
 
-	public <T> T execute(String serviceURI, Object arg) {
+	protected <T> T execute(String serviceURI, Object arg) {
 		return execute(serviceURI, arg, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T execute(String serviceURI, Object arg, Integer executeMode) {
+	protected <T> T execute(String serviceURI, Object arg, Integer executeMode) {
 
 		String mode = "";
 		if (null != executeMode && TraceManager.EXECUTE_MODE_ASYN == executeMode) {
 			mode = " async";
 		}
 		log.info("execute" + mode + " service: " + serviceURI);
-		long now = System.currentTimeMillis();
-		ActuatorContext context = null;
-		Object traceContext = null;
-		AbstractServiceNode service = null;
-		Object result = null;
-		Throwable ex = null;
+		long                now          = System.currentTimeMillis();
+		ActuatorContext     context      = null;
+		Object              traceContext = null;
+		AbstractServiceNode service      = null;
+		Object              result       = null;
+		Throwable           ex           = null;
 		try {
 
 			// checkContainerState();
@@ -162,7 +163,26 @@ public class ActuatorImpl {
 
 	// =================================== executeAsync ======================================
 
-	public void executeAsync(String serviceURI, Object arg) {
+	//	public void executeAsync(String serviceURI, Object arg) {
+	//		RuntimeContext rc = RuntimeContext.get();
+	//		container.getThreadPool().execute(new Runnable() {
+	//			@Override
+	//			public void run() {
+	//				// 添加上下文记录
+	//				RuntimeContext.begin(rc);
+	//				// execute
+	//				execute(serviceURI, arg, TraceManager.EXECUTE_MODE_ASYN);
+	//				// 清理上下文记录
+	//				RuntimeContext.clean();
+	//			}
+	//		});
+	//	}
+
+	protected void executeAsync(String serviceURI, Object arg) {
+		executeAsync(serviceURI, arg, null);
+	}
+
+	protected void executeAsync(String serviceURI, Object arg, String callBackService) {
 		RuntimeContext rc = RuntimeContext.get();
 		container.getThreadPool().execute(new Runnable() {
 			@Override
@@ -170,29 +190,42 @@ public class ActuatorImpl {
 				// 添加上下文记录
 				RuntimeContext.begin(rc);
 				// execute
-				execute(serviceURI, arg, TraceManager.EXECUTE_MODE_ASYN);
+				Object result = execute(serviceURI, arg, TraceManager.EXECUTE_MODE_ASYN);
+				if (null != callBackService) {
+					execute(callBackService, result, TraceManager.EXECUTE_MODE_ASYN);
+				}
 				// 清理上下文记录
 				RuntimeContext.clean();
 			}
 		});
 	}
 
+	// =================================== Pipeline ==================================
+
+	protected Pipeline createPipeline(final String serviceURI, final Object arg) {
+		return createPipeline(serviceURI, arg, null);
+	}
+
+	protected Pipeline createPipeline(final String serviceURI, final Object arg, ErrorHandler errorHandler) {
+		return Pipeline.create(serviceURI, arg, errorHandler);
+	}
+
 	// =================================== executeMapReduce ==================================
 
-	public <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
+	protected <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
 		return executeMapReduce(null, serviceURI, args, handler, timeout);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
+	protected <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
 
 		// checkContainerState();
 
 		if (CollectionUtils.isEmpty(args)) {
 			throw new ServiceException("Invalid parameter 'args'");
 		}
-		Object result = null;
-		RuntimeContext rc = RuntimeContext.get();
+		Object         result = null;
+		RuntimeContext rc     = RuntimeContext.get();
 		try {
 			int size = args.size();
 			for (int i = 0; i < size; i++) {
@@ -206,12 +239,12 @@ public class ActuatorImpl {
 		return (T) result;
 	}
 
-	public <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
+	protected <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
 		return executeMapReduce(null, services, args, handler, timeout);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
+	protected <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
 
 		// checkContainerState();
 
@@ -225,8 +258,8 @@ public class ActuatorImpl {
 			throw new ServiceException("Invalid parameter 'args' or 'services'");
 		}
 
-		Object result = null;
-		RuntimeContext rc = RuntimeContext.get();
+		Object         result = null;
+		RuntimeContext rc     = RuntimeContext.get();
 		try {
 			int size = args.size();
 			for (int i = 0; i < size; i++) {
@@ -240,8 +273,7 @@ public class ActuatorImpl {
 		return (T) result;
 	}
 
-	private void executeMapReduce0(final Object context, final String service, final Object arg, final MapReduceHander handler,
-			final RuntimeContext rc) {
+	private void executeMapReduce0(final Object context, final String service, final Object arg, final MapReduceHander handler, final RuntimeContext rc) {
 		container.getThreadPool().execute(new Runnable() {
 			@Override
 			public void run() {
