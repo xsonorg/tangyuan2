@@ -101,15 +101,21 @@ public class ControllerVo {
 	}
 
 	protected void dataConvert(RequestContext context) throws Throwable {
-		if (null != this.dataConverter) {
-			this.dataConverter.convert(context);
-			return;
+		try {
+			if (null != this.dataConverter) {
+				this.dataConverter.convert(context);
+				return;
+			}
+			DataConverter tempConverter = WebUtil.getDefaultDataConverter(this, context.getContextType());
+			if (null != tempConverter) {
+				tempConverter.convert(context);
+			}
+		} catch (Throwable e) {
+			if (e instanceof InvocationTargetException) {
+				throw ((InvocationTargetException) e).getTargetException();
+			}
+			throw e;
 		}
-		DataConverter tempConverter = WebUtil.getDefaultDataConverter(this, context.getContextType());
-		if (null != tempConverter) {
-			tempConverter.convert(context);
-		}
-		// TODO InvocationTargetException
 	}
 
 	protected void assembly(RequestContext context) throws Throwable {

@@ -14,12 +14,12 @@ import org.xson.common.object.XCO;
 
 public class ServletUtil {
 
-	public static final String URI_SYMBOL_FOLDER_SEPARATOR = "/";
-	public static final String URI_SYMBOL_ASTERISK         = "*";
-	public static final String URI_SYMBOL_HASHTAG          = "#";
-	public static final String URI_SYMBOL_QUESTION_MARK    = "?";
-	public static final String URI_SYMBOL_AND              = "&";
-	public static final String URI_SYMBOL_EQUAL            = "=";
+	public static final String	URI_SYMBOL_FOLDER_SEPARATOR	= "/";
+	public static final String	URI_SYMBOL_ASTERISK			= "*";
+	public static final String	URI_SYMBOL_HASHTAG			= "#";
+	public static final String	URI_SYMBOL_QUESTION_MARK	= "?";
+	public static final String	URI_SYMBOL_AND				= "&";
+	public static final String	URI_SYMBOL_EQUAL			= "=";
 
 	public static String getIpAddress(HttpServletRequest request) {
 		String ip = request.getHeader("x-forwarded-for");
@@ -38,7 +38,16 @@ public class ServletUtil {
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
-		// TODO 考虑多IP的兼容
+		if (null != ip && ip.indexOf(",") > -1) {
+			String[] ips = ip.split(",");
+			for (int index = 0; index < ips.length; index++) {
+				String strIp = (String) ips[index];
+				if (!("unknown".equalsIgnoreCase(strIp))) {
+					ip = strIp;
+					break;
+				}
+			}
+		}
 		return ip;
 	}
 
@@ -73,11 +82,11 @@ public class ServletUtil {
 		int size = itemList.size();
 		for (int i = 0; i < size; i++) {
 			String item = itemList.get(i);
-			int    pos  = item.indexOf(URI_SYMBOL_EQUAL);
+			int pos = item.indexOf(URI_SYMBOL_EQUAL);
 			if (pos < 0) {
 				continue;
 			}
-			String name  = item.substring(0, pos);
+			String name = item.substring(0, pos);
 			String value = item.substring(pos + 1);
 			queryMap.put(name, value);
 		}
@@ -86,7 +95,7 @@ public class ServletUtil {
 
 	public static String parseServiceURI(HttpServletRequest request) {
 
-		String uri         = StringUtils.trimEmpty(request.getRequestURI());
+		String uri = StringUtils.trimEmpty(request.getRequestURI());
 		String contextPath = StringUtils.trimEmpty(request.getContextPath());
 		if (null == uri || "/".equals(uri)) {
 			return uri;
@@ -112,7 +121,7 @@ public class ServletUtil {
 
 	public static String parseRequestURI(HttpServletRequest request) {
 
-		String uri         = StringUtils.trimEmpty(request.getRequestURI());
+		String uri = StringUtils.trimEmpty(request.getRequestURI());
 		String contextPath = StringUtils.trimEmpty(request.getContextPath());
 		if (null == uri || "/".equals(uri)) {
 			return uri;
@@ -129,10 +138,10 @@ public class ServletUtil {
 			uri = uri.substring(contextPath.length());
 		}
 
-		//		// 3. 去除"/"
-		//		if (uri.startsWith("/")) {
-		//			uri = uri.substring(1);
-		//		}
+		// // 3. 去除"/"
+		// if (uri.startsWith("/")) {
+		// uri = uri.substring(1);
+		// }
 		return uri;
 	}
 
@@ -140,7 +149,7 @@ public class ServletUtil {
 	 * 从Http的Header中分析上下文相关的内容
 	 */
 	public static XCO parseRCInfoFromRequestHeader(HttpServletRequest request) {
-		// TODO 
+		// TODO
 		return null;
 	}
 }

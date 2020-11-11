@@ -31,22 +31,19 @@ public class TraceUtil {
 	 */
 	public static String createTraceId() {
 		// aaaaaaaatttttttttttttccccfpppp
-		// TODO 考虑node and app
-		long   t = System.currentTimeMillis();
+		long t = System.currentTimeMillis();
 		String p = getProcessNo();
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
-	//	trackingVo.setStringValue("host_ip", mlc.getNodeIp());
-	//	trackingVo.setStringValue("node_name", mlc.getNodeName());
-	//	trackingVo.setStringValue("node_port", mlc.getNodePort());
-	//	trackingVo.setStringValue("app_name", mlc.getAppName());
+	// trackingVo.setStringValue("host_ip", mlc.getNodeIp());
+	// trackingVo.setStringValue("node_name", mlc.getNodeName());
+	// trackingVo.setStringValue("node_port", mlc.getNodePort());
+	// trackingVo.setStringValue("app_name", mlc.getAppName());
 
 	public static String createSpanId() {
-		// TODO
-		//		return null;
-		//		// TODO 考虑node and app
-		//		// TODO 迁移到trace相关代码中
+		// return null;
+		// // TODO 考虑node and app
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 

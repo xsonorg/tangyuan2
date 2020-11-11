@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 
 public abstract class TypeReference<T> {
 
-	private final Type	rawType;
+	private final Type rawType;
 
 	protected TypeReference() {
 		rawType = getSuperclassTypeParameter(getClass());
@@ -24,7 +24,7 @@ public abstract class TypeReference<T> {
 		}
 
 		Type rawType = ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
-		// TODO remove this when Reflector is fixed to return Types
+		// remove this when Reflector is fixed to return Types
 		if (rawType instanceof ParameterizedType) {
 			rawType = ((ParameterizedType) rawType).getRawType();
 		}

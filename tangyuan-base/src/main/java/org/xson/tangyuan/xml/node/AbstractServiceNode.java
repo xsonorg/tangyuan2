@@ -34,7 +34,7 @@ public abstract class AbstractServiceNode implements TangYuanNode {
 	protected Class<?>				resultType	= null;
 	/** 服务类型 */
 	protected TangYuanServiceType	serviceType	= null;
-	/** 后面考虑:引入相关服务和实现类 TODO */
+	/** 后面考虑:引入相关服务和实现类 */
 	protected int					aspect		= 0;
 	/** 服务的描述 */
 	protected String				desc		= null;

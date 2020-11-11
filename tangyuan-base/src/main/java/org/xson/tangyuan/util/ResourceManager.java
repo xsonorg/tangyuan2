@@ -16,12 +16,12 @@ public class ResourceManager {
 	}
 
 	public static Properties getProperties(String resource, boolean placeholder) throws Throwable {
-		InputStream in     = getInputStream(resource, placeholder);
-		Properties  props  = new Properties();
-		//		props.load(in);
-		//		in.close();
+		InputStream in = getInputStream(resource, placeholder);
+		Properties props = new Properties();
+		// props.load(in);
+		// in.close();
 		// fix: 中文乱码问题
-		Reader      reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+		Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
 		props.load(reader);
 		reader.close();
 		return props;
@@ -35,14 +35,13 @@ public class ResourceManager {
 		try {
 			InputStream in = null;
 			if (resource.toLowerCase().startsWith("http://") || resource.toLowerCase().startsWith("https://")) {
-				in = Resources.getUrlAsStream(resource);// TODO 这个要考虑支持加密
+				in = Resources.getUrlAsStream(resource);
 			} else if (resource.toLowerCase().startsWith("file://")) {
 				in = Resources.getResourceAsStreamFromFile(resource);
 			} else {
 				in = Resources.getResourceAsStream(resource);
 			}
 			if (placeholder) {
-				// in = PlaceholderResourceSupport.processInputStream(in, TangYuanContainer.getInstance().getXmlGlobalContext().getPlaceholderMap());
 				in = PlaceholderResourceSupport.processInputStream(in, AppPlaceholder.getData());
 			}
 			return in;
