@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.rpc.balance.BalanceHandler;
 import org.xson.tangyuan.rpc.balance.BalanceHostVo;
 import org.xson.tangyuan.rpc.balance.BalanceManager;
@@ -28,7 +27,7 @@ public class XmlRpcBalanceBuilder extends DefaultXmlComponentBuilder {
 		log.info(lang("xml.start.parsing.type", "balance", resource));
 		this.componentContext = (XmlRpcContext) xmlContext;
 		this.globalContext = this.componentContext.getXmlContext();
-		this.init(resource, "balance", true);// TODO root name
+		this.init(resource, "balances", true);
 		this.configurationElement();
 		this.clean();
 	}
@@ -70,15 +69,12 @@ public class XmlRpcBalanceBuilder extends DefaultXmlComponentBuilder {
 				handler = new WeightBalanceHandler();
 			}
 			if (null == handler) {
-				// TODO
-				throw new XmlParseException("in tag <balance>, missing attribute 'strategy' or 'impl'");
+				throw XmlParseException.createLang("xml.tag.attribute.empty", "strategy|impl", tagName, this.resource);
 			}
 
 			List<BalanceHostVo> hostList = buildHostNode(xNode.evalNodes("host"));
-			//			if (hostList.size() < 2) {
 			if (hostList.size() < 1) {
-				// TODO
-				throw new XmlParseException("<host> tag at least two.");
+				throw XmlParseException.createLang("xml.tag.sub.miss", "host", tagName, this.resource);
 			}
 			BalanceVo bVo = new BalanceVo(strategy, handler, hostList);
 			balanceMap.put(domain, bVo);
@@ -120,7 +116,8 @@ public class XmlRpcBalanceBuilder extends DefaultXmlComponentBuilder {
 		} else if (StringUtils.isEmpty(content)) {
 			return null;
 		}
-		throw new TangYuanException(lang("unsupported.type.n", "strategy", content));
+		//		throw new TangYuanException(lang("unsupported.type.n", "strategy", content));
+		throw XmlParseException.createLang("unsupported.type.n", "strategy", content);
 	}
 
 }

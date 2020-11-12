@@ -37,11 +37,9 @@
 						<xs:enumeration value="ehcache"/>
 						<xs:enumeration value="memcache"/>
 						<xs:enumeration value="redis"/>
-						<xs:enumeration value="share"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="sharedUse" type="xs:string" use="optional"/>
 			<xs:attribute name="class" type="xs:string" use="optional"/>
 			<xs:attribute name="resource" type="xs:string" use="optional"/>
 			<xs:attribute name="isDefault" type="xs:boolean" use="optional"/>

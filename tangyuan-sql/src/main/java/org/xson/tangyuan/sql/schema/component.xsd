@@ -14,7 +14,7 @@
 	<xs:element name="dataSource">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="property" maxOccurs="unbounded">
+				<xs:element name="property" maxOccurs="unbounded" minOccurs="0">
 					<xs:complexType>
 						<xs:attribute name="name" type="xs:string" use="required"/>
 						<xs:attribute name="value" type="xs:string" use="required"/>
@@ -29,12 +29,9 @@
 						<xs:enumeration value="C3P0"/>
 						<xs:enumeration value="PROXOOL"/>
 						<xs:enumeration value="DRUID"/>
-						<xs:enumeration value="JNDI"/>
-						<xs:enumeration value="SHARE"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="sharedUse" type="xs:string" use="optional"/>
 			<xs:attribute name="isDefault" type="xs:boolean" default="false"/>
 			<xs:attribute name="resource" type="xs:string" use="optional"/>
 		</xs:complexType>
@@ -57,8 +54,6 @@
 						<xs:enumeration value="C3P0"/>
 						<xs:enumeration value="PROXOOL"/>
 						<xs:enumeration value="DRUID"/>
-						<xs:enumeration value="JNDI"/>
-						<xs:enumeration value="SHARE"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -101,7 +96,7 @@
 	<xs:element name="setDefaultTransaction">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="property">
+				<xs:element name="property" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:attribute name="name" type="xs:string" use="required"/>
 						<xs:attribute name="value" type="xs:string" use="required"/>

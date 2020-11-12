@@ -24,10 +24,10 @@ import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
 public class XCOServlet extends HttpServlet {
 
-	private static final long	serialVersionUID		= 1L;
+	private static final long serialVersionUID       = 1L;
 
-	private static Log			log						= LogFactory.getLog(XCOServlet.class);
-	private ResponseHandler		defaultResponseHandler	= new DefaultResponseHandler();
+	private static Log        log                    = LogFactory.getLog(XCOServlet.class);
+	private ResponseHandler   defaultResponseHandler = new DefaultResponseHandler();
 
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -51,11 +51,11 @@ public class XCOServlet extends HttpServlet {
 
 	private void handler(HttpServletRequest req, HttpServletResponse resp, RequestTypeEnum requestType) {
 
-		long now = System.currentTimeMillis();
-		WebComponent container = WebComponent.getInstance();
-		String requestURI = req.getRequestURI();
-		RequestContext context = pretreatmentContext(req, resp, requestType);
-		ControllerVo cVo = context.getControllerVo();
+		long           now        = System.currentTimeMillis();
+		WebComponent   container  = WebComponent.getInstance();
+		String         requestURI = req.getRequestURI();
+		RequestContext context    = pretreatmentContext(req, resp, requestType);
+		ControllerVo   cVo        = context.getControllerVo();
 
 		try {
 			if (!container.isRunning()) {
@@ -80,7 +80,7 @@ public class XCOServlet extends HttpServlet {
 			return;
 		}
 
-		String remoteIp = ServletUtil.getIpAddress(req);// TODO 待优化 多个IP
+		String remoteIp = ServletUtil.getIpAddress(req);
 
 		try {
 			checkAll(cVo, remoteIp);
@@ -208,8 +208,8 @@ public class XCOServlet extends HttpServlet {
 	 */
 	private void doResponseSuccess(Object traceContext, RequestContext context, ControllerVo cVo) {
 		HttpServletResponse response = context.getResponse();
-		HttpServletRequest request = context.getRequest();
-		Throwable ex = null;
+		HttpServletRequest  request  = context.getRequest();
+		Throwable           ex       = null;
 		try {
 			CustomResponseHandler crh = context.getCustomResponseHandler();
 			if (null != crh) {
@@ -255,8 +255,7 @@ public class XCOServlet extends HttpServlet {
 		if (null != manager) {
 			manager.initTracking(RuntimeContext.get());
 			// TODO 控制器的URL需要增加标识。比如C@/a/c
-			traceContext = manager.startTracking(cVo.getUrl(), TangYuanServiceType.WEB.getVal(), context.getArg(), TraceManager.EXECUTE_MODE_SYNC,
-					now);
+			traceContext = manager.startTracking(cVo.getUrl(), TangYuanServiceType.WEB.getVal(), context.getArg(), TraceManager.EXECUTE_MODE_SYNC, now);
 		}
 		return traceContext;
 	}

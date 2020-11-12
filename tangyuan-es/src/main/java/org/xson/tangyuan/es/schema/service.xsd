@@ -2,6 +2,7 @@
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/es/service" targetNamespace="http://xson.org/schema/tangyuan/es/service" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="get">
 		<xs:complexType>
@@ -28,7 +29,7 @@
 			<xs:attribute name="cacheUse" type="xs:string"/>
 			<xs:attribute name="cacheClean" type="xs:string"/>
 			<xs:attribute name="desc" type="xs:string"/>
-			<xs:attribute name="group" type="xs:string"/>			
+			<xs:attribute name="group" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="put">
@@ -42,7 +43,7 @@
 			<xs:attribute name="converter" type="xs:string"/>
 			<xs:attribute name="cacheClean" type="xs:string"/>
 			<xs:attribute name="desc" type="xs:string"/>
-			<xs:attribute name="group" type="xs:string"/>			
+			<xs:attribute name="group" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="delete">
@@ -55,7 +56,7 @@
 			<xs:attribute name="converter" type="xs:string"/>
 			<xs:attribute name="cacheClean" type="xs:string"/>
 			<xs:attribute name="desc" type="xs:string"/>
-			<xs:attribute name="group" type="xs:string"/>			
+			<xs:attribute name="group" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="if">
@@ -66,6 +67,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="test" type="xs:string" use="required"/>
@@ -79,6 +81,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="test" type="xs:string" use="required"/>
@@ -92,6 +95,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -104,6 +108,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="collection" type="xs:string" use="required"/>
@@ -111,6 +116,25 @@
 			<xs:attribute name="open" type="xs:string"/>
 			<xs:attribute name="close" type="xs:string"/>
 			<xs:attribute name="separator" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="for">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="index" type="xs:string" use="required"/>
+			<xs:attribute name="open" type="xs:string"/>
+			<xs:attribute name="close" type="xs:string"/>
+			<xs:attribute name="separator" type="xs:string"/>
+			<xs:attribute name="start" type="xs:string"/>
+			<xs:attribute name="end" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="url">
@@ -121,6 +145,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -133,6 +158,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>

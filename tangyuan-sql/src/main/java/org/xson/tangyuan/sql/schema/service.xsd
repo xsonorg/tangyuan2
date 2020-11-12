@@ -10,6 +10,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
@@ -32,6 +33,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="exception"/>
 					<xs:element ref="transGroup"/>
 					<xs:element ref="include"/>
@@ -49,6 +51,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
@@ -70,6 +73,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
@@ -77,7 +81,6 @@
 			<xs:attribute name="resultType" type="xs:string"/>
 			<xs:attribute name="resultMap" type="xs:string"/>
 			<xs:attribute name="resultKey" type="xs:string"/>
-			<xs:attribute name="fetchSize" type="xs:int"/>
 			<xs:attribute name="dsKey" type="xs:string"/>
 			<xs:attribute name="txRef" type="xs:string"/>
 			<xs:attribute name="cacheUse" type="xs:string"/>
@@ -91,12 +94,14 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string"/>
 			<xs:attribute name="dsKey" type="xs:string"/>
 			<xs:attribute name="resultKey" type="xs:string"/>
+			<xs:attribute name="resultMap" type="xs:string"/>
 			<xs:attribute name="txRef" type="xs:string"/>
 			<xs:attribute name="cacheUse" type="xs:string"/>
 		</xs:complexType>
@@ -109,6 +114,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
@@ -129,6 +135,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
@@ -147,6 +154,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="include"/>
 				</xs:choice>
 			</xs:sequence>
@@ -173,6 +181,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="exception"/>
 					<xs:element ref="transGroup"/>
 					<xs:element ref="include"/>
@@ -242,6 +251,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="exception"/>
 					<xs:element ref="transGroup"/>
 					<xs:element ref="include"/>
@@ -267,6 +277,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="exception"/>
 					<xs:element ref="transGroup"/>
 					<xs:element ref="include"/>
@@ -292,6 +303,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="exception"/>
 					<xs:element ref="transGroup"/>
 					<xs:element ref="include"/>
@@ -316,6 +328,7 @@
 					<xs:element ref="elseif"/>
 					<xs:element ref="else"/>
 					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
 					<xs:element ref="exception"/>
 					<xs:element ref="transGroup"/>
 					<xs:element ref="include"/>
@@ -327,6 +340,37 @@
 			<xs:attribute name="open" type="xs:string"/>
 			<xs:attribute name="close" type="xs:string"/>
 			<xs:attribute name="separator" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="for">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="selectSet"/>
+					<xs:element ref="selectOne"/>
+					<xs:element ref="selectVar"/>
+					<xs:element ref="insert"/>
+					<xs:element ref="update"/>
+					<xs:element ref="delete"/>
+					<xs:element ref="setvar"/>
+					<xs:element ref="log"/>
+					<xs:element ref="if"/>
+					<xs:element ref="elseif"/>
+					<xs:element ref="else"/>
+					<xs:element ref="foreach"/>
+					<xs:element ref="for"/>
+					<xs:element ref="exception"/>
+					<xs:element ref="transGroup"/>
+					<xs:element ref="include"/>
+					<xs:element ref="call"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="index" type="xs:string" use="required"/>
+			<xs:attribute name="open" type="xs:string"/>
+			<xs:attribute name="close" type="xs:string"/>
+			<xs:attribute name="separator" type="xs:string"/>
+			<xs:attribute name="start" type="xs:string"/>
+			<xs:attribute name="end" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="exception">
@@ -370,13 +414,11 @@
 			<xs:attribute name="mode">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="EXTEND"/>
-						<xs:enumeration value="ALONE"/>
+						<xs:enumeration value="SYNC"/>
 						<xs:enumeration value="ASYNC"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="exResultKey" type="xs:string"/>
 			<xs:attribute name="codeKey" type="xs:string"/>
 			<xs:attribute name="messageKey" type="xs:string"/>
 		</xs:complexType>
