@@ -11,9 +11,9 @@ import org.xson.tangyuan.sql.datasource.AbstractDataSource;
 
 public class DBCPDataSource extends AbstractDataSource {
 
-	private Log						log	= LogFactory.getLog(getClass());
+	private Log                   log = LogFactory.getLog(getClass());
 
-	private final BasicDataSource	dataSource;
+	private final BasicDataSource dataSource;
 
 	protected DBCPDataSource(String creator, BasicDataSource dataSource, String logicDataSourceId, String realDataSourceId) {
 		this.dataSource = dataSource;
@@ -38,6 +38,13 @@ public class DBCPDataSource extends AbstractDataSource {
 
 	@Override
 	public void close(String creator) throws SQLException {
+		//		// fix bug
+		//		try {
+		//			System.out.println("#################deregisterDriver#################");
+		//			DriverManager.deregisterDriver(DriverManager.getDriver(this.dataSource.getUrl()));
+		//			//			AbandonedConnectionCleanupThread.checkedShutdown();
+		//		} catch (Throwable e) {
+		//		}
 		dataSource.close();
 	}
 
