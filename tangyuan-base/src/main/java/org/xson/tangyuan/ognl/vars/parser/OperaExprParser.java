@@ -10,17 +10,17 @@ import org.xson.tangyuan.ognl.vars.vo.TreeNode;
  */
 public class OperaExprParser extends AbstractParser {
 
-	public final static int		TEXTTYPE_VAL				= 1;	// 值
+	public final static int  TEXTTYPE_VAL              = 1;	// 值
 	// private final static int TEXTTYPE_SYMBOL = 2; // 运算符
-	public final static int		TEXTTYPE_SYMBOL_PLUS		= 2;	// +
-	public final static int		TEXTTYPE_SYMBOL_MINUS		= 3;	// -
-	public final static int		TEXTTYPE_SYMBOL_MULTIPLY	= 4;	// *
-	public final static int		TEXTTYPE_SYMBOL_DIVISION	= 5;	// /
-	public final static int		TEXTTYPE_SYMBOL_REMAINDER	= 6;	// %
+	public final static int  TEXTTYPE_SYMBOL_PLUS      = 2;	// +
+	public final static int  TEXTTYPE_SYMBOL_MINUS     = 3;	// -
+	public final static int  TEXTTYPE_SYMBOL_MULTIPLY  = 4;	// *
+	public final static int  TEXTTYPE_SYMBOL_DIVISION  = 5;	// /
+	public final static int  TEXTTYPE_SYMBOL_REMAINDER = 6;	// %
 
-	private final static int	SYMBOL_RIORITY_ZERO			= 0;	// 运算符优先级:0
-	private final static int	SYMBOL_RIORITY_ONE			= 1;	// 运算符优先级:1[+, -]
-	private final static int	SYMBOL_RIORITY_TWO			= 2;	// 运算符优先级:2[*, /, %]
+	private final static int SYMBOL_RIORITY_ZERO       = 0;	// 运算符优先级:0
+	private final static int SYMBOL_RIORITY_ONE        = 1;	// 运算符优先级:1[+, -]
+	private final static int SYMBOL_RIORITY_TWO        = 2;	// 运算符优先级:2[*, /, %]
 
 	private Object getVal(String text) {
 		text = text.trim();
@@ -38,7 +38,7 @@ public class OperaExprParser extends AbstractParser {
 	}
 
 	public boolean check(String text) {
-		int length = text.length();
+		int     length   = text.length();
 		boolean isString = false;
 		for (int i = 0; i < length; i++) {
 			char key = text.charAt(i);
@@ -87,7 +87,7 @@ public class OperaExprParser extends AbstractParser {
 				}
 				if (tree.priority >= priority) {
 					// a * b + c == a + b + c
-					TreeNode symbol = new TreeNode(text, type, priority, null);
+					TreeNode symbol  = new TreeNode(text, type, priority, null);
 					// 这里要递归向上找根节点, 并修正付父节点
 					TreeNode oldRoot = findRoot(tree);
 					oldRoot.parent = symbol;
@@ -96,7 +96,7 @@ public class OperaExprParser extends AbstractParser {
 					return symbol;
 				} else {// <
 					// a + b * c
-					TreeNode symbol = new TreeNode(text, type, priority, tree);
+					TreeNode symbol   = new TreeNode(text, type, priority, tree);
 					// 修正之前右子树的父节点
 					TreeNode oldRight = tree.right;
 					oldRight.parent = symbol;
@@ -125,11 +125,11 @@ public class OperaExprParser extends AbstractParser {
 
 	public Variable parse(String text) {
 		// 括弧(), 代表增加运算符的优先级
-		int length = text.length();
-		boolean isString = false;
-		int multiple = 1;// 倍数
-		TreeNode tree = null;
-		StringBuilder builder = new StringBuilder();
+		int           length   = text.length();
+		boolean       isString = false;
+		int           multiple = 1;// 倍数
+		TreeNode      tree     = null;
+		StringBuilder builder  = new StringBuilder();
 		for (int i = 0; i < length; i++) {
 			char key = text.charAt(i);
 			switch (key) {
@@ -259,14 +259,15 @@ public class OperaExprParser extends AbstractParser {
 
 	public static void main(String[] args) {
 		// 括弧的作用就是提升"符号"的优先级
-		// String text = "(2 + 4) * 5";
+		//		String          text = "(2 + 4) * 5";
 		// String text = "a + b + c";
 		// String text = "a + b * c + d";
-		// String text = "1 * 2 * 3 + 4 * 2";
+		//		String          text = "1 * 2 * 3 + 4 * 2";
+		String          text = "(-2 + 4) * 5";
 		// String text = "1 + 2";
-		String text = "abc";
-		OperaExprParser app = new OperaExprParser();
-		Variable tree = app.parse(text);
+		//		String text = "abc";
+		OperaExprParser app  = new OperaExprParser();
+		Variable        tree = app.parse(text);
 		System.out.println(tree);
 		System.out.println(1 * 2 * 3 + 4);
 		System.out.println(1 * 2 * 3 + 4 * 2);

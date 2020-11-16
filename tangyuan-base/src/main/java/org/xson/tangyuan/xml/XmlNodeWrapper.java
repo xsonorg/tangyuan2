@@ -10,11 +10,11 @@ import org.w3c.dom.NodeList;
 
 public class XmlNodeWrapper {
 
-	private Node		node;
-	private String		name;
-	private String		body;
-	private Properties	attributes;
-	private XPathParser	xmlPathParser;
+	private Node        node;
+	private String      name;
+	private String      body;
+	private Properties  attributes;
+	private XPathParser xmlPathParser;
 
 	public XmlNodeWrapper(XPathParser xmlPathParser, Node node) {
 		this.xmlPathParser = xmlPathParser;
@@ -25,13 +25,13 @@ public class XmlNodeWrapper {
 	}
 
 	private Properties parseAttributes(Node n) {
-		Properties attributes = new Properties();
+		Properties   attributes     = new Properties();
 		NamedNodeMap attributeNodes = n.getAttributes();
 		if (attributeNodes != null) {
 			for (int i = 0; i < attributeNodes.getLength(); i++) {
-				Node attribute = attributeNodes.item(i);
+				Node   attribute = attributeNodes.item(i);
 				// TODO String value = PropertyParser.parse(attribute.getNodeValue(), null);
-				String value = attribute.getNodeValue();
+				String value     = attribute.getNodeValue();
 				attributes.put(attribute.getNodeName(), value);
 			}
 		}
@@ -81,6 +81,17 @@ public class XmlNodeWrapper {
 		}
 	}
 
+	public String get2StringAttribute(String[] names) {
+		String value = null;
+		for (String name : names) {
+			value = getStringAttribute(name, null);
+			if (null != value) {
+				return value;
+			}
+		}
+		return value;
+	}
+
 	public String getStringAttribute(String name) {
 		return getStringAttribute(name, null);
 	}
@@ -105,8 +116,8 @@ public class XmlNodeWrapper {
 			nodeList1.addAll(nodeList2);
 		}
 		return nodeList1;
-	}	
-	
+	}
+
 	public XmlNodeWrapper newXMlNode(Node node) {
 		return new XmlNodeWrapper(this.xmlPathParser, node);
 	}

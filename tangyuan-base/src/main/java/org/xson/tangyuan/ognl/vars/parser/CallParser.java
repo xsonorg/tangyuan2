@@ -30,17 +30,18 @@ public class CallParser extends AbstractParser {
 	public Variable parse(String text) {
 		text = text.trim();
 
-		int left = text.indexOf("(");
+		int left  = text.indexOf("(");
 		int right = text.lastIndexOf(")");
 
 		if (left == -1 || right == -1 || left > right) {
-			throw new OgnlException("不合法的调用表达式: " + text);
+			//			throw new OgnlException("不合法的调用表达式: " + text);
+			throw OgnlException.createLang("ognl.expr.n.illegal", "call", "text");
 		}
 
-		String methodName = StringUtils.trimEmpty(text.substring(1, left));
-		String argString = StringUtils.trimEmpty(text.substring(left + 1, right));
-		Method method = getStaticMethod(methodName);
-		Object[] vars = null;
+		String   methodName = StringUtils.trimEmpty(text.substring(1, left));
+		String   argString  = StringUtils.trimEmpty(text.substring(left + 1, right));
+		Method   method     = getStaticMethod(methodName);
+		Object[] vars       = null;
 
 		if (null != argString) {
 			List<String> list = XmlTextParseUtil.splitToList(argString, ',');
