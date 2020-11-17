@@ -61,7 +61,7 @@ public class CallNode implements TangYuanNode {
 	}
 
 	@Override
-	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
+	public boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable {
 		Object parameter = arg;
 		if (null != itemList) {
 			XCO xco = null;
@@ -73,7 +73,7 @@ public class CallNode implements TangYuanNode {
 			}
 			for (PropertyItem item : itemList) {
 				if (item.value instanceof Variable) {
-					xco.setObjectValue(item.name, ((Variable) item.value).getValue(temp));
+					xco.setObjectValue(item.name, ((Variable) item.value).getValue(acArg));
 				} else {
 					xco.setObjectValue(item.name, item.value);
 				}
@@ -84,7 +84,7 @@ public class CallNode implements TangYuanNode {
 		String serviceURI = null;
 
 		if (dynamicCall) {
-			serviceURI = (String) ((Variable) this.service).getValue(temp);
+			serviceURI = (String) ((Variable) this.service).getValue(acArg);
 			if (null == serviceURI) {
 				throw new TangYuanException("The calling service name variable is null: " + ((Variable) this.service).getOriginal());
 			}
@@ -97,30 +97,30 @@ public class CallNode implements TangYuanNode {
 		if (CallMode.ASYNC == _mode) {
 			Actuator.executeAsync(serviceURI, parameter);
 			if (null != this.codeKey) {
-				Ognl.setValue(temp, this.codeKey, TangYuanContainer.SUCCESS_CODE);
+				Ognl.setValue(acArg, this.codeKey, TangYuanContainer.SUCCESS_CODE);
 			}
 		} else {
 			XCO result = Actuator.execute(serviceURI, parameter);
 			if (null != this.resultKey) {
-				Ognl.setValue(temp, this.resultKey, TangYuanUtil.getRealData(result));
+				Ognl.setValue(acArg, this.resultKey, TangYuanUtil.getRealData(result));
 			}
 			// 设置异常CODE/MESSAGE
-			setErrorInfo(temp, result);
+			setErrorInfo(acArg, result);
 		}
 		return true;
 	}
 
-	private void setErrorInfo(Object temp, Object result) {
+	private void setErrorInfo(Object acArg, Object result) {
 		if (null == result) {
 			return;
 		}
 		if (result instanceof XCO) {
 			XCO xco = (XCO) result;
 			if (null != this.codeKey && xco.exists(TangYuanContainer.XCO_CODE_KEY)) {
-				Ognl.setValue(temp, this.codeKey, xco.getCode());
+				Ognl.setValue(acArg, this.codeKey, xco.getCode());
 			}
 			if (null != this.messageKey && xco.exists(TangYuanContainer.XCO_MESSAGE_KEY)) {
-				Ognl.setValue(temp, this.messageKey, xco.getMessage());
+				Ognl.setValue(acArg, this.messageKey, xco.getMessage());
 			}
 		}
 	}

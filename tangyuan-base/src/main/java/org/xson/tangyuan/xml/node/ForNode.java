@@ -7,44 +7,44 @@ import org.xson.tangyuan.service.ActuatorContext;
 
 public abstract class ForNode implements TangYuanNode {
 
-	protected TangYuanNode	sqlNode		= null;
+	protected TangYuanNode sqlNode   = null;
 	/** 变量名称 */
-	protected String		index		= null;
+	protected String       index     = null;
 	/** 开始索引, 可以是常量或者变量 */
-	protected Object		start		= null;
+	protected Object       start     = null;
 	/** 结束索引, 不包括 */
-	protected Object		end			= null;
+	protected Object       end       = null;
 
 	/** 可选的 */
-	protected String		open		= null;
-	protected String		close		= null;
-	protected String		separator	= null;
+	protected String       open      = null;
+	protected String       close     = null;
+	protected String       separator = null;
 
 	@Override
-	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
+	public boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable {
 
-		int startVal = getIntValue(start, temp, "start");
-		int endVal = getIntValue(end, temp, "end");
+		int startVal = getIntValue(start, acArg, "start");
+		int endVal   = getIntValue(end, acArg, "end");
 		if (endVal <= startVal || endVal < 1) {
 			throw new TangYuanException("无效的属性[start:" + startVal + "], [end:" + endVal + "]");
 		}
 
 		append(ac, open);
 		for (int i = startVal; i < endVal; i++) {
-			Ognl.setValue(temp, index, i);
+			Ognl.setValue(acArg, index, i);
 			if (i > startVal) {
 				append(ac, separator);
 			}
-			sqlNode.execute(ac, arg, temp);
+			sqlNode.execute(ac, arg, acArg);
 		}
 		append(ac, close);
 		return true;
 	}
 
-	private int getIntValue(Object val, Object temp, String msg) {
+	private int getIntValue(Object val, Object acArg, String msg) {
 		try {
 			if (val instanceof Variable) {
-				val = ((Variable) val).getValue(temp);
+				val = ((Variable) val).getValue(acArg);
 			}
 			return ((Integer) val).intValue();
 		} catch (Throwable e) {

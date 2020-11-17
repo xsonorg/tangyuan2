@@ -10,45 +10,33 @@ import org.xson.tangyuan.ognl.vars.vo.LogicalVariable;
 import org.xson.tangyuan.ognl.vars.warper.GAParserWarper;
 import org.xson.tangyuan.service.ActuatorContext;
 
-public class ExceptionNode implements TangYuanNode {
+public class ExceptionNode2 implements TangYuanNode {
 
 	private LogicalVariable test;
 
-	// int, v
-	private Object          code;
-	// null, string, v
-	private Object          message;
+	private int             code;
+	private String          message;
+
 	private List<Object>    unitList;
 
-	public ExceptionNode(LogicalVariable test, Object code, Object message, String i18n) {
+	public ExceptionNode2(LogicalVariable test, int code, String message, String i18n) {
 		this.test = test;
 		this.code = code;
 		this.message = message;
-		if (null != this.message && this.message instanceof String) {
+		if (null != this.message) {
 			//			this.unitList = new TokenParserUtil().parseLog(this.message, "{", "}");
-			this.unitList = parseLog((String) this.message, "{", "}");
+			this.unitList = parseLog(this.message, "{", "}");
 		}
 	}
 
 	@Override
 	public boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable {
 		if (test.getResult(acArg)) {
-			String errorMessage = "";
-			if (null != this.message) {
-				if (this.message instanceof Variable) {
-					errorMessage = (String) ((Variable) this.message).getValue(acArg);
-				}
-				if (null != unitList) {
-					errorMessage = getErrorMessage(arg, acArg);
-				}
+			String errorMessage = this.message;
+			if (null != unitList) {
+				errorMessage = getErrorMessage(arg, acArg);
 			}
-			int errorCode = -1;
-			if (this.code instanceof Variable) {
-				errorCode = (Integer) ((Variable) this.code).getValue(acArg);
-			} else {
-				errorCode = (Integer) this.code;
-			}
-			throw new ServiceException(errorCode, errorMessage);
+			throw new ServiceException(code, (null != errorMessage) ? errorMessage : "");
 		}
 		return true;
 	}
@@ -72,30 +60,6 @@ public class ExceptionNode implements TangYuanNode {
 		return builder.toString();
 	}
 
-	//	private int             code;
-	//	private String          message;
-	//  Variable
-	//	public ExceptionNode(LogicalVariable test, int code, String message, String i18n) {
-	//		this.test = test;
-	//		this.code = code;
-	//		this.message = message;
-	//		if (null != this.message) {
-	//			//			this.unitList = new TokenParserUtil().parseLog(this.message, "{", "}");
-	//			this.unitList = parseLog(this.message, "{", "}");
-	//		}
-	//	}
-
-	//	@Override
-	//	public boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable {
-	//		if (test.getResult(acArg)) {
-	//			String errorMessage = this.message;
-	//			if (null != unitList) {
-	//				errorMessage = getErrorMessage(arg, acArg);
-	//			}
-	//			throw new ServiceException(code, (null != errorMessage) ? errorMessage : "");
-	//		}
-	//		return true;
-	//	}
 	//	private String getErrorMessage(Object arg) {
 	//		StringBuilder builder = new StringBuilder();
 	//		for (Object obj : unitList) {

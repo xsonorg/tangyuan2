@@ -47,13 +47,36 @@
 			<item name="应用程序属性配置" href="app-property.html" />
 			<item name="线程池配置" href="thread-pool.html" />
 			<item name="日志管理" href="tangyuan-log.html" />
+<!-- 			<menu name="01章节">
+				<item name="首页01" href="01/index.html" />
+				<item name="使用说明01" href="01/usage01.html" />
+			</menu> -->
+			
+			<item name="01章节" href="01/index.html" collapse="true">
+				<item name="首页01" href="01/index.html" />
+				<item name="使用说明01" href="01/usage01.html" />
+			</item>
+			
+			<!-- <item name="02章节" href="02/index.html" /> -->
+			
+			<item name="02章节" href="02/index.html" collapse="true">
+				<description>xxxx</description>
+				<item name="首页01" href="01/index.html" />
+				<item name="使用说明01" href="01/usage01.html" />	
+			</item>
+			
 		</menu>
 		
-		<menu name="基本篇">
-			<item name="服务" href="01/service.html" />
-			<item name="文本中表达式" href="01/xml_expr.html" />
-		</menu>		
-
+		<menu name="01章节" inheritAsRef="true" inherit="">
+			<item name="首页01" href="01/index.html" />
+			<item name="使用说明01" href="01/usage01.html" />
+		</menu>
+		
+		<menu name="02章节" inheritAsRef="false">
+			<item name="首页01" href="01/index.html" />
+			<item name="使用说明01" href="01/usage01.html" />
+		</menu>				
+		
 		<!-- 
 		<menu name="PROJECT DOCUMENTATION">
 			<item name="Dependencies" href="dependencies.html" />

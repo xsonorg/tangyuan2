@@ -29,17 +29,17 @@ import org.xson.tangyuan.xml.node.vo.PropertyItem;
 
 public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
-	protected String					ns						= "";
-	protected Map<String, TangYuanNode>	integralRefMap			= null;
-	protected Map<String, Integer>		integralServiceMap		= null;
-	protected Map<String, Integer>		integralServiceNsMap	= null;
-	protected Map<String, Integer>		integralServiceClassMap	= null;
+	protected String                    ns                      = "";
+	protected Map<String, TangYuanNode> integralRefMap          = null;
+	protected Map<String, Integer>      integralServiceMap      = null;
+	protected Map<String, Integer>      integralServiceNsMap    = null;
+	protected Map<String, Integer>      integralServiceClassMap = null;
 
-	protected Map<String, NodeHandler>	nodeHandlers			= new HashMap<String, NodeHandler>();
+	protected Map<String, NodeHandler>  nodeHandlers            = new HashMap<String, NodeHandler>();
 
 	protected class SelectResult {
-		public Class<?>		resultType;
-		public MappingVo	resultMap;
+		public Class<?>  resultType;
+		public MappingVo resultMap;
 
 		public SelectResult(Class<?> resultType, MappingVo resultMap) {
 			this.resultType = resultType;
@@ -145,8 +145,8 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 	protected TangYuanNode parseNode(XmlNodeWrapper context, boolean internal) {
 		List<TangYuanNode> contents = parseDynamicTags(context);
-		int size = contents.size();
-		TangYuanNode sqlNode = null;
+		int                size     = contents.size();
+		TangYuanNode       sqlNode  = null;
 		if (size == 1) {
 			sqlNode = contents.get(0);
 		} else if (size > 1) {
@@ -160,7 +160,7 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 	protected List<TangYuanNode> parseDynamicTags(XmlNodeWrapper node) {
 		List<TangYuanNode> contents = new ArrayList<TangYuanNode>();
-		NodeList children = node.getNode().getChildNodes();
+		NodeList           children = node.getNode().getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			XmlNodeWrapper child = node.newXMlNode(children.item(i));
 			if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
@@ -171,8 +171,8 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 				// contents.add(new EsTextNode(data));
 				contents.add(getTextNode(data));
 			} else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) {
-				String nodeName = child.getNode().getNodeName();
-				NodeHandler handler = nodeHandlers.get(nodeName);
+				String      nodeName = child.getNode().getNodeName();
+				NodeHandler handler  = nodeHandlers.get(nodeName);
 				if (handler == null) {
 					throw new XmlParseException("Unknown element <" + nodeName + "> in SQL statement.");
 				}
@@ -187,7 +187,7 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 		if (properties.size() > 0) {
 			resultList = new ArrayList<PropertyItem>();
 			for (XmlNodeWrapper xNode : properties) {
-				String name = getStringFromAttr(xNode, "name");
+				String name  = getStringFromAttr(xNode, "name");
 				String value = getStringFromAttr(xNode, "value", lang("xml.tag.attribute.empty", "value", tagName, resource));
 				if (null == name) {
 					name = value;
@@ -214,8 +214,8 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 		// TODO: 考虑支持Bean
 
-		Class<?> resultTypeClass = null;
-		MappingVo resultMapVo = null;
+		Class<?>  resultTypeClass = null;
+		MappingVo resultMapVo     = null;
 
 		if (null != resultType && null != resultMap) {// 都存在值的情况下
 			if ("xco".equalsIgnoreCase(resultType)) {
@@ -249,11 +249,11 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 	public class IfHandler implements NodeHandler {
 		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
-			String tagName = "if";
-			String test = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
+			String             tagName  = "if";
+			String             test     = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
 			List<TangYuanNode> contents = parseDynamicTags(xNode);
-			int size = contents.size();
-			IfNode ifNode = null;
+			int                size     = contents.size();
+			IfNode             ifNode   = null;
 			if (1 == size) {
 				ifNode = new IfNode(contents.get(0), new LogicalExprParser().parse(test));
 			} else if (size > 1) {
@@ -277,11 +277,11 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 				// the tag before the '{}' tag must be an '{}' tag----"elseIf", "if"
 				throw new XmlParseException(lang("xml.tag.invalid", tagName, resource));
 			}
-			String test = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
+			String             test     = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
 			List<TangYuanNode> contents = parseDynamicTags(xNode);
-			int size = contents.size();
+			int                size     = contents.size();
 
-			IfNode ifNode = null;
+			IfNode             ifNode   = null;
 			if (1 == size) {
 				ifNode = new IfNode(contents.get(0), new LogicalExprParser().parse(test));
 			} else if (size > 1) {
@@ -307,8 +307,8 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 			}
 
 			List<TangYuanNode> contents = parseDynamicTags(xNode);
-			int size = contents.size();
-			IfNode ifNode = null;
+			int                size     = contents.size();
+			IfNode             ifNode   = null;
 			if (1 == size) {
 				ifNode = new IfNode(contents.get(0), null);
 			} else if (size > 1) {
@@ -323,8 +323,8 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 	public class IncludeHandler implements NodeHandler {
 		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
-			String tagName = "include";
-			String refKey = getStringFromAttr(xNode, "ref", lang("xml.tag.attribute.empty", "ref", tagName, resource));
+			String       tagName = "include";
+			String       refKey  = getStringFromAttr(xNode, "ref", lang("xml.tag.attribute.empty", "ref", tagName, resource));
 			TangYuanNode refNode = globalContext.getIntegralRefMap().get(refKey);
 			if (null == refNode) {
 				throw new XmlParseException(lang("xml.tag.attribute.reference.invalid", refKey, "ref", tagName, resource));
@@ -345,10 +345,10 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 	public class LogHandler implements NodeHandler {
 		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
-			String tagName = "log";
-			String message = getStringFromAttr(xNode, "message", lang("xml.tag.attribute.empty", "message", tagName, resource));
-			String _level = getStringFromAttr(xNode, "level");
-			Integer level = 3;
+			String  tagName = "log";
+			String  message = getStringFromAttr(xNode, "message", lang("xml.tag.attribute.empty", "message", tagName, resource));
+			String  _level  = getStringFromAttr(xNode, "level");
+			Integer level   = 3;
 			if (null != _level) {
 				level = getLogLevel(_level);
 			}
@@ -360,14 +360,39 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 		}
 	}
 
+	//	public class ThrowHandler implements NodeHandler {
+	//		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
+	//			String tagName = "exception";
+	//			String test    = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
+	//			int    code    = getIntFromAttr(xNode, "code", lang("xml.tag.attribute.empty", "code", tagName, resource));
+	//			String message = getStringFromAttr(xNode, "message");
+	//			String i18n    = getStringFromAttr(xNode, "i18n");
+	//			targetContents.add(new ExceptionNode(new LogicalExprParser().parse(test), code, message, i18n));
+	//		}
+	//	}
+
 	public class ThrowHandler implements NodeHandler {
 		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
-			String tagName = "exception";
-			String test = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
-			int code = getIntFromAttr(xNode, "code", lang("xml.tag.attribute.empty", "code", tagName, resource));
-			String message = getStringFromAttr(xNode, "message");
-			String i18n = getStringFromAttr(xNode, "i18n");
-			targetContents.add(new ExceptionNode(new LogicalExprParser().parse(test), code, message, i18n));
+			String tagName      = "exception";
+			String test         = getStringFromAttr(xNode, "test", lang("xml.tag.attribute.empty", "test", tagName, resource));
+			//			int    code    = getIntFromAttr(xNode, "code", lang("xml.tag.attribute.empty", "code", tagName, resource));
+			//			String message = getStringFromAttr(xNode, "message");
+			String i18n         = getStringFromAttr(xNode, "i18n");
+			String code         = getStringFromAttr(xNode, "code", lang("xml.tag.attribute.empty", "code", tagName, resource));
+			String message      = getStringFromAttr(xNode, "message");
+			Object errorCode    = null;
+			Object errorMessage = message;
+			if (checkVar(code)) {
+				errorCode = parseVariableUseGA(code);
+			} else {
+				errorCode = Integer.valueOf(code);
+			}
+			if (checkVar(message)) {
+				errorMessage = parseVariableUseGA(message);
+			}
+
+			//targetContents.add(new ExceptionNode(new LogicalExprParser().parse(test), code, message, i18n));
+			targetContents.add(new ExceptionNode(new LogicalExprParser().parse(test), errorCode, errorMessage, i18n));
 		}
 	}
 
@@ -376,15 +401,15 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 			// <setvar key="{x}" value="100" type="Integer" />
 			String tagName = "setvar";
 
-			String key = getStringFromAttr(xNode, "key", lang("xml.tag.attribute.empty", "key", tagName, resource));
-			String _value = getStringFromAttr(xNode, "value", lang("xml.tag.attribute.empty", "value", tagName, resource));
-			String type = getStringFromAttr(xNode, "type");
+			String key     = getStringFromAttr(xNode, "key", lang("xml.tag.attribute.empty", "key", tagName, resource));
+			String _value  = getStringFromAttr(xNode, "value", lang("xml.tag.attribute.empty", "value", tagName, resource));
+			String type    = getStringFromAttr(xNode, "type");
 
 			if (!checkVar(key)) {
 				throw new XmlParseException(lang("xml.tag.attribute.invalid.should", key, "{xxx}", tagName, resource));
 			}
 			key = getRealVal(key);
-			Object value = null;
+			Object  value    = null;
 			boolean constant = true;
 			if (checkVar(_value)) {
 				constant = false;
@@ -402,18 +427,16 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
 			String tagName = "return";
 			String _result = getStringFromAttr(xNode, "value");
-			Object result = null;
+			Object result  = null;
 			if (null != _result) {
 				if (checkVar(_result)) {
-					// result = new NormalParser().parse(getRealVal(_result));
-					// result = new GAParserWarper().parse(getRealVal(_result));
 					result = parseVariableUseGA(_result);
 				} else {
 					result = parseValue(_result);
 				}
 			}
 			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			List<PropertyItem> resultList = buildPropertyItem(properties, tagName);
+			List<PropertyItem>   resultList = buildPropertyItem(properties, tagName);
 			if (null != result && null != resultList) {
 				// throw new XmlParseException("<return> node in the result | property can only choose a way.");
 				throw new XmlParseException(lang("xml.tag.attribute.empty", "value|property", tagName, resource));
@@ -425,19 +448,22 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 
 	public class CallHandler implements NodeHandler {
 		public void handleNode(XmlNodeWrapper xNode, List<TangYuanNode> targetContents) {
-			String tagName = "call";
+			String tagName    = "call";
 
-			String serviceId = getStringFromAttr(xNode, "service", lang("xml.tag.attribute.empty", "service", tagName, resource));
-			String resultKey = getStringFromAttr(xNode, "resultKey");
-			String _mode = getStringFromAttr(xNode, "mode");
-			String codeKey = getStringFromAttr(xNode, "codeKey");
-			String messageKey = getStringFromAttr(xNode, "messageKey");
+			String serviceId  = getStringFromAttr(xNode, "service", lang("xml.tag.attribute.empty", "service", tagName, resource));
+			String _mode      = getStringFromAttr(xNode, "mode");
+
+			//			String resultKey  = getStringFromAttr(xNode, "resultKey");
+			//			String codeKey    = getStringFromAttr(xNode, "codeKey");
+			//			String messageKey = getStringFromAttr(xNode, "messageKey");
+
+			String resultKey  = parseVariableKey(xNode, "resultKey", tagName);
+			String codeKey    = parseVariableKey(xNode, "codeKey", tagName);
+			String messageKey = parseVariableKey(xNode, "messageKey", tagName);
 
 			// fix: 新增变量调用功能
-			Object service = serviceId;
+			Object service    = serviceId;
 			if (checkVar(serviceId)) {
-				// service = new NormalParser().parse(getRealVal(serviceId));
-				// service = new GAParserWarper().parse(getRealVal(serviceId));
 				service = parseVariableUseGA(serviceId);
 			}
 			// 增加新的默认模式
@@ -450,7 +476,7 @@ public class DefaultXmlPluginBuilder extends DefaultXmlBuilder {
 			}
 
 			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-			List<PropertyItem> itemList = buildPropertyItem(properties, tagName);
+			List<PropertyItem>   itemList   = buildPropertyItem(properties, tagName);
 
 			// service id可以放在运行期间检查
 			targetContents.add(new CallNode(service, resultKey, mode, itemList, codeKey, messageKey));

@@ -25,13 +25,13 @@ public class ReturnNode implements TangYuanNode {
 		this.resultType = resultType;
 	}
 
-	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
+	public boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable {
 		if (null == resultValue) {
 			if (XCO.class == resultType) {
 				XCO xco = new XCO();
 				for (PropertyItem item : resultList) {
 					if (item.value instanceof Variable) {
-						xco.setObjectValue(item.name, ((Variable) item.value).getValue(temp));
+						xco.setObjectValue(item.name, ((Variable) item.value).getValue(acArg));
 					} else {
 						xco.setObjectValue(item.name, item.value);
 					}
@@ -40,7 +40,7 @@ public class ReturnNode implements TangYuanNode {
 			}
 		} else {
 			if (resultValue instanceof Variable) {
-				ac.setResult(((Variable) resultValue).getValue(temp));
+				ac.setResult(((Variable) resultValue).getValue(acArg));
 			} else {
 				ac.setResult(resultValue);
 			}

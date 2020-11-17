@@ -268,6 +268,11 @@ public class DefaultXmlBuilder {
 
 	// /////////////////////////////////////////////////////////////////////////////////////////
 
+	/**
+	 * 解析一个变量
+	 * @param val {xxx}
+	 * @return
+	 */
 	protected Variable parseVariableUseGA(String val) {
 		return new GAParserWarper().parse(getRealVal(val));
 	}

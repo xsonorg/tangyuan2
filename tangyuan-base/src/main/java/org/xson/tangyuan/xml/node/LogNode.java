@@ -36,7 +36,7 @@ public class LogNode implements TangYuanNode {
 	}
 
 	@Override
-	public boolean execute(ActuatorContext ac, Object arg, Object temp) {
+	public boolean execute(ActuatorContext ac, Object arg, Object acArg) {
 		String parsedText = this.originalText;
 		if (null != logUnits) {
 			StringBuilder builder = new StringBuilder();
@@ -46,7 +46,7 @@ public class LogNode implements TangYuanNode {
 					builder.append(obj);
 				} else {
 					Variable varVo = (Variable) obj;
-					Object value = varVo.getValue(temp);
+					Object value = varVo.getValue(acArg);
 					if (null == value && ArgSelfVo.AEG_SELF_MARK.equalsIgnoreCase(varVo.getOriginal())) {
 						value = arg.toString();
 					}

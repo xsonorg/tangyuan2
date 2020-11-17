@@ -9,30 +9,30 @@ import org.xson.tangyuan.service.ActuatorContext;
 
 public abstract class ForEachNode implements TangYuanNode {
 
-	protected TangYuanNode	sqlNode;
+	protected TangYuanNode sqlNode;
 	/** 集合变量(从那个集合中遍历, 不能为空) */
-	protected Variable		collection;
+	protected Variable     collection;
 	/** 集合中索引的变量名称 */
-	protected String		index;
+	protected String       index;
 
-	protected String		open;
-	protected String		close;
-	protected String		separator;
+	protected String       open;
+	protected String       close;
+	protected String       separator;
 
 	@Override
-	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
-		int count = 0;
-		Object obj = collection.getValue(temp);
+	public boolean execute(ActuatorContext ac, Object arg, Object acArg) throws Throwable {
+		int    count = 0;
+		Object obj   = collection.getValue(acArg);
 		if (null == obj) {
 			throw new TangYuanException("in the <foreach> node, the collection[" + collection.getOriginal() + "] is empty.");
 		}
 		append(ac, open);
 
 		if (null != obj && obj instanceof Collection) {
-			count = foreachCollection(obj, ac, arg, temp);
+			count = foreachCollection(obj, ac, arg, acArg);
 		} else if (null != obj && obj.getClass().isArray()) {
-			Class<?> clazz = obj.getClass();
-			int arrayLength = 0;
+			Class<?> clazz       = obj.getClass();
+			int      arrayLength = 0;
 			if (int[].class == clazz) {
 				arrayLength = ((int[]) obj).length;
 			} else if (long[].class == clazz) {
@@ -52,7 +52,7 @@ public abstract class ForEachNode implements TangYuanNode {
 			} else {
 				arrayLength = ((Object[]) obj).length;
 			}
-			count = foreachArray(ac, arg, temp, arrayLength);
+			count = foreachArray(ac, arg, acArg, arrayLength);
 		} else {
 			// 必须是集合类型
 			throw new TangYuanException("Unsupported collection[" + collection.getOriginal() + "] type: " + obj.getClass().getName());
@@ -70,29 +70,29 @@ public abstract class ForEachNode implements TangYuanNode {
 	protected abstract void append(ActuatorContext ac, String str);
 
 	@SuppressWarnings("unused")
-	private int foreachCollection(Object target, ActuatorContext ac, Object arg, Object temp) throws Throwable {
+	private int foreachCollection(Object target, ActuatorContext ac, Object arg, Object acArg) throws Throwable {
 		Collection<?> collection = (Collection<?>) target;
-		int count = 0;
+		int           count      = 0;
 		for (Object item : collection) {
 			// if (null == item) { 对于用户的操作未知, 不能抛出异常
-			Ognl.setValue(temp, index, count);
+			Ognl.setValue(acArg, index, count);
 			if (count++ > 0) {
 				append(ac, separator);
 			}
-			sqlNode.execute(ac, arg, temp);
+			sqlNode.execute(ac, arg, acArg);
 		}
 		return count;
 	}
 
-	private int foreachArray(ActuatorContext ac, Object arg, Object temp, int arrayLength) throws Throwable {
-		int i = 0;
+	private int foreachArray(ActuatorContext ac, Object arg, Object acArg, int arrayLength) throws Throwable {
+		int i    = 0;
 		int iEnd = arrayLength;
 		for (; i < iEnd; i++) {
-			Ognl.setValue(temp, index, i);
+			Ognl.setValue(acArg, index, i);
 			if (i > 0) {
 				append(ac, separator);
 			}
-			sqlNode.execute(ac, arg, temp);
+			sqlNode.execute(ac, arg, acArg);
 		}
 		return i;
 	}
