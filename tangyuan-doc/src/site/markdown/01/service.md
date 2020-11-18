@@ -189,18 +189,37 @@ tangyuan中的服务的定义。。。。。。。。。。。。。。。。。
 
 ## 4. mapReduce
 
-
+	@Test
+	public void test01() {
+		String    serviceURI = "if/getRole";
+		List<XCO> args       = new ArrayList<XCO>();
+		for (int i = 0; i < 10; i++) {
+			XCO arg = new XCO();
+			arg.setLongValue("id", i + 1);
+			args.add(arg);
+		}
+		MapReduceHander handler = new DefaultMapReduceHander(args.size());
+		Object          result  = Actuator.executeMapReduce(serviceURI, args, handler, 1000L);
+		System.out.println(result);
+	}
 
 ## 5. 服务管道
+
+
 
 ## 6. 服务异常
 
 
+
+
+
+
+
+
+
+
+
 -------
-
-
-
-
 
 ### 2.6.4. 分布式方式
 
@@ -219,7 +238,3 @@ tangyuan中的服务的定义。。。。。。。。。。。。。。。。。
 
 
 
-
-> 封装的返回结果
-
-为了兼容和承载所有不同类型的实际返回结果，TangYuan框架将所有的返回结果统一封装成一个XCO类型的对象。对于当前版本`1.2.3`，默认返回的即是封装后的结果，当然我们也可以通过设置系统变量`<config-property name="allServiceReturnXCO" value="true"/>`来兼容老的版本。
