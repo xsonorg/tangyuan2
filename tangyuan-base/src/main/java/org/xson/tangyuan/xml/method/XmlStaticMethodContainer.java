@@ -1,4 +1,4 @@
-package org.xson.tangyuan.app;
+package org.xson.tangyuan.xml.method;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -13,13 +13,13 @@ import org.xson.tangyuan.util.ClassUtils;
 /**
  * 静态工具方法容器
  */
-public class StaticMethodContainer {
+public class XmlStaticMethodContainer {
 
-	private static StaticMethodContainer	instance	= new StaticMethodContainer();
+	private static XmlStaticMethodContainer instance = new XmlStaticMethodContainer();
 
-	private Log								log			= LogFactory.getLog(getClass());
+	private Log                             log      = LogFactory.getLog(getClass());
 
-	private StaticMethodContainer() {
+	private XmlStaticMethodContainer() {
 	}
 
 	private Map<String, Method> methodMap = new ConcurrentHashMap<>();
@@ -33,10 +33,10 @@ public class StaticMethodContainer {
 		if (lastpos < 0) {
 			throw new TangYuanException("Illegal method call name: " + fullName);
 		}
-		String className = fullName.substring(0, lastpos);
-		String methodName = fullName.substring(lastpos + 1);
-		Class<?> clazz = ClassUtils.forName(className);
-		Method[] methods = clazz.getMethods();
+		String   className  = fullName.substring(0, lastpos);
+		String   methodName = fullName.substring(lastpos + 1);
+		Class<?> clazz      = ClassUtils.forName(className);
+		Method[] methods    = clazz.getMethods();
 		for (Method m : methods) {
 			if (m.getName().equals(methodName)) {
 				if (!Modifier.isStatic(m.getModifiers())) {

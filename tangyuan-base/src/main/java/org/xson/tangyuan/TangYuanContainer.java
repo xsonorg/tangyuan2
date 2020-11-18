@@ -223,7 +223,8 @@ public class TangYuanContainer implements TangYuanComponent {
 			this.cloneServiceArg = Boolean.parseBoolean(properties.get("cloneServiceArg".toUpperCase()));
 		}
 
-		log.info(TangYuanLang.get("config.property.load"), "tangyuan-component");
+		//		log.info(TangYuanLang.get("config.property.load"), "tangyuan-component");
+		log.infoLang("config.property.load", "tangyuan-component");
 	}
 
 	/** 解析日志语言 */
@@ -257,7 +258,9 @@ public class TangYuanContainer implements TangYuanComponent {
 		// 3. 初始化Log
 		initLog();
 
-		log.info(TangYuanLang.get("tangyuan.starting"), Version.getVersion());
+		//		log.info(TangYuanLang.get("tangyuan.starting"), Version.getVersion());
+
+		log.infoLang("tangyuan.starting", Version.getVersion());
 
 		this.state = ComponentState.INITIALIZING;
 
@@ -270,7 +273,8 @@ public class TangYuanContainer implements TangYuanComponent {
 		this.state = ComponentState.RUNNING;
 		reportInitialized();
 
-		log.info(TangYuanLang.get("tangyuan.starting.successfully"));
+		//		log.info(TangYuanLang.get("tangyuan.starting.successfully"));
+		log.infoLang("tangyuan.starting.successfully");
 		log.info("#####################################################");
 	}
 
@@ -302,7 +306,8 @@ public class TangYuanContainer implements TangYuanComponent {
 	@Override
 	public void stop(long waitingTime, boolean asyn) {
 		log.info("#####################################################");
-		log.info(TangYuanLang.get("tangyuan.stopping"));
+		//		log.info(TangYuanLang.get("tangyuan.stopping"));
+		log.infoLang("tangyuan.stopping");
 
 		reportClosing();
 
@@ -416,7 +421,8 @@ public class TangYuanContainer implements TangYuanComponent {
 
 		reportClosed();
 
-		log.info(TangYuanLang.get("tangyuan.stopping.successfully"));
+		//		log.info(TangYuanLang.get("tangyuan.stopping.successfully"));
+		log.infoLang("tangyuan.stopping.successfully");
 	}
 
 	private void waitForService() {

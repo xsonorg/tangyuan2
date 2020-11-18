@@ -9,35 +9,35 @@ import java.util.SimpleTimeZone;
 
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Decimal128;
-import org.xson.tangyuan.app.StaticMethodContainer;
 import org.xson.tangyuan.mongo.MongoComponent;
+import org.xson.tangyuan.xml.method.XmlStaticMethodContainer;
 
 import com.mongodb.util.JSONExtCallback;
 
 /**
  * Mongo 静态工具
  */
-public class MongoStaticMethod {
+public class XmlMongoStaticMethod {
 
 	public static void register() {
 
-		StaticMethodContainer.register("Date", MongoStaticMethod.class.getName() + ".Date");
-		StaticMethodContainer.register("Date_D", MongoStaticMethod.class.getName() + ".Date_D");
-		StaticMethodContainer.register("Date_DS", MongoStaticMethod.class.getName() + ".Date_DS");
+		XmlStaticMethodContainer.register("Date", XmlMongoStaticMethod.class.getName() + ".Date");
+		XmlStaticMethodContainer.register("Date_D", XmlMongoStaticMethod.class.getName() + ".Date_D");
+		XmlStaticMethodContainer.register("Date_DS", XmlMongoStaticMethod.class.getName() + ".Date_DS");
 
-		StaticMethodContainer.register("ISODate", MongoStaticMethod.class.getName() + ".ISODate");
-		StaticMethodContainer.register("ISODate_D", MongoStaticMethod.class.getName() + ".ISODate_D");
-		StaticMethodContainer.register("ISODate_S", MongoStaticMethod.class.getName() + ".ISODate_S");
-		StaticMethodContainer.register("ISODate_SS", MongoStaticMethod.class.getName() + ".ISODate_SS");
+		XmlStaticMethodContainer.register("ISODate", XmlMongoStaticMethod.class.getName() + ".ISODate");
+		XmlStaticMethodContainer.register("ISODate_D", XmlMongoStaticMethod.class.getName() + ".ISODate_D");
+		XmlStaticMethodContainer.register("ISODate_S", XmlMongoStaticMethod.class.getName() + ".ISODate_S");
+		XmlStaticMethodContainer.register("ISODate_SS", XmlMongoStaticMethod.class.getName() + ".ISODate_SS");
 
-		StaticMethodContainer.register("Timestamp", MongoStaticMethod.class.getName() + ".Timestamp");
-		StaticMethodContainer.register("Timestamp_I", MongoStaticMethod.class.getName() + ".Timestamp_I");
-		StaticMethodContainer.register("Timestamp_L", MongoStaticMethod.class.getName() + ".Timestamp_L");
-		StaticMethodContainer.register("Timestamp_D", MongoStaticMethod.class.getName() + ".Timestamp_D");
-		StaticMethodContainer.register("Timestamp_S", MongoStaticMethod.class.getName() + ".Timestamp_S");
-		StaticMethodContainer.register("Timestamp_SS", MongoStaticMethod.class.getName() + ".Timestamp_SS");
+		XmlStaticMethodContainer.register("Timestamp", XmlMongoStaticMethod.class.getName() + ".Timestamp");
+		XmlStaticMethodContainer.register("Timestamp_I", XmlMongoStaticMethod.class.getName() + ".Timestamp_I");
+		XmlStaticMethodContainer.register("Timestamp_L", XmlMongoStaticMethod.class.getName() + ".Timestamp_L");
+		XmlStaticMethodContainer.register("Timestamp_D", XmlMongoStaticMethod.class.getName() + ".Timestamp_D");
+		XmlStaticMethodContainer.register("Timestamp_S", XmlMongoStaticMethod.class.getName() + ".Timestamp_S");
+		XmlStaticMethodContainer.register("Timestamp_SS", XmlMongoStaticMethod.class.getName() + ".Timestamp_SS");
 
-		StaticMethodContainer.register("Decimal128", MongoStaticMethod.class.getName() + ".Decimal128");
+		XmlStaticMethodContainer.register("Decimal128", XmlMongoStaticMethod.class.getName() + ".Decimal128");
 	}
 
 	// Date
@@ -84,8 +84,8 @@ public class MongoStaticMethod {
 
 	public static java.util.Date ISODate_SS(String dateString, String pattern) {
 		if (null != pattern) {
-			Date isoDate = null;
-			SimpleDateFormat format = new SimpleDateFormat(pattern);
+			Date             isoDate = null;
+			SimpleDateFormat format  = new SimpleDateFormat(pattern);
 			format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 			isoDate = format.parse(dateString, new ParsePosition(0));
 			return isoDate;

@@ -217,7 +217,7 @@ public class ActuatorImpl {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
+	protected <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<?> args, MapReduceHander handler, long timeout) {
 
 		// checkContainerState();
 
@@ -244,7 +244,7 @@ public class ActuatorImpl {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
+	protected <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<?> args, MapReduceHander handler, long timeout) {
 
 		// checkContainerState();
 

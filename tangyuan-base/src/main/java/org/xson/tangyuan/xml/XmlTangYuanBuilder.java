@@ -14,7 +14,6 @@ import org.xson.tangyuan.aop.sys.SystemAopHandler;
 import org.xson.tangyuan.aop.sys.SystemAopVo;
 import org.xson.tangyuan.app.AppPlaceholder;
 import org.xson.tangyuan.app.AppProperty;
-import org.xson.tangyuan.app.XmlExtNsArg;
 import org.xson.tangyuan.client.http.HttpClientManager;
 import org.xson.tangyuan.client.http.HttpClientVo;
 import org.xson.tangyuan.manager.TangYuanManager;
@@ -27,11 +26,12 @@ import org.xson.tangyuan.util.INIXLoader;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
+import org.xson.tangyuan.xml.nsarg.XmlExtNsArg;
 
 public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 
-	private List<SystemAopVo>	startingBeforeList	= new ArrayList<SystemAopVo>();
-	private List<SystemAopVo>	startingAfterList	= new ArrayList<SystemAopVo>();
+	private List<SystemAopVo> startingBeforeList = new ArrayList<SystemAopVo>();
+	private List<SystemAopVo> startingAfterList  = new ArrayList<SystemAopVo>();
 
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
@@ -89,15 +89,15 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void buildPlaceholderNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		String tagName = "app-placeholder";
+		String              tagName        = "app-placeholder";
 		Map<String, String> placeholderMap = new HashMap<String, String>();
-		List<String> resources = new ArrayList<String>();
+		List<String>        resources      = new ArrayList<String>();
 		if (contexts.size() > 1) {
 			throw new XmlParseException(lang("xml.tag.mostone", tagName));
 		}
 		for (XmlNodeWrapper xNode : contexts) {
-			String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
-			Properties props = getProperties(resource, false, true);
+			String     resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+			Properties props    = getProperties(resource, false, true);
 			placeholderMap.putAll((Map) props);
 			resources.add(resource);
 			log.info(lang("xml.tag.resource.load", tagName, resource));
@@ -115,15 +115,15 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 	 * 解析app-property: 仅支持一个
 	 */
 	private void buildAppPropertyNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		String tagName = "app-property";
-		XCO appProperty = new XCO();
-		List<String> resources = new ArrayList<String>();
+		String       tagName     = "app-property";
+		XCO          appProperty = new XCO();
+		List<String> resources   = new ArrayList<String>();
 		if (contexts.size() > 1) {
 			throw new XmlParseException(lang("xml.tag.mostone", tagName));
 		}
 		for (XmlNodeWrapper xNode : contexts) {
-			String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
-			InputStream in = getInputStream(resource, true, true);
+			String      resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+			InputStream in       = getInputStream(resource, true, true);
 			new INIXLoader().load(in, appProperty);
 			in.close();
 			resources.add(resource);
@@ -136,13 +136,14 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, reloader));
 			}
 			// 添加外部参数使用前缀
-			XmlExtNsArg.getInstance().addExtArg("APP:", appProperty);
+			//			XmlExtNsArg.getInstance().addExtArg("APP:", appProperty);
+			XmlExtNsArg.getInstance().addExtNsArg(AppProperty.extNsPrefix, (AppProperty) reloader);
 		}
 	}
 
 	private void buildThreadPoolNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		String tagName = "thread-pool";
-		int size = contexts.size();
+		int    size    = contexts.size();
 		if (size > 1) {
 			throw new XmlParseException(lang("xml.tag.mostone", tagName));
 		}
@@ -152,25 +153,25 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 			return;
 		}
 
-		XmlNodeWrapper xNode = contexts.get(0);
-		String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
-		Properties p = getProperties(resource, true, true);
+		XmlNodeWrapper xNode    = contexts.get(0);
+		String         resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+		Properties     p        = getProperties(resource, true, true);
 		log.info(lang("xml.tag.resource.load", tagName, resource));
 		TangYuanContainer.getInstance().startThreadPool(p);
 	}
 
 	private void buildHttpClientNode(List<XmlNodeWrapper> contexts) throws Throwable {
 		// <httpclient id="client1" resource="http.client.properties"/>
-		String tagName = "httpclient";
-		Map<String, Integer> hcMap = new HashMap<String, Integer>();
-		List<HttpClientVo> voList = new ArrayList<HttpClientVo>();
+		String               tagName = "httpclient";
+		Map<String, Integer> hcMap   = new HashMap<String, Integer>();
+		List<HttpClientVo>   voList  = new ArrayList<HttpClientVo>();
 		for (XmlNodeWrapper xNode : contexts) {
-			String id = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
+			String id       = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
 			String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 			if (hcMap.containsKey(id)) {
 				throw new XmlParseException(lang("xml.tag.id.repeated", id, tagName, this.resource));
 			}
-			Properties p = getProperties(resource, true, true);
+			Properties   p    = getProperties(resource, true, true);
 			HttpClientVo hcVo = new HttpClientVo(id, p);
 
 			voList.add(hcVo);
@@ -191,20 +192,19 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 		}
 
 		List<SystemAopVo> closingBeforeList = new ArrayList<SystemAopVo>();
-		List<SystemAopVo> closingAfterList = new ArrayList<SystemAopVo>();
+		List<SystemAopVo> closingAfterList  = new ArrayList<SystemAopVo>();
 
 		for (XmlNodeWrapper context : contexts) {
-			String className = getStringFromAttr(context, "class", lang("xml.tag.attribute.empty", "class", "system-aop", this.resource));
-			String type = getStringFromAttr(context, "pointcut", lang("xml.tag.attribute.empty", "pointcut", "system-aop", this.resource));
-			SystemAopHandler handler = getInstanceForName(className, SystemAopHandler.class,
+			String               className     = getStringFromAttr(context, "class", lang("xml.tag.attribute.empty", "class", "system-aop", this.resource));
+			String               type          = getStringFromAttr(context, "pointcut", lang("xml.tag.attribute.empty", "pointcut", "system-aop", this.resource));
+			SystemAopHandler     handler       = getInstanceForName(className, SystemAopHandler.class,
 					lang("xml.class.impl.interface", className, SystemAopHandler.class.getName()));
 
-			Map<String, String> properties = new HashMap<String, String>();
+			Map<String, String>  properties    = new HashMap<String, String>();
 			List<XmlNodeWrapper> innerContexts = context.evalNodes("property");
 			for (XmlNodeWrapper innerContext : innerContexts) {
-				String name = getStringFromAttr(innerContext, "name", lang("xml.tag.attribute.empty", "name", "system-aop.property", this.resource));
-				String value = getStringFromAttr(innerContext, "value",
-						lang("xml.tag.attribute.empty", "value", "system-aop.property", this.resource));
+				String name  = getStringFromAttr(innerContext, "name", lang("xml.tag.attribute.empty", "name", "system-aop.property", this.resource));
+				String value = getStringFromAttr(innerContext, "value", lang("xml.tag.attribute.empty", "value", "system-aop.property", this.resource));
 				properties.put(name, value);
 			}
 			PlaceholderResourceSupport.processMap(properties);
@@ -233,12 +233,12 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 	}
 
 	private void buildComponentNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		Map<String, String> resourceMap = new HashMap<String, String>();
-		Map<String, String> typeMap = new HashMap<String, String>();
+		Map<String, String> resourceMap     = new HashMap<String, String>();
+		Map<String, String> typeMap         = new HashMap<String, String>();
 		Map<String, String> typeResourceMap = new HashMap<String, String>();
 		for (XmlNodeWrapper context : contexts) {
 			String resource = StringUtils.trim(context.getStringAttribute("resource"));
-			String type = StringUtils.trim(context.getStringAttribute("type"));
+			String type     = StringUtils.trim(context.getStringAttribute("type"));
 			if (null == resource || null == type) {
 				throw new XmlParseException("Startup component parameter is incomplete.");
 			}
@@ -263,9 +263,9 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 
 		log.info("Ready to start all components.");
 
-		String type = null;
-		Aop aop = null;
-		boolean onlyProxy = false;
+		String                type                  = null;
+		Aop                   aop                   = null;
+		boolean               onlyProxy             = false;
 		RpcPlaceHolderHandler rpcPlaceHolderHandler = null;
 
 		// 1. 启动监控

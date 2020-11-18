@@ -3,11 +3,11 @@ package org.xson.tangyuan.ognl.vars.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xson.tangyuan.app.XmlExtNsArg;
 import org.xson.tangyuan.ognl.vars.Variable;
 import org.xson.tangyuan.ognl.vars.vo.NormalVariable;
 import org.xson.tangyuan.ognl.vars.vo.VariableItem;
 import org.xson.tangyuan.ognl.vars.vo.VariableItemWraper;
+import org.xson.tangyuan.xml.nsarg.XmlExtNsArg;
 
 public class NormalParser extends AbstractParser {
 
@@ -94,7 +94,8 @@ public class NormalParser extends AbstractParser {
 		//		return new NormalVariable(text, new VariableItemWraper(text, itemList));
 
 		text = text.trim();
-		String prefix = XmlExtNsArg.getInstance().isExtProperty(text);
+		//		String prefix = XmlExtNsArg.getInstance().isExtProperty(text);
+		String prefix = XmlExtNsArg.getInstance().isExtNs(text);
 		if (null != prefix) {
 			text = text.substring(prefix.length());
 		}

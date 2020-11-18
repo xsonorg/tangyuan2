@@ -11,7 +11,7 @@ import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.log.TangYuanLang;
 import org.xson.tangyuan.manager.TangYuanState.ComponentState;
 import org.xson.tangyuan.mongo.datasource.MongoDataSourceManager;
-import org.xson.tangyuan.mongo.util.MongoStaticMethod;
+import org.xson.tangyuan.mongo.util.XmlMongoStaticMethod;
 import org.xson.tangyuan.mongo.xml.XmlMongoComponentBuilder;
 import org.xson.tangyuan.mongo.xml.XmlMongoContext;
 import org.xson.tangyuan.service.context.MongoServiceContextFactory;
@@ -23,16 +23,16 @@ import com.mongodb.util.JSONExtCallback;
 
 public class MongoComponent implements TangYuanComponent {
 
-	private static MongoComponent	instance				= new MongoComponent();
+	private static MongoComponent   instance                = new MongoComponent();
 
-	private Log						log						= LogFactory.getLog(getClass());
-	private MongoDataSourceManager	dataSourceManager		= null;
-	private ShardingDefManager		shardingDefManager		= new ShardingDefManager();
+	private Log                     log                     = LogFactory.getLog(getClass());
+	private MongoDataSourceManager  dataSourceManager       = null;
+	private ShardingDefManager      shardingDefManager      = new ShardingDefManager();
 
-	private volatile ComponentState	state					= ComponentState.UNINITIALIZED;
+	private volatile ComponentState state                   = ComponentState.UNINITIALIZED;
 
-	private WriteConcern			defaultWriteConcern		= WriteConcern.ACKNOWLEDGED;
-	private String					defaultMongoDatePattern	= JSONExtCallback._dateTimeFormat;
+	private WriteConcern            defaultWriteConcern     = WriteConcern.ACKNOWLEDGED;
+	private String                  defaultMongoDatePattern = JSONExtCallback._dateTimeFormat;
 
 	static {
 		TangYuanContainer.getInstance().registerContextFactory(TangYuanServiceType.MONGO, new MongoServiceContextFactory());
@@ -92,7 +92,7 @@ public class MongoComponent implements TangYuanComponent {
 		XmlMongoContext componentContext = new XmlMongoContext();
 		componentContext.setXmlContext(TangYuanContainer.getInstance().getXmlGlobalContext());
 
-		MongoStaticMethod.register();
+		XmlMongoStaticMethod.register();
 
 		XmlMongoComponentBuilder builder = new XmlMongoComponentBuilder();
 		builder.parse(componentContext, resource);

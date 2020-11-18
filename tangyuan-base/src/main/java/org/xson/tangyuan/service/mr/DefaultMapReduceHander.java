@@ -10,13 +10,13 @@ import org.xson.common.object.XCO;
  */
 public class DefaultMapReduceHander implements MapReduceHander {
 
-	private volatile int	count	= 0;
+	private volatile int count = 0;
 
-	private long			sleepTime;
+	private long         sleepTime;//TODO
 
-	private int				total;
+	private int          total;
 
-	private List<Object>	resultList;
+	private List<Object> resultList;
 
 	public DefaultMapReduceHander(int total) {
 		this(total, 10L);
@@ -28,6 +28,22 @@ public class DefaultMapReduceHander implements MapReduceHander {
 		this.resultList = new ArrayList<Object>();
 	}
 
+	//	@Override
+	//	public void merge(Object context, String service, Object result) {
+	//		synchronized (this) {
+	//			count++;
+	//			XCO xco = (XCO) result;
+	//			if (0 != xco.getCode()) {
+	//				return;
+	//			}
+	//			XCO data = xco.getData();
+	//			if (null == data) {
+	//				return;
+	//			}
+	//			this.resultList.add(data);
+	//		}
+	//	}
+
 	@Override
 	public void merge(Object context, String service, Object result) {
 		synchronized (this) {
@@ -36,7 +52,7 @@ public class DefaultMapReduceHander implements MapReduceHander {
 			if (0 != xco.getCode()) {
 				return;
 			}
-			XCO data = xco.getData();
+			Object data = xco.getData();
 			if (null == data) {
 				return;
 			}
@@ -53,6 +69,7 @@ public class DefaultMapReduceHander implements MapReduceHander {
 			}
 			Thread.sleep(this.sleepTime);
 		}
+		// TODO 并发
 		return this.resultList;
 	}
 }

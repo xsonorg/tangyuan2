@@ -3,12 +3,12 @@ package org.xson.tangyuan.ognl.vars.parser;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.xson.tangyuan.app.StaticMethodContainer;
 import org.xson.tangyuan.ognl.OgnlException;
 import org.xson.tangyuan.ognl.vars.Variable;
 import org.xson.tangyuan.ognl.vars.vo.CallVariable;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.XmlTextParseUtil;
+import org.xson.tangyuan.xml.method.XmlStaticMethodContainer;
 
 /**
  * 文本表达式，方法调用解析
@@ -56,10 +56,10 @@ public class CallParser extends AbstractParser {
 	}
 
 	private Method getStaticMethod(String methodName) {
-		Method m = StaticMethodContainer.getStaticMethod(methodName);
+		Method m = XmlStaticMethodContainer.getStaticMethod(methodName);
 		if (null == m) {
-			StaticMethodContainer.register(methodName);
-			m = StaticMethodContainer.getStaticMethod(methodName);
+			XmlStaticMethodContainer.register(methodName);
+			m = XmlStaticMethodContainer.getStaticMethod(methodName);
 		}
 		return m;
 	}

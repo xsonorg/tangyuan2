@@ -64,20 +64,20 @@ public class Actuator {
 
 	// =================================== executeMapReduce ==================================
 
-	public static <T> T executeMapReduce(String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
+	public static <T> T executeMapReduce(String serviceURI, List<?> args, MapReduceHander handler, long timeout) {
 		return executeMapReduce(null, serviceURI, args, handler, timeout);
 	}
 
-	public static <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<Object> args, MapReduceHander handler, long timeout) {
+	public static <T> T executeMapReduce(Object mapReduceContext, String serviceURI, List<?> args, MapReduceHander handler, long timeout) {
 		impl.checkContainerState();
 		return impl.executeMapReduce(mapReduceContext, serviceURI, args, handler, timeout);
 	}
 
-	public static <T> T executeMapReduce(List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
+	public static <T> T executeMapReduce(List<String> services, List<?> args, MapReduceHander handler, long timeout) {
 		return executeMapReduce(null, services, args, handler, timeout);
 	}
 
-	public static <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<Object> args, MapReduceHander handler, long timeout) {
+	public static <T> T executeMapReduce(Object mapReduceContext, List<String> services, List<?> args, MapReduceHander handler, long timeout) {
 		impl.checkContainerState();
 		return impl.executeMapReduce(mapReduceContext, services, args, handler, timeout);
 	}

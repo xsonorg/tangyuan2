@@ -7,15 +7,18 @@ import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
 import org.xson.tangyuan.manager.conf.DefaultResourceReloader;
 import org.xson.tangyuan.util.INIXLoader;
+import org.xson.tangyuan.xml.nsarg.ExtNsArgWrapper;
 
 /**
  * Tangyuan 应用常量
  */
-public class AppProperty extends DefaultResourceReloader {
+public class AppProperty extends DefaultResourceReloader implements ExtNsArgWrapper {
 
-	private Log					log			= LogFactory.getLog(getClass());
+	private Log                log         = LogFactory.getLog(getClass());
 
-	private static AppProperty	instance	= null;
+	public final static String extNsPrefix = "APP:";
+
+	private static AppProperty instance    = null;
 
 	public static AppProperty getInstance(XCO data) {
 		if (null == instance) {
@@ -25,6 +28,9 @@ public class AppProperty extends DefaultResourceReloader {
 	}
 
 	private XCO data = null;
+
+	// 给出默认值，避免空属性
+	// private XCO data = new XCO();
 
 	private AppProperty(XCO data) {
 		this.data = data;
@@ -45,6 +51,11 @@ public class AppProperty extends DefaultResourceReloader {
 	@SuppressWarnings("unchecked")
 	public static <T> T get(String key) {
 		return (T) ((instance == null) ? null : instance.get0(key));
+	}
+
+	@Override
+	public XCO getExtNsArg() {
+		return this.data;
 	}
 
 	@Override

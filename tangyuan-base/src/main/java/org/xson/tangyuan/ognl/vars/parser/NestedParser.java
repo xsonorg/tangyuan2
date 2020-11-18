@@ -6,8 +6,8 @@ import org.xson.tangyuan.ognl.vars.vo.NestedVariableItem;
 
 public class NestedParser extends AbstractParser {
 
-	private char	nestedOpenToken		= '{';
-	private char	nestedCloseToken	= '}';
+	private char nestedOpenToken  = '{';
+	private char nestedCloseToken = '}';
 
 	public NestedParser() {
 	}
@@ -53,22 +53,22 @@ public class NestedParser extends AbstractParser {
 	 * 解析嵌套表达式
 	 */
 	public NestedVariable parse(String text) {
-		NestedVariableItem nestedItem = new NestedVariableItem();
-		parse0(this.nestedOpenToken + text + this.nestedCloseToken, 0, text.length() + 1, nestedItem);
+		NestedVariableItem nestedItem = new NestedVariableItem(0);
+		parse0(this.nestedOpenToken + text + this.nestedCloseToken, 0, text.length() + 1, nestedItem, 0);
 		return new NestedVariable(text, nestedItem);
 	}
 
 	/**
 	 * {x{xxx}x} // ${user{x{xxx}x}Name{xxx}} d{e}
 	 */
-	private int parse0(String text, int start, int end, NestedVariableItem nestedItem) {
+	private int parse0(String text, int start, int end, NestedVariableItem nestedItem, int level) {
 		if ((end - start) < 3) { // {x}:最短的
 			throw new OgnlException("Illegal nested property length: " + text);
 		}
 		// 当前坐标-->'{'
 		start++;
-		boolean toContinue = true;
-		StringBuilder sb = new StringBuilder();
+		boolean       toContinue = true;
+		StringBuilder sb         = new StringBuilder();
 		while (toContinue) {
 			char chr = text.charAt(start);
 			if (nestedOpenToken == chr) {
@@ -76,8 +76,8 @@ public class NestedParser extends AbstractParser {
 					nestedItem.addPart(sb.toString().trim());
 					sb = new StringBuilder();
 				}
-				NestedVariableItem newNestedItem = new NestedVariableItem();
-				start = parse0(text, start, end, newNestedItem);
+				NestedVariableItem newNestedItem = new NestedVariableItem(level + 1);
+				start = parse0(text, start, end, newNestedItem, level + 1);
 				nestedItem.addPart(newNestedItem);
 			} else if (nestedCloseToken == chr) {
 				toContinue = false;

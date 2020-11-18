@@ -1,4 +1,4 @@
-package org.xson.tangyuan.app;
+package org.xson.tangyuan.xml.nsarg;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Set;
 import org.xson.tangyuan.TangYuanException;
 
 /**
- * 扩展的带命名空间的参数
+ * XML中扩展的带命名空间的参数
  */
 public class XmlExtNsArg {
 
@@ -17,7 +17,7 @@ public class XmlExtNsArg {
 		return instance;
 	}
 
-	private Map<String, Object> extArgMap = new HashMap<String, Object>();
+	private Map<String, ExtNsArgWrapper> extArgMap = new HashMap<String, ExtNsArgWrapper>();
 
 	private XmlExtNsArg() {
 	}
@@ -33,7 +33,7 @@ public class XmlExtNsArg {
 	 * @param prefix
 	 * @param extArgObject
 	 */
-	public void addExtArg(String prefix, Object extArgObject) {
+	public void addExtNsArg(String prefix, ExtNsArgWrapper wrapper) {
 
 		if (null == prefix || 0 == prefix.length()) {
 			throw new TangYuanException("Illegal extended arguments prefix: " + prefix);
@@ -60,17 +60,17 @@ public class XmlExtNsArg {
 		if (extArgMap.containsKey(prefix)) {
 			throw new TangYuanException("existing extension arguments prefix: " + prefix);
 		}
-		this.extArgMap.put(prefix, extArgObject);
+		this.extArgMap.put(prefix, wrapper);
 	}
 
 	/**
 	 * 获取扩展(外部)参数对象
 	 */
-	public Object getArg(String prefix) {
+	public ExtNsArgWrapper getExtNsArgWrapper(String prefix) {
 		return this.extArgMap.get(prefix);
 	}
 
-	public String isExtProperty(String property) {
+	public String isExtNs(String property) {
 		if (0 == this.extArgMap.size()) {
 			return null;
 		}

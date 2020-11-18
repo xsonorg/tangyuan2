@@ -2,9 +2,9 @@ package org.xson.tangyuan.ognl.vars.vo;
 
 import java.util.List;
 
-import org.xson.tangyuan.app.XmlExtNsArg;
 import org.xson.tangyuan.ognl.Ognl;
 import org.xson.tangyuan.ognl.vars.Variable;
+import org.xson.tangyuan.xml.nsarg.XmlExtNsArg;
 
 /**
  * 变量单元(包装,可能包含多个Item)
@@ -38,15 +38,24 @@ public class VariableItemWraper extends Variable {
 	}
 
 	public Object getValue(Object arg) {
-		//		return Ognl.getValue(arg, this);
 		if (null == this.extArgPrefix) {
 			return Ognl.getValue(arg, this);
 		} else {
-			//			Object extArg = TangYuanContainer.getInstance().getExtArg().getArg(this.extArgPrefix);
-			Object extArg = XmlExtNsArg.getInstance().getArg(this.extArgPrefix);
+			Object extArg = XmlExtNsArg.getInstance().getExtNsArgWrapper(this.extArgPrefix).getExtNsArg();
 			return Ognl.getValue(extArg, this);
 		}
 	}
+
+	//	public Object getValue(Object arg) {
+	//		//		return Ognl.getValue(arg, this);
+	//		if (null == this.extArgPrefix) {
+	//			return Ognl.getValue(arg, this);
+	//		} else {
+	//			//			Object extArg = TangYuanContainer.getInstance().getExtArg().getArg(this.extArgPrefix);
+	//			Object extArg = XmlExtNsArg.getInstance().getArg(this.extArgPrefix);
+	//			return Ognl.getValue(extArg, this);
+	//		}
+	//	}
 
 	//	public VariableItemWraper(String original, VariableItem item) {
 	//		this.original = original;
