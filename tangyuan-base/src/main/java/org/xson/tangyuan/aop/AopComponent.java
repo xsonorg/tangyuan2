@@ -9,7 +9,6 @@ import org.xson.tangyuan.Version;
 import org.xson.tangyuan.aop.xml.XmlAopBuilder;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.log.TangYuanLang;
 import org.xson.tangyuan.manager.TangYuanState.ComponentState;
 
 public class AopComponent implements TangYuanComponent {
@@ -40,20 +39,23 @@ public class AopComponent implements TangYuanComponent {
 
 	public void start(String resource) throws Throwable {
 		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		log.info(TangYuanLang.get("component.starting"), "aop", Version.getVersion());
+		//		log.info(TangYuanLang.get("component.starting"), "aop", Version.getVersion());
+		log.infoLang("component.starting", "aop", Version.getVersion());
 		this.state = ComponentState.INITIALIZING;
 
 		XmlAopBuilder xmlBuilder = new XmlAopBuilder();
 		xmlBuilder.parse(TangYuanContainer.getInstance().getXmlGlobalContext(), resource);
 
 		this.state = ComponentState.RUNNING;
-		log.info(TangYuanLang.get("component.starting.successfully"), "aop");
+		//		log.info(TangYuanLang.get("component.starting.successfully"), "aop");
+		log.infoLang("component.starting.successfully", "aop");
 	}
 
 	@Override
 	public void stop(long waitingTime, boolean asyn) {
 		this.state = ComponentState.CLOSED;
-		log.info(TangYuanLang.get("component.stopping.successfully"), "aop");
+		//		log.info(TangYuanLang.get("component.stopping.successfully"), "aop");
+		log.infoLang("component.stopping.successfully", "aop");
 	}
 
 }
