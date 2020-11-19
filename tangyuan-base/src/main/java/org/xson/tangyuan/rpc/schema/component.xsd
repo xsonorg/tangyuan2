@@ -34,16 +34,9 @@
 	<xs:element name="client">
 		<xs:complexType>
 			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="use" use="optional" default="HTTP_CLIENT">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="HTTP_CLIENT"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
 			<xs:attribute name="schema" type="xs:string" use="optional"/>
-			<xs:attribute name="resource" type="xs:string" use="optional"/>
 			<xs:attribute name="usi" type="xs:string" use="optional"/>
+			<xs:attribute name="isDefault" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="remote-node">

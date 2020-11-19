@@ -23,13 +23,13 @@ import org.xson.tangyuan.xml.XmlParseException;
 
 public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 
-	private XmlRpcContext			componentContext			= null;
+	private XmlRpcContext        componentContext         = null;
 
-	private Map<String, Integer>	clientIdMap					= new HashMap<String, Integer>();
+	private Map<String, Integer> clientIdMap              = new HashMap<String, Integer>();
 	/** Placeholder Remote Node List */
-	private Map<String, Integer>	placeHolderRemoteNodeMap	= new HashMap<String, Integer>();
-	private RemoteHostManager		remoteHostManager			= null;
-	private String					defaultClientRpcId			= null;
+	private Map<String, Integer> placeHolderRemoteNodeMap = new HashMap<String, Integer>();
+	private RemoteHostManager    remoteHostManager        = null;
+	private String               defaultClientRpcId       = null;
 
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
@@ -60,7 +60,7 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 		buildBalanceNode(getMostOneNode(this.root, "balance", lang("xml.tag.mostone", "balance")));
 		buildRemoteHostNode(getMostOneNode(this.root, "remote-host", lang("xml.tag.mostone", "remote-host")));
 
-		List<RpcClientVo> clientVoList = buildClientNode(this.root.evalNodes("client"));
+		List<RpcClientVo>  clientVoList = buildClientNode(this.root.evalNodes("client"));
 		List<RemoteNodeVo> remoteVoList = buildRemoteNode(this.root.evalNodes("remote-node"));
 
 		initAll(clientVoList, remoteVoList);
@@ -89,12 +89,12 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 			return;// do nothing
 		}
 
-		BalanceManager balanceManager = this.componentContext.getBalanceManager();
-		String onlyClientRpcId = null;
-		Map<String, RemoteNodeVo> remoteNodeMap = new HashMap<String, RemoteNodeVo>();
+		BalanceManager                 balanceManager  = this.componentContext.getBalanceManager();
+		String                         onlyClientRpcId = null;
+		Map<String, RemoteNodeVo>      remoteNodeMap   = new HashMap<String, RemoteNodeVo>();
 
 		// clientId->rpc impl
-		Map<String, AbstractRpcClient> rpcImplMap = new HashMap<String, AbstractRpcClient>();
+		Map<String, AbstractRpcClient> rpcImplMap      = new HashMap<String, AbstractRpcClient>();
 		for (RpcClientVo rcVo : clientVoList) {
 			AbstractRpcClient rpc = rcVo.create(balanceManager, this.remoteHostManager);
 			rpcImplMap.put(rcVo.getId(), rpc);
@@ -130,15 +130,16 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 	}
 
 	private List<RpcClientVo> buildClientNode(List<XmlNodeWrapper> contexts) {
-		String tagName = "client";
-		List<RpcClientVo> list = new ArrayList<RpcClientVo>();
+		String            tagName = "client";
+		List<RpcClientVo> list    = new ArrayList<RpcClientVo>();
 		for (XmlNodeWrapper xNode : contexts) {
 
-			String id = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
-			String schema = getStringFromAttr(xNode, "schema");
-			String resource = getStringFromAttr(xNode, "resource");
-			String usi = getStringFromAttr(xNode, "usi", lang("xml.tag.attribute.empty", "usi", tagName, this.resource));
-			boolean defaultClient = getBoolFromAttr(xNode, "default", false);
+			String  id            = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
+			String  schema        = getStringFromAttr(xNode, "schema");
+			String  usi           = getStringFromAttr(xNode, "usi", lang("xml.tag.attribute.empty", "usi", tagName, this.resource));
+			boolean defaultClient = getBoolFromAttr(xNode, "isDefault", false);
+
+			// String resource = getStringFromAttr(xNode, "resource");
 
 			if (clientIdMap.containsKey(id)) {
 				throw new XmlParseException(lang("xml.tag.id.repeated", id, tagName, this.resource));
@@ -148,7 +149,8 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 				setDefaultClientRpcId(id, tagName);
 			}
 
-			RpcClientVo vo = new RpcClientVo(id, schema, resource, usi, defaultClient);
+			//			RpcClientVo vo = new RpcClientVo(id, schema, resource, usi, defaultClient);
+			RpcClientVo vo = new RpcClientVo(id, schema, null, usi, defaultClient);
 			list.add(vo);
 			clientIdMap.put(id, 1);
 		}
@@ -156,12 +158,12 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 	}
 
 	private List<RemoteNodeVo> buildRemoteNode(List<XmlNodeWrapper> contexts) {
-		String tagName = "remote-node";
+		String               tagName     = "remote-node";
 		Map<String, Integer> remoteIdMap = new HashMap<String, Integer>();
-		List<RemoteNodeVo> list = new ArrayList<RemoteNodeVo>();
+		List<RemoteNodeVo>   list        = new ArrayList<RemoteNodeVo>();
 		for (XmlNodeWrapper xNode : contexts) {
 
-			String id = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
+			String id     = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
 			String domain = getStringFromAttr(xNode, "domain", lang("xml.tag.attribute.empty", "domain", tagName, this.resource));
 			String client = getStringFromAttr(xNode, "client");
 
@@ -188,10 +190,10 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 		if (null == xNode) {
 			return;
 		}
-		String tagName = "balance";
-		String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+		String               tagName  = "balance";
+		String               resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 
-		XmlRpcBalanceBuilder builder = new XmlRpcBalanceBuilder();
+		XmlRpcBalanceBuilder builder  = new XmlRpcBalanceBuilder();
 		builder.parse(this.componentContext, resource);
 	}
 
@@ -199,7 +201,7 @@ public class XmlRpcComponentBuilder extends DefaultXmlComponentBuilder {
 		if (null == xNode) {
 			return;
 		}
-		String tagName = "remote-host";
+		String tagName  = "remote-host";
 		String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 
 		this.remoteHostManager = new RemoteHostManager();
