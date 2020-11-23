@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xson.org/schema/tangyuan/sql/service" targetNamespace="http://xson.org/schema/tangyuan/sql/service" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="sql">
 		<xs:complexType>
@@ -119,7 +120,6 @@
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string"/>
-			<xs:attribute name="resultType" type="xs:string"/>
 			<xs:attribute name="rowCount" type="xs:string"/>
 			<xs:attribute name="incrementKey" type="xs:string"/>
 			<xs:attribute name="dsKey" type="xs:string"/>
