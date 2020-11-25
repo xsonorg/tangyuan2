@@ -493,7 +493,10 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 			String[] groups      = getStringArrayFromAttr(xNode, "group");
 
 			checkServiceRepeated(id, tagName);
-			dsKey = checkReferencedDsKey(dsKey, tagName, id);
+			if (null != dsKey) {
+				dsKey = checkReferencedDsKey(dsKey, tagName, id);
+			}
+
 			XTransactionDefinition txDef = this.componentContext.getTransactionMatcher().getTransactionDefinition(txRef, id, tagName);
 			if (null == txDef) {
 				throw new XmlParseException(lang("xml.tag.attribute.reference.id.invalid", txRef, id, "txRef", tagName, this.resource));
@@ -570,7 +573,7 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 			String dsKey     = getStringFromAttr(xNode, "dsKey");
 			String resultMap = getStringFromAttr(xNode, "resultMap");
 			String _cacheUse = getStringFromAttr(xNode, "cacheUse");
-			String  resultKey = parseVariableKey(xNode, "resultKey", tagName);
+			String resultKey = parseVariableKey(xNode, "resultKey", tagName);
 			if (null == dsKey) {
 				dsKey = dsKeyWithSqlService;
 			} else {
@@ -592,7 +595,7 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 			}
 			String dsKey     = getStringFromAttr(xNode, "dsKey");
 			String _cacheUse = getStringFromAttr(xNode, "cacheUse");
-			String  resultKey = parseVariableKey(xNode, "resultKey", tagName);
+			String resultKey = parseVariableKey(xNode, "resultKey", tagName);
 			if (null == dsKey) {
 				dsKey = dsKeyWithSqlService;
 			} else {
