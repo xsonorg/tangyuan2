@@ -340,9 +340,12 @@ public class XMLPluginBuilder extends ControllerBuilder {
 
 			ResponseHandler responseHandler = getResponseHandler(url);
 
+			String desc = StringUtils.trim(context.getStringAttribute("desc"));
+
 			RESTControllerVo cVo = new RESTControllerVo(fullUrl, url, requestType, transfer, validate, execMethod,
 					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
-					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler, restURIVo);
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler, restURIVo,
+					desc);
 
 			this.context.addRestController(cVo);
 			// log.info("Add <c> :" + requestType + " " + fullUrl);
@@ -427,9 +430,11 @@ public class XMLPluginBuilder extends ControllerBuilder {
 
 			ResponseHandler responseHandler = getResponseHandler(url);
 
+			String desc = StringUtils.trim(context.getStringAttribute("desc"));
+
 			ControllerVo cVo = new ControllerVo(url, requestType, transfer, validate, execMethod,
 					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
-					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler);
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, responseHandler, desc);
 
 			this.context.getControllerMap().put(cVo.getUrl(), cVo);
 			log.info("Add <c> :" + cVo.getUrl());

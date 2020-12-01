@@ -49,7 +49,7 @@ public class AutoMappingBuilder extends ControllerBuilder {
 
 			ControllerVo cVo = new ControllerVo(url, requestType, transfer, validate, execMethod,
 					getInterceptList(url, assemblyList, InterceptType.ASSEMBLY), getInterceptList(url, beforeList, InterceptType.BEFORE),
-					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, null);
+					getInterceptList(url, afterList, InterceptType.AFTER), permission, cacheUse, convert, cacheInAop, null, null);
 
 			this.context.getControllerMap().put(cVo.getUrl(), cVo);
 			log.info("Add auto <c> :" + cVo.getUrl());

@@ -17,7 +17,7 @@ import org.xson.tangyuan.web.util.ServletUtils;
 
 public class ControllerVo {
 
-	private static Log				log	= LogFactory.getLog(ControllerVo.class);
+	private static Log				log		= LogFactory.getLog(ControllerVo.class);
 
 	protected String				url;
 	protected String				transfer;
@@ -39,9 +39,12 @@ public class ControllerVo {
 	/** 返回结果处理器 */
 	private ResponseHandler			responseHandler;
 
+	/** 服务的描述 */
+	protected String				desc	= null;
+
 	public ControllerVo(String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
 			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
-			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler) {
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler, String desc) {
 		this.url = url;
 		this.requestType = requestType;
 		this.transfer = transfer;
@@ -57,6 +60,8 @@ public class ControllerVo {
 		this.cacheInAop = cacheInAop;
 
 		this.responseHandler = responseHandler;
+
+		this.desc = desc;
 	}
 
 	public String getUrl() {
@@ -95,23 +100,41 @@ public class ControllerVo {
 		return responseHandler;
 	}
 
-	public void dataConvert(RequestContext context) throws Throwable {
-		if (null != this.dataConverter) {
-			this.dataConverter.convert(context, this);
-			return;
-		}
+	public String getDesc() {
+		return desc;
+	}
 
-		DataConverter tempConverter = ServletUtils.getDefaultDataConverter(this, context.getContextType());
-		if (null != tempConverter) {
-			tempConverter.convert(context, this);
+	public void dataConvert(RequestContext context) throws Throwable {
+		try {
+			if (null != this.dataConverter) {
+				this.dataConverter.convert(context, this);
+				return;
+			}
+
+			DataConverter tempConverter = ServletUtils.getDefaultDataConverter(this, context.getContextType());
+			if (null != tempConverter) {
+				tempConverter.convert(context, this);
+			}
+		} catch (Throwable e) {
+			if (e instanceof InvocationTargetException) {
+				throw ((InvocationTargetException) e).getTargetException();
+			}
+			throw e;
 		}
 	}
 
 	public void assembly(RequestContext context) throws Throwable {
-		if (null != this.assemblyMethods) {
-			for (MethodObject mo : this.assemblyMethods) {
-				mo.getMethod().invoke(mo.getInstance(), context);
+		try {
+			if (null != this.assemblyMethods) {
+				for (MethodObject mo : this.assemblyMethods) {
+					mo.getMethod().invoke(mo.getInstance(), context);
+				}
 			}
+		} catch (Throwable e) {
+			if (e instanceof InvocationTargetException) {
+				throw ((InvocationTargetException) e).getTargetException();
+			}
+			throw e;
 		}
 	}
 
@@ -171,28 +194,28 @@ public class ControllerVo {
 		}
 	}
 
-	//	public boolean cacheGet(RequestContext context) throws Throwable {
-	//		// TODO 不能抛出异常
-	//		if (null != cacheUse) {
-	//			Object result = cacheUse.getObject(context.getArg());
-	//			if (null != result) {
-	//				context.setResult(result);
-	//				return true;
-	//			}
-	//		}
-	//		return false;
-	//	}
+	// public boolean cacheGet(RequestContext context) throws Throwable {
+	// // TODO 不能抛出异常
+	// if (null != cacheUse) {
+	// Object result = cacheUse.getObject(context.getArg());
+	// if (null != result) {
+	// context.setResult(result);
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 	//
-	//	public void cachePut(RequestContext context) throws Throwable {
-	//		// TODO 不能抛出异常
-	//		if (null != cacheUse) {
-	//			cacheUse.putObject(context.getArg(), context.getResult());
-	//		}
-	//	}
+	// public void cachePut(RequestContext context) throws Throwable {
+	// // TODO 不能抛出异常
+	// if (null != cacheUse) {
+	// cacheUse.putObject(context.getArg(), context.getResult());
+	// }
+	// }
 
 	public boolean cacheGet(RequestContext context) {
 		if (null != cacheUse) {
-			//			Object result = cacheUse.getObject(context.getArg());
+			// Object result = cacheUse.getObject(context.getArg());
 			Object result = null;
 			try {
 				result = cacheUse.getObject(context.getArg());
