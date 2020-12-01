@@ -22,7 +22,11 @@ public class Log4jProxy extends AbstractLog {
 				MDC.clear();
 				RuntimeContext rc = RuntimeContext.get();
 				if (null != rc) {
-					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, rc.getTraceId());
+					String traceId = rc.getTraceId();
+					if (null == traceId) {
+						traceId = "";
+					}
+					MDC.put(RuntimeContext.HEADER_KEY_TRACE_ID, traceId);
 					// MDC.put(RuntimeContext.HEADER_KEY_ORIGIN, rc.getOrigin());
 					// MDC.put(RuntimeContext.HEADER_KEY_COMPONENT, rc.getComponent());
 				}

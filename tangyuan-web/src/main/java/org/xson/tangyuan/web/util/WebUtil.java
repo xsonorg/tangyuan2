@@ -123,7 +123,7 @@ public class WebUtil {
 			String key   = (String) headerNames.nextElement();
 			String value = request.getHeader(key);
 			//			log.debug(key + ":" + value);
-			log.info(key + ":" + value);
+			log.info("\t" + key + ": " + value);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class WebUtil {
 		while (headerNames.hasMoreElements()) {
 			String key   = (String) headerNames.nextElement();
 			String value = request.getHeader(key);
-			sb.append(key + ":" + value);
+			sb.append(key + ": " + value);
 			sb.append("\n");
 		}
 		return sb.toString();

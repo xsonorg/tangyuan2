@@ -23,9 +23,11 @@ public class DefaultResponseHandler implements ResponseHandler {
 
 	private void printResult(RequestContext context, Object result) {
 		if (null == result) {
-			log.info(context.getContextType() + " " + context.getPath() + ", result: Null");
+			//			log.info(context.getContextType() + " " + context.getPath() + ", result: Null");
+			log.info("Result[" + context.getPath() + "]: Null");
 		} else {
-			log.info(context.getContextType() + " " + context.getPath() + ", result: " + result.toString());
+			//log.info(context.getContextType() + " " + context.getPath() + ", result: " + result.toString());
+			log.info("Result[" + context.getPath() + "]: " + result.toString());
 		}
 	}
 

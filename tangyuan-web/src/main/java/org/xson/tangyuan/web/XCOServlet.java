@@ -98,7 +98,8 @@ public class XCOServlet extends HttpServlet {
 		try {
 			cVo.dataConvert(context);
 			if (log.isInfoEnabled()) {
-				log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
+				//log.info(requestType + " " + context.getPath() + ", arg: " + context.getArg());
+				log.info("Arg[" + context.getPath() + "]: " + context.getArg());
 			}
 		} catch (Throwable e) {
 			log.errorLang(e, "web.servlet.invalid.convert", requestURI);
