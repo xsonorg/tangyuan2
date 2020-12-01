@@ -17,7 +17,7 @@ import org.xson.tangyuan.web.util.ServletUtils;
 
 public class ControllerVo {
 
-	private static Log				log	= LogFactory.getLog(ControllerVo.class);
+	private static Log				log		= LogFactory.getLog(ControllerVo.class);
 
 	protected String				url;
 	protected String				transfer;
@@ -39,9 +39,12 @@ public class ControllerVo {
 	/** 返回结果处理器 */
 	private ResponseHandler			responseHandler;
 
+	/** 服务的描述 */
+	protected String				desc	= null;
+
 	public ControllerVo(String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
 			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
-			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler) {
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler, String desc) {
 		this.url = url;
 		this.requestType = requestType;
 		this.transfer = transfer;
@@ -57,6 +60,8 @@ public class ControllerVo {
 		this.cacheInAop = cacheInAop;
 
 		this.responseHandler = responseHandler;
+
+		this.desc = desc;
 	}
 
 	public String getUrl() {
@@ -95,15 +100,26 @@ public class ControllerVo {
 		return responseHandler;
 	}
 
-	public void dataConvert(RequestContext context) throws Throwable {
-		if (null != this.dataConverter) {
-			this.dataConverter.convert(context, this);
-			return;
-		}
+	public String getDesc() {
+		return desc;
+	}
 
-		DataConverter tempConverter = ServletUtils.getDefaultDataConverter(this, context.getContextType());
-		if (null != tempConverter) {
-			tempConverter.convert(context, this);
+	public void dataConvert(RequestContext context) throws Throwable {
+		try {
+			if (null != this.dataConverter) {
+				this.dataConverter.convert(context, this);
+				return;
+			}
+
+			DataConverter tempConverter = ServletUtils.getDefaultDataConverter(this, context.getContextType());
+			if (null != tempConverter) {
+				tempConverter.convert(context, this);
+			}
+		} catch (Throwable e) {
+			if (e instanceof InvocationTargetException) {
+				throw ((InvocationTargetException) e).getTargetException();
+			}
+			throw e;
 		}
 	}
 

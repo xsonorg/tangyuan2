@@ -15,9 +15,9 @@ public class RESTControllerVo extends ControllerVo {
 
 	public RESTControllerVo(String originalURI, String url, RequestTypeEnum requestType, String transfer, String validate, MethodObject execMethod,
 			List<MethodObject> assemblyMethods, List<MethodObject> beforeMethods, List<MethodObject> afterMethods, String permission,
-			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler, RestURIVo restURIVo) {
+			CacheUseVo cacheUse, DataConverter dataConverter, boolean cacheInAop, ResponseHandler responseHandler, RestURIVo restURIVo, String desc) {
 		super(url, requestType, transfer, validate, execMethod, assemblyMethods, beforeMethods, afterMethods, permission, cacheUse, dataConverter,
-				cacheInAop, responseHandler);
+				cacheInAop, responseHandler, desc);
 		this.originalURI = originalURI;
 		this.restURIVo = restURIVo;
 	}
