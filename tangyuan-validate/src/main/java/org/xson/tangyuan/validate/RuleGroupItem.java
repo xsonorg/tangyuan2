@@ -14,21 +14,21 @@ import org.xson.tangyuan.util.CollectionUtils;
 
 public class RuleGroupItem {
 
-	private static Log			log	= LogFactory.getLog(RuleGroupItem.class);
+	private static Log          log = LogFactory.getLog(RuleGroupItem.class);
 
-	private String				fieldName;
-	private TypeEnum			type;
-	private List<Rule>			rules;
-	private boolean				require;
-	private Object				defaultValue;
-	private String				desc;
-	private String				message;
-	private int					code;
+	private String              fieldName;
+	private TypeEnum            type;
+	private List<Rule>          rules;
+	private boolean             require;
+	private Object              defaultValue;
+	private String              desc;
+	private String              message;
+	private int                 code;
 	// 内嵌对象
-	private List<RuleGroupItem>	items;
+	private List<RuleGroupItem> items;
 
-	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message,
-			int code, List<RuleGroupItem> items) {
+	public RuleGroupItem(String fieldName, TypeEnum type, List<Rule> rules, boolean require, String defaultValue, String desc, String message, int code,
+			List<RuleGroupItem> items) {
 		this.fieldName = fieldName;
 		this.type = type;
 		this.rules = rules;
@@ -77,7 +77,7 @@ public class RuleGroupItem {
 			}
 
 			// 无验证规则
-			if (CollectionUtils.isEmpty(this.rules)) {
+			if (CollectionUtils.isEmpty(this.rules) && CollectionUtils.isEmpty(this.items)) {
 				return true;
 			}
 

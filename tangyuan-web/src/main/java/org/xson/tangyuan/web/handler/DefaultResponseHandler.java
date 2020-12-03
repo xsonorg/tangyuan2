@@ -1,7 +1,5 @@
 package org.xson.tangyuan.web.handler;
 
-import java.io.IOException;
-
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.executor.ServiceException;
@@ -42,13 +40,13 @@ public class DefaultResponseHandler implements ResponseHandler {
 	}
 
 	@Override
-	public void onSuccess(RequestContext context) throws IOException {
+	public void onSuccess(RequestContext context) throws Throwable {
 		XCO result = convertResult(context);
 		ServletResponseUtil.responseXCO(context, result);
 	}
 
 	@Override
-	public void onError(RequestContext context, Throwable ex) throws IOException {
+	public void onError(RequestContext context, Throwable ex) throws Throwable {
 		XCO errorResult = null;
 		if (ex instanceof ServiceException) {
 			errorResult = TangYuanUtil.getExceptionResult(ex);
