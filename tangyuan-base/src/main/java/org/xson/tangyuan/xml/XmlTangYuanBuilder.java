@@ -14,6 +14,7 @@ import org.xson.tangyuan.aop.sys.SystemAopHandler;
 import org.xson.tangyuan.aop.sys.SystemAopVo;
 import org.xson.tangyuan.app.AppPlaceholder;
 import org.xson.tangyuan.app.AppProperty;
+import org.xson.tangyuan.app.SystemProperty;
 import org.xson.tangyuan.client.http.HttpClientManager;
 import org.xson.tangyuan.client.http.HttpClientVo;
 import org.xson.tangyuan.manager.TangYuanManager;
@@ -52,6 +53,9 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 	}
 
 	private void configurationElement() throws Throwable {
+		// 添加系统变量
+		XmlExtNsArg.getInstance().addExtNsArg(SystemProperty.extNsPrefix, SystemProperty.getInstance());
+
 		// 解析占位属性
 		buildPlaceholderNode(this.root.evalNodes("app-placeholder"));
 		// 解析App配置文件

@@ -19,9 +19,9 @@ public class OgnlMap {
 		if (null == bean) {
 			return null;
 		}
-		Map<String, Object> beanMap = new HashMap<String, Object>();
-		FieldVoWrapper fieldVoWrapper = TypeUtils.getBeanField(bean.getClass());
-		List<FieldVo> fieldList = fieldVoWrapper.getFieldList();
+		Map<String, Object> beanMap        = new HashMap<String, Object>();
+		FieldVoWrapper      fieldVoWrapper = TypeUtils.getBeanField(bean.getClass());
+		List<FieldVo>       fieldList      = fieldVoWrapper.getFieldList();
 		for (FieldVo model : fieldList) {
 			try {
 				Object result = model.getGetter().invoke(bean);
@@ -37,15 +37,25 @@ public class OgnlMap {
 
 	// data为原始数据
 	public static Object getValue(Map<String, Object> data, VariableItemWraper varVo) {
+
+		// 先尝试整体取值
+		try {
+			Object returnObj = data.get(varVo.getOriginal());
+			if (null != returnObj) {
+				return returnObj;
+			}
+		} catch (Throwable e) {
+		}
+
 		// 这里取值为空是否要报错, 应该严格报错, 只有最后一个为空，可以忽略
 		if (null != varVo.getItem()) {
 			return data.get(varVo.getItem().getName());
 		}
 		List<VariableItem> varUnitList = varVo.getItemList();
-		int size = varUnitList.size();
-		Object returnObj = data;
+		int                size        = varUnitList.size();
+		Object             returnObj   = data;
 		for (int i = 0; i < size; i++) {
-			boolean hasNext = (i + 1) < size;
+			boolean      hasNext = (i + 1) < size;
 			VariableItem vUnitVo = varUnitList.get(i);
 			if (returnObj instanceof Map) {
 				returnObj = getValueFromMap(returnObj, vUnitVo, hasNext, data);
@@ -99,7 +109,7 @@ public class OgnlMap {
 
 		if (VariableItemType.PROPERTY == peVo.getType() || VariableItemType.VAR == peVo.getType()) {
 			// Map<String, Object> map = (Map<String, Object>) target;
-			Map map = (Map) target;
+			Map    map   = (Map) target;
 			// String key = peVo.getName();
 			Object value = map.get(key);
 			if (null != value) {
@@ -148,7 +158,7 @@ public class OgnlMap {
 				// }
 				// 以后考虑在优化
 
-				int i = 0;
+				int        i          = 0;
 				Collection collection = (Collection<?>) target;
 				for (Object obj : collection) {
 					if (i++ == index) {

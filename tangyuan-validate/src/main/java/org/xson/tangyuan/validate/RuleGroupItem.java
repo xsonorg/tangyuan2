@@ -134,7 +134,8 @@ public class RuleGroupItem {
 			}
 
 		} catch (Throwable e) {
-			if (forcedThrowException || ValidateComponent.getInstance().isThrowException()) {
+			//			if (forcedThrowException || ValidateComponent.getInstance().isThrowException()) {
+			if (forcedThrowException) {
 				if (e instanceof ServiceException) {
 					throw e;
 				}

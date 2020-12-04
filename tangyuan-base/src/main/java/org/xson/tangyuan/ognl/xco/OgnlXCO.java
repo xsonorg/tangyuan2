@@ -22,9 +22,9 @@ public class OgnlXCO {
 		if (null == bean) {
 			return null;
 		}
-		XCO xco = new XCO();
+		XCO            xco            = new XCO();
 		FieldVoWrapper fieldVoWrapper = TypeUtils.getBeanField(bean.getClass());
-		List<FieldVo> fieldList = fieldVoWrapper.getFieldList();
+		List<FieldVo>  fieldList      = fieldVoWrapper.getFieldList();
 		for (FieldVo model : fieldList) {
 			try {
 				Object result = model.getGetter().invoke(bean);
@@ -47,15 +47,25 @@ public class OgnlXCO {
 	 * @return
 	 */
 	public static Object getValue(XCO data, VariableItemWraper varVo) {
+
+		// 先尝试整体取值
+		try {
+			Object returnObj = data.getObjectValue(varVo.getOriginal());
+			if (null != returnObj) {
+				return returnObj;
+			}
+		} catch (Throwable e) {
+		}
+
 		// 这里取值为空是否要报错, 应该严格报错, 只有最后一个为空，可以忽略
 		if (null != varVo.getItem()) {
 			return data.getObjectValue(varVo.getItem().getName());
 		}
 		List<VariableItem> varUnitList = varVo.getItemList();
-		int size = varUnitList.size();
-		Object returnObj = data;
+		int                size        = varUnitList.size();
+		Object             returnObj   = data;
 		for (int i = 0; i < size; i++) {
-			boolean hasNext = (i + 1) < size;
+			boolean      hasNext = (i + 1) < size;
 			VariableItem vUnitVo = varUnitList.get(i);
 			if (returnObj instanceof XCO) {
 				returnObj = getValueFromXCO(returnObj, vUnitVo, data);
@@ -109,7 +119,7 @@ public class OgnlXCO {
 		}
 
 		if (VariableItemType.PROPERTY == peVo.getType() || VariableItemType.VAR == peVo.getType()) {
-			XCO xco = (XCO) target;
+			XCO    xco   = (XCO) target;
 			Object value = xco.getObjectValue(key);
 			if (null != value) {
 				return value;
@@ -138,7 +148,7 @@ public class OgnlXCO {
 					return value;
 				}
 			} else {
-				int i = 0;
+				int        i          = 0;
 				Collection collection = (Collection<?>) target;
 				for (Object obj : collection) {
 					if (i++ == index) {
