@@ -12,10 +12,10 @@ public class LogExt extends DefaultResourceReloader {
 	private LogExtVo extVo = null;
 
 	public static LogExt newInstance() {
-		JdkLogProxy log = new JdkLogProxy(LogExt.class.getName());
-		LogExt f = new LogExt();
-		boolean initFlag = false;
-		String resource = null;
+		JdkLogProxy log      = new JdkLogProxy(LogExt.class.getName());
+		LogExt      f        = new LogExt();
+		boolean     initFlag = false;
+		String      resource = null;
 		try {
 			resource = "tangyuan-log-ext.properties";
 			initFlag = f.init(resource);
@@ -60,7 +60,7 @@ public class LogExt extends DefaultResourceReloader {
 	}
 
 	@Override
-	public void reload(String resource) throws Throwable {
+	public synchronized void reload(String resource) throws Throwable {
 		Properties p = getPropertiesForReload(resource, null, false, true);
 		if (null != p) {
 			update(new LogExtVo(p));

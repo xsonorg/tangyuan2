@@ -11,9 +11,9 @@ import org.xson.tangyuan.manager.conf.ResourceReloader;
  */
 public class LogLoaderFactory implements ResourceReloader {
 
-	private static LogLoader		logLoader	= null;
+	private static LogLoader        logLoader = null;
 
-	private static LogLoaderFactory	instance	= new LogLoaderFactory();
+	private static LogLoaderFactory instance  = new LogLoaderFactory();
 
 	public static LogLoaderFactory getInstance() {
 		return instance;
@@ -71,7 +71,7 @@ public class LogLoaderFactory implements ResourceReloader {
 	}
 
 	@Override
-	public void reload(String resource) throws Throwable {
+	public synchronized void reload(String resource) throws Throwable {
 		try {
 			if (null != logLoader) {
 				logLoader.reload(resource);
@@ -84,7 +84,7 @@ public class LogLoaderFactory implements ResourceReloader {
 	private static void testLoader(Class<? extends LogLoader> loaderClass, String methodName, String resource) {
 		try {
 			LogLoader instance = loaderClass.getConstructor().newInstance();
-			Method method = loaderClass.getMethod(methodName, String.class);
+			Method    method   = loaderClass.getMethod(methodName, String.class);
 			method.invoke(instance, new Object[] { resource });
 			logLoader = instance;
 		} catch (Throwable t) {

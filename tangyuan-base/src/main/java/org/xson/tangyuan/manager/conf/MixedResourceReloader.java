@@ -24,7 +24,7 @@ public class MixedResourceReloader implements ResourceReloader {
 	//	}
 
 	@Override
-	public void reload(String resource) throws Throwable {
+	public synchronized void reload(String resource) throws Throwable {
 		for (ResourceReloader reloader : reloaders) {
 			try {
 				reloader.reload(resource);

@@ -1,13 +1,11 @@
 package org.xson.tangyuan.xml;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.xson.common.object.XCO;
 import org.xson.tangyuan.TangYuanContainer;
 import org.xson.tangyuan.aop.Aop;
 import org.xson.tangyuan.aop.sys.SystemAopHandler;
@@ -18,12 +16,10 @@ import org.xson.tangyuan.app.SystemProperty;
 import org.xson.tangyuan.client.http.HttpClientManager;
 import org.xson.tangyuan.client.http.HttpClientVo;
 import org.xson.tangyuan.manager.TangYuanManager;
-import org.xson.tangyuan.manager.conf.ResourceReloader;
 import org.xson.tangyuan.manager.conf.ResourceReloaderVo;
 import org.xson.tangyuan.rpc.RpcPlaceHolderHandler;
 import org.xson.tangyuan.service.Actuator;
 import org.xson.tangyuan.service.ActuatorImpl;
-import org.xson.tangyuan.util.INIXLoader;
 import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.StringUtils;
 import org.xson.tangyuan.util.TangYuanUtil;
@@ -89,59 +85,44 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 	}
 
 	/**
-	 * 解析app-placeholder: 仅支持一个
+	 * 解析app-placeholder: 支持多个
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void buildPlaceholderNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		String              tagName        = "app-placeholder";
-		Map<String, String> placeholderMap = new HashMap<String, String>();
-		List<String>        resources      = new ArrayList<String>();
-		if (contexts.size() > 1) {
-			throw new XmlParseException(lang("xml.tag.mostone", tagName));
-		}
+		String       tagName   = "app-placeholder";
+		List<String> resources = new ArrayList<String>();
 		for (XmlNodeWrapper xNode : contexts) {
-			String     resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
-			Properties props    = getProperties(resource, false, true);
-			placeholderMap.putAll((Map) props);
+			String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 			resources.add(resource);
 			log.info(lang("xml.tag.resource.load", tagName, resource));
 		}
 		if (resources.size() > 0) {
 			// register ResourceReloader
-			ResourceReloader reloader = AppPlaceholder.getInstance(placeholderMap);
+			AppPlaceholder.init(resources);
 			for (String resource : resources) {
-				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, reloader));
+				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, AppPlaceholder.getInstance()));
 			}
 		}
 	}
 
 	/**
-	 * 解析app-property: 仅支持一个
+	 * 解析app-property: 支持多个
 	 */
 	private void buildAppPropertyNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		String       tagName     = "app-property";
-		XCO          appProperty = new XCO();
-		List<String> resources   = new ArrayList<String>();
-		if (contexts.size() > 1) {
-			throw new XmlParseException(lang("xml.tag.mostone", tagName));
-		}
+		String       tagName   = "app-property";
+		List<String> resources = new ArrayList<String>();
 		for (XmlNodeWrapper xNode : contexts) {
-			String      resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
-			InputStream in       = getInputStream(resource, true, true);
-			new INIXLoader().load(in, appProperty);
-			in.close();
+			String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 			resources.add(resource);
 			log.info(lang("xml.tag.resource.load", tagName, resource));
 		}
 		if (resources.size() > 0) {
 			// register reloader
-			ResourceReloader reloader = AppProperty.getInstance(appProperty);
+			AppProperty.init(resources);
 			for (String resource : resources) {
-				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, reloader));
+				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, AppProperty.getInstance()));
 			}
 			// 添加外部参数使用前缀
-			//			XmlExtNsArg.getInstance().addExtArg("APP:", appProperty);
-			XmlExtNsArg.getInstance().addExtNsArg(AppProperty.extNsPrefix, (AppProperty) reloader);
+			XmlExtNsArg.getInstance().addExtNsArg(AppProperty.extNsPrefix, (AppProperty) AppProperty.getInstance());
 		}
 	}
 
@@ -420,4 +401,53 @@ public class XmlTangYuanBuilder extends DefaultXmlComponentBuilder {
 		}
 	}
 
+	//	@SuppressWarnings({ "rawtypes", "unchecked" })
+	//	private void buildPlaceholderNode(List<XmlNodeWrapper> contexts) throws Throwable {
+	//		String              tagName        = "app-placeholder";
+	//		Map<String, String> placeholderMap = new HashMap<String, String>();
+	//		List<String>        resources      = new ArrayList<String>();
+	//		if (contexts.size() > 1) {
+	//			throw new XmlParseException(lang("xml.tag.mostone", tagName));
+	//		}
+	//		for (XmlNodeWrapper xNode : contexts) {
+	//			String     resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+	//			Properties props    = getProperties(resource, false, true);
+	//			placeholderMap.putAll((Map) props);
+	//			resources.add(resource);
+	//			log.info(lang("xml.tag.resource.load", tagName, resource));
+	//		}
+	//		if (resources.size() > 0) {
+	//			// register ResourceReloader
+	//			ResourceReloader reloader = AppPlaceholder.getInstance(placeholderMap);
+	//			for (String resource : resources) {
+	//				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, reloader));
+	//			}
+	//		}
+	//	}
+	//	private void buildAppPropertyNode(List<XmlNodeWrapper> contexts) throws Throwable {
+	//		String       tagName     = "app-property";
+	//		XCO          appProperty = new XCO();
+	//		List<String> resources   = new ArrayList<String>();
+	//		if (contexts.size() > 1) {
+	//			throw new XmlParseException(lang("xml.tag.mostone", tagName));
+	//		}
+	//		for (XmlNodeWrapper xNode : contexts) {
+	//			String      resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+	//			InputStream in       = getInputStream(resource, true, true);
+	//			new INIXLoader().load(in, appProperty);
+	//			in.close();
+	//			resources.add(resource);
+	//			log.info(lang("xml.tag.resource.load", tagName, resource));
+	//		}
+	//		if (resources.size() > 0) {
+	//			// register reloader
+	//			ResourceReloader reloader = AppProperty.getInstance(appProperty);
+	//			for (String resource : resources) {
+	//				XmlGlobalContext.addReloaderVo(new ResourceReloaderVo(resource, reloader));
+	//			}
+	//			// 添加外部参数使用前缀
+	//			//			XmlExtNsArg.getInstance().addExtArg("APP:", appProperty);
+	//			XmlExtNsArg.getInstance().addExtNsArg(AppProperty.extNsPrefix, (AppProperty) reloader);
+	//		}
+	//	}
 }
