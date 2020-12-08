@@ -17,11 +17,11 @@ import org.xson.tangyuan.mq.xml.XmlMqContext;
 
 public class MqListenerComponent implements TangYuanComponent {
 
-	private static MqListenerComponent	instance		= new MqListenerComponent();
+	private static MqListenerComponent instance     = new MqListenerComponent();
 
-	private Log							log				= LogFactory.getLog(getClass());
+	private Log                        log          = LogFactory.getLog(getClass());
 
-	private List<Receiver>				receiverList	= null;
+	private List<Receiver>             receiverList = null;
 
 	private MqListenerComponent() {
 	}
@@ -53,7 +53,7 @@ public class MqListenerComponent implements TangYuanComponent {
 	}
 
 	private void startListener() throws Throwable {
-		XmlMqContext myContext = MqContainer.getInstance().getMyContext();
+		XmlMqContext     myContext      = MqContainer.getInstance().getMyContext();
 		List<ListenerVo> listenerVoList = myContext.getListenerVoList();
 		if (0 == listenerVoList.size()) {
 			return;
@@ -61,10 +61,10 @@ public class MqListenerComponent implements TangYuanComponent {
 		receiverList = new ArrayList<Receiver>();
 
 		for (ListenerVo lVo : listenerVoList) {
-			ChannelVo queue = myContext.getChannelVoMap().get(lVo.getChannel());
-			String msKey = queue.getMsKey();
-			MqSourceType type = myContext.getMqSourceMap().get(msKey).getType();
-			Receiver receiver = null;
+			ChannelVo    queue    = myContext.getChannelVoMap().get(lVo.getChannel());
+			String       msKey    = queue.getMsKey();
+			MqSourceType type     = myContext.getMqSourceMap().get(msKey).getType();
+			Receiver     receiver = null;
 			if (MqSourceType.ActiveMQ == type) {
 				receiver = new ActiveMqReceiver(lVo.getService(), queue, lVo.getBinding());
 			} else if (MqSourceType.RabbitMQ == type) {

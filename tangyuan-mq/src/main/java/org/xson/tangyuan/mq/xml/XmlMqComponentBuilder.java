@@ -23,6 +23,7 @@ import org.xson.tangyuan.util.PlaceholderResourceSupport;
 import org.xson.tangyuan.util.PropertyUtils;
 import org.xson.tangyuan.util.ResourceManager;
 import org.xson.tangyuan.util.StringUtils;
+import org.xson.tangyuan.xml.DefaultXmlComponentBuilder;
 import org.xson.tangyuan.xml.XPathParser;
 import org.xson.tangyuan.xml.XmlContext;
 import org.xson.tangyuan.xml.XmlExtendBuilder;
@@ -31,13 +32,13 @@ import org.xson.tangyuan.xml.XmlNodeBuilder;
 import org.xson.tangyuan.xml.XmlNodeWrapper;
 import org.xson.tangyuan.xml.XmlParseException;
 
-public class XmlMqBuilder implements XmlExtendBuilder {
+public class XmlMqComponentBuilder extends DefaultXmlComponentBuilder {
 
-	private Log						log					= LogFactory.getLog(getClass());
-	private XPathParser				xPathParser			= null;
-	private XmlMqContext			context				= MqContainer.getInstance().getMyContext();
-	private String					defaultMqSource		= null;
-	private Map<String, Integer>	duplicateQueueMap	= new HashMap<String, Integer>();
+	private Log                  log               = LogFactory.getLog(getClass());
+	private XPathParser          xPathParser       = null;
+	private XmlMqContext         context           = MqContainer.getInstance().getMyContext();
+	private String               defaultMqSource   = null;
+	private Map<String, Integer> duplicateQueueMap = new HashMap<String, Integer>();
 
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
@@ -82,15 +83,15 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			}
 			_defaultMqSource = id;
 
-			MqSourceType type = null;
-			String _type = StringUtils.trim(xNode.getStringAttribute("type"));
+			MqSourceType type  = null;
+			String       _type = StringUtils.trim(xNode.getStringAttribute("type"));
 			type = getMqSourceType(_type);
 			if (null == type) {
 				throw new XmlParseException("Unsupported MQ types in <mqSource>: " + id);
 			}
 
-			boolean defaultMs = false;
-			String _isDefault = StringUtils.trim(xNode.getStringAttribute("isDefault"));
+			boolean defaultMs  = false;
+			String  _isDefault = StringUtils.trim(xNode.getStringAttribute("isDefault"));
 			if (null != _isDefault) {
 				defaultMs = Boolean.parseBoolean(_isDefault);
 				if (defaultMs) {
@@ -108,19 +109,19 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			//						StringUtils.trim(propertyNode.getStringAttribute("value")));
 			//			}
 
-			Map<String, String> data = null;
-			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			Map<String, String> data     = null;
+			String              resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 			if (null != resource) {
 				data = (Map) ResourceManager.getProperties(resource, true);
-				data = PropertyUtils.keyToUpperCase(data);		// 还需要将Key全变成大写
+				data = PropertyUtils.keyToUpperCase(data); // 还需要将Key全变成大写
 			} else {
 				data = new HashMap<String, String>();
 				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
 				for (XmlNodeWrapper propertyNode : properties) {
 					data.put(StringUtils.trim(propertyNode.getStringAttribute("name")), StringUtils.trim(propertyNode.getStringAttribute("value")));
 				}
-				PlaceholderResourceSupport.processMap(data);	// 占位替换
-				data = PropertyUtils.keyToUpperCase(data);		// key转大写
+				PlaceholderResourceSupport.processMap(data); // 占位替换
+				data = PropertyUtils.keyToUpperCase(data); // key转大写
 			}
 
 			MqSourceVo hostVo = new MqSourceVo(id, type, data, resource);
@@ -145,9 +146,9 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 		}
 		for (XmlNodeWrapper xNode : contexts) {
 
-			String id = StringUtils.trim(xNode.getStringAttribute("id"));
+			String id        = StringUtils.trim(xNode.getStringAttribute("id"));
 			String queueName = StringUtils.trim(xNode.getStringAttribute("queueName"));
-			String msKey = StringUtils.trim(xNode.getStringAttribute("msKey"));
+			String msKey     = StringUtils.trim(xNode.getStringAttribute("msKey"));
 
 			if (context.getChannelVoMap().containsKey(id)) {
 				throw new XmlParseException("Duplicate queue id: " + id);
@@ -170,15 +171,14 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			}
 			duplicateQueueMap.put(queueName + "_" + msKey, 1);
 
-			Map<String, String> data = new HashMap<String, String>();
+			Map<String, String>  data       = new HashMap<String, String>();
 			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
 			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(), StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
 
-			String senderKey = null;
-			ChannelVo qVo = null;
+			String    senderKey = null;
+			ChannelVo qVo       = null;
 			if (MqSourceType.ActiveMQ == context.getMqSourceMap().get(msKey).getType()) {
 				senderKey = MqSourceType.ActiveMQ.toString().toUpperCase();
 				qVo = new ActiveMqChannelVo(id, queueName, msKey, ChannelType.Queue, senderKey, data);
@@ -198,9 +198,9 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 		}
 		for (XmlNodeWrapper xNode : contexts) {
 
-			String id = StringUtils.trim(xNode.getStringAttribute("id"));
+			String id        = StringUtils.trim(xNode.getStringAttribute("id"));
 			String queueName = StringUtils.trim(xNode.getStringAttribute("topicName"));
-			String msKey = StringUtils.trim(xNode.getStringAttribute("msKey"));
+			String msKey     = StringUtils.trim(xNode.getStringAttribute("msKey"));
 
 			if (context.getChannelVoMap().containsKey(id)) {
 				throw new XmlParseException("Duplicate topic id: " + id);
@@ -223,15 +223,14 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			}
 			duplicateQueueMap.put(queueName + "_" + msKey, 1);
 
-			Map<String, String> data = new HashMap<String, String>();
+			Map<String, String>  data       = new HashMap<String, String>();
 			List<XmlNodeWrapper> properties = xNode.evalNodes("property");
 			for (XmlNodeWrapper propertyNode : properties) {
-				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(),
-						StringUtils.trim(propertyNode.getStringAttribute("value")));
+				data.put(StringUtils.trim(propertyNode.getStringAttribute("name")).toUpperCase(), StringUtils.trim(propertyNode.getStringAttribute("value")));
 			}
 
-			String senderKey = null;
-			ChannelVo qVo = null;
+			String    senderKey = null;
+			ChannelVo qVo       = null;
 			if (MqSourceType.ActiveMQ == context.getMqSourceMap().get(msKey).getType()) {
 				senderKey = MqSourceType.ActiveMQ.toString().toUpperCase();
 				qVo = new ActiveMqChannelVo(id, queueName, msKey, ChannelType.Topic, senderKey, data);
@@ -251,13 +250,13 @@ public class XmlMqBuilder implements XmlExtendBuilder {
 			return;
 		}
 		for (int i = 0; i < size; i++) {
-			XmlNodeWrapper xNode = contexts.get(i);
-			String resource = StringUtils.trim(xNode.getStringAttribute("resource"));
+			XmlNodeWrapper xNode    = contexts.get(i);
+			String         resource = StringUtils.trim(xNode.getStringAttribute("resource"));
 			// log.info("Start parsing(1): " + resource);
 			log.info("Start parsing: " + resource);
 			//InputStream inputStream = Resources.getResourceAsStream(resource);
-			InputStream inputStream = ResourceManager.getInputStream(resource, false);
-			XPathParser parser = new XPathParser(inputStream);
+			InputStream    inputStream    = ResourceManager.getInputStream(resource, false);
+			XPathParser    parser         = new XPathParser(inputStream);
 			XmlNodeBuilder xmlNodeBuilder = getXmlNodeBuilder(parser);
 			xmlNodeBuilder.parseService();
 		}
