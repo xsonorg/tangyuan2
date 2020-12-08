@@ -14,8 +14,8 @@ public class ServiceNode extends AbstractSqlNode {
 
 	private static Log log = LogFactory.getLog(ServiceNode.class);
 
-	public ServiceNode(String id, String ns, String serviceKey, String dsKey, XTransactionDefinition txDef, TangYuanNode sqlNode, CacheUseVo cacheUse,
-			CacheCleanVo cacheClean, Class<?> resultType, String desc, String[] groups) {
+	public ServiceNode(String id, String ns, String serviceKey, String dsKey, XTransactionDefinition txDef, TangYuanNode sqlNode, CacheUseVo cacheUse, CacheCleanVo cacheClean,
+			Class<?> resultType, String desc, String[] groups) {
 		this.id = id;
 		this.ns = ns;
 		this.serviceKey = serviceKey;
@@ -37,9 +37,9 @@ public class ServiceNode extends AbstractSqlNode {
 	public boolean execute(ActuatorContext ac, Object arg, Object temp) throws Throwable {
 		SqlServiceContext sqlContext = (SqlServiceContext) ac.getServiceContext(this.serviceType);
 
-		long startTime = System.currentTimeMillis();
-		String cacheKey = null;
-		Object result = null;
+		long              startTime  = System.currentTimeMillis();
+		String            cacheKey   = null;
+		Object            result     = null;
 
 		// 1. cache使用
 		if (null != this.cacheUse && null == cacheKey) {
@@ -53,8 +53,7 @@ public class ServiceNode extends AbstractSqlNode {
 			if (null != result) {
 				ac.setResult(result);
 				if (log.isInfoEnabled()) {
-					// TODO use cache
-					log.info("sql execution time: " + getSlowServiceLog(startTime));
+					log.info("sql execution time: " + getSlowServiceLog(startTime) + " use cache");
 				}
 				return true;
 			}

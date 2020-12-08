@@ -3,6 +3,7 @@ package org.xson.tangyuan.sql.xml.node;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.service.ActuatorContext;
 import org.xson.tangyuan.sql.service.cmd.SQLCommandContext;
 import org.xson.tangyuan.sql.service.context.SqlServiceContext;
@@ -11,10 +12,12 @@ import org.xson.tangyuan.xml.node.TangYuanNode;
 
 public class SelectVarNode extends AbstractSqlNode {
 
-	private static Log log = LogFactory.getLog(SelectVarNode.class);
+	private static Log log       = LogFactory.getLog(SelectVarNode.class);
 
-	public SelectVarNode(String id, String ns, String serviceKey, String dsKey, XTransactionDefinition txDef, TangYuanNode sqlNode,
-			CacheUseVo cacheUse, String desc, String[] groups) {
+	private MappingVo  resultMap = null;
+
+	public SelectVarNode(String id, String ns, String serviceKey, String dsKey, XTransactionDefinition txDef, TangYuanNode sqlNode, MappingVo resultMap, CacheUseVo cacheUse,
+			String desc, String[] groups) {
 
 		this.id = id;
 		this.ns = ns;
@@ -44,7 +47,7 @@ public class SelectVarNode extends AbstractSqlNode {
 		} else {
 			sqlContext.beforeExecute(this);
 		}
-		Object result = sqlContext.executeSelectVar(this);
+		Object result = sqlContext.executeSelectVar(this, resultMap);
 		sqlContext.afterExecute(this);
 		// 7. 设置结果
 		ac.setResult(result);

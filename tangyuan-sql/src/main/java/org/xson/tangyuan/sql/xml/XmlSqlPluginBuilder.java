@@ -333,6 +333,7 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 			//			}
 
 			String       id        = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
+			String       resultMap = getStringFromAttr(xNode, "resultMap");
 			String       dsKey     = getStringFromAttr(xNode, "dsKey");
 			String       txRef     = getStringFromAttr(xNode, "txRef");
 			String       _cacheUse = getStringFromAttr(xNode, "cacheUse");
@@ -352,8 +353,9 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 				throw new XmlParseException(lang("xml.tag.attribute.reference.id.invalid", txRef, id, "txRef", tagName, this.resource));
 			}
 
+			SelectResult  selectResult  = parseSelectResult(null, resultMap, tagName, this.componentContext);
 			CacheUseVo    cacheUse      = parseCacheUse(_cacheUse, id);
-			SelectVarNode selectVarNode = new SelectVarNode(id, this.ns, getFullId(id), dsKey, txDef, sqlNode, cacheUse, desc, groups);
+			SelectVarNode selectVarNode = new SelectVarNode(id, this.ns, getFullId(id), dsKey, txDef, sqlNode, selectResult.resultMap, cacheUse, desc, groups);
 			list.add(selectVarNode);
 		}
 
@@ -594,6 +596,7 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 				throw new XmlParseException(lang("xml.tag.content-id.empty", idWithSqlService, tagName, resource));
 			}
 			String dsKey     = getStringFromAttr(xNode, "dsKey");
+			String resultMap = getStringFromAttr(xNode, "resultMap");
 			String _cacheUse = getStringFromAttr(xNode, "cacheUse");
 			String resultKey = parseVariableKey(xNode, "resultKey", tagName);
 			if (null == dsKey) {
@@ -601,8 +604,9 @@ public class XmlSqlPluginBuilder extends DefaultXmlPluginBuilder {
 			} else {
 				checkInnerDsKey(dsKey, tagName);
 			}
+			SelectResult          selectResult  = parseSelectResult(null, resultMap, tagName, componentContext);
 			CacheUseVo            cacheUse      = parseCacheUse(_cacheUse, idWithSqlService);
-			InternalSelectVarNode selectVarNode = new InternalSelectVarNode(dsKey, resultKey, sqlNode, cacheUse);
+			InternalSelectVarNode selectVarNode = new InternalSelectVarNode(dsKey, resultKey, sqlNode, selectResult.resultMap, cacheUse);
 			targetContents.add(selectVarNode);
 		}
 	}

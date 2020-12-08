@@ -4,16 +4,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.xson.tangyuan.hive.datasource.DataSourceManager;
 import org.xson.tangyuan.hive.transaction.XConnection.ConnectionState;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.sql.datasource.DataSourceManager;
 
 public class MultipleTransactionManager implements XTransactionManager {
 
-	private static Log			log	= LogFactory.getLog(MultipleTransactionManager.class);
+	private static Log          log = LogFactory.getLog(MultipleTransactionManager.class);
 
-	protected DataSourceManager	dataSources;
+	protected DataSourceManager dataSources;
 
 	public MultipleTransactionManager(DataSourceManager dataSources) {
 		this.dataSources = dataSources;

@@ -23,17 +23,16 @@
 			<version>${tangyuan.version}</version>
 		</dependency>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.xson</groupId>
-			<artifactId>tangyuan-sql-datasource</artifactId>
+			<artifactId>tangyuan-sql</artifactId>
 			<version>${tangyuan.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.xson</groupId>
 			<artifactId>tangyuan-cache</artifactId>
 			<version>${tangyuan.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -43,17 +42,29 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-jdbc</artifactId>
+			<!-- <version>2.3.2</version> -->
+			<version>2.3.7</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.hive</groupId>
-			<artifactId>hive-jdbc</artifactId>
-			<version>2.3.2</version>
-			<scope>provided</scope>
+		    <groupId>jdk.tools</groupId>
+		    <artifactId>jdk.tools</artifactId>
+		    <version>1.8</version>
 		</dependency>
+
+<!-- 		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<scope>provided</scope>
+		</dependency> -->
+<!-- 		<dependency>
+			<groupId>org.xson</groupId>
+			<artifactId>tangyuan-sql-datasource</artifactId>
+			<version>${tangyuan.version}</version>
+		</dependency> -->
 
 	</dependencies>
 

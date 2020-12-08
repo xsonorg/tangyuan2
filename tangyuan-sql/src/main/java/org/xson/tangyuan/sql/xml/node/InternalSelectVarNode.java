@@ -3,6 +3,7 @@ package org.xson.tangyuan.sql.xml.node;
 import org.xson.tangyuan.cache.apply.CacheUseVo;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.mapping.MappingVo;
 import org.xson.tangyuan.ognl.Ognl;
 import org.xson.tangyuan.service.ActuatorContext;
 import org.xson.tangyuan.sql.service.context.SqlServiceContext;
@@ -13,16 +14,17 @@ import org.xson.tangyuan.xml.node.TangYuanNode;
  */
 public class InternalSelectVarNode extends AbstractSqlNode {
 
-	private static Log	log	= LogFactory.getLog(InternalSelectVarNode.class);
+	private static Log log       = LogFactory.getLog(InternalSelectVarNode.class);
 
-	// 返回结果的key
-	private String		resultKey;
+	private String     resultKey = null;
+	private MappingVo  resultMap = null;
 
-	public InternalSelectVarNode(String dsKey, String resultKey, TangYuanNode sqlNode, CacheUseVo cacheUse) {
+	public InternalSelectVarNode(String dsKey, String resultKey, TangYuanNode sqlNode, MappingVo resultMap, CacheUseVo cacheUse) {
 		this.dsKey = dsKey;
 		this.resultKey = resultKey;
 		this.sqlNode = sqlNode;
 		this.simple = false;
+		this.resultMap = resultMap;
 		this.cacheUse = cacheUse;
 	}
 
@@ -34,7 +36,7 @@ public class InternalSelectVarNode extends AbstractSqlNode {
 	@Override
 	protected Object executeSql(ActuatorContext ac, SqlServiceContext sqlContext, Object temp) throws Throwable {
 		sqlContext.beforeExecute(this, true);
-		Object result = sqlContext.executeSelectVar(this);
+		Object result = sqlContext.executeSelectVar(this, resultMap);
 		sqlContext.afterExecute(this);
 		if (null != this.resultKey) {
 			Ognl.setValue(temp, this.resultKey, result);
