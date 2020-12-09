@@ -26,9 +26,9 @@ import org.xson.tangyuan.xml.XmlParseException;
 
 public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 
-	private XmlSqlContext				componentContext		= null;
-	private Map<String, DataSourceVo>	dataSourceVoMap			= new HashMap<String, DataSourceVo>();
-	private int							defaultDataSourceCount	= 0;
+	private XmlSqlContext             componentContext       = null;
+	private Map<String, DataSourceVo> dataSourceVoMap        = new HashMap<String, DataSourceVo>();
+	private int                       defaultDataSourceCount = 0;
 
 	@Override
 	public void parse(XmlContext xmlContext, String resource) throws Throwable {
@@ -51,7 +51,7 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 		// 解析配置项目
 		buildConfigNode(this.root.evalNodes("config-property"), SqlComponent.getInstance());
 		// 解析dataSource
-		List<DataSourceVo> dsList = buildDataSourceNode(this.root.evalNodes("dataSource"));
+		List<DataSourceVo> dsList      = buildDataSourceNode(this.root.evalNodes("dataSource"));
 		// 解析dataSourceGroup
 		List<DataSourceVo> dsGroupList = buildDataSourceGroupNode(this.root.evalNodes("dataSourceGroup"));
 		addDataSource(dsList, dsGroupList);
@@ -72,18 +72,18 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 		if (0 == size) {
 			return;
 		}
-		String tagName = "transaction";
+		String                              tagName        = "transaction";
 		Map<String, XTransactionDefinition> transactionMap = new HashMap<String, XTransactionDefinition>();
 		for (int i = 0; i < size; i++) {
-			XmlNodeWrapper xNode = contexts.get(i);
+			XmlNodeWrapper xNode      = contexts.get(i);
 
-			String id = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
+			String         id         = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
 			// 此属性因该无用了
-			String name = getStringFromAttr(xNode, "name");
-			String _behavior = getStringFromAttr(xNode, "behavior");
-			String _isolation = getStringFromAttr(xNode, "isolation");
-			Integer timeout = getIntegerFromAttr(xNode, "timeout");
-			Boolean readOnly = getBoolanFromAttr(xNode, "readOnly");
+			String         name       = getStringFromAttr(xNode, "name");
+			String         _behavior  = getStringFromAttr(xNode, "behavior");
+			String         _isolation = getStringFromAttr(xNode, "isolation");
+			Integer        timeout    = getIntegerFromAttr(xNode, "timeout");
+			Boolean        readOnly   = getBoolanFromAttr(xNode, "readOnly");
 
 			if (transactionMap.containsKey(id)) {
 				throw new XmlParseException(lang("xml.tag.id.repeated", id, tagName, this.resource));
@@ -111,12 +111,12 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 		if (null == xNode) {
 			return;
 		}
-		String tagName = "setDefaultTransaction";
-		String type = getStringFromAttr(xNode, "type", lang("xml.tag.attribute.empty", "type", tagName, this.resource));
+		String               tagName    = "setDefaultTransaction";
+		String               type       = getStringFromAttr(xNode, "type", lang("xml.tag.attribute.empty", "type", tagName, this.resource));
 		List<XmlNodeWrapper> properties = xNode.evalNodes("property");
-		List<String[]> ruleList = new ArrayList<String[]>();
+		List<String[]>       ruleList   = new ArrayList<String[]>();
 		for (XmlNodeWrapper propertyNode : properties) {
-			String name = getStringFromAttr(propertyNode, "name", lang("xml.tag.attribute.empty", "name", tagName + ".property", this.resource));
+			String name  = getStringFromAttr(propertyNode, "name", lang("xml.tag.attribute.empty", "name", tagName + ".property", this.resource));
 			String value = getStringFromAttr(propertyNode, "value", lang("xml.tag.attribute.empty", "value", tagName + ".property", this.resource));
 			ruleList.add(new String[] { name, value });
 		}
@@ -127,18 +127,18 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<DataSourceVo> buildDataSourceNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		int size = contexts.size();
-		String tagName = "dataSource";
+		int                size    = contexts.size();
+		String             tagName = "dataSource";
 
-		List<DataSourceVo> dsList = new ArrayList<DataSourceVo>();
+		List<DataSourceVo> dsList  = new ArrayList<DataSourceVo>();
 		for (int i = 0; i < size; i++) {
-			XmlNodeWrapper xNode = contexts.get(i);
+			XmlNodeWrapper xNode     = contexts.get(i);
 
-			String id = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
-			String _type = getStringFromAttr(xNode, "type", lang("xml.tag.attribute.empty", "type", tagName, this.resource));
-			boolean defaultDs = getBoolFromAttr(xNode, "isDefault", false);
-			String resource = getStringFromAttr(xNode, "resource");
-			String sharedUse = getStringFromAttr(xNode, "sharedUse");
+			String         id        = getStringFromAttr(xNode, "id", lang("xml.tag.attribute.empty", "id", tagName, this.resource));
+			String         _type     = getStringFromAttr(xNode, "type", lang("xml.tag.attribute.empty", "type", tagName, this.resource));
+			boolean        defaultDs = getBoolFromAttr(xNode, "isDefault", false);
+			String         resource  = getStringFromAttr(xNode, "resource");
+			String         sharedUse = getStringFromAttr(xNode, "sharedUse");
 
 			if (dataSourceVoMap.containsKey(id)) {
 				throw new XmlParseException(lang("xml.tag.id.repeated", id, tagName, this.resource));
@@ -159,10 +159,8 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 				data = new HashMap<String, String>();
 				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
 				for (XmlNodeWrapper propertyNode : properties) {
-					String name = getStringFromAttr(propertyNode, "name",
-							lang("xml.tag.attribute.empty", "name", tagName + ".property", this.resource));
-					String value = getStringFromAttr(propertyNode, "value",
-							lang("xml.tag.attribute.empty", "value", tagName + ".property", this.resource));
+					String name  = getStringFromAttr(propertyNode, "name", lang("xml.tag.attribute.empty", "name", tagName + ".property", this.resource));
+					String value = getStringFromAttr(propertyNode, "value", lang("xml.tag.attribute.empty", "value", tagName + ".property", this.resource));
 					data.put(name, value);
 				}
 			}
@@ -179,19 +177,19 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<DataSourceVo> buildDataSourceGroupNode(List<XmlNodeWrapper> contexts) throws Throwable {
-		int size = contexts.size();
-		String tagName = "dataSourceGroup";
+		int                size    = contexts.size();
+		String             tagName = "dataSourceGroup";
 
-		List<DataSourceVo> dsList = new ArrayList<DataSourceVo>();
+		List<DataSourceVo> dsList  = new ArrayList<DataSourceVo>();
 		for (int i = 0; i < size; i++) {
-			XmlNodeWrapper xNode = contexts.get(i);
+			XmlNodeWrapper xNode     = contexts.get(i);
 
-			String id = getStringFromAttr(xNode, "groupId", lang("xml.tag.attribute.empty", "groupId", tagName, this.resource));
-			String _type = getStringFromAttr(xNode, "type", lang("xml.tag.attribute.empty", "type", tagName, this.resource));
-			boolean defaultDs = getBoolFromAttr(xNode, "isDefault", false);
-			String resource = getStringFromAttr(xNode, "resource");
-			int start = getIntFromAttr(xNode, "start", 0);
-			int end = getIntFromAttr(xNode, "end", lang("xml.tag.attribute.empty", "end", tagName, this.resource));
+			String         id        = getStringFromAttr(xNode, "groupId", lang("xml.tag.attribute.empty", "groupId", tagName, this.resource));
+			String         _type     = getStringFromAttr(xNode, "type", lang("xml.tag.attribute.empty", "type", tagName, this.resource));
+			boolean        defaultDs = getBoolFromAttr(xNode, "isDefault", false);
+			String         resource  = getStringFromAttr(xNode, "resource");
+			int            start     = getIntFromAttr(xNode, "start", 0);
+			int            end       = getIntFromAttr(xNode, "end", lang("xml.tag.attribute.empty", "end", tagName, this.resource));
 
 			if (dataSourceVoMap.containsKey(id)) {
 				throw new XmlParseException(lang("xml.tag.id.repeated", id, tagName, this.resource));
@@ -206,16 +204,14 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 
 			Map<String, String> data = null;
 			if (null != resource) {
-				Properties p = MixedResourceManager.getProperties(resource, true, false);
+				Properties p = MixedResourceManager.getProperties(resource, true, true);
 				data = (Map) p;
 			} else {
 				data = new HashMap<String, String>();
 				List<XmlNodeWrapper> properties = xNode.evalNodes("property");
 				for (XmlNodeWrapper propertyNode : properties) {
-					String name = getStringFromAttr(propertyNode, "name",
-							lang("xml.tag.attribute.empty", "name", tagName + ".property", this.resource));
-					String value = getStringFromAttr(propertyNode, "value",
-							lang("xml.tag.attribute.empty", "value", tagName + ".property", this.resource));
+					String name  = getStringFromAttr(propertyNode, "name", lang("xml.tag.attribute.empty", "name", tagName + ".property", this.resource));
+					String value = getStringFromAttr(propertyNode, "value", lang("xml.tag.attribute.empty", "value", tagName + ".property", this.resource));
 					data.put(name, value);
 				}
 			}
@@ -246,10 +242,10 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 			throw new XmlParseException(lang("xml.tag.mostone.default", "dataSource|dataSourceGroup"));
 		}
 
-		DataSourceManager dataSourceManager = null;
-		String _defaultDsKey = null;
-		Map<String, DataSourceVo> logicDataSourceMap = new HashMap<String, DataSourceVo>();
-		Map<String, AbstractDataSource> realDataSourceMap = new HashMap<String, AbstractDataSource>();
+		DataSourceManager               dataSourceManager  = null;
+		String                          _defaultDsKey      = null;
+		Map<String, DataSourceVo>       logicDataSourceMap = new HashMap<String, DataSourceVo>();
+		Map<String, AbstractDataSource> realDataSourceMap  = new HashMap<String, AbstractDataSource>();
 
 		for (DataSourceVo dsVo : allList) {
 			dsVo.start(logicDataSourceMap, realDataSourceMap);
@@ -276,14 +272,14 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 	 */
 	private void buildMapperNode(XmlNodeWrapper xNode) throws Throwable {
 		if (null == xNode) {
-			Map<String, TypeHandler<?>> jdbcTypeMap = new HashMap<String, TypeHandler<?>>();
-			TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+			Map<String, TypeHandler<?>> jdbcTypeMap         = new HashMap<String, TypeHandler<?>>();
+			TypeHandlerRegistry         typeHandlerRegistry = new TypeHandlerRegistry();
 			typeHandlerRegistry.init(jdbcTypeMap);
 			SqlComponent.getInstance().setTypeHandlerRegistry(typeHandlerRegistry);
 			return;
 		}
-		String tagName = "mapper";
-		String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+		String              tagName          = "mapper";
+		String              resource         = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 		XmlSqlMapperBuilder xmlMapperBuilder = new XmlSqlMapperBuilder();
 		xmlMapperBuilder.parse(this.componentContext, resource);
 	}
@@ -295,8 +291,8 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 		if (null == xNode) {
 			return;
 		}
-		String tagName = "sharding";
-		String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+		String                tagName            = "sharding";
+		String                resource           = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
 		XmlSqlShardingBuilder xmlShardingBuilder = new XmlSqlShardingBuilder();
 		xmlShardingBuilder.parse(this.componentContext, resource);
 	}
@@ -306,13 +302,13 @@ public class XmlSqlComponentBuilder extends DefaultXmlComponentBuilder {
 		if (size == 0) {
 			return;
 		}
-		String tagName = "plugin";
+		String                    tagName        = "plugin";
 		List<XmlSqlPluginBuilder> pluginBuilders = new ArrayList<XmlSqlPluginBuilder>();
 		// 扫描所有的plugin
 		for (int i = 0; i < size; i++) {
-			XmlNodeWrapper xNode = contexts.get(i);
-			String resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
-			XmlSqlPluginBuilder builder = new XmlSqlPluginBuilder();
+			XmlNodeWrapper      xNode    = contexts.get(i);
+			String              resource = getStringFromAttr(xNode, "resource", lang("xml.tag.attribute.empty", "resource", tagName, this.resource));
+			XmlSqlPluginBuilder builder  = new XmlSqlPluginBuilder();
 			builder.setContext(resource, this.componentContext);
 			// first
 			builder.parseRef();

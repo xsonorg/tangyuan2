@@ -15,17 +15,16 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class RabbitMqSource implements MqSource {
 
-	private static Log				log				= LogFactory.getLog(RabbitMqSource.class);
+	private static Log             log             = LogFactory.getLog(RabbitMqSource.class);
 
-	private ConnectionFactory		factory			= null;
+	private ConnectionFactory      factory         = null;
 
-	private Connection				connection		= null;
-	private LinkedList<Connection>	connectionQueue	= null;
+	private Connection             connection      = null;
+	private LinkedList<Connection> connectionQueue = null;
+	private boolean                poolConnection  = false;
+	private int                    maxConnections  = 1;
 
-	private boolean					poolConnection	= false;
 	// private boolean poolSession = false;
-
-	private int						maxConnections	= 1;
 	// private int maxSessions = 1;
 
 	public void init(MqSourceVo msVo) throws Throwable {
@@ -57,6 +56,7 @@ public class RabbitMqSource implements MqSource {
 			factory.setPassword(properties.get("Password".toUpperCase()));
 		}
 
+		// TODO
 		// factory.setAutomaticRecoveryEnabled(true);
 		// factory.setNetworkRecoveryInterval(10000);// attempt recovery every 10 seconds
 

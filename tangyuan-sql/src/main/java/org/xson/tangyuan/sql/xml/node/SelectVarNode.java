@@ -27,6 +27,7 @@ public class SelectVarNode extends AbstractSqlNode {
 		this.sqlNode = sqlNode;
 		this.txDef = txDef;
 
+		this.resultMap = resultMap;
 		this.cacheUse = cacheUse;
 
 		this.desc = desc;

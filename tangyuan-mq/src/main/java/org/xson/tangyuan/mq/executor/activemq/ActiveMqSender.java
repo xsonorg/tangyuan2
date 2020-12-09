@@ -11,10 +11,10 @@ import org.xson.common.object.XCO;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.mq.MqContainer;
+import org.xson.tangyuan.mq.MqComponent;
 import org.xson.tangyuan.mq.datasource.activemq.ActiveMqSource;
-import org.xson.tangyuan.mq.executor.MqServiceContext;
 import org.xson.tangyuan.mq.executor.Sender;
+import org.xson.tangyuan.mq.service.context.MqServiceContext;
 import org.xson.tangyuan.mq.vo.ActiveMqChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
@@ -43,13 +43,13 @@ public class ActiveMqSender extends Sender {
 	}
 
 	private void sendQueueMessage(ActiveMqChannelVo queue, Object arg, boolean useTx, MqServiceContext context) throws Throwable {
-		ActiveMqSource mqSource = (ActiveMqSource) MqContainer.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
-		Connection connection = null;
-		Session session = null;
-		Throwable tx = null;
+		ActiveMqSource mqSource        = (ActiveMqSource) MqComponent.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
+		Connection     connection      = null;
+		Session        session         = null;
+		Throwable      tx              = null;
 
-		boolean transacted = false;
-		int acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
+		boolean        transacted      = false;
+		int            acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
 		if (useTx) {
 			transacted = true;
 			acknowledgeMode = Session.SESSION_TRANSACTED;
@@ -66,15 +66,15 @@ public class ActiveMqSender extends Sender {
 				context.addTransactionObject(new ActiveMqTransactionObject(mqSource, session));
 			}
 
-			Destination destination = session.createQueue(queue.getName());
+			Destination     destination     = session.createQueue(queue.getName());
 			MessageProducer messageProducer = session.createProducer(destination);
-			TextMessage message = session.createTextMessage(((XCO) arg).toXMLString());
+			TextMessage     message         = session.createTextMessage(((XCO) arg).toXMLString());
 
 			// int deliveryMode = (Integer) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_P_DELIVERYMODE);
 			// long timeToLive = (Long) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_P_TIMETOLIVE);
 
-			int deliveryMode = queue.getDeliveryMode();
-			long timeToLive = queue.getTimeToLive();
+			int             deliveryMode    = queue.getDeliveryMode();
+			long            timeToLive      = queue.getTimeToLive();
 
 			messageProducer.send(message, deliveryMode, Message.DEFAULT_PRIORITY, timeToLive);
 
@@ -94,13 +94,13 @@ public class ActiveMqSender extends Sender {
 	}
 
 	private void sendTopicMessage(ActiveMqChannelVo queue, Object arg, boolean useTx, MqServiceContext context) throws Throwable {
-		ActiveMqSource mqSource = (ActiveMqSource) MqContainer.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
-		Connection connection = null;
-		Session session = null;
-		Throwable tx = null;
+		ActiveMqSource mqSource        = (ActiveMqSource) MqComponent.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
+		Connection     connection      = null;
+		Session        session         = null;
+		Throwable      tx              = null;
 
-		boolean transacted = false;
-		int acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
+		boolean        transacted      = false;
+		int            acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
 		if (useTx) {
 			transacted = true;
 			acknowledgeMode = Session.SESSION_TRANSACTED;
@@ -118,15 +118,15 @@ public class ActiveMqSender extends Sender {
 				context.addTransactionObject(new ActiveMqTransactionObject(mqSource, session));
 			}
 
-			Destination destination = session.createTopic(queue.getName());
+			Destination     destination     = session.createTopic(queue.getName());
 			MessageProducer messageProducer = session.createProducer(destination);
-			TextMessage message = session.createTextMessage(((XCO) arg).toXMLString());
+			TextMessage     message         = session.createTextMessage(((XCO) arg).toXMLString());
 
 			// int deliveryMode = (Integer) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_P_DELIVERYMODE);
 			// long timeToLive = (Long) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_P_TIMETOLIVE);
 
-			int deliveryMode = queue.getDeliveryMode();
-			long timeToLive = queue.getTimeToLive();
+			int             deliveryMode    = queue.getDeliveryMode();
+			long            timeToLive      = queue.getTimeToLive();
 
 			messageProducer.send(message, deliveryMode, Message.DEFAULT_PRIORITY, timeToLive);
 

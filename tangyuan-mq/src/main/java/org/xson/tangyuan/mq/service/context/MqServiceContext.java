@@ -1,18 +1,19 @@
-package org.xson.tangyuan.mq.executor;
+package org.xson.tangyuan.mq.service.context;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xson.tangyuan.executor.DefaultServiceContext;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
+import org.xson.tangyuan.mq.executor.MqTransactionObject;
 import org.xson.tangyuan.mq.executor.MqTransactionObject.State;
+import org.xson.tangyuan.service.context.ServiceContext;
 
-public class MqServiceContext extends DefaultServiceContext {
+public class MqServiceContext implements ServiceContext {
 
-	private static Log					log				= LogFactory.getLog(MqServiceContext.class);
+	private static Log                log          = LogFactory.getLog(MqServiceContext.class);
 
-	private List<MqTransactionObject>	transObjList	= new ArrayList<MqTransactionObject>();
+	private List<MqTransactionObject> transObjList = new ArrayList<MqTransactionObject>();
 
 	public void addTransactionObject(MqTransactionObject transObj) {
 		transObjList.add(transObj);
@@ -56,4 +57,10 @@ public class MqServiceContext extends DefaultServiceContext {
 	//		// 这里不能处理任务错误,统一上抛
 	//		return false;
 	//	}
+
+	@Override
+	public void onException(Object info) {
+		// TODO Auto-generated method stub
+		//		this.exceptionCount++;
+	}
 }

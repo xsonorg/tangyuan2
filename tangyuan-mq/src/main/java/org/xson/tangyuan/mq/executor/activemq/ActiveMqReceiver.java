@@ -14,37 +14,36 @@ import javax.management.modelmbean.XMLParseException;
 import org.xson.common.object.XCO;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.mq.MqContainer;
+import org.xson.tangyuan.mq.MqComponent;
 import org.xson.tangyuan.mq.datasource.activemq.ActiveMqSource;
 import org.xson.tangyuan.mq.executor.Receiver;
 import org.xson.tangyuan.mq.vo.ActiveMqChannelVo;
 import org.xson.tangyuan.mq.vo.BindingVo;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
-import org.xson.tangyuan.runtime.RuntimeContext;
 
 // TODO 考虑异常重启的问题
 public class ActiveMqReceiver extends Receiver {
 
-	private static Log			log						= LogFactory.getLog(ActiveMqReceiver.class);
+	private static Log         log                   = LogFactory.getLog(ActiveMqReceiver.class);
 
-	private volatile boolean	running					= false;
-	protected volatile boolean	closed					= false;
+	private volatile boolean   running               = false;
+	protected volatile boolean closed                = false;
 
-	private Session				session					= null;
+	private Session            session               = null;
 
-	private String				service					= null;
+	private String             service               = null;
 	// private ChannelVo queue = null;
 
-	private ActiveMqChannelVo	queue					= null;
+	private ActiveMqChannelVo  queue                 = null;
 
-	private BindingVo			binding					= null;
+	private BindingVo          binding               = null;
 
-	private String				typeStr					= null;
+	private String             typeStr               = null;
 
-	private Connection			durableSubscriberConn	= null;
+	private Connection         durableSubscriberConn = null;
 	// 同步接收线程
-	private Thread				syncReceiveThread		= null;
+	private Thread             syncReceiveThread     = null;
 
 	public ActiveMqReceiver(String service, ChannelVo queue, BindingVo binding) {
 		this.service = service;
@@ -56,7 +55,7 @@ public class ActiveMqReceiver extends Receiver {
 	public void start() throws Throwable {
 
 		boolean durableSubscribers = false;// 持久化订阅
-		String clientID = null;
+		String  clientID           = null;
 		if (ChannelType.Topic == queue.getType()) {
 			// durableSubscribers = (Boolean) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_C_DURABLESUBSCRIBERS);
 			durableSubscribers = queue.isDurableSubscribers();
@@ -69,9 +68,9 @@ public class ActiveMqReceiver extends Receiver {
 			}
 		}
 
-		ActiveMqSource mqSource = (ActiveMqSource) MqContainer.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
+		ActiveMqSource mqSource   = (ActiveMqSource) MqComponent.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
 
-		Connection connection = null;
+		Connection     connection = null;
 		if (!durableSubscribers) {
 			connection = mqSource.getConnection();
 		} else {
@@ -81,8 +80,8 @@ public class ActiveMqReceiver extends Receiver {
 
 		// boolean transacted = (Boolean) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_C_TRANSACTED);
 		// int acknowledgeMode = (Integer) queue.getProperties().get(ActiveMqVo.ACTIVEMQ_C_ACKNOWLEDGEMODE);
-		boolean transacted = queue.isTransacted();
-		int acknowledgeMode = queue.getAcknowledgeMode();
+		boolean transacted      = queue.isTransacted();
+		int     acknowledgeMode = queue.getAcknowledgeMode();
 		session = connection.createSession(transacted, acknowledgeMode);
 
 		Destination destination = null;
@@ -117,7 +116,7 @@ public class ActiveMqReceiver extends Receiver {
 						log.error("listen to the [" + queue.getName() + "] error.", e);
 					} finally {
 						// 清理上下文记录
-						RuntimeContext.clean();
+						//						RuntimeContext.clean(); TODO
 					}
 				}
 			});
@@ -143,7 +142,7 @@ public class ActiveMqReceiver extends Receiver {
 					}
 
 					// 清理上下文记录
-					RuntimeContext.clean();
+					//					RuntimeContext.clean(); TODO
 				}
 				closed = true;
 			}
@@ -160,15 +159,15 @@ public class ActiveMqReceiver extends Receiver {
 			XCO xcoMessage = null;
 			if (message instanceof TextMessage) {
 				TextMessage textMessage = (TextMessage) message;
-				String text = textMessage.getText();
+				String      text        = textMessage.getText();
 				xcoMessage = XCO.fromXML(text);
 			} else {
 				// TODO
 			}
 
 			// 添加上下文记录
-			// RuntimeContext.beginFromArg(xcoMessage, "MQ");
-			RuntimeContext.beginFromArg(xcoMessage, RuntimeContext.CONTEXT_ORIGIN_MQ);
+			//			RuntimeContext.beginFromArg(xcoMessage, RuntimeContext.CONTEXT_ORIGIN_MQ);
+			// TODO
 
 			log.info("received a message from " + typeStr + "[" + queue.getName() + "]: " + xcoMessage);
 

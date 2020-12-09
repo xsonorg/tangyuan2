@@ -1,6 +1,7 @@
 package org.xson.tangyuan.mq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,13 +15,16 @@ import org.xson.tangyuan.log.TangYuanLang;
 import org.xson.tangyuan.manager.TangYuanState.ComponentState;
 import org.xson.tangyuan.mq.datasource.MqSourceManager;
 import org.xson.tangyuan.mq.datasource.MqSourceVo.MqSourceType;
-import org.xson.tangyuan.mq.executor.MqServiceContextFactory;
 import org.xson.tangyuan.mq.executor.Receiver;
 import org.xson.tangyuan.mq.executor.Sender;
 import org.xson.tangyuan.mq.executor.activemq.ActiveMqReceiver;
+import org.xson.tangyuan.mq.executor.activemq.ActiveMqSender;
 import org.xson.tangyuan.mq.executor.rabbitmq.RabbitMqReceiver;
+import org.xson.tangyuan.mq.executor.rabbitmq.RabbitMqSender;
+import org.xson.tangyuan.mq.service.context.MqServiceContextFactory;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ListenerVo;
+import org.xson.tangyuan.mq.xml.XmlMqComponentBuilder;
 import org.xson.tangyuan.mq.xml.XmlMqContext;
 import org.xson.tangyuan.xml.node.AbstractServiceNode.TangYuanServiceType;
 
@@ -38,6 +42,8 @@ public class MqComponent implements TangYuanComponent {
 
 	private MqServiceComponent      serviceComponent  = null;
 	private MqListenerComponent     listenerComponent = null;
+
+	private XmlMqContext            componentContext  = new XmlMqContext();
 
 	static {
 		// 注册上下文工厂
@@ -72,41 +78,43 @@ public class MqComponent implements TangYuanComponent {
 		// log.info(TangYuanLang.get("config.property.load"), "mq-component");
 	}
 
-	private void post(XmlSqlContext componentContext) {
-
+	private void post(XmlMqContext componentContext) {
+		senderMap = new HashMap<String, Sender>();
+		senderMap.put("ActiveMQ".toUpperCase(), new ActiveMqSender());
+		senderMap.put("RabbitMQ".toUpperCase(), new RabbitMqSender());
 	}
 
 	public void start(String resource) throws Throwable {
 		if (null == this.serviceComponent) {
-			startComponent();
+
+			log.info(TangYuanLang.get("component.dividing.line"));
+			log.info(TangYuanLang.get("component.starting"), "mq", Version.getVersion());
+			this.state = ComponentState.INITIALIZING;
+
+			startComponent(resource);
 			startService();
 			return;
 		}
 		if (null == this.listenerComponent) {
 			startListener();
+
+			this.state = ComponentState.RUNNING;
+			log.info(TangYuanLang.get("component.starting.successfully"), "mq");
+
 			return;
 		}
 	}
 
-	private void startComponent() throws Throwable {
-		log.info(TangYuanLang.get("component.dividing.line"));
-		log.info(TangYuanLang.get("component.starting"), "mq", Version.getVersion());
+	private void startComponent(String resource) throws Throwable {
+		TangYuanLang.getInstance().load("tangyuan-lang-mq");
 
-		this.state = ComponentState.INITIALIZING;
+		//		XmlMqContext componentContext = new XmlMqContext();
+		this.componentContext.setXmlContext(TangYuanContainer.getInstance().getXmlGlobalContext());
 
-		TangYuanLang.getInstance().load("tangyuan-lang-sql");
-
-		XmlSqlContext componentContext = new XmlSqlContext();
-		componentContext.setXmlContext(TangYuanContainer.getInstance().getXmlGlobalContext());
-
-		XmlSqlComponentBuilder builder = new XmlSqlComponentBuilder();
+		XmlMqComponentBuilder builder = new XmlMqComponentBuilder();
 		builder.parse(componentContext, resource);
 		post(componentContext);
 		componentContext.clean();
-
-		this.state = ComponentState.RUNNING;
-
-		log.info(TangYuanLang.get("component.starting.successfully"), "mq");
 	}
 
 	private void startService() throws Throwable {
@@ -114,17 +122,17 @@ public class MqComponent implements TangYuanComponent {
 	}
 
 	private void startListener() throws Throwable {
-		XmlMqContext     myContext      = MqContainer.getInstance().getMyContext();
-		List<ListenerVo> listenerVoList = myContext.getListenerVoList();
+		//		XmlMqContext     myContext      = MqComponent.getInstance().getMyContext();
+		List<ListenerVo> listenerVoList = this.componentContext.getListenerVoList();
 		if (0 == listenerVoList.size()) {
 			return;
 		}
 		receiverList = new ArrayList<Receiver>();
 
 		for (ListenerVo lVo : listenerVoList) {
-			ChannelVo    queue    = myContext.getChannelVoMap().get(lVo.getChannel());
+			ChannelVo    queue    = this.componentContext.getChannelVoMap().get(lVo.getChannel());
 			String       msKey    = queue.getMsKey();
-			MqSourceType type     = myContext.getMqSourceMap().get(msKey).getType();
+			MqSourceType type     = this.componentContext.getMqSourceMap().get(msKey).getType();
 			Receiver     receiver = null;
 			if (MqSourceType.ActiveMQ == type) {
 				receiver = new ActiveMqReceiver(lVo.getService(), queue, lVo.getBinding());
@@ -175,4 +183,23 @@ public class MqComponent implements TangYuanComponent {
 		log.info(TangYuanLang.get("component.stopping.successfully"), "mq");
 	}
 
+	public MqSourceManager getMqSourceManager() {
+		return mqSourceManager;
+	}
+
+	public void setMqSourceManager(MqSourceManager mqSourceManager) {
+		this.mqSourceManager = mqSourceManager;
+	}
+
+	public Sender getSender(String key) {
+		return senderMap.get(key);
+	}
+
+	public ChannelVo getChannel(String id) {
+		return channelMap.get(id);
+	}
+
+	public void setChannelMap(Map<String, ChannelVo> channelMap) {
+		this.channelMap = channelMap;
+	}
 }

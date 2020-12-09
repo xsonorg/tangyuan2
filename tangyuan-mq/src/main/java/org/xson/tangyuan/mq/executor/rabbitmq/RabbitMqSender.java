@@ -4,10 +4,10 @@ import org.xson.common.object.XCO;
 import org.xson.tangyuan.TangYuanException;
 import org.xson.tangyuan.log.Log;
 import org.xson.tangyuan.log.LogFactory;
-import org.xson.tangyuan.mq.MqContainer;
+import org.xson.tangyuan.mq.MqComponent;
 import org.xson.tangyuan.mq.datasource.rabbitmq.RabbitMqSource;
-import org.xson.tangyuan.mq.executor.MqServiceContext;
 import org.xson.tangyuan.mq.executor.Sender;
+import org.xson.tangyuan.mq.service.context.MqServiceContext;
 import org.xson.tangyuan.mq.vo.ChannelVo;
 import org.xson.tangyuan.mq.vo.ChannelVo.ChannelType;
 import org.xson.tangyuan.mq.vo.RabbitMqChannelVo;
@@ -36,19 +36,19 @@ public class RabbitMqSender extends Sender {
 			return;
 		}
 
-		RabbitMqSource mqSource = (RabbitMqSource) MqContainer.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
-		Channel channel = null;
-		Throwable tx = null;
+		RabbitMqSource mqSource  = (RabbitMqSource) MqComponent.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
+		Channel        channel   = null;
+		Throwable      tx        = null;
 
-		String queueName = queue.getName();
+		String         queueName = queue.getName();
 		try {
 
 			// boolean durable = (Boolean) queue.getProperties().get(RabbitMqVo.RABBITMQ_DURABLE);
 			// boolean exclusive = (Boolean) queue.getProperties().get(RabbitMqVo.RABBITMQ_EXCLUSIVE);
 			// boolean autoDelete = (Boolean) queue.getProperties().get(RabbitMqVo.RABBITMQ_AUTODELETE);
 
-			boolean durable = queue.isDurable();
-			boolean exclusive = queue.isExclusive();
+			boolean durable    = queue.isDurable();
+			boolean exclusive  = queue.isExclusive();
 			boolean autoDelete = queue.isAutoDelete();
 
 			channel = mqSource.getChannel();
@@ -75,15 +75,15 @@ public class RabbitMqSender extends Sender {
 	}
 
 	private void sendTopicMessage(RabbitMqChannelVo queue, RoutingVo rVo, Object arg, boolean useTx, MqServiceContext context) throws Throwable {
-		RabbitMqSource mqSource = (RabbitMqSource) MqContainer.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
-		Channel channel = null;
-		Throwable tx = null;
-		String exchange = queue.getName();
+		RabbitMqSource mqSource = (RabbitMqSource) MqComponent.getInstance().getMqSourceManager().getMqSource(queue.getMsKey());
+		Channel        channel  = null;
+		Throwable      tx       = null;
+		String         exchange = queue.getName();
 		try {
 			// String exchangeType = (String) queue.getProperties().get(RabbitMqVo.RABBITMQ_EXCHANGE_TYPE);
 			String exchangeType = queue.getExchangeType();
 
-			String routingKey = null;
+			String routingKey   = null;
 			if (BuiltinExchangeType.FANOUT.getType().equalsIgnoreCase(exchangeType)) {
 				routingKey = "";
 			} else {
